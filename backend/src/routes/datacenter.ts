@@ -9,9 +9,9 @@ service.init().catch((err) => console.error('Failed to initialize datacenter tab
 
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, shortName } = req.body;
+    const { name, shortName, publicCIDR, privateCIDR } = req.body;
     if (!name || !shortName) return res.status(400).json({ error: 'name and shortName are required' });
-    const created = await service.create({ name, shortName });
+    const created = await service.create({ name, shortName, publicCIDR, privateCIDR });
     res.status(201).json(created);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -41,8 +41,8 @@ router.get('/:id', async (req: Request, res: Response) => {
 router.put('/:id', async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
-    const { name, shortName } = req.body;
-    const updated = await service.update(id, { name, shortName });
+    const { name, shortName, publicCIDR, privateCIDR } = req.body;
+    const updated = await service.update(id, { name, shortName, publicCIDR, privateCIDR });
     if (!updated) return res.status(404).json({ error: 'not found' });
     res.json(updated);
   } catch (err: any) {

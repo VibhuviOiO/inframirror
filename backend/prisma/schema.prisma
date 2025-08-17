@@ -14,9 +14,8 @@ model Datacenter {
   id            Int              @id @default(autoincrement())
   name          String
   shortName     String
-  privateCIDR   String?          @map("private_cidr")
-  publicCIDR    String?          @map("public_cidr")
-  publicCIDR    String?          @map("public_cidr")
+  privateCIDR   String?
+  publicCIDR    String?
   services      DatacenterService[]
   appDeployments AppDeployment[]
 }
