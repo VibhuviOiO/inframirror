@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -------------------
+// Core: Datacenters
+// -------------------
+model Datacenter {
+  id            Int              @id @default(autoincrement())
+  name          String
+  shortName     String
+  privateCIDR   String?          @map("private_cidr")
+  publicCIDR    String?          @map("public_cidr")
+  publicCIDR    String?          @map("public_cidr")
+  services      DatacenterService[]
+  appDeployments AppDeployment[]
+}
+
+// -------------------
+// Service Layer
+// -------------------
+model ServiceType {
+  id          Int                 @id @default(autoincrement())
+  name        String              @unique
+  description String?
+  catalog     ServiceCatalog[]
+  deployments DatacenterService[]
+}
+
+model ServiceCatalog {
+  id             Int                 @id @default(autoincrement())
+  name           String              @unique
+  description    String?
+  defaultTypeId  Int?
+  defaultType    ServiceType?        @relation(fields: [defaultTypeId], references: [id])
+  deployments    DatacenterService[]
+  owners         ServiceOwner[]
+}
+
+model DatacenterService {
+  id               Int                 @id @default(autoincrement())
+  datacenterId     Int
+  serviceCatalogId Int
+  serviceTypeId    Int
+  isEnabled        Boolean             @default(true)
+  config           Json
+
+  datacenter       Datacenter          @relation(fields: [datacenterId], references: [id])
+  serviceCatalog   ServiceCatalog      @relation(fields: [serviceCatalogId], references: [id])
+  serviceType      ServiceType         @relation(fields: [serviceTypeId], references: [id])
+  instances        ServiceInstance[]
+  appDeployments   AppDeployment[]
+  fromDependencies ServiceDependency[]  @relation("FromService")
+  toDependencies   ServiceDependency[]  @relation("ToService")
+}
+
+model ServiceInstance {
+  id                  Int                @id @default(autoincrement())
+  datacenterServiceId Int
+  ipAddress           String
+  port                Int
+  metadata            Json
+
+  datacenterService   DatacenterService  @relation(fields: [datacenterServiceId], references: [id])
+}
+
+// -------------------
+// Apps on Top of Infra
+// -------------------
+model Application {
+  id            Int             @id @default(autoincrement())
+  name          String          @unique
+  description   String?
+  ownerTeam     String?
+  gitRepoUrl    String?         // <-- new field
+  deployments   AppDeployment[]
+}
+
+model AppDeployment {
+  id                Int                 @id @default(autoincrement())
+  applicationId     Int
+  datacenterId      Int
+  serviceId         Int
+  version           String?
+  config            Json
+
+  application       Application         @relation(fields: [applicationId], references: [id])
+  datacenter        Datacenter          @relation(fields: [datacenterId], references: [id])
+  datacenterService DatacenterService   @relation(fields: [serviceId], references: [id])
+}
+
+// -------------------
+// Optional (ownership & dependencies)
+// -------------------
+model ServiceOwner {
+  id              Int             @id @default(autoincrement())
+  serviceCatalogId Int
+  teamName        String
+  contactEmail    String?
+  slackChannel    String?
+
+  serviceCatalog  ServiceCatalog  @relation(fields: [serviceCatalogId], references: [id])
+}
+
+model ServiceDependency {
+  id            Int               @id @default(autoincrement())
+  fromServiceId Int
+  toServiceId   Int
+  relationType  String
+
+  fromService   DatacenterService @relation("FromService", fields: [fromServiceId], references: [id])
+  toService     DatacenterService @relation("ToService", fields: [toServiceId], references: [id])
+}
