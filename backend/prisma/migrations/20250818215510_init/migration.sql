@@ -10,6 +10,14 @@ CREATE TABLE "public"."Region" (
 );
 
 -- CreateTable
+CREATE TABLE "public"."Environment" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "Environment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."Team" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
@@ -92,7 +100,7 @@ CREATE TABLE "public"."Application" (
     "hostId" INTEGER,
     "catalogId" INTEGER NOT NULL,
     "teamId" INTEGER,
-    "environment" TEXT,
+    "environmentId" INTEGER,
 
     CONSTRAINT "Application_pkey" PRIMARY KEY ("id")
 );
@@ -101,10 +109,16 @@ CREATE TABLE "public"."Application" (
 CREATE UNIQUE INDEX "Region_name_key" ON "public"."Region"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Environment_name_key" ON "public"."Environment"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Team_name_key" ON "public"."Team"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ServiceOrAppType_name_key" ON "public"."ServiceOrAppType"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ApplicationCatalog_uniqueId_key" ON "public"."ApplicationCatalog"("uniqueId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Host_hostname_key" ON "public"."Host"("hostname");
@@ -144,3 +158,6 @@ ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_catalogId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "public"."Team"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_environmentId_fkey" FOREIGN KEY ("environmentId") REFERENCES "public"."Environment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
