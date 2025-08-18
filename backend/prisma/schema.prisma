@@ -7,111 +7,104 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// -------------------
-// Core: Datacenters
-// -------------------
-model Datacenter {
-  id            Int              @id @default(autoincrement())
-  name          String
-  shortName     String
-  privateCIDR   String?
-  publicCIDR    String?
-  services      DatacenterService[]
-  appDeployments AppDeployment[]
+model Region {
+  id        Int          @id @default(autoincrement())
+  name      String       @unique
+  datacenters Datacenter[]
 }
 
-// -------------------
-// Service Layer
-// -------------------
-model ServiceType {
-  id          Int                 @id @default(autoincrement())
-  name        String              @unique
-  description String?
-  catalog     ServiceCatalog[]
-  deployments DatacenterService[]
+model Team {
+  id        Int                  @id @default(autoincrement())
+  name      String               @unique
+  apps      Application[]        
+  appCatalogs ApplicationCatalog[] 
+}
+
+model ServiceOrAppType {
+  id        Int          @id @default(autoincrement())
+  name      String       @unique
+  services  ServiceCatalog[]
+  apps      ApplicationCatalog[]
 }
 
 model ServiceCatalog {
-  id             Int                 @id @default(autoincrement())
-  name           String              @unique
+  id             Int          @id @default(autoincrement())
+  name           String
+  defaultPort    Int?
   description    String?
-  defaultTypeId  Int?
-  defaultType    ServiceType?        @relation(fields: [defaultTypeId], references: [id])
-  deployments    DatacenterService[]
-  owners         ServiceOwner[]
+  serviceTypeId  Int
+  serviceType    ServiceOrAppType @relation(fields: [serviceTypeId], references: [id])
+  deployments    Service[]
 }
 
-model DatacenterService {
-  id               Int                 @id @default(autoincrement())
-  datacenterId     Int
-  serviceCatalogId Int
-  serviceTypeId    Int
-  isEnabled        Boolean             @default(true)
-  config           Json
-
-  datacenter       Datacenter          @relation(fields: [datacenterId], references: [id])
-  serviceCatalog   ServiceCatalog      @relation(fields: [serviceCatalogId], references: [id])
-  serviceType      ServiceType         @relation(fields: [serviceTypeId], references: [id])
-  instances        ServiceInstance[]
-  appDeployments   AppDeployment[]
-  fromDependencies ServiceDependency[]  @relation("FromService")
-  toDependencies   ServiceDependency[]  @relation("ToService")
+model ApplicationCatalog {
+  id             Int          @id @default(autoincrement())
+  name           String
+  uniqueId       String
+  defaultPort    Int?
+  description    String?
+  appTypeId      Int
+  gitRepoUrl     String?
+  teamId         Int
+  team          Team @relation(fields: [teamId], references: [id])
+  appType        ServiceOrAppType @relation(fields: [appTypeId], references: [id])
+  apps           Application[]
 }
 
-model ServiceInstance {
-  id                  Int                @id @default(autoincrement())
-  datacenterServiceId Int
-  ipAddress           String
-  port                Int
-  metadata            Json
-
-  datacenterService   DatacenterService  @relation(fields: [datacenterServiceId], references: [id])
+model Datacenter {
+  id           Int        @id @default(autoincrement())
+  name         String
+  shortName    String
+  privateCIDR  String?
+  publicCIDR   String?
+  regionId     Int
+  region       Region     @relation(fields: [regionId], references: [id])
+  hosts        Host[]
+  services     Service[]
+  applications Application[]
 }
 
-// -------------------
-// Apps on Top of Infra
-// -------------------
+enum HostKind {
+  VM
+  Physical
+  BareMetal
+}
+
+model Host {
+  id           Int        @id @default(autoincrement())
+  datacenterId Int
+  hostname     String     @unique
+  privateIP    String
+  publicIP     String?
+  kind         HostKind
+  tags         Json?
+
+  datacenter   Datacenter @relation(fields: [datacenterId], references: [id])
+  services     Service[]
+  applications Application[]
+}
+
+model Service {
+  id              Int            @id @default(autoincrement())
+  datacenterId    Int
+  hostId          Int
+  catalogId       Int
+
+  datacenter      Datacenter     @relation(fields: [datacenterId], references: [id])
+  host            Host           @relation(fields: [hostId], references: [id])
+  catalog         ServiceCatalog @relation(fields: [catalogId], references: [id])
+}
+
 model Application {
-  id            Int             @id @default(autoincrement())
-  name          String          @unique
-  description   String?
-  ownerTeam     String?
-  gitRepoUrl    String?         // <-- new field
-  deployments   AppDeployment[]
-}
+  id             Int                @id @default(autoincrement())
+  datacenterId   Int
+  hostId         Int?
+  catalogId      Int
+  teamId         Int?
+  environment    String?
 
-model AppDeployment {
-  id                Int                 @id @default(autoincrement())
-  applicationId     Int
-  datacenterId      Int
-  serviceId         Int
-  version           String?
-  config            Json
-
-  application       Application         @relation(fields: [applicationId], references: [id])
-  datacenter        Datacenter          @relation(fields: [datacenterId], references: [id])
-  datacenterService DatacenterService   @relation(fields: [serviceId], references: [id])
-}
-
-// -------------------
-// Optional (ownership & dependencies)
-// -------------------
-model ServiceOwner {
-  id              Int             @id @default(autoincrement())
-  serviceCatalogId Int
-  teamName        String
-  contactEmail    String?
-  slackChannel    String?
-
-  serviceCatalog  ServiceCatalog  @relation(fields: [serviceCatalogId], references: [id])
-}
-
-model ServiceDependency {
-  id            Int               @id @default(autoincrement())
-  fromServiceId Int
-  toServiceId   Int
-  relationType  String
-
-  fromService   DatacenterService @relation("FromService", fields: [fromServiceId], references: [id])
-  toService     DatacenterService @relation("ToService", fields: [toServiceId], references: [id])
+  datacenter     Datacenter         @relation(fields: [datacenterId], references: [id])
+  host           Host?              @relation(fields: [hostId], references: [id])
+  catalog        ApplicationCatalog @relation(fields: [catalogId], references: [id])
+  team           Team?              @relation(fields: [teamId], references: [id])
 }

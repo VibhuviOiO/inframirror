@@ -1,12 +1,24 @@
-import type { Datacenter, NewDatacenter } from '../models/datacenter.js';
-import * as repo from '../repositories/datacenterRepository.js';
+import { getAll, getById, create, update, remove } from '../repositories/datacenterRepository.js';
+import type { NewDatacenter } from '../models/datacenter.js';
 
-export const init = async () => {
-  await repo.createTableIfNotExists();
-};
+export async function getAllDatacenters() {
+  return getAll();
+}
 
-export const create = async (dc: NewDatacenter) => repo.createDatacenter(dc);
-export const list = async () => repo.getAllDatacenters();
-export const getById = async (id: number) => repo.getDatacenterById(id);
-export const update = async (id: number, dc: Partial<NewDatacenter>) => repo.updateDatacenter(id, dc);
-export const remove = async (id: number) => repo.deleteDatacenter(id);
+export async function getDatacenterById(id: number) {
+  return getById(id);
+}
+
+export async function createDatacenter(data: NewDatacenter) {
+  return create(data);
+}
+
+export async function updateDatacenter(id: number, data: Partial<NewDatacenter>) {
+  return update(id, data);
+}
+
+export async function deleteDatacenter(id: number) {
+  return remove(id);
+}
+// Ensure this file is always a module
+export {};

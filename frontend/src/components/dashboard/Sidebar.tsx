@@ -14,7 +14,8 @@ import {
   Cpu,
   Shield,
   Users,
-  FileText
+  FileText,
+  Hexagon
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -51,59 +52,62 @@ const menuGroups: MenuGroup[] = [
       {
         name: 'Datacenters',
         icon: Building2,
-        subItems: [
-          { name: 'Overview', href: '/datacenters', icon: Grid3X3 },
-          { name: 'Add New', href: '/datacenters/add', icon: Plus }
-        ]
+        href: '/infrastructure/datacenters'
       },
       {
-        name: 'Services',
-        icon: Layers3,
-        subItems: [
-          { name: 'Overview', href: '/services', icon: Grid3X3 },
-          { name: 'Add New', href: '/services/add', icon: Plus }
-        ]
-      }
+        name: 'Machines',
+        icon: Cpu,
+        href: '/infrastructure/machines'
+      },
     ]
   },
   {
-    title: "Management",
+    title: "Services",
+    items: [
+      {
+        name: 'Marathon',
+        icon: Hexagon,
+        href: '/services/marathon'
+      },
+      {
+        name: 'Machines',
+        icon: Cpu,
+        href: '/services/machines'
+      },
+    ]
+  },
+  {
+    title: "Applications",
     items: [
       {
         name: 'Applications',
         icon: AppWindow,
-        subItems: [
-          { name: 'Overview', href: '/applications', icon: Grid3X3 },
-          { name: 'Deploy', href: '/applications/deploy', icon: Plus }
-        ]
+        href: '/applications'
       },
       {
-        name: 'Users',
-        icon: Users,
-        subItems: [
-          { name: 'Overview', href: '/users', icon: Grid3X3 },
-          { name: 'Invite', href: '/users/invite', icon: Plus }
-        ]
+        name: 'Deployments',
+        icon: Database,
+        href: '/applications/deployments'
       }
     ]
   },
   {
-    title: "System",
+    title: "Settings",
     items: [
       {
-        name: 'Security',
-        icon: Shield,
-        href: '/security'
+        name: 'Service Catalog',
+        icon: Grid3X3,
+        href: '/settings/services'
       },
       {
-        name: 'Reports',
-        icon: FileText,
-        href: '/reports'
+        name: 'Application Types',
+        icon: Layers3,
+        href: '/settings/application-types'
       },
       {
-        name: 'Settings',
-        icon: Settings,
-        href: '/settings'
+        name: 'Teams',
+        icon: Users,
+        href: '/settings/teams'
       }
     ]
   }

@@ -1,3 +1,9 @@
+### teams
+curl http://localhost:8080/teams
+curl http://localhost:8080/teams/1
+curl -X POST http://localhost:8080/teams -H "Content-Type: application/json" -d '{"name":"New Team"}'
+curl -X PUT http://localhost:8080/teams/1 -H "Content-Type: application/json" -d '{"name":"Updated Team"}'
+curl -X DELETE http://localhost:8080/teams/1
 # Dev Instruction, never apply this to prod. 
 
 ### Use Case 1: Update schema (new fields, new tables, changes)

@@ -2,8 +2,9 @@ export interface Datacenter {
   id: number;
   name: string;
   shortName: string;
-  publicCIDR?: string | null;
-  privateCIDR?: string | null;
+  privateCIDR?: string;
+  publicCIDR?: string;
+  regionId: number;
 }
 
 export type NewDatacenter = Omit<Datacenter, 'id'>;

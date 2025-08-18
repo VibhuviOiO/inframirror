@@ -1,11 +1,14 @@
 import express from 'express';
 import type { Request, Response } from 'express';
 import prisma from './prismaClient.js';
-import datacenterRouter from './routes/datacenter.js';
-import serviceCatalogRouter from './routes/serviceCatalog.js';
-import serviceTypeRouter from './routes/serviceType.js';
 import cors from 'cors'
 import { errorHandler } from './middleware/errorHandler.js';
+
+
+import teamRoutes from './routes/teamRoutes.js';
+import datacenterRoutes from './routes/datacenterRoutes.js';
+import regionRoutes from './routes/regionRoutes.js';
+
 
 const app = express();
 const PORT = 8080;
@@ -27,10 +30,12 @@ app.get('/health', async (req: Request, res: Response) => {
   }
 });
 
-app.use('/datacenters', datacenterRouter);
-app.use('/service-catalogs', serviceCatalogRouter);
-app.use('/service-types', serviceTypeRouter);
-// ...after all routes...
+
+
+app.use('/teams', teamRoutes);
+app.use('/datacenters', datacenterRoutes);
+app.use('/regions', regionRoutes);
+
 app.use(errorHandler);
 
 app.listen(PORT, () => {
