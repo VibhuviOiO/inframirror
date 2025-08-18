@@ -1,35 +1,34 @@
-import { useMemo, useState } from 'react';
-import { Plus, Edit2, Trash2, Check, X } from 'lucide-react';
-import {
-  useServiceOrAppTypes,
-  useCreateServiceOrAppType,
-  useUpdateServiceOrAppType,
-  useDeleteServiceOrAppType,
-  ServiceOrAppType,
-} from '../hooks/useServiceOrAppTypes';
-import { toast } from 'sonner';
 
+import { Plus, Edit2, Trash2, Check, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  useTeams,
+  useCreateTeam,
+  useUpdateTeam,
+  useDeleteTeam,
+  Team,
+} from '../hooks/useTeams';
+import { toast } from 'sonner';
 
 function Spinner() {
   return <div className="w-5 h-5 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />;
 }
 
-function ServiceTypes() {
-  const { data: items, isLoading, isError, error } = useServiceOrAppTypes();
-  const create = useCreateServiceOrAppType();
-  const update = useUpdateServiceOrAppType();
-  const del = useDeleteServiceOrAppType();
+export default function TeamsPage() {
+  const { data: items, isLoading, isError, error } = useTeams();
+  const create = useCreateTeam();
+  const update = useUpdateTeam();
+  const del = useDeleteTeam();
   const [addValue, setAddValue] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
   const [search, setSearch] = useState('');
 
-  // Defensive: always treat items as array
-  const safeItems = Array.isArray(items) ? items : [];
   const filteredRows = useMemo(() => {
-    if (!search.trim()) return safeItems;
-    return safeItems.filter(r => r.name.toLowerCase().includes(search.trim().toLowerCase()));
-  }, [safeItems, search]);
+    if (!items) return [];
+    if (!search.trim()) return items;
+    return items.filter(r => r.name.toLowerCase().includes(search.trim().toLowerCase()));
+  }, [items, search]);
 
   // Inline add
   const handleAdd = async () => {
@@ -37,7 +36,7 @@ function ServiceTypes() {
     try {
       await create.mutateAsync({ name: addValue });
       setAddValue('');
-      toast.success('Type created');
+      toast.success('Team created');
     } catch (err: any) {
       toast.error(err?.message || 'Error');
     }
@@ -50,7 +49,7 @@ function ServiceTypes() {
       await update.mutateAsync({ id, data: { name: editValue } });
       setEditingId(null);
       setEditValue('');
-      toast.success('Type updated');
+      toast.success('Team updated');
     } catch (err: any) {
       toast.error(err?.message || 'Error');
     }
@@ -58,7 +57,7 @@ function ServiceTypes() {
 
   // Inline delete with confirmation
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this type?')) return;
+    if (!window.confirm('Are you sure you want to delete this team?')) return;
     try {
       await del.mutateAsync(id);
       toast.success('Deleted');
@@ -71,14 +70,14 @@ function ServiceTypes() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight flex items-center gap-2">
-          <span className="inline-block bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-lg shadow-sm">Service/App Types</span>
+          <span className="inline-block bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-lg shadow-sm">Teams</span>
         </h1>
         <div className="flex gap-2 w-full sm:w-auto">
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search types..."
+            placeholder="Search teams..."
             className="w-full sm:w-72 px-4 py-2 rounded-full border-2 border-blue-200 focus:ring-2 focus:ring-blue-300 bg-white dark:bg-gray-900 shadow focus:shadow-lg transition"
           />
         </div>
@@ -96,14 +95,14 @@ function ServiceTypes() {
               <table className="min-w-full table-auto">
                 <thead>
                   <tr className="text-left bg-blue-100 dark:bg-blue-950 animate-fade-in">
-                    <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Type</th>
+                    <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Team</th>
                     <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredRows.length === 0 && (
                     <tr>
-                      <td colSpan={2} className="px-6 py-8 text-center text-gray-400">No types found.</td>
+                      <td colSpan={2} className="px-6 py-8 text-center text-gray-400">No teams found.</td>
                     </tr>
                   )}
                   {filteredRows.map((r) => (
@@ -169,7 +168,7 @@ function ServiceTypes() {
                         value={addValue}
                         onChange={e => setAddValue(e.target.value)}
                         className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                        placeholder="Add new type..."
+                        placeholder="Add new team..."
                         onKeyDown={e => { if (e.key === 'Enter') handleAdd(); }}
                       />
                     </td>
@@ -193,5 +192,3 @@ function ServiceTypes() {
     </div>
   );
 }
-
-export default ServiceTypes;

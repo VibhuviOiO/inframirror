@@ -52,7 +52,7 @@ const menuGroups: MenuGroup[] = [
       {
         name: 'Datacenters',
         icon: Building2,
-        href: '/infrastructure/datacenters'
+        href: '/datacenters'
       },
       {
         name: 'Machines',
@@ -90,26 +90,6 @@ const menuGroups: MenuGroup[] = [
         href: '/applications/deployments'
       }
     ]
-  },
-  {
-    title: "Settings",
-    items: [
-      {
-        name: 'Service Catalog',
-        icon: Grid3X3,
-        href: '/settings/services'
-      },
-      {
-        name: 'Application Types',
-        icon: Layers3,
-        href: '/settings/application-types'
-      },
-      {
-        name: 'Teams',
-        icon: Users,
-        href: '/settings/teams'
-      }
-    ]
   }
 ];
 
@@ -143,7 +123,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </div>
           
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6">
+          <nav className="flex-1 px-4 py-6 flex flex-col justify-between">
             <div className="space-y-8">
               {menuGroups.map((group) => (
                 <div key={group.title}>
@@ -153,61 +133,33 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   <ul className="space-y-1">
                     {group.items.map((item) => (
                       <li key={item.name}>
-                        {item.subItems ? (
-                          <>
-                            <button
-                              onClick={() => toggleExpanded(item.name)}
-                              className={cn(
-                                "group flex w-full items-center gap-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                                expandedItems.includes(item.name) 
-                                  ? "bg-sidebar-active-bg text-sidebar-active" 
-                                  : "text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
-                              )}
-                            >
-                              <item.icon className="h-5 w-5 shrink-0" />
-                              <span className="flex-1 text-left">{item.name}</span>
-                              <ChevronRight 
-                                className={cn(
-                                  "h-4 w-4 transition-transform duration-200",
-                                  expandedItems.includes(item.name) && "rotate-90"
-                                )}
-                              />
-                            </button>
-                            {expandedItems.includes(item.name) && (
-                              <ul className="mt-1 space-y-1 pl-8 animate-fade-in">
-                                {item.subItems.map((subItem) => (
-                                  <li key={subItem.name}>
-                                    <a
-                                      href={subItem.href}
-                                      className="group flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-sidebar-hover hover:text-foreground transition-all duration-200"
-                                    >
-                                      <subItem.icon className="h-4 w-4 shrink-0" />
-                                      {subItem.name}
-                                    </a>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </>
-                        ) : (
-                          <a
-                            href={item.href}
-                            className={cn(
-                              "group flex items-center gap-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                              item.href === '/' 
-                                ? "bg-sidebar-active-bg text-sidebar-active shadow-subtle" 
-                                : "text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
-                            )}
-                          >
-                            <item.icon className="h-5 w-5 shrink-0" />
-                            {item.name}
-                          </a>
-                        )}
+                        <a
+                          href={item.href}
+                          className={cn(
+                            "group flex items-center gap-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                            item.href === '/' 
+                              ? "bg-sidebar-active-bg text-sidebar-active shadow-subtle" 
+                              : "text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
+                          )}
+                        >
+                          <item.icon className="h-5 w-5 shrink-0" />
+                          {item.name}
+                        </a>
                       </li>
                     ))}
                   </ul>
                 </div>
               ))}
+            </div>
+            {/* Settings at the bottom */}
+            <div className="mb-4">
+              <a
+                href="/settings"
+                className="group flex items-center gap-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
+              >
+                <Settings className="h-5 w-5 shrink-0" />
+                Settings
+              </a>
             </div>
           </nav>
         </div>

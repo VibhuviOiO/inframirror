@@ -4,6 +4,7 @@ export type Datacenter = {
   id: number
   name: string
   shortName: string
+  regionId: number
   privateCIDR?: string | null
   publicCIDR?: string | null
 }
@@ -51,6 +52,7 @@ export function useCreateDatacenter() {
         id: Date.now(),
         name: newDc.name as string,
         shortName: newDc.shortName as string,
+        regionId: Number(newDc.regionId),
         privateCIDR: newDc.privateCIDR ?? null,
         publicCIDR: newDc.publicCIDR ?? null,
       }

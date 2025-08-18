@@ -1,35 +1,33 @@
 import { useMemo, useState } from 'react';
 import { Plus, Edit2, Trash2, Check, X } from 'lucide-react';
 import {
-  useServiceOrAppTypes,
-  useCreateServiceOrAppType,
-  useUpdateServiceOrAppType,
-  useDeleteServiceOrAppType,
-  ServiceOrAppType,
-} from '../hooks/useServiceOrAppTypes';
+  useRegions,
+  useCreateRegion,
+  useUpdateRegion,
+  useDeleteRegion,
+  Region,
+} from '../hooks/useRegions';
 import { toast } from 'sonner';
-
 
 function Spinner() {
   return <div className="w-5 h-5 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />;
 }
 
-function ServiceTypes() {
-  const { data: items, isLoading, isError, error } = useServiceOrAppTypes();
-  const create = useCreateServiceOrAppType();
-  const update = useUpdateServiceOrAppType();
-  const del = useDeleteServiceOrAppType();
+export default function RegionsPage() {
+  const { data: items, isLoading, isError, error } = useRegions();
+  const create = useCreateRegion();
+  const update = useUpdateRegion();
+  const del = useDeleteRegion();
   const [addValue, setAddValue] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
   const [search, setSearch] = useState('');
 
-  // Defensive: always treat items as array
-  const safeItems = Array.isArray(items) ? items : [];
   const filteredRows = useMemo(() => {
-    if (!search.trim()) return safeItems;
-    return safeItems.filter(r => r.name.toLowerCase().includes(search.trim().toLowerCase()));
-  }, [safeItems, search]);
+    if (!items) return [];
+    if (!search.trim()) return items;
+    return items.filter(r => r.name.toLowerCase().includes(search.trim().toLowerCase()));
+  }, [items, search]);
 
   // Inline add
   const handleAdd = async () => {
@@ -37,7 +35,7 @@ function ServiceTypes() {
     try {
       await create.mutateAsync({ name: addValue });
       setAddValue('');
-      toast.success('Type created');
+      toast.success('Region created');
     } catch (err: any) {
       toast.error(err?.message || 'Error');
     }
@@ -50,7 +48,7 @@ function ServiceTypes() {
       await update.mutateAsync({ id, data: { name: editValue } });
       setEditingId(null);
       setEditValue('');
-      toast.success('Type updated');
+      toast.success('Region updated');
     } catch (err: any) {
       toast.error(err?.message || 'Error');
     }
@@ -58,7 +56,7 @@ function ServiceTypes() {
 
   // Inline delete with confirmation
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this type?')) return;
+    if (!window.confirm('Are you sure you want to delete this region?')) return;
     try {
       await del.mutateAsync(id);
       toast.success('Deleted');
@@ -71,14 +69,14 @@ function ServiceTypes() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight flex items-center gap-2">
-          <span className="inline-block bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-lg shadow-sm">Service/App Types</span>
+          <span className="inline-block bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-lg shadow-sm">Regions</span>
         </h1>
         <div className="flex gap-2 w-full sm:w-auto">
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search types..."
+            placeholder="Search regions..."
             className="w-full sm:w-72 px-4 py-2 rounded-full border-2 border-blue-200 focus:ring-2 focus:ring-blue-300 bg-white dark:bg-gray-900 shadow focus:shadow-lg transition"
           />
         </div>
@@ -96,19 +94,22 @@ function ServiceTypes() {
               <table className="min-w-full table-auto">
                 <thead>
                   <tr className="text-left bg-blue-100 dark:bg-blue-950 animate-fade-in">
-                    <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Type</th>
+                    <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Region</th>
                     <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredRows.length === 0 && (
                     <tr>
-                      <td colSpan={2} className="px-6 py-8 text-center text-gray-400">No types found.</td>
+                      <td colSpan={2} className="px-6 py-8 text-center text-gray-400">No regions found.</td>
                     </tr>
                   )}
                   {filteredRows.map((r) => (
                     <tr key={r.id} className="transition group hover:bg-blue-50 dark:hover:bg-blue-950">
-                      <td className="px-6 py-4 bg-transparent">
+                      <td className="px-6 py-4 flex items-center gap-3 bg-transparent">
+                        <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-blue-200 text-blue-700 font-bold text-lg shadow-sm">
+                          {r.name.slice(0, 2).toUpperCase()}
+                        </span>
                         {editingId === r.id ? (
                           <input
                             value={editValue}
@@ -164,12 +165,15 @@ function ServiceTypes() {
                   ))}
                   {/* Add row at the bottom */}
                   <tr className="bg-blue-50 dark:bg-blue-950 animate-fade-in">
-                    <td className="px-6 py-4 bg-transparent">
+                    <td className="px-6 py-4 flex items-center gap-3 bg-transparent">
+                      <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-blue-100 text-blue-500 font-bold text-lg shadow-sm">
+                        <Plus size={20} />
+                      </span>
                       <input
                         value={addValue}
                         onChange={e => setAddValue(e.target.value)}
                         className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                        placeholder="Add new type..."
+                        placeholder="Add new region..."
                         onKeyDown={e => { if (e.key === 'Enter') handleAdd(); }}
                       />
                     </td>
@@ -193,5 +197,3 @@ function ServiceTypes() {
     </div>
   );
 }
-
-export default ServiceTypes;

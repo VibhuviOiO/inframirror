@@ -6,6 +6,10 @@ import {
   useDeleteDatacenter,
   Datacenter,
 } from '../hooks/useDatacenters'
+import {
+  useRegions,
+  Region,
+} from '../hooks/useRegions'
 import { toast } from 'sonner'
 
 function Spinner() {
@@ -33,6 +37,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 export default function DatacentersPage() {
   // ...existing code...
   const { data: items, isLoading, isError, error } = useDatacenters()
+  const { data: regions, isLoading: loadingRegions } = useRegions()
   const create = useCreateDatacenter()
   const update = useUpdateDatacenter()
   const del = useDeleteDatacenter()
@@ -58,6 +63,7 @@ export default function DatacentersPage() {
 
   async function save() {
     if (!form.name || !form.shortName) return toast.error('Name and Short Name are required')
+    if (!form.regionId) return toast.error('Region is required')
 
     try {
       if (editing) {
@@ -83,6 +89,11 @@ export default function DatacentersPage() {
     }
   }
 
+  const regionMap = useMemo(() => {
+    const map: Record<number, string> = {}
+    regions?.forEach(r => { map[r.id] = r.name })
+    return map
+  }, [regions])
   const rows = useMemo(() => items ?? [], [items])
 
   return (
@@ -110,6 +121,7 @@ export default function DatacentersPage() {
                 <tr className="text-left">
                   <th className="px-4 py-3 text-sm text-gray-500">Name</th>
                   <th className="px-4 py-3 text-sm text-gray-500">Short Name</th>
+                  <th className="px-4 py-3 text-sm text-gray-500">Region</th>
                   <th className="px-4 py-3 text-sm text-gray-500">Private CIDR</th>
                   <th className="px-4 py-3 text-sm text-gray-500">Public CIDR</th>
                   <th className="px-4 py-3 text-sm text-gray-500">Actions</th>
@@ -120,6 +132,7 @@ export default function DatacentersPage() {
                   <tr key={r.id} className="border-t border-gray-100 dark:border-gray-700">
                     <td className="px-4 py-3">{r.name}</td>
                     <td className="px-4 py-3">{r.shortName}</td>
+                    <td className="px-4 py-3">{regionMap[r.regionId] ?? '-'}</td>
                     <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{r.privateCIDR ?? ''}</td>
                     <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{r.publicCIDR ?? ''}</td>
                     <td className="px-4 py-3">
@@ -147,6 +160,20 @@ export default function DatacentersPage() {
               <input value={form.shortName || ''} onChange={(e) => setForm((f) => ({ ...f, shortName: e.target.value }))} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
             </div>
             <div>
+              <label className="block text-sm font-medium mb-1">Region</label>
+              <select
+                value={form.regionId || ''}
+                onChange={e => setForm(f => ({ ...f, regionId: Number(e.target.value) }))}
+                className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900"
+                disabled={loadingRegions}
+              >
+                <option value="">Select region</option>
+                {regions?.map(r => (
+                  <option key={r.id} value={r.id}>{r.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
               <label className="block text-sm font-medium mb-1">Private CIDR</label>
               <input value={form.privateCIDR || ''} onChange={(e) => setForm((f) => ({ ...f, privateCIDR: e.target.value }))} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
             </div>
@@ -167,6 +194,7 @@ export default function DatacentersPage() {
             <div className="space-y-2">
               <div><strong>Name:</strong> {viewing.name}</div>
               <div><strong>Short Name:</strong> {viewing.shortName}</div>
+              <div><strong>Region:</strong> {regionMap[viewing.regionId] ?? '-'}</div>
               <div><strong>Private CIDR:</strong> {viewing.privateCIDR ?? '-'}</div>
               <div><strong>Public CIDR:</strong> {viewing.publicCIDR ?? '-'}</div>
             </div>
