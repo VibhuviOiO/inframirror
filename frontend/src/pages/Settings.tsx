@@ -9,8 +9,6 @@ const settingsMenu = [
   { name: 'Regions', icon: Building2, href: '/settings/regions' },
   { name: 'Environments', icon: Cloud, href: '/settings/environments' },
   { name: 'SVC/App Types', icon: Layers3, href: '/settings/service-types' },
-  { name: 'Service Catalog', icon: Grid3X3, href: '/settings/services-catalog' },
-  { name: 'App Catalog', icon: Grid3X3, href: '/settings/application-catalog' },
   { name: 'Teams', icon: Users, href: '/settings/teams' },
 ];
 
@@ -27,24 +25,29 @@ export default function SettingsPage() {
               <span className="font-bold text-xl tracking-tight text-gray-800 dark:text-gray-100">Settings</span>
             </div>
             <nav className="flex flex-col gap-2">
-              {settingsMenu.map((item) => (
-                <NavLink
-                  key={item.href}
-                  to={item.href}
-                  className={({ isActive }) =>
-                    cn(
+              {settingsMenu.map((item, idx) => {
+                // Special case: highlight Regions if on /settings or /settings/regions
+                const isRegions = idx === 0;
+                const selected = isRegions
+                  ? location.pathname === '/settings' || location.pathname === item.href
+                  : location.pathname === item.href;
+                return (
+                  <NavLink
+                    key={item.href}
+                    to={item.href}
+                    className={cn(
                       'flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition shadow-sm',
-                      isActive || location.pathname === item.href
+                      selected
                         ? 'bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-lg scale-[1.03]'
                         : 'text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-700 dark:hover:text-blue-200'
-                    )
-                  }
-                  end
-                >
-                  <item.icon className="h-5 w-5" />
-                  {item.name}
-                </NavLink>
-              ))}
+                    )}
+                    end
+                  >
+                    <item.icon className="h-5 w-5" />
+                    {item.name}
+                  </NavLink>
+                );
+              })}
             </nav>
           </aside>
           {/* Settings content */}

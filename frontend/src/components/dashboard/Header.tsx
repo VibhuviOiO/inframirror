@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <div className="flex items-center gap-x-3 hover:bg-sidebar-hover rounded-lg px-2 py-1.5 transition-colors cursor-pointer">
             <div className="hidden lg:flex lg:flex-col lg:items-end lg:text-sm">
               <p className="font-medium text-foreground">Musharof</p>
-              <p className="text-xs text-muted-foreground">Administrator</p>
+              <p className="text-xs text-muted-foreground">InfraHub Admin</p>
             </div>
             <Avatar className="h-9 w-9 ring-2 ring-border shadow-subtle">
               <AvatarImage src="/lovable-uploads/d5b984e9-dda3-4cc4-a691-a578c7a0e24a.png" alt="Profile" />

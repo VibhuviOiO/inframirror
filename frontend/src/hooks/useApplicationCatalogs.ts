@@ -6,6 +6,9 @@ export type ApplicationCatalog = {
   uniqueId: string;
   appTypeId: number;
   teamId: number;
+  defaultPort?: number;
+  description?: string;
+  gitRepoUrl?: string;
 };
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');

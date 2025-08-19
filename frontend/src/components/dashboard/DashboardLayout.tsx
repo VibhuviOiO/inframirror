@@ -7,7 +7,7 @@ export const DashboardLayout = ({ children }: { children?: React.ReactNode }) =>
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-dashboard-bg">
+    <div className="min-h-screen flex bg-white dark:bg-gray-900">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
@@ -21,7 +21,7 @@ export const DashboardLayout = ({ children }: { children?: React.ReactNode }) =>
         onClose={() => setSidebarOpen(false)} 
       />
       {/* Main content */}
-      <div className="lg:pl-72">
+      <div className="flex-1 lg:pl-72 bg-white dark:bg-gray-900 min-h-screen">
         <Header 
           onMenuClick={() => setSidebarOpen(true)} 
         />

@@ -62,6 +62,21 @@ const menuGroups: MenuGroup[] = [
     ]
   },
   {
+    title: "Catalogs",
+    items: [
+      {
+        name: 'Service Catalog',
+        icon: Layers3,
+        href: '/service-catalogs'
+      },
+      {
+        name: 'Application Catalog',
+        icon: FileText,
+        href: '/application-catalogs'
+      },
+    ]
+  },
+  {
     title: "Services",
     items: [
       {
@@ -106,28 +121,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Static sidebar for desktop */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <div className="flex grow flex-col overflow-y-auto bg-sidebar-bg border-r border-sidebar-border">
+  {/* Modern sidebar for desktop, flush with left edge */}
+  <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+  <div className="flex grow flex-col overflow-y-auto bg-gradient-to-b from-blue-700 via-purple-700 to-pink-600 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-none shadow-2xl border-r border-blue-900/60 dark:border-gray-800 p-4 relative">
+    {/* Soft white overlay for depth */}
+    <div className="absolute inset-0 pointer-events-none bg-white/10 rounded-none" />
           {/* Logo */}
-          <div className="flex h-16 shrink-0 items-center px-6 border-b border-sidebar-border">
-            <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-moderate">
-                <Database className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <div>
-                <span className="text-lg font-semibold text-foreground">AdminHub</span>
-                <p className="text-xs text-muted-foreground">Management Console</p>
-              </div>
+          <div className="flex items-center gap-3 mb-8 px-2">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-pink-400 via-purple-500 to-blue-600 flex items-center justify-center shadow-lg">
+              <Database className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <span className="text-2xl font-extrabold tracking-widest bg-gradient-to-r from-blue-200 via-white to-blue-400 bg-clip-text text-transparent drop-shadow-lg shadow-blue-900/30 uppercase">InfraHub</span>
+              <p className="text-xs text-blue-100/80 tracking-wide mt-1">Management Console</p>
             </div>
           </div>
-          
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 flex flex-col justify-between">
+          <nav className="flex-1 flex flex-col justify-between">
             <div className="space-y-8">
               {menuGroups.map((group) => (
                 <div key={group.title}>
-                  <h3 className="px-2 mb-3 text-xs font-medium uppercase tracking-wider text-nav-group">
+                  <h3 className="px-2 mb-3 text-xs font-semibold uppercase tracking-wider text-blue-200/80">
                     {group.title}
                   </h3>
                   <ul className="space-y-1">
@@ -136,14 +150,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                         <a
                           href={item.href}
                           className={cn(
-                            "group flex items-center gap-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                            item.href === '/' 
-                              ? "bg-sidebar-active-bg text-sidebar-active shadow-subtle" 
-                              : "text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
+                            "group flex items-center gap-x-3 rounded-xl px-3 py-2.5 text-base font-semibold transition-all duration-200",
+                            window.location.pathname === item.href
+                              ? "bg-white/10 text-white shadow-lg ring-2 ring-white/30"
+                              : "text-blue-100 hover:bg-white/10 hover:text-white"
                           )}
                         >
-                          <item.icon className="h-5 w-5 shrink-0" />
-                          {item.name}
+                          <item.icon className={cn("h-6 w-6 shrink-0", window.location.pathname === item.href ? "text-white" : "text-blue-200 group-hover:text-white")} />
+                          <span>{item.name}</span>
                         </a>
                       </li>
                     ))}
@@ -152,13 +166,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               ))}
             </div>
             {/* Settings at the bottom */}
-            <div className="mb-4">
+            <div className="mb-2 mt-8">
               <a
                 href="/settings"
-                className="group flex items-center gap-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-muted-foreground hover:bg-sidebar-hover hover:text-foreground"
+                className={cn(
+                  "group flex items-center gap-x-3 rounded-xl px-3 py-2.5 text-base font-semibold transition-all duration-200",
+                  window.location.pathname.startsWith('/settings')
+                    ? "bg-white/10 text-white shadow-lg ring-2 ring-white/30"
+                    : "text-blue-100 hover:bg-white/10 hover:text-white"
+                )}
               >
-                <Settings className="h-5 w-5 shrink-0" />
-                Settings
+                <Settings className={cn("h-6 w-6 shrink-0", window.location.pathname.startsWith('/settings') ? "text-white" : "text-blue-200 group-hover:text-white")} />
+                <span>Settings</span>
               </a>
             </div>
           </nav>
@@ -178,7 +197,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 <Database className="h-5 w-5 text-primary-foreground" />
               </div>
               <div>
-                <span className="text-lg font-semibold text-foreground">AdminHub</span>
+                <span className="text-lg font-semibold text-foreground">InfraHub</span>
                 <p className="text-xs text-muted-foreground">Management Console</p>
               </div>
             </div>

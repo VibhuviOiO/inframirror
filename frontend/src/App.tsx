@@ -16,6 +16,7 @@ import SettingsPage from "./pages/Settings";
 import RegionsPage from "./pages/Regions";
 
 import ServiceCatalog from "./pages/ServiceCatalog";
+import ServiceCatalogPage from "./pages/ServiceCatalog";
 import ServiceTypes from "./pages/ServiceTypes";
 import ServiceOwners from "./pages/ServiceOwners";
 import ServiceDependencies from "./pages/ServiceDependencies";
@@ -40,13 +41,13 @@ const App = () => (
             <Route path="regions" element={<RegionsPage />} />
             <Route path="environments" element={<EnvironmentsPage />} />
             <Route path="service-types" element={<ServiceTypes />} />
-            <Route path="services-catalog" element={<ServiceCatalog />} />
-            <Route path="application-catalog" element={<ApplicationCatalogPage />} />
-            <Route path="application-types" element={<ServiceTypes />} />
             <Route path="teams" element={<TeamsPage />} />
             {/* Add more submenus as needed */}
-            <Route index element={<div className="text-gray-500">Select a settings category from the left.</div>} />
+            <Route index element={<RegionsPage />} />
           </Route>
+          <Route path="/service-catalogs" element={<ServiceCatalog />} />
+          <Route path="/application-catalogs" element={<ApplicationCatalogPage />} />
+          <Route path="/service-catalogs" element={<ServiceCatalogPage />} />
           <Route path="/infrastructure/datacenters/enabled-services" element={<DatacentersEnabledServices />} />
           <Route path="/infrastructure/datacenters/instances" element={<DatacentersInstances />} />
           {/* Services */}
