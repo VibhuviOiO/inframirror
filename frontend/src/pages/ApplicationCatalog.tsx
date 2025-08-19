@@ -16,7 +16,14 @@ function Spinner() {
   return <div className="w-5 h-5 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />;
 }
 
+function Badge({ children, color }: { children: React.ReactNode; color?: string }) {
+  return (
+    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${color || 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100'}`}>{children}</span>
+  );
+}
+
 function ApplicationCatalogPage() {
+  const [addModalOpen, setAddModalOpen] = useState(false);
   const { data: items, isLoading, isError, error } = useApplicationCatalogs();
   const { data: types } = useServiceOrAppTypes();
   const { data: teams } = useTeams();
@@ -46,7 +53,7 @@ function ApplicationCatalogPage() {
     return items.filter(r => r.name.toLowerCase().includes(search.trim().toLowerCase()));
   }, [items, search]);
 
-  // Inline add
+  // Add via modal
   const handleAdd = async () => {
     if (!addValue.trim()) return toast.error('Name is required');
     if (!addUniqueId.trim()) return toast.error('Unique ID is required');
@@ -62,6 +69,7 @@ function ApplicationCatalogPage() {
       setAddPort('');
       setAddDesc('');
       setAddRepo('');
+      setAddModalOpen(false);
       toast.success('Application Catalog created');
     } catch (err: any) {
       toast.error(err?.message || 'Error');
@@ -103,22 +111,29 @@ function ApplicationCatalogPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Application Catalogs</h1>
-        <div className="flex gap-2 w-full sm:w-auto">
+        <h1 className="text-2xl font-bold text-blue-900 dark:text-blue-100 tracking-tight">Application Catalogs</h1>
+        <div className="flex gap-2 w-full sm:w-auto items-center justify-end">
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search applications..."
-            className="w-full sm:w-72 px-4 py-2 rounded-full border-2 border-blue-200 focus:ring-2 focus:ring-blue-300 bg-white dark:bg-gray-900 shadow focus:shadow-lg transition"
+            className="w-full sm:w-72 px-4 py-2 rounded border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-900 shadow-sm focus:shadow-md transition"
           />
+          <button
+            onClick={() => setAddModalOpen(true)}
+            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-800 text-white rounded-full shadow transition w-10 h-10"
+            title="Add Application"
+          >
+            <Plus size={22} />
+          </button>
         </div>
       </div>
       <div className="relative mt-4">
         <div className="overflow-x-auto">
-          <div className="rounded-2xl shadow-xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
+          <div className="shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-2 sm:p-6">
             {isLoading ? (
               <div className="p-8 flex items-center justify-center">
                 <Spinner />
@@ -127,16 +142,16 @@ function ApplicationCatalogPage() {
               <div className="p-8 text-red-600">Error: {(error as Error)?.message}</div>
             ) : (
               <table className="min-w-full table-auto">
-                <thead>
-                  <tr className="text-left bg-blue-100 dark:bg-blue-950 animate-fade-in">
-                    <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Name</th>
-                    <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Unique ID</th>
-                    <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">App Type</th>
-                    <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Team</th>
-                    <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Default Port</th>
-                    <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Description</th>
-                    <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Git Repo URL</th>
-                    <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Actions</th>
+                <thead className="sticky top-0 z-10">
+                  <tr className="text-left bg-blue-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 animate-fade-in">
+                    <th className="px-4 py-3 text-base font-bold text-blue-900 dark:text-blue-100">Name</th>
+                    <th className="px-4 py-3 text-base font-bold text-blue-900 dark:text-blue-100">Unique Id</th>
+                    <th className="px-4 py-3 text-base font-bold text-blue-900 dark:text-blue-100">App Type</th>
+                    <th className="px-4 py-3 text-base font-bold text-blue-900 dark:text-blue-100">Team</th>
+                    <th className="px-4 py-3 text-base font-bold text-blue-900 dark:text-blue-100">Default port</th>
+                    <th className="px-4 py-3 text-base font-bold text-blue-900 dark:text-blue-100">Description</th>
+                    <th className="px-4 py-3 text-base font-bold text-blue-900 dark:text-blue-100">Git repo</th>
+                    <th className="px-4 py-3 text-base font-bold text-blue-900 dark:text-blue-100">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -145,38 +160,43 @@ function ApplicationCatalogPage() {
                       <td colSpan={8} className="px-6 py-8 text-center text-gray-400">No applications found.</td>
                     </tr>
                   )}
-                  {filteredRows.map((r) => (
-                    <tr key={r.id} className="transition group hover:bg-blue-50 dark:hover:bg-blue-950">
-                      <td className="px-4 py-4 bg-transparent">
+                  {filteredRows.map((r, idx) => (
+                    <tr
+                      key={r.id}
+                      className={
+                        `transition group ${idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'} hover:bg-blue-100 dark:hover:bg-gray-700 ${idx !== filteredRows.length - 1 ? 'border-b border-gray-200 dark:border-gray-800' : ''}`
+                      }
+                    >
+                      <td className="px-4 py-4 bg-transparent align-middle">
                         {editingId === r.id ? (
                           <input
                             value={editValue}
                             onChange={e => setEditValue(e.target.value)}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
                             onKeyDown={e => { if (e.key === 'Enter') handleEdit(r.id); }}
                             autoFocus
                           />
                         ) : (
-                          <span className="text-lg font-medium text-blue-900 dark:text-blue-100">{r.name}</span>
+                          <span className="text-base font-medium text-blue-900 dark:text-blue-100">{r.name}</span>
                         )}
                       </td>
-                      <td className="px-4 py-4 bg-transparent">
+                      <td className="px-4 py-4 bg-transparent align-middle">
                         {editingId === r.id ? (
                           <input
                             value={editUniqueId}
                             onChange={e => setEditUniqueId(e.target.value)}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
                           />
                         ) : (
-                          <span className="text-blue-700 dark:text-blue-200 font-semibold">{r.uniqueId}</span>
+                          <span className="text-base font-medium text-blue-900 dark:text-blue-100">{r.uniqueId}</span>
                         )}
                       </td>
-                      <td className="px-4 py-4 bg-transparent">
+                      <td className="px-4 py-4 bg-transparent align-middle">
                         {editingId === r.id ? (
                           <select
                             value={editType}
                             onChange={e => setEditType(Number(e.target.value))}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
                           >
                             <option value="">Select type...</option>
                             {types?.map(t => (
@@ -184,17 +204,17 @@ function ApplicationCatalogPage() {
                             ))}
                           </select>
                         ) : (
-                          <span className="text-blue-700 dark:text-blue-200 font-semibold">
+                          <Badge color="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
                             {types?.find(t => t.id === r.appTypeId)?.name || r.appTypeId}
-                          </span>
+                          </Badge>
                         )}
                       </td>
-                      <td className="px-4 py-4 bg-transparent">
+                      <td className="px-4 py-4 bg-transparent align-middle">
                         {editingId === r.id ? (
                           <select
                             value={editTeam}
                             onChange={e => setEditTeam(Number(e.target.value))}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
                           >
                             <option value="">Select team...</option>
                             {teams?.map(t => (
@@ -202,12 +222,12 @@ function ApplicationCatalogPage() {
                             ))}
                           </select>
                         ) : (
-                          <span className="text-blue-700 dark:text-blue-200 font-semibold">
+                          <Badge color="bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-100">
                             {teams?.find(t => t.id === r.teamId)?.name || r.teamId}
-                          </span>
+                          </Badge>
                         )}
                       </td>
-                      <td className="px-4 py-4 bg-transparent">
+                      <td className="px-4 py-4 bg-transparent align-middle">
                         {editingId === r.id ? (
                           <input
                             type="number"
@@ -216,31 +236,31 @@ function ApplicationCatalogPage() {
                               const val = e.target.value;
                               setEditPort(val === '' ? '' : Number(val));
                             }}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
                             placeholder="Port"
                           />
                         ) : (
-                          <span className="text-blue-900 dark:text-blue-100">{r.defaultPort ?? ''}</span>
+                          <span className="text-base font-medium text-blue-900 dark:text-blue-100">{r.defaultPort ?? ''}</span>
                         )}
                       </td>
-                      <td className="px-4 py-4 bg-transparent">
+                      <td className="px-4 py-4 bg-transparent align-middle">
                         {editingId === r.id ? (
                           <input
                             value={editDesc}
                             onChange={e => setEditDesc(e.target.value)}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
                             placeholder="Description"
                           />
                         ) : (
-                          <span className="text-blue-900 dark:text-blue-100">{r.description ?? ''}</span>
+                          <span className="text-base font-medium text-blue-900 dark:text-blue-100">{r.description ?? ''}</span>
                         )}
                       </td>
-                      <td className="px-4 py-4 bg-transparent">
+                      <td className="px-4 py-4 bg-transparent align-middle">
                         {editingId === r.id ? (
                           <input
                             value={editRepo}
                             onChange={e => setEditRepo(e.target.value)}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
                             placeholder="Git Repo URL"
                           />
                         ) : (
@@ -249,7 +269,7 @@ function ApplicationCatalogPage() {
                               <GitBranch className="w-5 h-5 text-orange-600 hover:text-orange-800 transition" />
                             </a>
                           ) : (
-                            <span className="text-blue-900 dark:text-blue-100">—</span>
+                            <span className="text-base font-medium text-blue-900 dark:text-blue-100">—</span>
                           )
                         )}
                       </td>
@@ -294,91 +314,67 @@ function ApplicationCatalogPage() {
                       </td>
                     </tr>
                   ))}
-                  {/* Add row at the bottom */}
-                  <tr className="bg-blue-50 dark:bg-blue-950 animate-fade-in">
-                    <td className="px-4 py-4 bg-transparent">
-                      <input
-                        value={addValue}
-                        onChange={e => setAddValue(e.target.value)}
-                        className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                        placeholder="Add new app..."
-                        onKeyDown={e => { if (e.key === 'Enter') handleAdd(); }}
-                      />
-                    </td>
-                    <td className="px-4 py-4 bg-transparent">
-                      <input
-                        value={addUniqueId}
-                        onChange={e => setAddUniqueId(e.target.value)}
-                        className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                        placeholder="Unique ID..."
-                      />
-                    </td>
-                    <td className="px-4 py-4 bg-transparent">
-                      <select
-                        value={addType}
-                        onChange={e => setAddType(Number(e.target.value))}
-                        className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                      >
-                        <option value="">Select type...</option>
-                        {types?.map(t => (
-                          <option key={t.id} value={t.id}>{t.name}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-4 bg-transparent">
-                      <select
-                        value={addTeam}
-                        onChange={e => setAddTeam(Number(e.target.value))}
-                        className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                      >
-                        <option value="">Select team...</option>
-                        {teams?.map(t => (
-                          <option key={t.id} value={t.id}>{t.name}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-4 bg-transparent">
-                      <input
-                        type="number"
-                        value={addPort}
-                        onChange={e => {
-                          const val = e.target.value;
-                          setAddPort(val === '' ? '' : Number(val));
-                        }}
-                        className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                        placeholder="Port"
-                      />
-                    </td>
-                    <td className="px-4 py-4 bg-transparent">
-                      <input
-                        value={addDesc}
-                        onChange={e => setAddDesc(e.target.value)}
-                        className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                        placeholder="Description"
-                      />
-                    </td>
-                    <td className="px-4 py-4 bg-transparent">
-                      <input
-                        value={addRepo}
-                        onChange={e => setAddRepo(e.target.value)}
-                        className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                        placeholder="Git Repo URL"
-                      />
-                    </td>
-                    <td className="px-4 py-4 bg-transparent">
-                      <button
-                        onClick={handleAdd}
-                        className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-800 text-white rounded-full px-5 py-2 font-bold shadow-md transition"
-                        title="Add"
-                        style={{ minWidth: 40 }}
-                      >
-                        <Plus size={20} />
-                      </button>
-                    </td>
-                  </tr>
+                  {/* Add Modal */}
+                  {addModalOpen && (
+                    <tr>
+                      <td colSpan={8} className="p-0">
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-full max-w-2xl relative">
+                            <button onClick={() => setAddModalOpen(false)} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
+                            <h2 className="text-2xl font-bold mb-6 text-blue-900 dark:text-blue-100">Add Application</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label className="block text-sm font-medium mb-1">Name</label>
+                                <input value={addValue} onChange={e => setAddValue(e.target.value)} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-1">Unique ID</label>
+                                <input value={addUniqueId} onChange={e => setAddUniqueId(e.target.value)} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-1">App Type</label>
+                                <select value={addType} onChange={e => setAddType(Number(e.target.value))} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900">
+                                  <option value="">Select type...</option>
+                                  {types?.map(t => (
+                                    <option key={t.id} value={t.id}>{t.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-1">Team</label>
+                                <select value={addTeam} onChange={e => setAddTeam(Number(e.target.value))} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900">
+                                  <option value="">Select team...</option>
+                                  {teams?.map(t => (
+                                    <option key={t.id} value={t.id}>{t.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-1">Default Port</label>
+                                <input type="number" value={addPort} onChange={e => setAddPort(e.target.value === '' ? '' : Number(e.target.value))} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-1">Description</label>
+                                <input value={addDesc} onChange={e => setAddDesc(e.target.value)} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium mb-1">Git Repo URL</label>
+                                <input value={addRepo} onChange={e => setAddRepo(e.target.value)} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-end gap-2 pt-8">
+                              <button onClick={() => setAddModalOpen(false)} className="px-4 py-2 rounded border">Cancel</button>
+                              <button onClick={handleAdd} className="px-4 py-2 rounded bg-blue-600 text-white font-semibold">Add</button>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             )}
+            {/* Floating Add Button removed, add button is now in the top right as an icon only */}
           </div>
         </div>
       </div>

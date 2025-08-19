@@ -123,13 +123,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     <>
   {/* Modern sidebar for desktop, flush with left edge */}
   <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-  <div className="flex grow flex-col overflow-y-auto bg-gradient-to-b from-blue-700 via-purple-700 to-pink-600 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-none shadow-2xl border-r border-blue-900/60 dark:border-gray-800 p-4 relative">
-    {/* Soft white overlay for depth */}
-    <div className="absolute inset-0 pointer-events-none bg-white/10 rounded-none" />
+  <div className="flex grow flex-col overflow-y-auto bg-gradient-to-b from-blue-800 via-gray-900 to-gray-800 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-none shadow-2xl border-r border-blue-900/40 dark:border-gray-800 p-4">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-8 px-2">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-pink-400 via-purple-500 to-blue-600 flex items-center justify-center shadow-lg">
-              <Database className="h-6 w-6 text-white" />
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-gray-200 via-blue-200 to-blue-400 flex items-center justify-center shadow-lg">
+              <Database className="h-6 w-6 text-blue-900" />
             </div>
             <div>
               <span className="text-2xl font-extrabold tracking-widest bg-gradient-to-r from-blue-200 via-white to-blue-400 bg-clip-text text-transparent drop-shadow-lg shadow-blue-900/30 uppercase">InfraHub</span>
