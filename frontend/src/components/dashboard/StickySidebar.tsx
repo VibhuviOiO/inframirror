@@ -17,9 +17,10 @@ const menuGroups = [
     ],
   },
   {
-    title: "Catalog",
+    title: "Catalogs",
     items: [
-      { name: "Catalog", icon: Layers3, href: "/catalog" },
+      { name: "Service Catalog", icon: Layers3, href: "/service-catalogs" },
+      { name: "Application Catalog", icon: FileText, href: "/application-catalogs" },
     ],
   },
   {
@@ -38,13 +39,12 @@ const menuGroups = [
   },
 ];
 
-interface SidebarProps {
+interface StickySidebarProps {
   expanded: boolean;
   setExpanded: (v: boolean) => void;
 }
 
-
-export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
+export default function StickySidebar({ expanded, setExpanded }: StickySidebarProps) {
   // Simulate user data
   const user = {
     name: 'Jinna Baalu',
@@ -52,14 +52,8 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
   };
   const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
 
-  // Sidebar expands on hover, collapses on mouse leave
   return (
-    <div
-      className={`fixed top-0 left-0 z-20 h-full bg-white border-r-2 border-gray-100 flex flex-col transition-all duration-300 ${expanded ? 'w-72' : 'w-20'}`}
-      onMouseEnter={() => setExpanded(true)}
-      onMouseLeave={() => setExpanded(false)}
-      style={{ cursor: 'pointer' }}
-    >
+  <div className={`fixed top-0 left-0 z-20 h-full bg-white border-r-2 border-gray-100 flex flex-col transition-all duration-300 ${expanded ? 'w-72' : 'w-20'}`}>
       {expanded ? (
         <>
           {/* Expanded: Modern sidebar like Sidebar.tsx */}
@@ -112,11 +106,19 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
         </>
       ) : (
         <>
-          {/* Collapsed: Centered icons only */}
+          {/* Collapsed: Centered icons only, show expand button on logo hover */}
           <div className="flex items-center justify-center h-20 border-b border-gray-100 group relative">
             <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center shadow">
               <Database className="h-7 w-7 text-indigo-600" />
             </div>
+            <button
+              onClick={() => setExpanded(true)}
+              className="absolute left-full ml-2 p-2 rounded-full bg-gray-100 hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ top: '50%', transform: 'translateY(-50%)' }}
+              aria-label="Expand sidebar"
+            >
+              <ChevronRight />
+            </button>
           </div>
           <div className="flex-1 flex flex-col gap-2 mt-6 overflow-y-auto">
             {menuGroups.map((group) => (
@@ -155,6 +157,16 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
             )}
           </div>
         </>
+      )}
+      {/* Expand/collapse button for expanded mode only */}
+      {expanded && (
+        <button
+          onClick={() => setExpanded(false)}
+          className="mb-6 mx-auto p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+          aria-label="Collapse sidebar"
+        >
+          <ChevronLeft />
+        </button>
       )}
     </div>
   );

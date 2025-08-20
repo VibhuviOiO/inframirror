@@ -1,32 +1,37 @@
+
 import { useState } from 'react';
-import { Sidebar } from './Sidebar';
-import { Header } from './Header';
 import { DashboardContent } from './DashboardContent';
+import Sidebar from './Sidebar';
+
+import Header from './Navbar';
+import { usePageTitle } from './usePageTitle';
+
+
 
 export const DashboardLayout = ({ children }: { children?: React.ReactNode }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Sidebar expanded/collapsed state
+  const [expanded, setExpanded] = useState(true);
+  const sidebarWidth = expanded ? 288 : 80; // px
+  const title = usePageTitle();
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-gray-900">
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Sidebar */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
-      />
-      {/* Main content */}
-      <div className="flex-1 lg:pl-72 bg-white dark:bg-gray-900 min-h-screen">
-        <Header 
-          onMenuClick={() => setSidebarOpen(true)} 
-        />
+      <Sidebar expanded={expanded} setExpanded={setExpanded} />
+      {/* Header (sticky navbar) */}
+      <Header expanded={expanded} sidebarWidth={sidebarWidth} title={title} />
+      {/* Main content, shifted right and down for sidebar/header */}
+      <div
+        className="transition-all duration-300"
+        style={{
+          marginLeft: sidebarWidth,
+          paddingTop: 80, // header height in px
+        }}
+      >
         <main className="py-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div
+            className={expanded ? "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" : "w-full px-4 sm:px-6 lg:px-8"}
+          >
             {children ? children : <DashboardContent />}
           </div>
         </main>

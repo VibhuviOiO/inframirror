@@ -7,14 +7,15 @@ import ApplicationDeployments from "./pages/ApplicationDeployments";
 import NotFound from "./pages/NotFound";
 import SettingsPage from "./pages/Settings";
 import RegionsPage from "./pages/Regions";
-import ServiceCatalog from "./pages/ServiceCatalog";
-import ServiceCatalogPage from "./pages/ServiceCatalog";
+
+import { ServiceCatalogPageWithLayout } from "./pages/ServiceCatalog";
 import ServiceTypes from "./pages/ServiceTypes";
 import ServiceOwners from "./pages/ServiceOwners";
 import ServiceDependencies from "./pages/ServiceDependencies";
 import EnvironmentsPage from "./pages/Environments";
 import TeamsPage from "./pages/Teams";
-import ApplicationCatalogPage from "./pages/ApplicationCatalog";
+import ApplicationCatalogPageWithLayout from "./pages/ApplicationCatalog";
+import CatalogPage from "./pages/Catalog";
 
 const routes = [
   {
@@ -36,9 +37,9 @@ const routes = [
       { index: true, element: <RegionsPage /> },
     ],
   },
-  { path: "/service-catalogs", element: <ServiceCatalog /> },
-  { path: "/application-catalogs", element: <ApplicationCatalogPage /> },
-  { path: "/service-catalogs", element: <ServiceCatalogPage /> },
+  { path: "/catalog", element: <CatalogPage /> },
+  { path: "/service-catalogs", element: <ServiceCatalogPageWithLayout /> },
+  { path: "/application-catalogs", element: <ApplicationCatalogPageWithLayout /> },
   { path: "/infrastructure/datacenters/enabled-services", element: <DatacentersEnabledServices /> },
   { path: "/infrastructure/datacenters/instances", element: <DatacentersInstances /> },
   { path: "applications", element: <Applications /> },

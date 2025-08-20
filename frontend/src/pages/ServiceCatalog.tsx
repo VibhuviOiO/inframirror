@@ -338,7 +338,8 @@ function ServiceCatalogPage() {
   );
 }
 
-export default function ServiceCatalogPageWithLayout() {
+
+export function ServiceCatalogPageWithLayout() {
   return (
     <DashboardLayout>
       <ServiceCatalogPage />
