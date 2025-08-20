@@ -26,7 +26,7 @@ export const ChartCard: React.FC<ChartCardProps> = ({
   return (
     <div className="rounded-xl border border-gray-200 bg-card p-6 shadow-sm">
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-card-foreground">{title}</h3>
+  <h3 className="text-sm font-semibold text-card-foreground">{title}</h3>
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
       

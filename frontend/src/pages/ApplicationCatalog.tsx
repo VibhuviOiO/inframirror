@@ -120,7 +120,7 @@ function ApplicationCatalogPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search applications..."
-            className="w-full sm:w-72 px-4 py-2 rounded border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-900 shadow-sm focus:shadow-md transition"
+            className="w-full sm:w-72 px-4 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm transition"
           />
           <button
             onClick={() => setAddModalOpen(true)}
@@ -325,15 +325,15 @@ function ApplicationCatalogPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
                                 <label className="block text-sm font-medium mb-1">Name</label>
-                                <input value={addValue} onChange={e => setAddValue(e.target.value)} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
+                                <input value={addValue} onChange={e => setAddValue(e.target.value)} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium mb-1">Unique ID</label>
-                                <input value={addUniqueId} onChange={e => setAddUniqueId(e.target.value)} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
+                                <input value={addUniqueId} onChange={e => setAddUniqueId(e.target.value)} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium mb-1">App Type</label>
-                                <select value={addType} onChange={e => setAddType(Number(e.target.value))} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900">
+                                <select value={addType} onChange={e => setAddType(Number(e.target.value))} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" >
                                   <option value="">Select type...</option>
                                   {types?.map(t => (
                                     <option key={t.id} value={t.id}>{t.name}</option>
@@ -342,7 +342,7 @@ function ApplicationCatalogPage() {
                               </div>
                               <div>
                                 <label className="block text-sm font-medium mb-1">Team</label>
-                                <select value={addTeam} onChange={e => setAddTeam(Number(e.target.value))} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900">
+                                <select value={addTeam} onChange={e => setAddTeam(Number(e.target.value))} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" >
                                   <option value="">Select team...</option>
                                   {teams?.map(t => (
                                     <option key={t.id} value={t.id}>{t.name}</option>
@@ -351,15 +351,15 @@ function ApplicationCatalogPage() {
                               </div>
                               <div>
                                 <label className="block text-sm font-medium mb-1">Default Port</label>
-                                <input type="number" value={addPort} onChange={e => setAddPort(e.target.value === '' ? '' : Number(e.target.value))} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
+                                <input type="number" value={addPort} onChange={e => setAddPort(e.target.value === '' ? '' : Number(e.target.value))} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" />
                               </div>
                               <div>
                                 <label className="block text-sm font-medium mb-1">Description</label>
-                                <input value={addDesc} onChange={e => setAddDesc(e.target.value)} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
+                                <input value={addDesc} onChange={e => setAddDesc(e.target.value)} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" />
                               </div>
                               <div className="md:col-span-2">
                                 <label className="block text-sm font-medium mb-1">Git Repo URL</label>
-                                <input value={addRepo} onChange={e => setAddRepo(e.target.value)} className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-900" />
+                                <input value={addRepo} onChange={e => setAddRepo(e.target.value)} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" />
                               </div>
                             </div>
                             <div className="flex items-center justify-end gap-2 pt-8">

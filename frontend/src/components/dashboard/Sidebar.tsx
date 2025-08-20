@@ -123,15 +123,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     <>
   {/* Modern sidebar for desktop, flush with left edge */}
   <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-  <div className="flex grow flex-col overflow-y-auto bg-gradient-to-b from-blue-800 via-gray-900 to-gray-800 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-none shadow-2xl border-r border-blue-900/40 dark:border-gray-800 p-4">
+  <div className="flex grow flex-col overflow-y-auto bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950 border-r border-gray-200 dark:border-gray-800 shadow-2xl p-8">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-8 px-2">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-gray-200 via-blue-200 to-blue-400 flex items-center justify-center shadow-lg">
-              <Database className="h-6 w-6 text-blue-900" />
+            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-lg">
+              <Database className="h-6 w-6 text-indigo-600" />
             </div>
             <div>
-              <span className="text-2xl font-extrabold tracking-widest bg-gradient-to-r from-blue-200 via-white to-blue-400 bg-clip-text text-transparent drop-shadow-lg shadow-blue-900/30 uppercase">InfraHub</span>
-              <p className="text-xs text-blue-100/80 tracking-wide mt-1">Management Console</p>
+              <span className="text-base font-bold tracking-tight text-gray-800 dark:text-gray-100">InfraHub</span>
+              <p className="text-xs text-gray-500 dark:text-gray-400 tracking-wide mt-1">Management Console</p>
             </div>
           </div>
           {/* Navigation */}
@@ -139,7 +139,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <div className="space-y-8">
               {menuGroups.map((group) => (
                 <div key={group.title}>
-                  <h3 className="px-2 mb-3 text-xs font-semibold uppercase tracking-wider text-blue-200/80">
+                  <h3 className="px-2 mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                     {group.title}
                   </h3>
                   <ul className="space-y-1">
@@ -148,13 +148,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                         <a
                           href={item.href}
                           className={cn(
-                            "group flex items-center gap-x-3 rounded-xl px-3 py-2.5 text-base font-semibold transition-all duration-200",
+                            "group flex items-center gap-x-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200",
                             window.location.pathname === item.href
-                              ? "bg-white/10 text-white shadow-lg ring-2 ring-white/30"
-                              : "text-blue-100 hover:bg-white/10 hover:text-white"
+                              ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-lg scale-[1.03]"
+                              : "text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-700 dark:hover:text-blue-200"
                           )}
                         >
-                          <item.icon className={cn("h-6 w-6 shrink-0", window.location.pathname === item.href ? "text-white" : "text-blue-200 group-hover:text-white")} />
+                          <item.icon className={cn("h-6 w-6 shrink-0", window.location.pathname === item.href ? "text-white" : "text-indigo-600 group-hover:text-blue-700 dark:group-hover:text-blue-200")} />
                           <span>{item.name}</span>
                         </a>
                       </li>
@@ -168,13 +168,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <a
                 href="/settings"
                 className={cn(
-                  "group flex items-center gap-x-3 rounded-xl px-3 py-2.5 text-base font-semibold transition-all duration-200",
+                  "group flex items-center gap-x-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200",
                   window.location.pathname.startsWith('/settings')
-                    ? "bg-white/10 text-white shadow-lg ring-2 ring-white/30"
-                    : "text-blue-100 hover:bg-white/10 hover:text-white"
+                    ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-lg scale-[1.03]"
+                    : "text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-700 dark:hover:text-blue-200"
                 )}
               >
-                <Settings className={cn("h-6 w-6 shrink-0", window.location.pathname.startsWith('/settings') ? "text-white" : "text-blue-200 group-hover:text-white")} />
+                <Settings className={cn("h-6 w-6 shrink-0", window.location.pathname.startsWith('/settings') ? "text-white" : "text-indigo-600 group-hover:text-blue-700 dark:group-hover:text-blue-200")} />
                 <span>Settings</span>
               </a>
             </div>
@@ -195,7 +195,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 <Database className="h-5 w-5 text-primary-foreground" />
               </div>
               <div>
-                <span className="text-lg font-semibold text-foreground">InfraHub</span>
+                <span className="text-base font-semibold text-foreground">InfraHub</span>
                 <p className="text-xs text-muted-foreground">Management Console</p>
               </div>
             </div>

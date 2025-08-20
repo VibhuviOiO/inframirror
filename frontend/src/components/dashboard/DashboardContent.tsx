@@ -65,7 +65,7 @@ export const DashboardContent = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+  <h1 className="text-base font-bold text-foreground">Dashboard</h1>
         <p className="text-muted-foreground">Welcome back! Here's what's happening with your system.</p>
       </div>
 
@@ -96,11 +96,11 @@ export const DashboardContent = () => {
       <div className="rounded-xl border border-gray-200 bg-card p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-card-foreground">Monthly Target</h3>
+            <h3 className="text-sm font-semibold text-card-foreground">Monthly Target</h3>
             <p className="text-sm text-muted-foreground">Target you've set for each month</p>
           </div>
           <div className="text-right">
-            <div className="text-2xl font-bold text-primary">75.55%</div>
+            <div className="text-base font-bold text-primary">75.55%</div>
             <div className="text-sm text-success">+10%</div>
           </div>
         </div>

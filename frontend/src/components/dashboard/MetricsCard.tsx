@@ -27,7 +27,7 @@ export const MetricsCard: React.FC<MetricsCardProps> = ({
         <div className="ml-4 flex-1">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <div className="flex items-baseline">
-            <p className="text-2xl font-semibold text-card-foreground">{value}</p>
+            <p className="text-base font-semibold text-card-foreground">{value}</p>
           </div>
         </div>
       </div>
