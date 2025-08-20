@@ -119,9 +119,9 @@ export default function CatalogPage() {
 
   return (
     <DashboardLayout>
-      <div className="py-4 px-0 sm:px-0 flex justify-center min-h-screen">
-        <div className="w-full max-w-6xl">
-          <div className="rounded-3xl shadow-2xl bg-white border border-gray-100 px-0 pt-0 pb-0" style={{ minHeight: 600, position: 'relative', marginTop: 0, marginLeft: 0, marginRight: 0 }}>
+      <div className="pt-2 px-0 flex justify-center min-h-screen">
+        <div className="w-full max-w-[98vw]">
+          <div className="rounded-3xl shadow-2xl bg-white border border-gray-100 px-0 pt-0 pb-0" style={{ minHeight: 600, position: 'relative', marginTop: 0, marginLeft: 0, marginRight: 0, boxShadow: '0 8px 32px 0 rgba(37,99,235,0.08)' }}>
             <div className="flex flex-row items-center justify-between px-8 pt-8 pb-4">
               <div className="flex gap-0">
                 <button
@@ -194,14 +194,9 @@ export default function CatalogPage() {
             </div>
             <div className="relative z-10" style={{marginTop: -24, borderTopLeftRadius: 0, borderTopRightRadius: 0, background: '#fff', border: '1px solid #e5e7eb', borderTop: 'none', borderBottomLeftRadius: 24, borderBottomRightRadius: 24, boxShadow: '0 8px 32px 0 rgba(37,99,235,0.08)', overflow: 'hidden', padding: 0}}>
               {tab === 'services' ? (
-                // ...Service Catalog Table code (as before)...
-                <div className="space-y-0">
-                  {/* ...existing Service Catalog table code here... */}
-                </div>
+                <div className="space-y-0"></div>
               ) : (
-                <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
-                  <ApplicationCatalogTable />
-                </Suspense>
+                <div className="space-y-0"></div>
               )}
             </div>
           </div>
