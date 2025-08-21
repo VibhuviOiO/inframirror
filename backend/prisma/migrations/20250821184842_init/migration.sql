@@ -74,25 +74,28 @@ CREATE TABLE "public"."Host" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."Service" (
+CREATE TABLE "public"."Cluster" (
     "id" SERIAL NOT NULL,
-    "datacenterId" INTEGER NOT NULL,
-    "hostId" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
     "catalogId" INTEGER NOT NULL,
+    "environmentId" INTEGER,
+    "datacenterId" INTEGER,
 
-    CONSTRAINT "Service_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Cluster_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."Application" (
+CREATE TABLE "public"."Service" (
     "id" SERIAL NOT NULL,
-    "datacenterId" INTEGER NOT NULL,
-    "hostId" INTEGER,
-    "catalogId" INTEGER NOT NULL,
-    "teamId" INTEGER,
+    "datacenterId" INTEGER,
+    "hostId" INTEGER NOT NULL,
+    "catalogId" INTEGER,
     "environmentId" INTEGER,
+    "metadata" JSONB NOT NULL,
+    "clusterId" INTEGER,
+    "teamId" INTEGER,
 
-    CONSTRAINT "Application_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Service_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -126,25 +129,28 @@ ALTER TABLE "public"."Datacenter" ADD CONSTRAINT "Datacenter_regionId_fkey" FORE
 ALTER TABLE "public"."Host" ADD CONSTRAINT "Host_datacenterId_fkey" FOREIGN KEY ("datacenterId") REFERENCES "public"."Datacenter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_datacenterId_fkey" FOREIGN KEY ("datacenterId") REFERENCES "public"."Datacenter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Cluster" ADD CONSTRAINT "Cluster_catalogId_fkey" FOREIGN KEY ("catalogId") REFERENCES "public"."Catalog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Cluster" ADD CONSTRAINT "Cluster_environmentId_fkey" FOREIGN KEY ("environmentId") REFERENCES "public"."Environment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Cluster" ADD CONSTRAINT "Cluster_datacenterId_fkey" FOREIGN KEY ("datacenterId") REFERENCES "public"."Datacenter"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_datacenterId_fkey" FOREIGN KEY ("datacenterId") REFERENCES "public"."Datacenter"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_hostId_fkey" FOREIGN KEY ("hostId") REFERENCES "public"."Host"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_catalogId_fkey" FOREIGN KEY ("catalogId") REFERENCES "public"."Catalog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_catalogId_fkey" FOREIGN KEY ("catalogId") REFERENCES "public"."Catalog"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_datacenterId_fkey" FOREIGN KEY ("datacenterId") REFERENCES "public"."Datacenter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_environmentId_fkey" FOREIGN KEY ("environmentId") REFERENCES "public"."Environment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_hostId_fkey" FOREIGN KEY ("hostId") REFERENCES "public"."Host"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_clusterId_fkey" FOREIGN KEY ("clusterId") REFERENCES "public"."Cluster"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_catalogId_fkey" FOREIGN KEY ("catalogId") REFERENCES "public"."Catalog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "public"."Team"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_environmentId_fkey" FOREIGN KEY ("environmentId") REFERENCES "public"."Environment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "public"."Team"("id") ON DELETE SET NULL ON UPDATE CASCADE;

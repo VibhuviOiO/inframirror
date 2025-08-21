@@ -8,21 +8,22 @@ datasource db {
 }
 
 model Region {
-  id        Int          @id @default(autoincrement())
-  name      String       @unique
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
   datacenters Datacenter[]
 }
 
 model Environment {
-  id   Int    @id @default(autoincrement())
-  name String @unique  // e.g., "dev", "stage", "prod"
-  apps Application[]
+  id        Int        @id @default(autoincrement())
+  name      String     @unique  // e.g., "dev", "stage", "prod"
+  services  Service[]
+  clusters  Cluster[]
 }
 
 model Team {
-  id        Int                  @id @default(autoincrement())
-  name      String               @unique
-  apps      Application[]
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  services  Service[]
   catalogs  Catalog[]
 }
 
@@ -45,10 +46,10 @@ model Catalog {
 
   catalogTypeId Int
   catalogType   CatalogType @relation(fields: [catalogTypeId], references: [id])
-  services     Service[]
-  applications Application[]
-}
 
+  services      Service[]
+  clusters      Cluster[]
+}
 
 model Datacenter {
   id           Int        @id @default(autoincrement())
@@ -60,7 +61,7 @@ model Datacenter {
   region       Region     @relation(fields: [regionId], references: [id])
   hosts        Host[]
   services     Service[]
-  applications Application[]
+  clusters     Cluster[]
 }
 
 enum HostKind {
@@ -80,31 +81,36 @@ model Host {
 
   datacenter   Datacenter @relation(fields: [datacenterId], references: [id])
   services     Service[]
-  applications Application[]
+}
+
+model Cluster {
+  id            Int        @id @default(autoincrement())
+  name          String
+  catalogId     Int
+  environmentId Int?
+  datacenterId  Int?
+
+  catalog       Catalog     @relation(fields: [catalogId], references: [id])
+  environment   Environment? @relation(fields: [environmentId], references: [id])
+  datacenter    Datacenter? @relation(fields: [datacenterId], references: [id])
+
+  services      Service[]
 }
 
 model Service {
-  id              Int            @id @default(autoincrement())
-  datacenterId    Int
+  id              Int         @id @default(autoincrement())
+  datacenterId    Int?
   hostId          Int
-  catalogId       Int
+  catalogId       Int?
+  environmentId   Int?
+  metadata        Json        @db.JsonB
+  clusterId       Int?
+  teamId          Int?
 
-  datacenter      Datacenter     @relation(fields: [datacenterId], references: [id])
-  host            Host           @relation(fields: [hostId], references: [id])
-  catalog         Catalog @relation(fields: [catalogId], references: [id])
-}
-
-model Application {
-  id           Int                @id @default(autoincrement())
-  datacenterId Int
-  hostId       Int?
-  catalogId    Int
-  teamId       Int?
-  environmentId Int?
-
-  datacenter   Datacenter         @relation(fields: [datacenterId], references: [id])
-  host         Host?              @relation(fields: [hostId], references: [id])
-  catalog      Catalog @relation(fields: [catalogId], references: [id])
-  team         Team?              @relation(fields: [teamId], references: [id])
-  environment  Environment?       @relation(fields: [environmentId], references: [id])
+  datacenter      Datacenter? @relation(fields: [datacenterId], references: [id])
+  host            Host        @relation(fields: [hostId], references: [id])
+  catalog         Catalog?    @relation(fields: [catalogId], references: [id])
+  environment     Environment? @relation(fields: [environmentId], references: [id])
+  cluster         Cluster?    @relation(fields: [clusterId], references: [id])
+  team            Team?       @relation(fields: [teamId], references: [id])
 }

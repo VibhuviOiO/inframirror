@@ -62,31 +62,50 @@ curl -X PUT http://localhost:8080/datacenters/1 \
 curl -X DELETE http://localhost:8080/datacenters/3
 
 
-# --- HOST API ---
 
-## Host Model (Prisma)
+# --- CLUSTER API ---
+## Cluster API Endpoints
 
-```
-model Host {
-  id           Int        @id @default(autoincrement())
-  datacenterId Int
-  hostname     String     @unique
-  privateIP    String
-  publicIP     String?
-  kind         HostKind
-  tags         Json?
-  datacenter   Datacenter @relation(fields: [datacenterId], references: [id])
-  services     Service[]
-  applications Application[]
-}
-
-enum HostKind {
-  VM
-  Physical
-  BareMetal
-}
+### List all clusters
+```sh
+curl http://localhost:8080/clusters
 ```
 
+### Get a cluster by ID (replace 1 with a valid ID)
+```sh
+curl http://localhost:8080/clusters/1
+```
+
+### Create a new cluster
+```sh
+curl -X POST http://localhost:8080/clusters \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "cluster1",
+    "catalogId": 1,
+    "environmentId": 1,
+    "datacenterId": 1
+  }'
+```
+
+### Update a cluster (replace 1 with a valid ID)
+```sh
+curl -X PUT http://localhost:8080/clusters/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "cluster1-updated",
+    "catalogId": 1,
+    "environmentId": 2,
+    "datacenterId": 1
+  }'
+```
+
+### Delete a cluster (replace 1 with a valid ID)
+```sh
+curl -X DELETE http://localhost:8080/clusters/1
+```
+
+# --- HOST API --- 
 ## Host API Endpoints
 
 ### List all hosts
