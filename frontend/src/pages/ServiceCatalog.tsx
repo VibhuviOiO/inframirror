@@ -1,7 +1,6 @@
-
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { Plus, Edit2, Trash2, Check, X, ChevronUp, ChevronDown, Upload, Download } from 'lucide-react';
+import { Edit2, Trash2, Check, X, ChevronUp, ChevronDown, Upload, Download } from 'lucide-react';
 import {
   useServiceCatalogs,
   useCreateServiceCatalog,
@@ -15,11 +14,6 @@ function Spinner() {
   return <div className="w-5 h-5 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />;
 }
 
-function Badge({ children, color }: { children: React.ReactNode; color?: string }) {
-  return (
-    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${color || 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100'}`}>{children}</span>
-  );
-}
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:8080';
 async function fetchJSON(url, options) {
@@ -178,7 +172,7 @@ function ServiceCatalogPage() {
           <div className="flex-1" />
           <button
             onClick={() => setImportModalOpen(true)}
-            className="ml-2 inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition px-2 py-1 text-sm"
+            className="ml-2 inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded shadow-sm transition px-2 py-1 text-sm"
             style={{ height: 32, fontSize: '0.925rem' }}
             title="Import Service Catalog"
           >
@@ -190,7 +184,7 @@ function ServiceCatalogPage() {
               // Export logic stub
               toast.info('Export not implemented yet');
             }}
-            className="ml-2 inline-flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white rounded-md shadow-sm transition px-2 py-1 text-sm"
+            className="ml-2 inline-flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white rounded shadow-sm transition px-2 py-1 text-sm"
             style={{ height: 32, fontSize: '0.925rem' }}
             title="Export Service Catalog"
           >
@@ -199,7 +193,7 @@ function ServiceCatalogPage() {
           </button>
           <button
             onClick={() => setAddModalOpen(true)}
-            className="ml-2 inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded-md shadow-sm transition px-2 py-1 text-sm"
+            className="ml-2 inline-flex items-center justify-center bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 hover:from-blue-700 hover:via-blue-600 hover:to-indigo-600 text-white rounded shadow-sm transition px-2 py-1 text-sm"
             style={{ height: 32, fontSize: '0.925rem' }}
             title="Add Service Catalog"
           >
@@ -351,6 +345,66 @@ function ServiceCatalogPage() {
               )}
             </>
           )}
+        </div>
+      )}
+      {/* Add Service Catalog Modal */}
+      {addModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
+            <button onClick={() => setAddModalOpen(false)} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
+            <h2 className="text-xl font-bold mb-4 text-blue-900 dark:text-blue-100">Add Service Catalog</h2>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Name</label>
+              <input
+                value={addValue}
+                onChange={e => setAddValue(e.target.value)}
+                className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                placeholder="Service Name"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Type</label>
+              <select
+                value={addType}
+                onChange={e => setAddType(Number(e.target.value))}
+                className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+              >
+                <option value="">Select Type</option>
+                {types?.map(t => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Port</label>
+              <input
+                type="number"
+                value={addPort}
+                onChange={e => setAddPort(e.target.value === '' ? '' : Number(e.target.value))}
+                className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                placeholder="Default Port (optional)"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Description</label>
+              <input
+                value={addDesc}
+                onChange={e => setAddDesc(e.target.value)}
+                className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                placeholder="Description (optional)"
+              />
+            </div>
+            <div className="flex items-center justify-end gap-2 pt-4">
+              <button onClick={() => setAddModalOpen(false)} className="px-4 py-2 rounded border">Cancel</button>
+              <button
+                className="px-4 py-2 rounded bg-blue-600 text-white font-semibold disabled:opacity-60"
+                disabled={!addValue.trim() || !addType}
+                onClick={handleAdd}
+              >
+                Add
+              </button>
+            </div>
+          </div>
         </div>
       )}
       <div className="relative mt-2">
