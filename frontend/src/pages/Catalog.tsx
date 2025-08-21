@@ -119,18 +119,17 @@ export default function CatalogPage() {
 
   return (
     <DashboardLayout>
-      <div className="pt-2 px-0 flex justify-center min-h-screen">
+      <div className="flex justify-center min-h-screen">
         <div className="w-full max-w-[98vw]">
-          <div className="rounded-3xl shadow-2xl bg-white border border-gray-100 px-0 pt-0 pb-0" style={{ minHeight: 600, position: 'relative', marginTop: 0, marginLeft: 0, marginRight: 0, boxShadow: '0 8px 32px 0 rgba(37,99,235,0.08)' }}>
-            <div className="flex flex-row items-center justify-between px-8 pt-8 pb-4">
+          
+            <div className="flex flex-row items-center pt-8 pb-4">
               <div className="flex gap-0">
                 <button
-                  className={`flex items-center gap-2 px-8 pt-4 pb-3 font-semibold text-lg transition focus:outline-none border-0 bg-transparent relative
-                    ${tab === "services" ? "text-blue-700 font-bold" : "text-gray-500 hover:text-blue-700"}
+                  className={`flex items-center gap-2 px-5 pt-2 pb-2 font-medium text-base transition focus:outline-none border-0 relative
+                    ${tab === "services" ? "text-blue-700 font-bold bg-white" : "text-gray-500 hover:text-blue-700 bg-gray-100"}
                   `}
                   style={{
                     borderBottom: tab === "services" ? "3px solid #2563eb" : "3px solid transparent",
-                    background: "#fff",
                     zIndex: tab === "services" ? 2 : 1,
                     borderTopLeftRadius: 18,
                     borderTopRightRadius: 0,
@@ -140,7 +139,7 @@ export default function CatalogPage() {
                   }}
                   onClick={() => setTab("services")}
                 >
-                  <span>All services</span>
+                  <span>Service Catalog</span>
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${tab === "services" ? "bg-blue-100 text-blue-700" : "bg-gray-200 text-gray-500"}`}>{serviceCount}</span>
                 </button>
                 <div className="-ml-2 w-4 h-8 flex items-end" aria-hidden="true">
@@ -149,12 +148,11 @@ export default function CatalogPage() {
                   </svg>
                 </div>
                 <button
-                  className={`flex items-center gap-2 px-8 pt-4 pb-3 font-semibold text-lg transition focus:outline-none border-0 bg-transparent relative
-                    ${tab === "applications" ? "text-blue-700 font-bold" : "text-gray-500 hover:text-blue-700"}
+                  className={`flex items-center gap-2 px-5 pt-2 pb-2 font-medium text-base transition focus:outline-none border-0 relative
+                    ${tab === "applications" ? "text-blue-700 font-bold bg-white" : "text-gray-500 hover:text-blue-700 bg-gray-100"}
                   `}
                   style={{
                     borderBottom: tab === "applications" ? "3px solid #2563eb" : "3px solid transparent",
-                    background: "#fff",
                     zIndex: tab === "applications" ? 2 : 1,
                     borderTopLeftRadius: 0,
                     borderTopRightRadius: 18,
@@ -164,35 +162,14 @@ export default function CatalogPage() {
                   }}
                   onClick={() => setTab("applications")}
                 >
-                  <span>Applications</span>
+                  <span>Application Catalog</span>
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${tab === "applications" ? "bg-blue-100 text-blue-700" : "bg-gray-200 text-gray-500"}`}>{applicationCount}</span>
                 </button>
               </div>
-              <div className="flex gap-2 items-center">
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  </span>
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    placeholder="Search catalogs..."
-                    className="w-72 pl-10 pr-4 py-2 border border-gray-200 rounded-full bg-white focus:ring-2 focus:ring-indigo-300 text-base shadow-sm transition"
-                    style={{ height: 44 }}
-                  />
-                </div>
-                <button
-                  onClick={() => setAddModalOpen(true)}
-                  className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow transition w-12 h-12"
-                  title="Add Service Catalog"
-                  style={{ fontSize: 24 }}
-                >
-                  <Plus size={24} />
-                </button>
-              </div>
             </div>
-            <div className="relative z-10" style={{marginTop: -24, borderTopLeftRadius: 0, borderTopRightRadius: 0, background: '#fff', border: '1px solid #e5e7eb', borderTop: 'none', borderBottomLeftRadius: 24, borderBottomRightRadius: 24, boxShadow: '0 8px 32px 0 rgba(37,99,235,0.08)', overflow: 'hidden', padding: 0}}>
+            {/* Line below the tabs for the whole page */}
+            <div className="w-full border-b border-gray-200" />
+            <div className="relative z-10" style={{marginTop: -24}}>
               {tab === 'services' ? (
                 <div className="space-y-0"></div>
               ) : (
@@ -201,7 +178,6 @@ export default function CatalogPage() {
             </div>
           </div>
         </div>
-      </div>
     </DashboardLayout>
   );
 }
