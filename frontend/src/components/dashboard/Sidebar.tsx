@@ -10,16 +10,17 @@ const menuGroups = [
     ],
   },
   {
+    title: "Catalog",
+    items: [
+      { name: "Service Catalog", icon: Cpu, href: "/service-catalog" },
+      { name: "Application Catalog", icon: Hexagon, href: "/application-catalog" }
+    ],
+  },
+  {
     title: "Infrastructure",
     items: [
       { name: "Datacenters", icon: Building2, href: "/datacenters" },
       { name: "Machines", icon: Cpu, href: "/infrastructure/machines" },
-    ],
-  },
-  {
-    title: "Catalog",
-    items: [
-      { name: "Catalog", icon: Layers3, href: "/catalog" },
     ],
   },
   {

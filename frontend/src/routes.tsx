@@ -15,7 +15,6 @@ import ServiceDependencies from "./pages/ServiceDependencies";
 import EnvironmentsPage from "./pages/Environments";
 import TeamsPage from "./pages/Teams";
 import ApplicationCatalogPageWithLayout from "./pages/ApplicationCatalog";
-import CatalogPage from "./pages/Catalog";
 
 const routes = [
   {
@@ -37,9 +36,8 @@ const routes = [
       { index: true, element: <RegionsPage /> },
     ],
   },
-  { path: "/catalog", element: <CatalogPage /> },
-  { path: "/service-catalogs", element: <ServiceCatalogPageWithLayout /> },
-  { path: "/application-catalogs", element: <ApplicationCatalogPageWithLayout /> },
+  { path: "/service-catalog", element: <ServiceCatalogPageWithLayout /> },
+  { path: "/application-catalog", element: <ApplicationCatalogPageWithLayout /> },
   { path: "/infrastructure/datacenters/enabled-services", element: <DatacentersEnabledServices /> },
   { path: "/infrastructure/datacenters/instances", element: <DatacentersInstances /> },
   { path: "applications", element: <Applications /> },
