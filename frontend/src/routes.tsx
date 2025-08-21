@@ -14,6 +14,8 @@ import EnvironmentsPage from "./pages/Environments";
 import TeamsPage from "./pages/Teams";
 import CatalogTypePage from "./pages/CatalogType";
 import HostsPage from "./pages/Hosts";
+import ClustersPageWithLayout from "./pages/Clusters";
+import ServicesPage from "./pages/Services";
 
 const routes = [
   {
@@ -26,6 +28,8 @@ const routes = [
   },
   { path: "/catalog", element: <CatalogPageWithLayout /> },
   { path: "/hosts", element: <HostsPage /> },
+  { path: "/clusters", element: <ClustersPageWithLayout /> },
+  { path: "/services", element: <ServicesPage /> },
   {
     path: "/settings",
     element: <SettingsPage />,

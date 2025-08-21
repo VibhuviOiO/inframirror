@@ -14,7 +14,9 @@ const menuGroups = [
     title: "Infrastructure",
     items: [
       { name: "Datacenters", icon: Building2, href: "/datacenters" },
-      { name: "Hosts", icon: Layers3, href: "/hosts" },
+  { name: "Hosts", icon: Layers3, href: "/hosts" },
+  { name: "Clusters", icon: Layers3, href: "/clusters" },
+  { name: "Services", icon: Cpu, href: "/services" },
       { name: "Machines", icon: Cpu, href: "/infrastructure/machines" },
     ],
   }
