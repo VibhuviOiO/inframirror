@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Plus, Edit2, Trash2, Check, X, ChevronUp, ChevronDown } from 'lucide-react';
 import {
@@ -20,8 +20,35 @@ function Badge({ children, color }: { children: React.ReactNode; color?: string 
   );
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:8080';
+async function fetchJSON(url, options) {
+  const fullUrl = url.startsWith('http') ? url : `${API_BASE}${url.startsWith('/') ? '' : '/'}${url}`;
+  const res = await fetch(fullUrl, options);
+  let text = await res.text();
+  let json;
+  try { json = JSON.parse(text); } catch { json = undefined; }
+  if (!res.ok) {
+    const errMsg = json?.message || text || res.statusText;
+    throw new Error(`HTTP ${res.status} ${res.statusText}: ${errMsg}`);
+  }
+  return json;
+}
+
+function toInitCap(str) {
+  return str
+    .trim()
+    .split(' ')
+    .filter(Boolean)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}
+
 function ServiceCatalogPage() {
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [importError, setImportError] = useState('');
+  const [importStatus, setImportStatus] = useState(null); // { total, success, failed, errors: [] }
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: items, isLoading, isError, error } = useServiceCatalogs();
   const { data: types } = useServiceOrAppTypes();
   const create = useCreateServiceCatalog();
@@ -127,9 +154,8 @@ function ServiceCatalogPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100 tracking-tight">Service Catalogs</h1>
-        <div className="flex gap-2 w-full sm:w-auto items-center justify-end">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex w-full items-center">
           <input
             type="text"
             value={search}
@@ -137,15 +163,161 @@ function ServiceCatalogPage() {
             placeholder="Search catalogs..."
             className="w-full sm:w-64 px-3 py-1.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-indigo-300 text-sm shadow-sm transition"
           />
+          <div className="flex-1" />
+          <button
+            onClick={() => setImportModalOpen(true)}
+            className="ml-2 inline-flex items-center justify-center bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white rounded-md shadow-sm transition px-4 py-2"
+            title="Import Service Catalog"
+          >
+            Import
+          </button>
+          <button
+            onClick={() => {
+              // Export logic stub
+              toast.info('Export not implemented yet');
+            }}
+            className="ml-2 inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-md shadow-sm transition px-4 py-2"
+            title="Export Service Catalog"
+          >
+            Export
+          </button>
           <button
             onClick={() => setAddModalOpen(true)}
-            className="inline-flex items-center justify-center bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white rounded-full shadow-sm transition w-9 h-9"
+            className="ml-2 inline-flex items-center justify-center bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white rounded-md shadow-sm transition px-4 py-2"
             title="Add Service Catalog"
           >
-            <Plus size={18} />
+            Add Service Catalog
           </button>
         </div>
       </div>
+      {/* Import Modal */}
+      {importModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-full max-w-lg relative">
+            <button onClick={() => setImportModalOpen(false)} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
+            <h2 className="text-xl font-bold mb-4 text-blue-900 dark:text-blue-100">Import Service Catalogs</h2>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">CSV Format</label>
+              <div className="bg-gray-100 dark:bg-gray-800 rounded p-2 text-xs font-mono">
+                name,type,defaultPort,description
+                <br />Example:<br />MyService,Web,8080,Some description
+              </div>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv"
+              className="mb-2"
+              onChange={async (e) => {
+                setImportError('');
+                setImportStatus(null);
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const text = await file.text();
+                // Parse CSV (simple split, for demo)
+                const rows = text.split(/\r?\n/).filter(Boolean).map(line => line.split(','));
+                // Validate header
+                if (!rows[0] || rows[0][0].toLowerCase() !== 'name' || rows[0][1]?.toLowerCase() !== 'type') {
+                  setImportError('CSV must start with: name,type,defaultPort,description');
+                  return;
+                }
+                // Gather existing names for uniqueness
+                const existingNames = new Set((items || []).map(i => i.name.toLowerCase()));
+                // Gather all types from backend for quick lookup
+                const typeMap = new Map((types || []).map(t => [t.name.toLowerCase(), t.id]));
+                let success = 0, failed = 0, errors = [];
+                for (let i = 1; i < rows.length; ++i) {
+                  let [name, type, defaultPort, description] = rows[i];
+                  name = toInitCap(name || '');
+                  type = toInitCap(type || '');
+                  if (!name) {
+                    errors.push(`Row ${i+1}: Name is required.`);
+                    failed++;
+                    continue;
+                  }
+                  if (!type) {
+                    errors.push(`Row ${i+1}: Type is required.`);
+                    failed++;
+                    continue;
+                  }
+                  if (existingNames.has(name.toLowerCase())) {
+                    errors.push(`Row ${i+1}: Duplicate name '${name}'.`);
+                    failed++;
+                    continue;
+                  }
+                  // Find or create Service Type
+                  let serviceTypeId = typeMap.get(type.toLowerCase());
+                  if (!serviceTypeId) {
+                    try {
+                      const newType = await fetchJSON('/service-or-app-types', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: type })
+                      });
+                      serviceTypeId = newType.id;
+                      typeMap.set(type.toLowerCase(), serviceTypeId);
+                    } catch (err) {
+                      errors.push(`Row ${i+1}: Failed to create type '${type}': ${err.message}`);
+                      failed++;
+                      continue;
+                    }
+                  }
+                  // Try to create ServiceCatalog
+                  try {
+                    await fetchJSON('/service-catalogs', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        name,
+                        serviceTypeId,
+                        defaultPort: defaultPort ? Number(defaultPort) : undefined,
+                        description: description || undefined
+                      })
+                    });
+                    existingNames.add(name.toLowerCase());
+                    success++;
+                  } catch (err) {
+                    // Log error details for debugging
+                    // eslint-disable-next-line no-console
+                    console.error('Import row error:', {
+                      row: i+1,
+                      name,
+                      serviceTypeId,
+                      defaultPort,
+                      description,
+                      error: err
+                    });
+                    errors.push(`Row ${i+1}: ${err.message}`);
+                    failed++;
+                  }
+                  setImportStatus({ total: rows.length - 1, success, failed, errors });
+                }
+                setImportStatus({ total: rows.length - 1, success, failed, errors });
+                if (failed === 0) toast.success('All rows imported successfully!');
+                else toast.error('Some rows failed to import.');
+              }}
+            />
+            {importError && <div className="text-red-600 text-sm mt-2">{importError}</div>}
+            <div className="flex items-center justify-end gap-2 pt-4">
+              <button onClick={() => setImportModalOpen(false)} className="px-4 py-2 rounded border">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Import Status Card */}
+      {importStatus && (
+        <div className="rounded-xl shadow bg-white border border-gray-200 p-4 mb-4">
+          <div className="font-semibold mb-2">Import Summary</div>
+          <div>Rows processed: {importStatus.total}</div>
+          <div className="text-green-700">Rows uploaded: {importStatus.success}</div>
+          <div className="text-red-700">Rows failed: {importStatus.failed}</div>
+          {importStatus.errors.length > 0 && (
+            <ul className="mt-2 text-sm text-red-600 list-disc list-inside">
+              {importStatus.errors.map((err, i) => <li key={i}>{err}</li>)}
+            </ul>
+          )}
+        </div>
+      )}
       <div className="relative mt-2">
         <div className="overflow-x-auto">
             {isLoading ? (
@@ -341,7 +513,7 @@ function ServiceCatalogPage() {
 
 export function ServiceCatalogPageWithLayout() {
   return (
-    <DashboardLayout>
+    <DashboardLayout title="Service Catalogs">
       <ServiceCatalogPage />
     </DashboardLayout>
   );
