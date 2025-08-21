@@ -108,46 +108,27 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
                 </div>
               ))}
             </div>
-            {/* Settings menu item with separator above, styled like other menu items */}
-            <div className="mt-4 border-t border-gray-200 dark:border-gray-700" />
-            <div className="flex items-center justify-center px-2 mt-2">
-              <a
-                href="/settings"
-                className={clsx(
-                  "group flex items-center gap-x-3 rounded-xl px-3 py-2.5 text-sm font-semibold w-full transition-all duration-200",
-                  window.location.pathname.startsWith('/settings')
-                    ? "text-indigo-600"
-                    : "text-gray-700 hover:bg-blue-100 hover:text-blue-700"
-                )}
-                style={{ minHeight: 48 }}
-                title="Settings"
-              >
-                <span className={clsx(
-                  "flex items-center justify-center h-8 w-8",
-                  window.location.pathname.startsWith('/settings') ? "ring-2 ring-indigo-500 rounded-full bg-white" : ""
-                )}>
-                  <Settings
-                    className={clsx(
-                      "h-6 w-6 shrink-0",
-                      window.location.pathname.startsWith('/settings')
-                        ? "text-indigo-600"
-                        : "text-gray-400 group-hover:text-indigo-400"
-                    )}
-                  />
-                </span>
-                {expanded && <span>Settings</span>}
-              </a>
-            </div>
+            {/* Settings as avatar at the bottom, no extra row above */}
           </nav>
-          {/* User info at the bottom */}
-          <div className="mt-4 border-t border-gray-200 dark:border-gray-700" />
-          <div className="mb-6 flex items-center gap-3 px-8 mt-4">
-            {user.image ? (
-              <img src={user.image} className="w-11 h-11 rounded-full border-2 border-white shadow" alt={user.name} />
-            ) : (
-              <div className="w-11 h-11 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-lg border-2 border-white shadow">{initials}</div>
-            )}
-            <span className="font-semibold text-gray-800 text-base whitespace-nowrap">{user.name}</span>
+          {/* Settings avatar at the bottom */}
+          <div className="border-t border-gray-200 dark:border-gray-700" />
+          <div className="flex items-center justify-center mt-2 mb-2">
+            <a
+              href="/settings"
+              className={clsx(
+                "flex items-center justify-center w-11 h-11 rounded-full bg-indigo-100 border-2 border-white shadow transition-colors",
+                window.location.pathname.startsWith('/settings')
+                  ? 'ring-2 ring-indigo-500'
+                  : 'hover:ring-2 hover:ring-indigo-300',
+                window.location.pathname.startsWith('/settings')
+                  ? 'text-indigo-700'
+                  : 'text-gray-400 hover:text-indigo-700'
+              )}
+              title="Settings"
+            >
+              <Settings className="h-6 w-6" />
+            </a>
+            {expanded && <span className="ml-3 font-semibold text-gray-800 text-xs">Settings</span>}
           </div>
         </>
       ) : (
@@ -186,8 +167,8 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
             ))}
           </div>
           {/* Settings icon separated from menu and profile */}
-          <div className="mt-4 border-t border-gray-200 dark:border-gray-700" />
-          <div className="flex flex-col items-center mt-4">
+          <div className="border-t border-gray-200 dark:border-gray-700" />
+          <div className="flex flex-col items-center">
             <a
               href="/settings"
               className={clsx(
@@ -207,14 +188,7 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
               </span>
             </a>
           </div>
-          <div className="mt-4 border-t border-gray-200 dark:border-gray-700" />
-          <div className="flex flex-col items-center gap-2 mt-4 mb-6">
-            {user.image ? (
-              <img src={user.image} className="w-11 h-11 rounded-full border-2 border-white shadow" alt={user.name} />
-            ) : (
-              <div className="w-11 h-11 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-lg border-2 border-white shadow">{initials}</div>
-            )}
-          </div>
+          {/* No profile at the bottom, only settings remains */}
         </>
       )}
     </div>
