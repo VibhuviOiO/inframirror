@@ -1,43 +1,44 @@
 import { useMemo, useState } from 'react';
 import { Plus, Edit2, Trash2, Check, X } from 'lucide-react';
-import {
-  useServiceOrAppTypes,
-  useCreateServiceOrAppType,
-  useUpdateServiceOrAppType,
-  useDeleteServiceOrAppType,
-  ServiceOrAppType,
-} from '../hooks/useServiceOrAppTypes';
 import { toast } from 'sonner';
 
-
+// CatalogType hooks (to be implemented in hooks/useCatalogTypes.ts)
+import {
+  useCatalogTypes,
+  useCreateCatalogType,
+  useUpdateCatalogType,
+  useDeleteCatalogType,
+} from '../hooks/useCatalogTypes'
 function Spinner() {
   return <div className="w-5 h-5 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />;
 }
 
-function ServiceTypes() {
-  const { data: items, isLoading, isError, error } = useServiceOrAppTypes();
-  const create = useCreateServiceOrAppType();
-  const update = useUpdateServiceOrAppType();
-  const del = useDeleteServiceOrAppType();
-  const [addValue, setAddValue] = useState('');
+export default function CatalogTypePage() {
+  const { data: items, isLoading, isError, error } = useCatalogTypes();
+  const create = useCreateCatalogType();
+  const update = useUpdateCatalogType();
+  const del = useDeleteCatalogType();
+  const [addName, setAddName] = useState('');
+  const [addDesc, setAddDesc] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editValue, setEditValue] = useState('');
+  const [editName, setEditName] = useState('');
+  const [editDesc, setEditDesc] = useState('');
   const [search, setSearch] = useState('');
 
-  // Defensive: always treat items as array
-  const safeItems = Array.isArray(items) ? items : [];
   const filteredRows = useMemo(() => {
-    if (!search.trim()) return safeItems;
-    return safeItems.filter(r => r.name.toLowerCase().includes(search.trim().toLowerCase()));
-  }, [safeItems, search]);
+    if (!items) return [];
+    if (!search.trim()) return items;
+    return items.filter(r => r.name.toLowerCase().includes(search.trim().toLowerCase()));
+  }, [items, search]);
 
   // Inline add
   const handleAdd = async () => {
-    if (!addValue.trim()) return toast.error('Name is required');
+    if (!addName.trim()) return toast.error('Name is required');
     try {
-      await create.mutateAsync({ name: addValue });
-      setAddValue('');
-      toast.success('Type created');
+      await create.mutateAsync({ name: addName, description: addDesc });
+      setAddName('');
+      setAddDesc('');
+      toast.success('Catalog Type created');
     } catch (err: any) {
       toast.error(err?.message || 'Error');
     }
@@ -45,12 +46,13 @@ function ServiceTypes() {
 
   // Inline edit
   const handleEdit = async (id: number) => {
-    if (!editValue.trim()) return toast.error('Name is required');
+    if (!editName.trim()) return toast.error('Name is required');
     try {
-      await update.mutateAsync({ id, data: { name: editValue } });
+      await update.mutateAsync({ id, data: { name: editName, description: editDesc } });
       setEditingId(null);
-      setEditValue('');
-      toast.success('Type updated');
+      setEditName('');
+      setEditDesc('');
+      toast.success('Catalog Type updated');
     } catch (err: any) {
       toast.error(err?.message || 'Error');
     }
@@ -58,7 +60,7 @@ function ServiceTypes() {
 
   // Inline delete with confirmation
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this type?')) return;
+    if (!window.confirm('Are you sure you want to delete this catalog type?')) return;
     try {
       await del.mutateAsync(id);
       toast.success('Deleted');
@@ -71,14 +73,14 @@ function ServiceTypes() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight flex items-center gap-2">
-          <span className="inline-block bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-lg shadow-sm">Service/App Types</span>
+          <span className="inline-block bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-lg shadow-sm">Catalog Types</span>
         </h1>
         <div className="flex gap-2 w-full sm:w-auto">
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search types..."
+            placeholder="Search catalog types..."
             className="w-full sm:w-72 px-4 py-2 rounded-full border-2 border-blue-200 focus:ring-2 focus:ring-blue-300 bg-white dark:bg-gray-900 shadow focus:shadow-lg transition"
           />
         </div>
@@ -96,29 +98,45 @@ function ServiceTypes() {
               <table className="min-w-full table-auto">
                 <thead>
                   <tr className="text-left bg-blue-100 dark:bg-blue-950 animate-fade-in">
-                    <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Type</th>
+                    <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Name</th>
+                    <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Description</th>
                     <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredRows.length === 0 && (
                     <tr>
-                      <td colSpan={2} className="px-6 py-8 text-center text-gray-400">No types found.</td>
+                      <td colSpan={3} className="px-6 py-8 text-center text-gray-400">No catalog types found.</td>
                     </tr>
                   )}
                   {filteredRows.map((r) => (
                     <tr key={r.id} className="transition group hover:bg-blue-50 dark:hover:bg-blue-950">
-                      <td className="px-6 py-4 bg-transparent">
+                      <td className="px-6 py-4 flex items-center gap-3 bg-transparent">
+                        <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-blue-200 text-blue-700 font-bold text-lg shadow-sm">
+                          {r.name.slice(0, 2).toUpperCase()}
+                        </span>
                         {editingId === r.id ? (
                           <input
-                            value={editValue}
-                            onChange={e => setEditValue(e.target.value)}
+                            value={editName}
+                            onChange={e => setEditName(e.target.value)}
                             className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
                             onKeyDown={e => { if (e.key === 'Enter') handleEdit(r.id); }}
                             autoFocus
                           />
                         ) : (
                           <span className="text-lg font-medium text-blue-900 dark:text-blue-100">{r.name}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 bg-transparent">
+                        {editingId === r.id ? (
+                          <input
+                            value={editDesc}
+                            onChange={e => setEditDesc(e.target.value)}
+                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                            onKeyDown={e => { if (e.key === 'Enter') handleEdit(r.id); }}
+                          />
+                        ) : (
+                          <span className="text-base text-gray-700 dark:text-gray-200">{r.description}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 bg-transparent">
@@ -133,7 +151,7 @@ function ServiceTypes() {
                                 <Check size={18} />
                               </button>
                               <button
-                                onClick={() => { setEditingId(null); setEditValue(''); }}
+                                onClick={() => { setEditingId(null); setEditName(''); setEditDesc(''); }}
                                 className="inline-flex items-center justify-center bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-full p-2 shadow transition"
                                 title="Cancel"
                               >
@@ -143,7 +161,7 @@ function ServiceTypes() {
                           ) : (
                             <>
                               <button
-                                onClick={() => { setEditingId(r.id); setEditValue(r.name); }}
+                                onClick={() => { setEditingId(r.id); setEditName(r.name); setEditDesc(r.description || ''); }}
                                 className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-800 text-white rounded-full p-2 shadow transition"
                                 title="Edit"
                               >
@@ -164,12 +182,24 @@ function ServiceTypes() {
                   ))}
                   {/* Add row at the bottom */}
                   <tr className="bg-blue-50 dark:bg-blue-950 animate-fade-in">
+                    <td className="px-6 py-4 flex items-center gap-3 bg-transparent">
+                      <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-blue-100 text-blue-500 font-bold text-lg shadow-sm">
+                        <Plus size={20} />
+                      </span>
+                      <input
+                        value={addName}
+                        onChange={e => setAddName(e.target.value)}
+                        className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                        placeholder="Add new catalog type..."
+                        onKeyDown={e => { if (e.key === 'Enter') handleAdd(); }}
+                      />
+                    </td>
                     <td className="px-6 py-4 bg-transparent">
                       <input
-                        value={addValue}
-                        onChange={e => setAddValue(e.target.value)}
+                        value={addDesc}
+                        onChange={e => setAddDesc(e.target.value)}
                         className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                        placeholder="Add new type..."
+                        placeholder="Description (optional)"
                         onKeyDown={e => { if (e.key === 'Enter') handleAdd(); }}
                       />
                     </td>
@@ -193,5 +223,3 @@ function ServiceTypes() {
     </div>
   );
 }
-
-export default ServiceTypes;

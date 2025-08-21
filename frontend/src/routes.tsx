@@ -8,13 +8,11 @@ import NotFound from "./pages/NotFound";
 import SettingsPage from "./pages/Settings";
 import RegionsPage from "./pages/Regions";
 
-import { ServiceCatalogPageWithLayout } from "./pages/ServiceCatalog";
-import ServiceTypes from "./pages/ServiceTypes";
+import { CatalogPageWithLayout } from "./pages/Catalog";
 import ServiceOwners from "./pages/ServiceOwners";
 import ServiceDependencies from "./pages/ServiceDependencies";
 import EnvironmentsPage from "./pages/Environments";
 import TeamsPage from "./pages/Teams";
-import ApplicationCatalogPageWithLayout from "./pages/ApplicationCatalog";
 
 const routes = [
   {
@@ -25,19 +23,17 @@ const routes = [
     path: "/datacenters",
     element: <DatacentersPage />,
   },
+  { path: "/catalog", element: <CatalogPageWithLayout /> },
   {
     path: "/settings",
     element: <SettingsPage />,
     children: [
       { path: "regions", element: <RegionsPage /> },
       { path: "environments", element: <EnvironmentsPage /> },
-      { path: "service-types", element: <ServiceTypes /> },
       { path: "teams", element: <TeamsPage /> },
       { index: true, element: <RegionsPage /> },
     ],
   },
-  { path: "/service-catalog", element: <ServiceCatalogPageWithLayout /> },
-  { path: "/application-catalog", element: <ApplicationCatalogPageWithLayout /> },
   { path: "/infrastructure/datacenters/enabled-services", element: <DatacentersEnabledServices /> },
   { path: "/infrastructure/datacenters/instances", element: <DatacentersInstances /> },
   { path: "applications", element: <Applications /> },

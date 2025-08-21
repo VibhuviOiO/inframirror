@@ -15,14 +15,10 @@ import NotFound from "./pages/NotFound";
 import SettingsPage from "./pages/Settings";
 import RegionsPage from "./pages/Regions";
 
-import ServiceCatalog from "./pages/ServiceCatalog";
-import ServiceCatalogPage from "./pages/ServiceCatalog";
-import ServiceTypes from "./pages/ServiceTypes";
 import ServiceOwners from "./pages/ServiceOwners";
 import ServiceDependencies from "./pages/ServiceDependencies";
 import EnvironmentsPage from "./pages/Environments";
 import TeamsPage from "./pages/Teams";
-import ApplicationCatalogPage from "./pages/ApplicationCatalog";
 
 const queryClient = new QueryClient();
 
