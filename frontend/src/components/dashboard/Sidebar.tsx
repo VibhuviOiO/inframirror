@@ -1,5 +1,5 @@
 import React from "react";
-import { Settings, Database, Layers3, Building2, Cpu, Home } from "lucide-react";
+import { Settings, Database, Layers3, Building2, Cpu, Home, Book, Server, Network, Settings2 } from "lucide-react";
 import clsx from "clsx";
 
 const menuGroups = [
@@ -7,17 +7,16 @@ const menuGroups = [
     title: "Main",
     items: [
       { name: "Dashboard", icon: Home, href: "/" },
-      { name: "Integration Catalog", icon: Cpu, href: "/catalog" },
+  { name: "Integration Catalog", icon: Book, href: "/catalog" },
     ],
   },
   {
     title: "Infrastructure",
     items: [
       { name: "Datacenters", icon: Building2, href: "/datacenters" },
-  { name: "Hosts", icon: Layers3, href: "/hosts" },
-  { name: "Clusters", icon: Layers3, href: "/clusters" },
-  { name: "Services", icon: Cpu, href: "/services" },
-      { name: "Machines", icon: Cpu, href: "/infrastructure/machines" },
+  { name: "Hosts", icon: Server, href: "/hosts" },
+  { name: "Clusters", icon: Network, href: "/clusters" },
+  { name: "Services", icon: Settings2, href: "/services" },
     ],
   }
 ];
