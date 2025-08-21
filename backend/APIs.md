@@ -61,26 +61,80 @@ curl -X PUT http://localhost:8080/datacenters/1 \
 # Delete a datacenter (replace 1 with a valid ID)
 curl -X DELETE http://localhost:8080/datacenters/3
 
+
 # --- HOST API ---
 
-# List all hosts
+## Host Model (Prisma)
+
+```
+model Host {
+  id           Int        @id @default(autoincrement())
+  datacenterId Int
+  hostname     String     @unique
+  privateIP    String
+  publicIP     String?
+  kind         HostKind
+  tags         Json?
+  datacenter   Datacenter @relation(fields: [datacenterId], references: [id])
+  services     Service[]
+  applications Application[]
+}
+
+enum HostKind {
+  VM
+  Physical
+  BareMetal
+}
+```
+
+## Host API Endpoints
+
+### List all hosts
+```sh
 curl http://localhost:8080/hosts
+```
 
-# Get a host by ID (replace 1 with a valid ID)
+### Get a host by ID (replace 1 with a valid ID)
+```sh
 curl http://localhost:8080/hosts/1
+```
 
-# Create a new host
+### Create a new host
+```sh
 curl -X POST http://localhost:8080/hosts \
   -H "Content-Type: application/json" \
-  -d '{"datacenterId":1,"hostname":"host1","privateIP":"10.0.0.10","kind":"VM"}'
+  -d '{
+    "datacenterId": 1,
+    "hostname": "host1",
+    "privateIP": "10.0.0.10",
+    "publicIP": "10.0.0.20",
+    "kind": "VM",
+    "tags": {"os": "ubuntu", "env": "prod"}
+  }'
+```
 
-# Update a host (replace 1 with a valid ID)
+### Update a host (replace 1 with a valid ID)
+```sh
 curl -X PUT http://localhost:8080/hosts/1 \
   -H "Content-Type: application/json" \
-  -d '{"hostname":"host1-updated","privateIP":"10.0.0.11","kind":"Physical"}'
+  -d '{
+    "hostname": "host1-updated",
+    "privateIP": "10.0.0.11",
+    "publicIP": "10.0.0.21",
+    "kind": "Physical",
+    "tags": {"os": "centos"}
+  }'
+```
 
-# Delete a host (replace 1 with a valid ID)
+### Delete a host (replace 1 with a valid ID)
+```sh
 curl -X DELETE http://localhost:8080/hosts/1
+```
+
+## Notes
+- `datacenterId` must reference an existing datacenter.
+- `kind` must be one of: `VM`, `Physical`, `BareMetal`.
+- `tags` is a JSON object for arbitrary metadata (optional).
 
 # --- ENVIRONMENT API ---
 

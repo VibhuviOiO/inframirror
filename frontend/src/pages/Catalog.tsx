@@ -163,24 +163,6 @@ function CatalogPage() {
           />
           <div className="flex-1" />
           <button
-            onClick={() => setImportModalOpen(true)}
-            className="ml-2 inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded shadow-sm transition px-2 py-1 text-sm"
-            style={{ height: 32, fontSize: '0.925rem' }}
-            title="Import Catalog"
-          >
-            <Download size={16} className="mr-1" />
-            Import
-          </button>
-          <button
-            onClick={() => toast.info('Export not implemented yet')}
-            className="ml-2 inline-flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white rounded shadow-sm transition px-2 py-1 text-sm"
-            style={{ height: 32, fontSize: '0.925rem' }}
-            title="Export Catalog"
-          >
-            <Upload size={16} className="mr-1" />
-            Export
-          </button>
-          <button
             onClick={async () => {
               if (!selectedIds.length) return;
               if (!window.confirm(`Delete ${selectedIds.length} selected catalogs?`)) return;
@@ -210,177 +192,6 @@ function CatalogPage() {
           </button>
         </div>
       </div>
-      {/* Import Modal */}
-      {importModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-full max-w-lg relative">
-            <button onClick={() => setImportModalOpen(false)} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
-            <h2 className="text-xl font-bold mb-4 text-blue-900 dark:text-blue-100">Import Catalogs</h2>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">CSV Format</label>
-              <div className="bg-gray-100 dark:bg-gray-800 rounded p-2 text-xs font-mono">
-                name,type,uniqueId,defaultPort,description,gitRepoUrl,team
-                <br />Example:<br />MyCatalog,Web,cat-001,8080,Some description,https://repo,TeamA
-              </div>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv"
-              className="mb-2"
-              onChange={e => {
-                setImportError('');
-                setImportStatus(null);
-                setImportFile(e.target.files?.[0] || null);
-              }}
-            />
-            {importError && <div className="text-red-600 text-sm mt-2">{importError}</div>}
-            <div className="flex items-center justify-end gap-2 pt-4">
-              <button onClick={() => setImportModalOpen(false)} className="px-4 py-2 rounded border">Close</button>
-              <button
-                className="px-4 py-2 rounded bg-blue-600 text-white font-semibold disabled:opacity-60"
-                disabled={!importFile || importing}
-                onClick={async () => {
-                  if (!importFile) return;
-                  setImportError('');
-                  setImportStatus(null);
-                  setImporting(true);
-                  try {
-                    const text = await importFile.text();
-                    const rows = text.split(/\r?\n/).filter(Boolean).map(line => line.split(','));
-                    if (!rows[0] || rows[0][0].toLowerCase() !== 'name' || rows[0][1]?.toLowerCase() !== 'type') {
-                      setImportError('CSV must start with: name,type,uniqueId,defaultPort,description,gitRepoUrl,team');
-                      setImporting(false);
-                      return;
-                    }
-                    const existingNames = new Set((items || []).map(i => i.name.toLowerCase()));
-                    let typeMap = new Map((types || []).map(t => [t.name.trim().toLowerCase(), t.id]));
-                    let teamMap = new Map((teams || []).map(t => [t.name.trim().toLowerCase(), t.id]));
-                    let success = 0, failed = 0, errors = [];
-                    for (let i = 1; i < rows.length; ++i) {
-                      let [name, type, uniqueId, defaultPort, description, gitRepoUrl, team] = rows[i];
-                      name = toInitCap((name || '').trim());
-                      type = toInitCap((type || '').trim());
-                      team = toInitCap((team || '').trim());
-                      if (!name) {
-                        errors.push(`Row ${i+1}: Name is required.`);
-                        failed++;
-                        continue;
-                      }
-                      if (!type) {
-                        errors.push(`Row ${i+1}: Type is required.`);
-                        failed++;
-                        continue;
-                      }
-                      if (!uniqueId) {
-                        errors.push(`Row ${i+1}: Unique ID is required.`);
-                        failed++;
-                        continue;
-                      }
-                      if (!team) {
-                        errors.push(`Row ${i+1}: Team is required.`);
-                        failed++;
-                        continue;
-                      }
-                      if (existingNames.has(name.toLowerCase())) {
-                        errors.push(`Row ${i+1}: Duplicate name '${name}'.`);
-                        failed++;
-                        continue;
-                      }
-                      // CatalogType: create if missing
-                      let catalogTypeId = typeMap.get(type.toLowerCase());
-                      if (!catalogTypeId) {
-                        try {
-                          const resp = await fetch('/catalog-types', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name: type, description: description || '' })
-                          });
-                          if (!resp.ok) throw new Error(await resp.text());
-                          const newType = await resp.json();
-                          catalogTypeId = newType.id;
-                          typeMap.set(type.toLowerCase(), catalogTypeId);
-                        } catch (err: any) {
-                          errors.push(`Row ${i+1}: Failed to create type '${type}': ${err.message}`);
-                          failed++;
-                          continue;
-                        }
-                      }
-                      // Team: create if missing
-                      let teamId = teamMap.get(team.toLowerCase());
-                      if (!teamId) {
-                        try {
-                          const resp = await fetch('/teams', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name: team })
-                          });
-                          if (!resp.ok) throw new Error(await resp.text());
-                          const newTeam = await resp.json();
-                          teamId = newTeam.id;
-                          teamMap.set(team.toLowerCase(), teamId);
-                        } catch (err: any) {
-                          errors.push(`Row ${i+1}: Failed to create team '${team}': ${err.message}`);
-                          failed++;
-                          continue;
-                        }
-                      }
-                      try {
-                        await create.mutateAsync({
-                          name,
-                          catalogTypeId,
-                          uniqueId,
-                          defaultPort: defaultPort ? Number(defaultPort) : undefined,
-                          description: description || undefined,
-                          gitRepoUrl: gitRepoUrl || undefined,
-                          teamId
-                        });
-                        existingNames.add(name.toLowerCase());
-                        success++;
-                      } catch (err: any) {
-                        errors.push(`Row ${i+1}: ${err.message}`);
-                        failed++;
-                      }
-                    }
-                    setImportStatus({ total: rows.length - 1, success, failed, errors });
-                    if (failed === 0) toast.success('All rows imported successfully!');
-                    else toast.error('Some rows failed to import.');
-                  } catch (err: any) {
-                    setImportError(err.message || 'Import failed');
-                  }
-                  setImporting(false);
-                  setImportModalOpen(false);
-                  if (typeof refetch === 'function') refetch();
-                }}
-              >
-                Import
-              </button>
-            </div>
-            {importing && (
-              <div className="mt-4 text-blue-700 text-sm">Import in progress...</div>
-            )}
-          </div>
-        </div>
-      )}
-      {/* Import Status Card */}
-      {showImportStatus && (
-        <div className="rounded-xl shadow bg-blue-100 border border-blue-400 p-3 mb-4 flex flex-col md:flex-row md:items-center md:gap-6 text-sm relative animate-fade-in">
-          <button onClick={() => setShowImportStatus(false)} className="absolute top-2 right-2 text-blue-700 hover:text-blue-900 text-lg font-bold">&times;</button>
-          {importing ? (
-            <span className="text-blue-700 font-semibold">Import in progress...</span>
-          ) : (
-            <>
-              <span className="font-semibold mr-4">Import Summary:</span>
-              <span className="mr-4">Rows processed: <b>{importStatus?.total}</b></span>
-              <span className="mr-4 text-green-700">Rows uploaded: <b>{importStatus?.success}</b></span>
-              <span className="mr-4 text-red-700">Rows failed: <b>{importStatus?.failed}</b></span>
-              {importStatus?.errors && importStatus.errors.length > 0 && (
-                <span className="text-red-600">Errors: {importStatus.errors.map((err, i) => <span key={i}>{err}{i < importStatus.errors.length-1 ? ', ' : ''}</span>)}</span>
-              )}
-            </>
-          )}
-        </div>
-      )}
       {/* Add Catalog Modal */}
       {addModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -473,7 +284,7 @@ function CatalogPage() {
         </div>
       )}
       <div className="relative mt-2">
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <div className="relative overflow-x-auto shadow-md">
           {isLoading ? (
             <div className="p-8 flex items-center justify-center">
               <Spinner />
@@ -482,9 +293,9 @@ function CatalogPage() {
             <div className="p-8 text-red-600">Error: {(error as Error)?.message}</div>
           ) : (
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                  <th className="px-4 py-3">
+              <thead>
+                <tr className="text-left bg-blue-100 dark:bg-blue-950 animate-fade-in">
+                  <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">
                     <input
                       type="checkbox"
                       checked={allSelected}
@@ -492,44 +303,44 @@ function CatalogPage() {
                       aria-label="Select all"
                     />
                   </th>
-                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('name')}>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('name')}> 
                     <div className="flex items-center">
                       Name
                       <span className="ml-1 font-bold">
                         {sortBy === 'name' ? (
                           sortDir === 'asc' ? (
-                            <ChevronUp size={16} className="inline text-gray-700 dark:text-gray-200 font-bold" />
+                            <ChevronUp size={16} className="inline text-blue-800 dark:text-blue-100 font-bold" />
                           ) : (
-                            <ChevronDown size={16} className="inline text-gray-700 dark:text-gray-200 font-bold" />
+                            <ChevronDown size={16} className="inline text-blue-800 dark:text-blue-100 font-bold" />
                           )
                         ) : (
-                          <ChevronUp size={16} className="inline text-gray-400 font-bold" />
+                          <ChevronUp size={16} className="inline text-blue-200 font-bold" />
                         )}
                       </span>
                     </div>
                   </th>
-                  <th className="px-6 py-3">Unique ID</th>
-                  <th className="px-6 py-3">Catalog Type</th>
-                  <th className="px-6 py-3">Team</th>
-                  <th className="px-6 py-3">Git Repo URL</th>
-                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('port')}>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Unique ID</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Catalog Type</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Team</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Git Repo URL</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('port')}>
                     <div className="flex items-center">
                       Port
                       <span className="ml-1 font-bold">
                         {sortBy === 'port' ? (
                           sortDir === 'asc' ? (
-                            <ChevronUp size={16} className="inline text-gray-700 dark:text-gray-200 font-bold" />
+                            <ChevronUp size={16} className="inline text-blue-800 dark:text-blue-100 font-bold" />
                           ) : (
-                            <ChevronDown size={16} className="inline text-gray-700 dark:text-gray-200 font-bold" />
+                            <ChevronDown size={16} className="inline text-blue-800 dark:text-blue-100 font-bold" />
                           )
                         ) : (
-                          <ChevronUp size={16} className="inline text-gray-400 font-bold" />
+                          <ChevronUp size={16} className="inline text-blue-200 font-bold" />
                         )}
                       </span>
                     </div>
                   </th>
-                  <th className="px-6 py-3">Description</th>
-                  <th className="px-6 py-3 text-right">Actions</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Description</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>

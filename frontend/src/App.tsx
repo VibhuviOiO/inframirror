@@ -10,7 +10,6 @@ import DatacentersPage from "./pages/Datacenters";
 import DatacentersEnabledServices from "./pages/DatacentersEnabledServices";
 import DatacentersInstances from "./pages/DatacentersInstances";
 import Applications from "./pages/Applications";
-import ApplicationDeployments from "./pages/ApplicationDeployments";
 import NotFound from "./pages/NotFound";
 import SettingsPage from "./pages/Settings";
 import RegionsPage from "./pages/Regions";

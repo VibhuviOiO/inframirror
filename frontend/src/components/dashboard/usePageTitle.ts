@@ -10,12 +10,11 @@ const PAGE_TITLES: Record<string, string> = {
   "/applications/deployments": "Deployments",
   "/infrastructure/datacenters/enabled-services": "Enabled Services",
   "/infrastructure/datacenters/instances": "Datacenter Instances",
-  // Add more as needed
+  "/hosts": "Hosts",
 };
 
 export function usePageTitle() {
   const { pathname } = useLocation();
-  // Try to match the full path, fallback to first segment
   return (
     PAGE_TITLES[pathname] ||
     PAGE_TITLES["/" + pathname.split("/")[1]] ||

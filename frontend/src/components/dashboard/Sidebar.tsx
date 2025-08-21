@@ -1,5 +1,5 @@
 import React from "react";
-import { Settings, ChevronLeft, ChevronRight, Database, Layers3, AppWindow, FileText, Building2, Cpu, Hexagon, Home } from "lucide-react";
+import { Settings, Database, Layers3, Building2, Cpu, Home } from "lucide-react";
 import clsx from "clsx";
 
 const menuGroups = [
@@ -14,23 +14,10 @@ const menuGroups = [
     title: "Infrastructure",
     items: [
       { name: "Datacenters", icon: Building2, href: "/datacenters" },
+      { name: "Hosts", icon: Layers3, href: "/hosts" },
       { name: "Machines", icon: Cpu, href: "/infrastructure/machines" },
     ],
-  },
-  {
-    title: "Services",
-    items: [
-      { name: "Marathon", icon: Hexagon, href: "/services/marathon" },
-      { name: "Machines", icon: Cpu, href: "/services/machines" },
-    ],
-  },
-  {
-    title: "Applications",
-    items: [
-      { name: "Applications", icon: AppWindow, href: "/applications" },
-      { name: "Deployments", icon: Database, href: "/applications/deployments" },
-    ],
-  },
+  }
 ];
 
 interface SidebarProps {
@@ -40,14 +27,6 @@ interface SidebarProps {
 
 
 export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
-  // Simulate user data
-  const user = {
-    name: 'Jinna Baalu',
-    image: '', // Set to image URL if available
-  };
-  const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
-
-  // Sidebar expands on hover, collapses on mouse leave
   return (
     <div
       className={`fixed top-0 left-0 z-20 h-full bg-white border-r-2 border-gray-100 flex flex-col transition-all duration-300 ${expanded ? 'w-72' : 'w-20'}`}
@@ -57,7 +36,6 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
     >
       {expanded ? (
         <>
-          {/* Expanded: Modern sidebar like Sidebar.tsx */}
           <div className="flex items-center gap-3 mb-8 px-8 pt-8">
             <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center shadow-lg">
               <Database className="h-6 w-6 text-indigo-600" />
@@ -108,9 +86,7 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
                 </div>
               ))}
             </div>
-            {/* Settings as avatar at the bottom, no extra row above */}
           </nav>
-          {/* Settings avatar at the bottom */}
           <div className="border-t border-gray-200 dark:border-gray-700" />
           <div className="flex items-center justify-center mt-2 mb-2">
             <a
@@ -133,7 +109,6 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
         </>
       ) : (
         <>
-          {/* Collapsed: Centered icons only */}
           <div className="flex items-center justify-center h-20 border-b border-gray-100 group relative">
             <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center shadow">
               <Database className="h-7 w-7 text-indigo-600" />
@@ -166,7 +141,6 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
               </div>
             ))}
           </div>
-          {/* Settings icon separated from menu and profile */}
           <div className="border-t border-gray-200 dark:border-gray-700" />
           <div className="flex flex-col items-center">
             <a
@@ -188,7 +162,6 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
               </span>
             </a>
           </div>
-          {/* No profile at the bottom, only settings remains */}
         </>
       )}
     </div>

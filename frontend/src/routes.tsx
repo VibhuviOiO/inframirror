@@ -3,7 +3,6 @@ import DatacentersPage from "./pages/Datacenters";
 import DatacentersEnabledServices from "./pages/DatacentersEnabledServices";
 import DatacentersInstances from "./pages/DatacentersInstances";
 import Applications from "./pages/Applications";
-import ApplicationDeployments from "./pages/ApplicationDeployments";
 import NotFound from "./pages/NotFound";
 import SettingsPage from "./pages/Settings";
 import RegionsPage from "./pages/Regions";
@@ -13,6 +12,8 @@ import ServiceOwners from "./pages/ServiceOwners";
 import ServiceDependencies from "./pages/ServiceDependencies";
 import EnvironmentsPage from "./pages/Environments";
 import TeamsPage from "./pages/Teams";
+import CatalogTypePage from "./pages/CatalogType";
+import HostsPage from "./pages/Hosts";
 
 const routes = [
   {
@@ -24,6 +25,7 @@ const routes = [
     element: <DatacentersPage />,
   },
   { path: "/catalog", element: <CatalogPageWithLayout /> },
+  { path: "/hosts", element: <HostsPage /> },
   {
     path: "/settings",
     element: <SettingsPage />,
@@ -31,13 +33,13 @@ const routes = [
       { path: "regions", element: <RegionsPage /> },
       { path: "environments", element: <EnvironmentsPage /> },
       { path: "teams", element: <TeamsPage /> },
+      { path: "catalog-types", element: <CatalogTypePage /> },
       { index: true, element: <RegionsPage /> },
     ],
   },
   { path: "/infrastructure/datacenters/enabled-services", element: <DatacentersEnabledServices /> },
   { path: "/infrastructure/datacenters/instances", element: <DatacentersInstances /> },
   { path: "applications", element: <Applications /> },
-  { path: "applications/deployments", element: <ApplicationDeployments /> },
   { path: "*", element: <NotFound /> },
 ];
 
