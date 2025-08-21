@@ -1,6 +1,7 @@
-import { useMemo, useState, useRef } from 'react';
+
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { Plus, Edit2, Trash2, Check, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, Edit2, Trash2, Check, X, ChevronUp, ChevronDown, Upload, Download } from 'lucide-react';
 import {
   useServiceCatalogs,
   useCreateServiceCatalog,
@@ -44,10 +45,20 @@ function toInitCap(str) {
 }
 
 function ServiceCatalogPage() {
+  const [importStatus, setImportStatus] = useState(null); // { total, success, failed, errors: [] }
+  const [showImportStatus, setShowImportStatus] = useState(false);
+  useEffect(() => {
+    if (importStatus) {
+      setShowImportStatus(true);
+      const timer = setTimeout(() => setShowImportStatus(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [importStatus]);
+  const [importFile, setImportFile] = useState<File|null>(null);
+  const [importing, setImporting] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [importError, setImportError] = useState('');
-  const [importStatus, setImportStatus] = useState(null); // { total, success, failed, errors: [] }
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: items, isLoading, isError, error } = useServiceCatalogs();
   const { data: types } = useServiceOrAppTypes();
@@ -161,14 +172,17 @@ function ServiceCatalogPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search catalogs..."
-            className="w-full sm:w-64 px-3 py-1.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-indigo-300 text-sm shadow-sm transition"
+            className="w-full sm:w-64 px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-indigo-300 text-sm shadow-sm transition"
+            style={{ height: 32, fontSize: '0.925rem' }}
           />
           <div className="flex-1" />
           <button
             onClick={() => setImportModalOpen(true)}
-            className="ml-2 inline-flex items-center justify-center bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white rounded-md shadow-sm transition px-4 py-2"
+            className="ml-2 inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition px-2 py-1 text-sm"
+            style={{ height: 32, fontSize: '0.925rem' }}
             title="Import Service Catalog"
           >
+            <Download size={16} className="mr-1" />
             Import
           </button>
           <button
@@ -176,14 +190,17 @@ function ServiceCatalogPage() {
               // Export logic stub
               toast.info('Export not implemented yet');
             }}
-            className="ml-2 inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-md shadow-sm transition px-4 py-2"
+            className="ml-2 inline-flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white rounded-md shadow-sm transition px-2 py-1 text-sm"
+            style={{ height: 32, fontSize: '0.925rem' }}
             title="Export Service Catalog"
           >
+            <Upload size={16} className="mr-1" />
             Export
           </button>
           <button
             onClick={() => setAddModalOpen(true)}
-            className="ml-2 inline-flex items-center justify-center bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white rounded-md shadow-sm transition px-4 py-2"
+            className="ml-2 inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded-md shadow-sm transition px-2 py-1 text-sm"
+            style={{ height: 32, fontSize: '0.925rem' }}
             title="Add Service Catalog"
           >
             Add Service Catalog
@@ -208,113 +225,131 @@ function ServiceCatalogPage() {
               type="file"
               accept=".csv"
               className="mb-2"
-              onChange={async (e) => {
+              onChange={e => {
                 setImportError('');
                 setImportStatus(null);
-                const file = e.target.files?.[0];
-                if (!file) return;
-                const text = await file.text();
-                // Parse CSV (simple split, for demo)
-                const rows = text.split(/\r?\n/).filter(Boolean).map(line => line.split(','));
-                // Validate header
-                if (!rows[0] || rows[0][0].toLowerCase() !== 'name' || rows[0][1]?.toLowerCase() !== 'type') {
-                  setImportError('CSV must start with: name,type,defaultPort,description');
-                  return;
-                }
-                // Gather existing names for uniqueness
-                const existingNames = new Set((items || []).map(i => i.name.toLowerCase()));
-                // Gather all types from backend for quick lookup
-                const typeMap = new Map((types || []).map(t => [t.name.toLowerCase(), t.id]));
-                let success = 0, failed = 0, errors = [];
-                for (let i = 1; i < rows.length; ++i) {
-                  let [name, type, defaultPort, description] = rows[i];
-                  name = toInitCap(name || '');
-                  type = toInitCap(type || '');
-                  if (!name) {
-                    errors.push(`Row ${i+1}: Name is required.`);
-                    failed++;
-                    continue;
-                  }
-                  if (!type) {
-                    errors.push(`Row ${i+1}: Type is required.`);
-                    failed++;
-                    continue;
-                  }
-                  if (existingNames.has(name.toLowerCase())) {
-                    errors.push(`Row ${i+1}: Duplicate name '${name}'.`);
-                    failed++;
-                    continue;
-                  }
-                  // Find or create Service Type
-                  let serviceTypeId = typeMap.get(type.toLowerCase());
-                  if (!serviceTypeId) {
-                    try {
-                      const newType = await fetchJSON('/service-or-app-types', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: type })
-                      });
-                      serviceTypeId = newType.id;
-                      typeMap.set(type.toLowerCase(), serviceTypeId);
-                    } catch (err) {
-                      errors.push(`Row ${i+1}: Failed to create type '${type}': ${err.message}`);
-                      failed++;
-                      continue;
-                    }
-                  }
-                  // Try to create ServiceCatalog
-                  try {
-                    await fetchJSON('/service-catalogs', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        name,
-                        serviceTypeId,
-                        defaultPort: defaultPort ? Number(defaultPort) : undefined,
-                        description: description || undefined
-                      })
-                    });
-                    existingNames.add(name.toLowerCase());
-                    success++;
-                  } catch (err) {
-                    // Log error details for debugging
-                    // eslint-disable-next-line no-console
-                    console.error('Import row error:', {
-                      row: i+1,
-                      name,
-                      serviceTypeId,
-                      defaultPort,
-                      description,
-                      error: err
-                    });
-                    errors.push(`Row ${i+1}: ${err.message}`);
-                    failed++;
-                  }
-                  setImportStatus({ total: rows.length - 1, success, failed, errors });
-                }
-                setImportStatus({ total: rows.length - 1, success, failed, errors });
-                if (failed === 0) toast.success('All rows imported successfully!');
-                else toast.error('Some rows failed to import.');
+                setImportFile(e.target.files?.[0] || null);
               }}
             />
             {importError && <div className="text-red-600 text-sm mt-2">{importError}</div>}
             <div className="flex items-center justify-end gap-2 pt-4">
               <button onClick={() => setImportModalOpen(false)} className="px-4 py-2 rounded border">Close</button>
+              <button
+                className="px-4 py-2 rounded bg-blue-600 text-white font-semibold disabled:opacity-60"
+                disabled={!importFile || importing}
+                onClick={async () => {
+                  if (!importFile) return;
+                  setImportError('');
+                  setImportStatus(null);
+                  setImporting(true);
+                  try {
+                    const text = await importFile.text();
+                    const rows = text.split(/\r?\n/).filter(Boolean).map(line => line.split(','));
+                    if (!rows[0] || rows[0][0].toLowerCase() !== 'name' || rows[0][1]?.toLowerCase() !== 'type') {
+                      setImportError('CSV must start with: name,type,defaultPort,description');
+                      setImporting(false);
+                      return;
+                    }
+                    const existingNames = new Set((items || []).map(i => i.name.toLowerCase()));
+                    const typeMap = new Map((types || []).map(t => [t.name.toLowerCase(), t.id]));
+                    let success = 0, failed = 0, errors = [];
+                    for (let i = 1; i < rows.length; ++i) {
+                      let [name, type, defaultPort, description] = rows[i];
+                      name = toInitCap(name || '');
+                      type = toInitCap(type || '');
+                      if (!name) {
+                        errors.push(`Row ${i+1}: Name is required.`);
+                        failed++;
+                        continue;
+                      }
+                      if (!type) {
+                        errors.push(`Row ${i+1}: Type is required.`);
+                        failed++;
+                        continue;
+                      }
+                      if (existingNames.has(name.toLowerCase())) {
+                        errors.push(`Row ${i+1}: Duplicate name '${name}'.`);
+                        failed++;
+                        continue;
+                      }
+                      let serviceTypeId = typeMap.get(type.toLowerCase());
+                      if (!serviceTypeId) {
+                        try {
+                          const newType = await fetchJSON('/service-or-app-types', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: type })
+                          });
+                          serviceTypeId = newType.id;
+                          typeMap.set(type.toLowerCase(), serviceTypeId);
+                        } catch (err) {
+                          errors.push(`Row ${i+1}: Failed to create type '${type}': ${err.message}`);
+                          failed++;
+                          continue;
+                        }
+                      }
+                      try {
+                        await fetchJSON('/service-catalogs', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            name,
+                            serviceTypeId,
+                            defaultPort: defaultPort ? Number(defaultPort) : undefined,
+                            description: description || undefined
+                          })
+                        });
+                        existingNames.add(name.toLowerCase());
+                        success++;
+                      } catch (err) {
+                        console.error('Import row error:', {
+                          row: i+1,
+                          name,
+                          serviceTypeId,
+                          defaultPort,
+                          description,
+                          error: err
+                        });
+                        errors.push(`Row ${i+1}: ${err.message}`);
+                        failed++;
+                      }
+                      setImportStatus({ total: rows.length - 1, success, failed, errors });
+                    }
+                    setImportStatus({ total: rows.length - 1, success, failed, errors });
+                    if (failed === 0) toast.success('All rows imported successfully!');
+                    else toast.error('Some rows failed to import.');
+                  } catch (err) {
+                    setImportError(err.message || 'Import failed');
+                  }
+                  setImporting(false);
+                  setImportModalOpen(false);
+                }}
+              >
+                Import
+              </button>
             </div>
+            {importing && (
+              <div className="mt-4 text-blue-700 text-sm">Import in progress...</div>
+            )}
           </div>
         </div>
       )}
       {/* Import Status Card */}
-      {importStatus && (
-        <div className="rounded-xl shadow bg-white border border-gray-200 p-4 mb-4">
-          <div className="font-semibold mb-2">Import Summary</div>
-          <div>Rows processed: {importStatus.total}</div>
-          <div className="text-green-700">Rows uploaded: {importStatus.success}</div>
-          <div className="text-red-700">Rows failed: {importStatus.failed}</div>
-          {importStatus.errors.length > 0 && (
-            <ul className="mt-2 text-sm text-red-600 list-disc list-inside">
-              {importStatus.errors.map((err, i) => <li key={i}>{err}</li>)}
-            </ul>
+      {showImportStatus && (
+        <div className="rounded-xl shadow bg-blue-100 border border-blue-400 p-3 mb-4 flex flex-col md:flex-row md:items-center md:gap-6 text-sm relative animate-fade-in">
+          <button onClick={() => setShowImportStatus(false)} className="absolute top-2 right-2 text-blue-700 hover:text-blue-900 text-lg font-bold">&times;</button>
+          {importing ? (
+            <span className="text-blue-700 font-semibold">Import in progress...</span>
+          ) : (
+            <>
+              <span className="font-semibold mr-4">Import Summary:</span>
+              <span className="mr-4">Rows processed: <b>{importStatus?.total}</b></span>
+              <span className="mr-4 text-green-700">Rows uploaded: <b>{importStatus?.success}</b></span>
+              <span className="mr-4 text-red-700">Rows failed: <b>{importStatus?.failed}</b></span>
+              {importStatus?.errors && importStatus.errors.length > 0 && (
+                <span className="text-red-600">Errors: {importStatus.errors.map((err, i) => <span key={i}>{err}{i < importStatus.errors.length-1 ? ', ' : ''}</span>)}</span>
+              )}
+            </>
           )}
         </div>
       )}
@@ -359,21 +394,17 @@ function ServiceCatalogPage() {
                     </tr>
                   )}
                   {sortedRows.map((r, idx) => (
-                    <tr
-                      key={r.id}
-                      className={`transition group ${idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'} hover:bg-blue-100 dark:hover:bg-gray-700 ${idx !== filteredRows.length - 1 ? 'border-b border-gray-200 dark:border-gray-800' : ''}`}
-                    >
-                      <td className="px-3 py-3 bg-transparent align-middle text-sm text-gray-800 dark:text-gray-100">
+                    <tr key={r.id} className="hover:bg-blue-50 dark:hover:bg-gray-800 transition">
+                      <td className="px-3 py-3 bg-transparent align-middle text-sm text-gray-800 dark:text-gray-100 font-semibold">
                         {editingId === r.id ? (
                           <input
                             value={editValue}
                             onChange={e => setEditValue(e.target.value)}
                             className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
-                            onKeyDown={e => { if (e.key === 'Enter') handleEdit(r.id); }}
-                            autoFocus
+                            placeholder="Name"
                           />
                         ) : (
-                          <span className="text-xs font-medium">{r.name}</span>
+                          r.name
                         )}
                       </td>
                       <td className="px-3 py-3 bg-transparent align-middle text-sm text-gray-800 dark:text-gray-100">
@@ -383,13 +414,13 @@ function ServiceCatalogPage() {
                             onChange={e => setEditType(Number(e.target.value))}
                             className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
                           >
-                            <option value="">Select type...</option>
+                            <option value="">Select Type</option>
                             {types?.map(t => (
                               <option key={t.id} value={t.id}>{t.name}</option>
                             ))}
                           </select>
                         ) : (
-                          <span className="text-xs font-medium">{types?.find(t => t.id === r.serviceTypeId)?.name || r.serviceTypeId}</span>
+                          types?.find(t => t.id === r.serviceTypeId)?.name || ''
                         )}
                       </td>
                       <td className="px-3 py-3 bg-transparent align-middle text-sm text-gray-800 dark:text-gray-100">
@@ -420,87 +451,28 @@ function ServiceCatalogPage() {
                           <span className="text-xs font-medium">{r.description ?? ''}</span>
                         )}
                       </td>
-                      <td className="px-4 py-4 bg-transparent">
-                        <div className="flex items-center gap-2">
-                          {editingId === r.id ? (
-                            <>
-                              <button
-                                onClick={() => handleEdit(r.id)}
-                                className="inline-flex items-center justify-center text-green-600 hover:text-green-700 p-1 transition"
-                                title="Save"
-                              >
-                                <Check size={14} />
-                              </button>
-                              <button
-                                onClick={() => { setEditingId(null); setEditValue(''); setEditType(''); setEditPort(''); setEditDesc(''); }}
-                                className="inline-flex items-center justify-center text-gray-400 hover:text-gray-700 p-1 transition"
-                                title="Cancel"
-                              >
-                                <X size={14} />
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() => { setEditingId(r.id); setEditValue(r.name); setEditType(r.serviceTypeId); setEditPort(r.defaultPort ?? ''); setEditDesc(r.description ?? ''); }}
-                                className="inline-flex items-center justify-center text-blue-600 hover:text-blue-800 p-1 transition"
-                                title="Edit"
-                              >
-                                <Edit2 size={14} />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(r.id)}
-                                className="inline-flex items-center justify-center text-red-500 hover:text-red-700 p-1 transition"
-                                title="Delete"
-                              >
-                                <Trash2 size={14} />
-                              </button>
-                            </>
-                          )}
-                        </div>
+                      <td className="px-3 py-3 bg-transparent align-middle text-sm text-gray-800 dark:text-gray-100">
+                        {/* Actions */}
+                        {editingId === r.id ? (
+                          <div className="flex gap-2">
+                            <button onClick={() => handleEdit(r.id)} className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"><Check size={16} /></button>
+                            <button onClick={() => setEditingId(null)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-2 py-1 rounded"><X size={16} /></button>
+                          </div>
+                        ) : (
+                          <div className="flex gap-2">
+                            <button onClick={() => {
+                              setEditingId(r.id);
+                              setEditValue(r.name);
+                              setEditType(r.serviceTypeId);
+                              setEditPort(r.defaultPort ?? '');
+                              setEditDesc(r.description ?? '');
+                            }} className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"><Edit2 size={14} /></button>
+                            <button onClick={() => handleDelete(r.id)} className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"><Trash2 size={14} /></button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))}
-                  {/* Add Modal */}
-                  {addModalOpen && (
-                    <tr>
-                      <td colSpan={5} className="p-0">
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-full max-w-2xl relative">
-                            <button onClick={() => setAddModalOpen(false)} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
-                            <h2 className="text-2xl font-bold mb-6 text-blue-900 dark:text-blue-100">Add Service Catalog</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div>
-                                <label className="block text-sm font-medium mb-1">Name</label>
-                                <input value={addValue} onChange={e => setAddValue(e.target.value)} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium mb-1">Service Type</label>
-                                <select value={addType} onChange={e => setAddType(Number(e.target.value))} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" >
-                                  <option value="">Select type...</option>
-                                  {types?.map(t => (
-                                    <option key={t.id} value={t.id}>{t.name}</option>
-                                  ))}
-                                </select>
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium mb-1">Default Port</label>
-                                <input type="number" value={addPort} onChange={e => setAddPort(e.target.value === '' ? '' : Number(e.target.value))} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium mb-1">Description</label>
-                                <input value={addDesc} onChange={e => setAddDesc(e.target.value)} className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm" />
-                              </div>
-                            </div>
-                            <div className="flex items-center justify-end gap-2 pt-8">
-                              <button onClick={() => setAddModalOpen(false)} className="px-4 py-2 rounded border">Cancel</button>
-                              <button onClick={handleAdd} className="px-4 py-2 rounded bg-blue-600 text-white font-semibold">Add</button>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
             )}
