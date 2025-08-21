@@ -41,7 +41,12 @@ export default function HostsPage() {
   const [viewing, setViewing] = useState<Host | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<Partial<Host>>({});
-  const [search, setSearch] = useState('');
+  // Per-column filters
+  const [filterDatacenter, setFilterDatacenter] = useState('');
+  const [filterHostname, setFilterHostname] = useState('');
+  const [filterIP, setFilterIP] = useState('');
+  const [filterKind, setFilterKind] = useState('');
+  const [filterTags, setFilterTags] = useState('');
 
   useEffect(() => {
     if (editingId !== null) {
@@ -97,23 +102,32 @@ export default function HostsPage() {
 
   const filteredRows = useMemo(() => {
     if (!items) return [];
-    if (!search.trim()) return items;
-    return items.filter((r) => r.hostname.toLowerCase().includes(search.trim().toLowerCase()));
-  }, [items, search]);
+    return items.filter((r) => {
+      // Datacenter filter
+      if (filterDatacenter && String(r.datacenterId) !== filterDatacenter) return false;
+      // Hostname filter
+      if (filterHostname && !r.hostname.toLowerCase().includes(filterHostname.toLowerCase())) return false;
+      // IP filter (matches either privateIP or publicIP)
+      if (filterIP) {
+        const ip = filterIP.toLowerCase();
+        const priv = r.privateIP?.toLowerCase() || '';
+        const pub = r.publicIP?.toLowerCase() || '';
+        if (!priv.includes(ip) && !pub.includes(ip)) return false;
+      }
+      // Kind filter
+      if (filterKind && r.kind !== filterKind) return false;
+      // Tags filter (searches in stringified tags)
+      if (filterTags && !(JSON.stringify(r.tags || {}).toLowerCase().includes(filterTags.toLowerCase()))) return false;
+      return true;
+    });
+  }, [items, filterDatacenter, filterHostname, filterIP, filterKind, filterTags]);
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex w-full items-center">
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search hosts..."
-              className="w-full sm:w-64 px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-indigo-300 text-sm shadow-sm transition"
-              style={{ height: 32, fontSize: '0.925rem' }}
-            />
+            <span className="font-semibold text-lg text-blue-900 dark:text-blue-100 mr-4">Hosts</span>
             <div className="flex-1" />
             <button
               onClick={openCreate}
@@ -136,13 +150,69 @@ export default function HostsPage() {
             <table className="min-w-full table-auto">
               <thead>
                 <tr className="text-left bg-blue-100 dark:bg-blue-950 animate-fade-in">
-                  <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Datacenter</th>
                   <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Hostname</th>
-                  <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Private IP</th>
-                  <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Public IP</th>
-                  <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Kind</th>
+                  <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Datacenter</th>
+                  <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Private/Public IP</th>
                   <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Tags</th>
                   <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100 text-right">Actions</th>
+                </tr>
+                <tr className="bg-blue-50 dark:bg-blue-900/40">
+                  <th className="px-4 py-1">
+                    <div className="relative flex items-center">
+                      <input
+                        className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 focus:ring-1 focus:ring-blue-300 pr-6"
+                        value={filterHostname}
+                        onChange={e => setFilterHostname(e.target.value)}
+                        placeholder="Filter..."
+                        style={{ minWidth: 80 }}
+                      />
+                      {filterHostname && (
+                        <button className="absolute right-1 text-gray-400 hover:text-gray-700" onClick={() => setFilterHostname('')} tabIndex={-1}>&times;</button>
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-4 py-1">
+                    <select
+                      className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 focus:ring-1 focus:ring-blue-300"
+                      value={filterDatacenter}
+                      onChange={e => setFilterDatacenter(e.target.value)}
+                      style={{ minWidth: 80 }}
+                    >
+                      <option value="">All</option>
+                      {datacenters?.map(dc => (
+                        <option key={dc.id} value={dc.id}>{dc.name}</option>
+                      ))}
+                    </select>
+                  </th>
+                  <th className="px-4 py-1">
+                    <div className="relative flex items-center">
+                      <input
+                        className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 focus:ring-1 focus:ring-blue-300 pr-6"
+                        value={filterIP}
+                        onChange={e => setFilterIP(e.target.value)}
+                        placeholder="Filter IP..."
+                        style={{ minWidth: 80 }}
+                      />
+                      {filterIP && (
+                        <button className="absolute right-1 text-gray-400 hover:text-gray-700" onClick={() => setFilterIP('')} tabIndex={-1}>&times;</button>
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-4 py-1">
+                    <div className="relative flex items-center">
+                      <input
+                        className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-900 focus:ring-1 focus:ring-blue-300 pr-6"
+                        value={filterTags}
+                        onChange={e => setFilterTags(e.target.value)}
+                        placeholder="Filter..."
+                        style={{ minWidth: 80 }}
+                      />
+                      {filterTags && (
+                        <button className="absolute right-1 text-gray-400 hover:text-gray-700" onClick={() => setFilterTags('')} tabIndex={-1}>&times;</button>
+                      )}
+                    </div>
+                  </th>
+                  <th className="px-4 py-1" />
                 </tr>
               </thead>
               <tbody>
@@ -153,6 +223,42 @@ export default function HostsPage() {
                 )}
                 {filteredRows.map((r) => (
                   <tr key={r.id} className="border-t border-gray-100 dark:border-gray-700">
+                    {/* Hostname with kind badge */}
+                    <td className="px-4 py-3">
+                      {editingId === r.id ? (
+                        <>
+                          <input
+                            value={form.hostname || ''}
+                            onChange={e => setForm(f => ({ ...f, hostname: e.target.value }))}
+                            className="w-full px-2 py-1 border rounded mb-1"
+                            placeholder="Hostname"
+                          />
+                          <select
+                            value={form.kind || ''}
+                            onChange={e => setForm(f => ({ ...f, kind: e.target.value as Host['kind'] }))}
+                            className="w-full px-2 py-1 border rounded text-xs"
+                          >
+                            <option value="">Select kind</option>
+                            <option value="VM">VM</option>
+                            <option value="Physical">Physical</option>
+                            <option value="BareMetal">BareMetal</option>
+                          </select>
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span>{r.hostname}</span>
+                          <span className={
+                            `inline-block px-2 py-0.5 rounded text-xs font-semibold ${
+                              r.kind === 'VM' ? 'bg-blue-100 text-blue-700' :
+                              r.kind === 'Physical' ? 'bg-green-100 text-green-700' :
+                              r.kind === 'BareMetal' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-700'
+                            }`
+                          }>{r.kind}</span>
+                        </div>
+                      )}
+                    </td>
+                    {/* Datacenter */}
                     <td className="px-4 py-3">
                       {editingId === r.id ? (
                         <select
@@ -170,58 +276,28 @@ export default function HostsPage() {
                         datacenterMap[r.datacenterId] ?? '-'
                       )}
                     </td>
+                    {/* Private/Public IP combined */}
                     <td className="px-4 py-3">
                       {editingId === r.id ? (
-                        <input
-                          value={form.hostname || ''}
-                          onChange={e => setForm(f => ({ ...f, hostname: e.target.value }))}
-                          className="w-full px-2 py-1 border rounded"
-                          placeholder="Hostname"
-                        />
+                        <>
+                          <input
+                            value={form.privateIP || ''}
+                            onChange={e => setForm(f => ({ ...f, privateIP: e.target.value }))}
+                            className="w-full px-2 py-1 border rounded mb-1"
+                            placeholder="Private IP"
+                          />
+                          <input
+                            value={form.publicIP || ''}
+                            onChange={e => setForm(f => ({ ...f, publicIP: e.target.value }))}
+                            className="w-full px-2 py-1 border rounded"
+                            placeholder="Public IP"
+                          />
+                        </>
                       ) : (
-                        r.hostname
+                        <span>{r.privateIP}{r.publicIP ? ` / ${r.publicIP}` : ''}</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
-                      {editingId === r.id ? (
-                        <input
-                          value={form.privateIP || ''}
-                          onChange={e => setForm(f => ({ ...f, privateIP: e.target.value }))}
-                          className="w-full px-2 py-1 border rounded"
-                          placeholder="Private IP"
-                        />
-                      ) : (
-                        r.privateIP
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      {editingId === r.id ? (
-                        <input
-                          value={form.publicIP || ''}
-                          onChange={e => setForm(f => ({ ...f, publicIP: e.target.value }))}
-                          className="w-full px-2 py-1 border rounded"
-                          placeholder="Public IP"
-                        />
-                      ) : (
-                        r.publicIP ?? ''
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      {editingId === r.id ? (
-                        <select
-                          value={form.kind || ''}
-                          onChange={e => setForm(f => ({ ...f, kind: e.target.value as Host['kind'] }))}
-                          className="w-full px-2 py-1 border rounded"
-                        >
-                          <option value="">Select kind</option>
-                          <option value="VM">VM</option>
-                          <option value="Physical">Physical</option>
-                          <option value="BareMetal">BareMetal</option>
-                        </select>
-                      ) : (
-                        r.kind
-                      )}
-                    </td>
+                    {/* Tags as badges */}
                     <td className="px-4 py-3 text-xs">
                       {editingId === r.id ? (
                         <input
@@ -231,9 +307,18 @@ export default function HostsPage() {
                           placeholder="Tags (JSON)"
                         />
                       ) : (
-                        r.tags ? JSON.stringify(r.tags) : ''
+                        <div className="flex flex-wrap gap-1 max-w-xs">
+                          {r.tags && typeof r.tags === 'object' && Object.entries(r.tags).length > 0 ? (
+                            Object.entries(r.tags).map(([key, value]) => (
+                              <span key={key} className="inline-block bg-indigo-100 text-indigo-700 rounded px-2 py-0.5 text-xs font-medium truncate max-w-[120px]" title={`${key}: ${value}`}>{key}: {String(value)}</span>
+                            ))
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </div>
                       )}
                     </td>
+                    {/* Actions */}
                     <td className="px-4 py-3 text-right">
                       {editingId === r.id ? (
                         <div className="flex gap-2 justify-end">
