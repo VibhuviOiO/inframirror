@@ -1,5 +1,4 @@
-import React from "react";
-import { Bell, Search, ChevronLeft, ChevronRight, Settings } from "lucide-react";
+import { Bell, Link, Search, Settings } from "lucide-react";
 
 export default function Header({ expanded, sidebarWidth, title }: { expanded: boolean; sidebarWidth: number; title: string }) {
   return (
@@ -19,16 +18,12 @@ export default function Header({ expanded, sidebarWidth, title }: { expanded: bo
             />
             <Search size={20} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
           </div>
-          {/* Add filter dropdown here if needed */}
         </div>
         <div className="h-8 w-px bg-gray-200 mx-4" />
         <div className="flex items-center gap-4">
           <button className="relative p-2 rounded-full hover:bg-gray-100">
             <Bell size={22} />
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-          </button>
-          <button className="p-2 rounded-full hover:bg-gray-100">
-            <Settings size={22} />
           </button>
         </div>
       </div>

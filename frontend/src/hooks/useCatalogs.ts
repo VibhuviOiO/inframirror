@@ -1,7 +1,7 @@
 export function useBulkDeleteCatalogs() {
   const qc = useQueryClient();
   return useMutation<void, Error, number[]>({
-    mutationFn: (ids) => request<void>(`/service-catalogs/bulk`, { method: 'DELETE', body: JSON.stringify({ ids }) }),
+    mutationFn: (ids) => request<void>(`/catalogs/bulk-delete`, { method: 'POST', body: JSON.stringify({ ids }) }),
     onMutate: async (ids) => {
       await qc.cancelQueries(['catalogs'] as any);
       const previous = (qc.getQueryData(['catalogs'] as any) as Catalog[]) || [];

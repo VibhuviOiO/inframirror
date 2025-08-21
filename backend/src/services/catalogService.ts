@@ -1,3 +1,7 @@
+import { bulkRemove } from '../repositories/catalogRepository.js';
+export async function bulkDeleteCatalogs(ids: number[]) {
+  return bulkRemove(ids);
+}
 import { getAll, getById, create, update, remove } from '../repositories/catalogRepository.js';
 import type { NewCatalog } from '../models/catalog.js';
 

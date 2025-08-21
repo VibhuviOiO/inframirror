@@ -48,5 +48,17 @@ router.delete('/:id', async (req, res, next) => {
     next(err);
   }
 });
+router.post('/bulk-delete', async (req, res, next) => {
+  try {
+    const ids = req.body.ids;
+    if (!Array.isArray(ids) || !ids.length) {
+      return res.status(400).json({ error: 'ids (array) required' });
+    }
+    await service.bulkDeleteCatalogs(ids);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
 
 export default router;

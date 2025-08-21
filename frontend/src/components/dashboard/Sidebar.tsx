@@ -73,28 +73,73 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
                 <div key={group.title}>
                   <h3 className="px-2 mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">{group.title}</h3>
                   <ul className="space-y-1">
-                    {group.items.map((item) => (
-                      <li key={item.name}>
-                        <a
-                          href={item.href}
-                          className={clsx(
-                            "group flex items-center gap-x-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200",
-                            window.location.pathname === item.href
-                              ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-lg scale-[1.03]"
-                              : "text-gray-700 hover:bg-blue-100 hover:text-blue-700"
-                          )}
-                        >
-                          <item.icon className={clsx("h-6 w-6 shrink-0", window.location.pathname === item.href ? "text-white" : "text-indigo-600 group-hover:text-blue-700")} />
-                          <span>{item.name}</span>
-                        </a>
-                      </li>
-                    ))}
+                    {group.items.map((item) => {
+                      const selected = window.location.pathname === item.href;
+                      return (
+                        <li key={item.name}>
+                          <a
+                            href={item.href}
+                            className={clsx(
+                              "group flex items-center gap-x-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200",
+                              selected
+                                ? "text-indigo-600"
+                                : "text-gray-700 hover:bg-blue-100 hover:text-blue-700"
+                            )}
+                          >
+                            <span className={clsx(
+                              "flex items-center justify-center h-8 w-8",
+                              selected ? "ring-2 ring-indigo-500 rounded-full bg-white" : ""
+                            )}>
+                              <item.icon
+                                className={clsx(
+                                  "h-6 w-6 shrink-0",
+                                  selected
+                                    ? "text-indigo-600"
+                                    : "text-gray-400 group-hover:text-indigo-400"
+                                )}
+                              />
+                            </span>
+                            <span>{item.name}</span>
+                          </a>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ))}
             </div>
+            {/* Settings menu item with separator above, styled like other menu items */}
+            <div className="mt-4 border-t border-gray-200 dark:border-gray-700" />
+            <div className="flex items-center justify-center px-2 mt-2">
+              <a
+                href="/settings"
+                className={clsx(
+                  "group flex items-center gap-x-3 rounded-xl px-3 py-2.5 text-sm font-semibold w-full transition-all duration-200",
+                  window.location.pathname.startsWith('/settings')
+                    ? "text-indigo-600"
+                    : "text-gray-700 hover:bg-blue-100 hover:text-blue-700"
+                )}
+                style={{ minHeight: 48 }}
+                title="Settings"
+              >
+                <span className={clsx(
+                  "flex items-center justify-center h-8 w-8",
+                  window.location.pathname.startsWith('/settings') ? "ring-2 ring-indigo-500 rounded-full bg-white" : ""
+                )}>
+                  <Settings
+                    className={clsx(
+                      "h-6 w-6 shrink-0",
+                      window.location.pathname.startsWith('/settings')
+                        ? "text-indigo-600"
+                        : "text-gray-400 group-hover:text-indigo-400"
+                    )}
+                  />
+                </span>
+                {expanded && <span>Settings</span>}
+              </a>
+            </div>
           </nav>
-          {/* User info at the bottom with separator */}
+          {/* User info at the bottom */}
           <div className="mt-4 border-t border-gray-200 dark:border-gray-700" />
           <div className="mb-6 flex items-center gap-3 px-8 mt-4">
             {user.image ? (
@@ -122,27 +167,48 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
                     <a
                       key={item.name}
                       href={item.href}
-                      className={`relative flex flex-col items-center justify-center gap-3 py-3 rounded-xl transition-colors group ${selected ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-gray-500 hover:bg-gray-100'}`}
+                      className={`relative flex flex-col items-center justify-center gap-3 py-3 rounded-xl transition-colors group ${selected ? 'text-indigo-600 font-bold' : 'text-gray-500 hover:bg-gray-100'}`}
                       style={{ minHeight: 48 }}
                     >
-                      <span className="flex items-center justify-center w-full">
+                      <span className={clsx(
+                        "flex items-center justify-center h-10 w-10",
+                        selected ? "ring-2 ring-indigo-500 rounded-full bg-white" : ""
+                      )}>
                         <item.icon
                           size={24}
                           className={selected ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-400'}
                         />
                       </span>
-                      {selected && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-indigo-500 rounded-r-full"></span>
-                      )}
                     </a>
                   );
                 })}
               </div>
             ))}
           </div>
-          {/* User initials only at the bottom with separator */}
+          {/* Settings icon separated from menu and profile */}
           <div className="mt-4 border-t border-gray-200 dark:border-gray-700" />
-          <div className="mb-6 flex items-center justify-center mt-4">
+          <div className="flex flex-col items-center mt-4">
+            <a
+              href="/settings"
+              className={clsx(
+                "flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-colors group",
+                window.location.pathname.startsWith('/settings')
+                  ? 'text-indigo-600 font-bold'
+                  : 'text-gray-500 hover:bg-gray-100'
+              )}
+              style={{ minHeight: 48 }}
+              title="Settings"
+            >
+              <span className={clsx(
+                "flex items-center justify-center h-10 w-10",
+                window.location.pathname.startsWith('/settings') ? "ring-2 ring-indigo-500 rounded-full bg-white" : ""
+              )}>
+                <Settings size={24} className={window.location.pathname.startsWith('/settings') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-400'} />
+              </span>
+            </a>
+          </div>
+          <div className="mt-4 border-t border-gray-200 dark:border-gray-700" />
+          <div className="flex flex-col items-center gap-2 mt-4 mb-6">
             {user.image ? (
               <img src={user.image} className="w-11 h-11 rounded-full border-2 border-white shadow" alt={user.name} />
             ) : (

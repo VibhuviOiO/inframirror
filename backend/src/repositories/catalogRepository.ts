@@ -1,3 +1,6 @@
+export async function bulkRemove(ids: number[]) {
+  return prisma.catalog.deleteMany({ where: { id: { in: ids } } });
+}
 import prisma from '../prismaClient.js';
 import type { Catalog, NewCatalog } from '../models/catalog.js';
 

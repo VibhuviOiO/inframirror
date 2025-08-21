@@ -26,7 +26,7 @@ function CatalogPage() {
   useEffect(() => {
     if (importStatus) {
       setShowImportStatus(true);
-      const timer = setTimeout(() => setShowImportStatus(false), 3000);
+      const timer = setTimeout(() => setShowImportStatus(false), 30000);
       return () => clearTimeout(timer);
     }
   }, [importStatus]);
@@ -254,14 +254,14 @@ function CatalogPage() {
                       return;
                     }
                     const existingNames = new Set((items || []).map(i => i.name.toLowerCase()));
-                    const typeMap = new Map((types || []).map(t => [t.name.toLowerCase(), t.id]));
-                    const teamMap = new Map((teams || []).map(t => [t.name.toLowerCase(), t.id]));
+                    let typeMap = new Map((types || []).map(t => [t.name.trim().toLowerCase(), t.id]));
+                    let teamMap = new Map((teams || []).map(t => [t.name.trim().toLowerCase(), t.id]));
                     let success = 0, failed = 0, errors = [];
                     for (let i = 1; i < rows.length; ++i) {
                       let [name, type, uniqueId, defaultPort, description, gitRepoUrl, team] = rows[i];
-                      name = toInitCap(name || '');
-                      type = toInitCap(type || '');
-                      team = toInitCap(team || '');
+                      name = toInitCap((name || '').trim());
+                      type = toInitCap((type || '').trim());
+                      team = toInitCap((team || '').trim());
                       if (!name) {
                         errors.push(`Row ${i+1}: Name is required.`);
                         failed++;
@@ -287,17 +287,43 @@ function CatalogPage() {
                         failed++;
                         continue;
                       }
+                      // CatalogType: create if missing
                       let catalogTypeId = typeMap.get(type.toLowerCase());
                       if (!catalogTypeId) {
-                        errors.push(`Row ${i+1}: Invalid type '${type}'.`);
-                        failed++;
-                        continue;
+                        try {
+                          const resp = await fetch('/catalog-types', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: type, description: description || '' })
+                          });
+                          if (!resp.ok) throw new Error(await resp.text());
+                          const newType = await resp.json();
+                          catalogTypeId = newType.id;
+                          typeMap.set(type.toLowerCase(), catalogTypeId);
+                        } catch (err: any) {
+                          errors.push(`Row ${i+1}: Failed to create type '${type}': ${err.message}`);
+                          failed++;
+                          continue;
+                        }
                       }
+                      // Team: create if missing
                       let teamId = teamMap.get(team.toLowerCase());
                       if (!teamId) {
-                        errors.push(`Row ${i+1}: Invalid team '${team}'.`);
-                        failed++;
-                        continue;
+                        try {
+                          const resp = await fetch('/teams', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: team })
+                          });
+                          if (!resp.ok) throw new Error(await resp.text());
+                          const newTeam = await resp.json();
+                          teamId = newTeam.id;
+                          teamMap.set(team.toLowerCase(), teamId);
+                        } catch (err: any) {
+                          errors.push(`Row ${i+1}: Failed to create team '${team}': ${err.message}`);
+                          failed++;
+                          continue;
+                        }
                       }
                       try {
                         await create.mutateAsync({
