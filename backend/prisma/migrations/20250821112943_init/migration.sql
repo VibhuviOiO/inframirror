@@ -26,36 +26,26 @@ CREATE TABLE "public"."Team" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."ServiceOrAppType" (
+CREATE TABLE "public"."CatalogType" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "description" TEXT,
 
-    CONSTRAINT "ServiceOrAppType_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "CatalogType_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."ServiceCatalog" (
+CREATE TABLE "public"."Catalog" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "uniqueId" TEXT,
     "defaultPort" INTEGER,
     "description" TEXT,
-    "serviceTypeId" INTEGER NOT NULL,
-
-    CONSTRAINT "ServiceCatalog_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "public"."ApplicationCatalog" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "uniqueId" TEXT NOT NULL,
-    "defaultPort" INTEGER,
-    "description" TEXT,
-    "appTypeId" INTEGER NOT NULL,
     "gitRepoUrl" TEXT,
-    "teamId" INTEGER NOT NULL,
+    "teamId" INTEGER,
+    "catalogTypeId" INTEGER NOT NULL,
 
-    CONSTRAINT "ApplicationCatalog_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Catalog_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -115,22 +105,19 @@ CREATE UNIQUE INDEX "Environment_name_key" ON "public"."Environment"("name");
 CREATE UNIQUE INDEX "Team_name_key" ON "public"."Team"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ServiceOrAppType_name_key" ON "public"."ServiceOrAppType"("name");
+CREATE UNIQUE INDEX "CatalogType_name_key" ON "public"."CatalogType"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ApplicationCatalog_uniqueId_key" ON "public"."ApplicationCatalog"("uniqueId");
+CREATE UNIQUE INDEX "Catalog_uniqueId_key" ON "public"."Catalog"("uniqueId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Host_hostname_key" ON "public"."Host"("hostname");
 
 -- AddForeignKey
-ALTER TABLE "public"."ServiceCatalog" ADD CONSTRAINT "ServiceCatalog_serviceTypeId_fkey" FOREIGN KEY ("serviceTypeId") REFERENCES "public"."ServiceOrAppType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Catalog" ADD CONSTRAINT "Catalog_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "public"."Team"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."ApplicationCatalog" ADD CONSTRAINT "ApplicationCatalog_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "public"."Team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "public"."ApplicationCatalog" ADD CONSTRAINT "ApplicationCatalog_appTypeId_fkey" FOREIGN KEY ("appTypeId") REFERENCES "public"."ServiceOrAppType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Catalog" ADD CONSTRAINT "Catalog_catalogTypeId_fkey" FOREIGN KEY ("catalogTypeId") REFERENCES "public"."CatalogType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."Datacenter" ADD CONSTRAINT "Datacenter_regionId_fkey" FOREIGN KEY ("regionId") REFERENCES "public"."Region"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -145,7 +132,7 @@ ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_datacenterId_fkey" FOREIG
 ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_hostId_fkey" FOREIGN KEY ("hostId") REFERENCES "public"."Host"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_catalogId_fkey" FOREIGN KEY ("catalogId") REFERENCES "public"."ServiceCatalog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Service" ADD CONSTRAINT "Service_catalogId_fkey" FOREIGN KEY ("catalogId") REFERENCES "public"."Catalog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_datacenterId_fkey" FOREIGN KEY ("datacenterId") REFERENCES "public"."Datacenter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -154,7 +141,7 @@ ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_datacenterId_fkey
 ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_hostId_fkey" FOREIGN KEY ("hostId") REFERENCES "public"."Host"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_catalogId_fkey" FOREIGN KEY ("catalogId") REFERENCES "public"."ApplicationCatalog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_catalogId_fkey" FOREIGN KEY ("catalogId") REFERENCES "public"."Catalog"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."Application" ADD CONSTRAINT "Application_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "public"."Team"("id") ON DELETE SET NULL ON UPDATE CASCADE;

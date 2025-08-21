@@ -1,3 +1,19 @@
+export function useBulkDeleteServiceCatalogs() {
+  const qc = useQueryClient();
+  return useMutation<void, Error, number[]>({
+    mutationFn: (ids) => request<void>(`/service-catalogs/bulk`, { method: 'DELETE', body: JSON.stringify({ ids }) }),
+    onMutate: async (ids) => {
+      await qc.cancelQueries(['serviceCatalogs'] as any);
+      const previous = (qc.getQueryData(['serviceCatalogs'] as any) as ServiceCatalog[]) || [];
+      qc.setQueryData(['serviceCatalogs'] as any, previous.filter((p) => !ids.includes(p.id)));
+      return { previous };
+    },
+    onError: (_err, _ids, context: any) => {
+      if (context?.previous) qc.setQueryData(['serviceCatalogs'] as any, context.previous);
+    },
+    onSettled: () => qc.invalidateQueries(['serviceCatalogs'] as any),
+  });
+}
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export type ServiceCatalog = {

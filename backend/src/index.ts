@@ -6,16 +6,16 @@ import { errorHandler } from './middleware/errorHandler.js';
 
 
 
+
 import applicationRoutes from './routes/applicationRoutes.js';
 import environmentRoutes from './routes/environmentRoutes.js';
 import serviceRoutes from './routes/serviceRoutes.js';
 import hostRoutes from './routes/hostRoutes.js';
-import applicationCatalogRoutes from './routes/applicationCatalogRoutes.js';
-import serviceCatalogRoutes from './routes/serviceCatalogRoutes.js';
-import serviceOrAppTypeRoutes from './routes/serviceOrAppTypeRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
 import datacenterRoutes from './routes/datacenterRoutes.js';
 import regionRoutes from './routes/regionRoutes.js';
+import catalogTypeRoutes from './routes/catalogTypeRoutes.js';
+import catalogRoutes from './routes/catalogRoutes.js';
 
 
 const app = express();
@@ -41,16 +41,16 @@ app.get('/health', async (req: Request, res: Response) => {
 
 
 
+
 app.use('/applications', applicationRoutes);
 app.use('/environments', environmentRoutes);
 app.use('/services', serviceRoutes);
 app.use('/hosts', hostRoutes);
-app.use('/application-catalogs', applicationCatalogRoutes);
-app.use('/service-catalogs', serviceCatalogRoutes);
-app.use('/service-or-app-types', serviceOrAppTypeRoutes);
 app.use('/teams', teamRoutes);
 app.use('/datacenters', datacenterRoutes);
 app.use('/regions', regionRoutes);
+app.use('/catalog-types', catalogTypeRoutes);
+app.use('/catalogs', catalogRoutes);
 
 app.use(errorHandler);
 

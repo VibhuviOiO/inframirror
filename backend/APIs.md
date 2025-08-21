@@ -1,28 +1,3 @@
-
-# --- SERVICE OR APP TYPE API ---
-
-### List all service or app types
-
-```bash
-curl http://localhost:8080/service-or-app-types
-```
-
-### Get a service or app type by ID (replace 1 with a valid ID)
-curl http://localhost:8080/service-or-app-types/1
-
-### Create a new service or app type
-curl -X POST http://localhost:8080/service-or-app-types \
-  -H "Content-Type: application/json" \
-  -d '{"name":"New Type"}'
-
-### Update a service or app type (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/service-or-app-types/4 \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Updated Type"}'
-
-### Delete a service or app type (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/service-or-app-types/4
-
 # --- TEAM API ---
 
 # List all teams
@@ -107,48 +82,6 @@ curl -X PUT http://localhost:8080/hosts/1 \
 # Delete a host (replace 1 with a valid ID)
 curl -X DELETE http://localhost:8080/hosts/1
 
-# --- SERVICE CATALOG API ---
-
-# List all service catalogs
-curl http://localhost:8080/service-catalogs
-
-# Get a service catalog by ID (replace 1 with a valid ID)
-curl http://localhost:8080/service-catalogs/1
-
-# Create a new service catalog
-curl -X POST http://localhost:8080/service-catalogs \
-  -H "Content-Type: application/json" \
-  -d '{"name":"New Catalog","serviceTypeId":1}'
-
-# Update a service catalog (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/service-catalogs/1 \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Updated Catalog","serviceTypeId":1}'
-
-# Delete a service catalog (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/service-catalogs/1
-
-# --- APPLICATION CATALOG API ---
-
-# List all application catalogs
-curl http://localhost:8080/application-catalogs
-
-# Get an application catalog by ID (replace 1 with a valid ID)
-curl http://localhost:8080/application-catalogs/1
-
-# Create a new application catalog
-curl -X POST http://localhost:8080/application-catalogs \
-  -H "Content-Type: application/json" \
-  -d '{"name":"New App","uniqueId":"app-003","appTypeId":1,"teamId":1}'
-
-# Update an application catalog (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/application-catalogs/1 \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Updated App","uniqueId":"app-003","appTypeId":1,"teamId":1}'
-
-# Delete an application catalog (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/application-catalogs/1
-
 # --- ENVIRONMENT API ---
 
 # List all environments
@@ -211,3 +144,45 @@ curl -X PUT http://localhost:8080/services/1 \
 
 # Delete a service (replace 1 with a valid ID)
 curl -X DELETE http://localhost:8080/services/1
+
+# --- CATALOG TYPE API ---
+
+# List all catalog types
+curl http://localhost:8080/catalog-types
+
+# Get a catalog type by ID (replace 1 with a valid ID)
+curl http://localhost:8080/catalog-types/1
+
+# Create a new catalog type
+curl -X POST http://localhost:8080/catalog-types \
+  -H "Content-Type: application/json" \
+  -d '{"name":"New Type", "description":"Type description"}'
+
+# Update a catalog type (replace 1 with a valid ID)
+curl -X PUT http://localhost:8080/catalog-types/1 \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Updated Type", "description":"Updated description"}'
+
+# Delete a catalog type (replace 1 with a valid ID)
+curl -X DELETE http://localhost:8080/catalog-types/1
+
+# --- CATALOG API ---
+
+# List all catalogs
+curl http://localhost:8080/catalogs
+
+# Get a catalog by ID (replace 1 with a valid ID)
+curl http://localhost:8080/catalogs/1
+
+# Create a new catalog
+curl -X POST http://localhost:8080/catalogs \
+  -H "Content-Type: application/json" \
+  -d '{"name":"New Catalog","catalogTypeId":1,"uniqueId":"cat-001","defaultPort":1234,"description":"desc","gitRepoUrl":"https://repo","teamId":1}'
+
+# Update a catalog (replace 1 with a valid ID)
+curl -X PUT http://localhost:8080/catalogs/1 \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Updated Catalog","catalogTypeId":1,"uniqueId":"cat-001","defaultPort":1234,"description":"desc","gitRepoUrl":"https://repo","teamId":1}'
+
+# Delete a catalog (replace 1 with a valid ID)
+curl -X DELETE http://localhost:8080/catalogs/1

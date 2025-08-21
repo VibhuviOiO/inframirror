@@ -6,6 +6,7 @@ import {
   useCreateServiceCatalog,
   useUpdateServiceCatalog,
   useDeleteServiceCatalog,
+  useBulkDeleteServiceCatalogs,
 } from '../hooks/useServiceCatalogs';
 import { useServiceOrAppTypes } from '../hooks/useServiceOrAppTypes';
 import { toast } from 'sonner';
@@ -39,6 +40,8 @@ function toInitCap(str) {
 }
 
 function ServiceCatalogPage() {
+  // Bulk selection state
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [importStatus, setImportStatus] = useState(null); // { total, success, failed, errors: [] }
   const [showImportStatus, setShowImportStatus] = useState(false);
   useEffect(() => {
@@ -54,11 +57,12 @@ function ServiceCatalogPage() {
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [importError, setImportError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { data: items, isLoading, isError, error } = useServiceCatalogs();
+  const { data: items, isLoading, isError, error, refetch } = useServiceCatalogs();
   const { data: types } = useServiceOrAppTypes();
   const create = useCreateServiceCatalog();
   const update = useUpdateServiceCatalog();
   const del = useDeleteServiceCatalog();
+  const bulkDelete = useBulkDeleteServiceCatalogs();
   const [addValue, setAddValue] = useState('');
   const [addType, setAddType] = useState<number | ''>('');
   const [addPort, setAddPort] = useState<number | ''>('');
@@ -157,6 +161,17 @@ function ServiceCatalogPage() {
     }
   };
 
+  // Bulk selection helpers
+  const allVisibleIds = useMemo(() => sortedRows.map(r => r.id), [sortedRows]);
+  const allSelected = allVisibleIds.length > 0 && allVisibleIds.every(id => selectedIds.includes(id));
+  const toggleSelectAll = () => {
+    if (allSelected) setSelectedIds(ids => ids.filter(id => !allVisibleIds.includes(id)));
+    else setSelectedIds(ids => Array.from(new Set([...ids, ...allVisibleIds])));
+  };
+  const toggleSelectOne = (id: number) => {
+    setSelectedIds(ids => ids.includes(id) ? ids.filter(i => i !== id) : [...ids, id]);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -192,6 +207,26 @@ function ServiceCatalogPage() {
             Export
           </button>
           <button
+            onClick={async () => {
+              if (!selectedIds.length) return;
+              if (!window.confirm(`Delete ${selectedIds.length} selected catalogs?`)) return;
+              try {
+                await bulkDelete.mutateAsync(selectedIds);
+                setSelectedIds([]);
+                toast.success('Selected catalogs deleted');
+              } catch (err: any) {
+                toast.error(err?.message || 'Bulk delete failed');
+              }
+            }}
+            className="ml-2 inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded shadow-sm transition px-2 py-1 text-sm disabled:opacity-50"
+            style={{ height: 32, fontSize: '0.925rem' }}
+            title="Delete Selected"
+            disabled={!selectedIds.length || bulkDelete.isPending}
+          >
+            <Trash2 size={16} className="mr-1" />
+            Delete
+          </button>
+          <button
             onClick={() => setAddModalOpen(true)}
             className="ml-2 inline-flex items-center justify-center bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 hover:from-blue-700 hover:via-blue-600 hover:to-indigo-600 text-white rounded shadow-sm transition px-2 py-1 text-sm"
             style={{ height: 32, fontSize: '0.925rem' }}
@@ -199,6 +234,7 @@ function ServiceCatalogPage() {
           >
             Add Service Catalog
           </button>
+          
         </div>
       </div>
       {/* Import Modal */}
@@ -317,6 +353,7 @@ function ServiceCatalogPage() {
                   }
                   setImporting(false);
                   setImportModalOpen(false);
+                  if (typeof refetch === 'function') refetch();
                 }}
               >
                 Import
@@ -408,138 +445,197 @@ function ServiceCatalogPage() {
         </div>
       )}
       <div className="relative mt-2">
-        <div className="overflow-x-auto">
-            {isLoading ? (
-              <div className="p-8 flex items-center justify-center">
-                <Spinner />
-              </div>
-            ) : isError ? (
-              <div className="p-8 text-red-600">Error: {(error as Error)?.message}</div>
-            ) : (
-              <table className="min-w-full table-auto">
-                <thead className="sticky top-0 z-10">
-                  <tr className="text-left bg-blue-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 animate-fade-in">
-                    <th className="px-3 py-4 text-xs font-bold tracking-wide text-gray-700 dark:text-gray-200 cursor-pointer select-none" onClick={() => handleSort('name')}>Name
-                      <span className="inline-flex flex-col justify-center items-center ml-1 min-h-[20px]">
-                        <ChevronUp size={14} className={sortBy==='name' ? (sortDir==='asc' ? 'text-blue-600' : 'text-gray-700 dark:text-gray-200') : 'text-gray-700 dark:text-gray-200'} style={{marginBottom: '-2px'}} />
-                        <ChevronDown size={14} className={sortBy==='name' ? (sortDir==='desc' ? 'text-blue-600' : 'text-gray-700 dark:text-gray-200') : 'text-gray-700 dark:text-gray-200'} style={{marginTop: '-2px'}} />
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+          {isLoading ? (
+            <div className="p-8 flex items-center justify-center">
+              <Spinner />
+            </div>
+          ) : isError ? (
+            <div className="p-8 text-red-600">Error: {(error as Error)?.message}</div>
+          ) : (
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      onChange={toggleSelectAll}
+                      aria-label="Select all"
+                    />
+                  </th>
+                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('name')}>
+                    <div className="flex items-center">
+                      Name
+                      <span className="ml-1 font-bold">
+                        {sortBy === 'name' ? (
+                          sortDir === 'asc' ? (
+                            <ChevronUp size={16} className="inline text-gray-700 dark:text-gray-200 font-bold" />
+                          ) : (
+                            <ChevronDown size={16} className="inline text-gray-700 dark:text-gray-200 font-bold" />
+                          )
+                        ) : (
+                          <ChevronUp size={16} className="inline text-gray-400 font-bold" />
+                        )}
                       </span>
-                    </th>
-                    <th className="px-3 py-4 text-xs font-bold tracking-wide text-gray-700 dark:text-gray-200 cursor-pointer select-none" onClick={() => handleSort('type')}>Type
-                      <span className="inline-flex flex-col justify-center items-center ml-1 min-h-[20px]">
-                        <ChevronUp size={14} className={sortBy==='type' ? (sortDir==='asc' ? 'text-blue-600' : 'text-gray-700 dark:text-gray-200') : 'text-gray-700 dark:text-gray-200'} style={{marginBottom: '-2px'}} />
-                        <ChevronDown size={14} className={sortBy==='type' ? (sortDir==='desc' ? 'text-blue-600' : 'text-gray-700 dark:text-gray-200') : 'text-gray-700 dark:text-gray-200'} style={{marginTop: '-2px'}} />
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('type')}>
+                    <div className="flex items-center">
+                      Type
+                      <span className="ml-1 font-bold">
+                        {sortBy === 'type' ? (
+                          sortDir === 'asc' ? (
+                            <ChevronUp size={16} className="inline text-gray-700 dark:text-gray-200 font-bold" />
+                          ) : (
+                            <ChevronDown size={16} className="inline text-gray-700 dark:text-gray-200 font-bold" />
+                          )
+                        ) : (
+                          <ChevronUp size={16} className="inline text-gray-400 font-bold" />
+                        )}
                       </span>
-                    </th>
-                    <th className="px-3 py-4 text-xs font-bold tracking-wide text-gray-700 dark:text-gray-200 cursor-pointer select-none" onClick={() => handleSort('port')}>Port
-                      <span className="inline-flex flex-col justify-center items-center ml-1 min-h-[20px]">
-                        <ChevronUp size={14} className={sortBy==='port' ? (sortDir==='asc' ? 'text-blue-600' : 'text-gray-700 dark:text-gray-200') : 'text-gray-700 dark:text-gray-200'} style={{marginBottom: '-2px'}} />
-                        <ChevronDown size={14} className={sortBy==='port' ? (sortDir==='desc' ? 'text-blue-600' : 'text-gray-700 dark:text-gray-200') : 'text-gray-700 dark:text-gray-200'} style={{marginTop: '-2px'}} />
+                    </div>
+                  </th>
+                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('port')}>
+                    <div className="flex items-center">
+                      Port
+                      <span className="ml-1 font-bold">
+                        {sortBy === 'port' ? (
+                          sortDir === 'asc' ? (
+                            <ChevronUp size={16} className="inline text-gray-700 dark:text-gray-200 font-bold" />
+                          ) : (
+                            <ChevronDown size={16} className="inline text-gray-700 dark:text-gray-200 font-bold" />
+                          )
+                        ) : (
+                          <ChevronUp size={16} className="inline text-gray-400 font-bold" />
+                        )}
                       </span>
-                    </th>
-                    <th className="px-3 py-4 text-xs font-bold tracking-wide text-gray-700 dark:text-gray-200">Description</th>
-                    <th className="px-3 py-4 text-xs font-bold tracking-wide text-gray-700 dark:text-gray-200">Actions</th>
+                    </div>
+                  </th>
+                  <th className="px-6 py-3">Description</th>
+                  <th className="px-6 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRows.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-400">No catalogs found.</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {filteredRows.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-8 text-center text-gray-400">No catalogs found.</td>
-                    </tr>
-                  )}
-                  {sortedRows.map((r, idx) => (
-                    <tr key={r.id} className="hover:bg-blue-50 dark:hover:bg-gray-800 transition">
-                      <td className="px-3 py-3 bg-transparent align-middle text-sm text-gray-800 dark:text-gray-100 font-semibold">
-                        {editingId === r.id ? (
-                          <input
-                            value={editValue}
-                            onChange={e => setEditValue(e.target.value)}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
-                            placeholder="Name"
-                          />
-                        ) : (
-                          r.name
-                        )}
-                      </td>
-                      <td className="px-3 py-3 bg-transparent align-middle text-sm text-gray-800 dark:text-gray-100">
-                        {editingId === r.id ? (
-                          <select
-                            value={editType}
-                            onChange={e => setEditType(Number(e.target.value))}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
-                          >
-                            <option value="">Select Type</option>
-                            {types?.map(t => (
-                              <option key={t.id} value={t.id}>{t.name}</option>
-                            ))}
-                          </select>
-                        ) : (
-                          types?.find(t => t.id === r.serviceTypeId)?.name || ''
-                        )}
-                      </td>
-                      <td className="px-3 py-3 bg-transparent align-middle text-sm text-gray-800 dark:text-gray-100">
-                        {editingId === r.id ? (
-                          <input
-                            type="number"
-                            value={editPort}
-                            onChange={e => {
-                              const val = e.target.value;
-                              setEditPort(val === '' ? '' : Number(val));
-                            }}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
-                            placeholder="Port"
-                          />
-                        ) : (
-                          <span className="text-xs font-medium">{r.defaultPort ?? ''}</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-3 bg-transparent align-middle text-sm text-gray-800 dark:text-gray-100">
-                        {editingId === r.id ? (
-                          <input
-                            value={editDesc}
-                            onChange={e => setEditDesc(e.target.value)}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
-                            placeholder="Description"
-                          />
-                        ) : (
-                          <span className="text-xs font-medium">{r.description ?? ''}</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-3 bg-transparent align-middle text-sm text-gray-800 dark:text-gray-100">
-                        {/* Actions */}
-                        {editingId === r.id ? (
-                          <div className="flex gap-2">
-                            <button onClick={() => handleEdit(r.id)} className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"><Check size={16} /></button>
-                            <button onClick={() => setEditingId(null)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-2 py-1 rounded"><X size={16} /></button>
-                          </div>
-                        ) : (
-                          <div className="flex gap-2">
-                            <button onClick={() => {
+                )}
+                {sortedRows.map((r, idx) => (
+                  <tr key={r.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                    <td className="px-4 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(r.id)}
+                        onChange={() => toggleSelectOne(r.id)}
+                        aria-label={`Select row ${r.name}`}
+                      />
+                    </td>
+                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                      {editingId === r.id ? (
+                        <input
+                          value={editValue}
+                          onChange={e => setEditValue(e.target.value)}
+                          className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
+                          placeholder="Name"
+                        />
+                      ) : (
+                        r.name
+                      )}
+                    </th>
+                    <td className="px-6 py-4">
+                      {editingId === r.id ? (
+                        <select
+                          value={editType}
+                          onChange={e => setEditType(Number(e.target.value))}
+                          className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
+                        >
+                          <option value="">Select Type</option>
+                          {types?.map(t => (
+                            <option key={t.id} value={t.id}>{t.name}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        types?.find(t => t.id === r.serviceTypeId)?.name || ''
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {editingId === r.id ? (
+                        <input
+                          type="number"
+                          value={editPort}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setEditPort(val === '' ? '' : Number(val));
+                          }}
+                          className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
+                          placeholder="Port"
+                        />
+                      ) : (
+                        <span className="text-xs font-medium">{r.defaultPort ?? ''}</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {editingId === r.id ? (
+                        <input
+                          value={editDesc}
+                          onChange={e => setEditDesc(e.target.value)}
+                          className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm text-base font-medium text-blue-900 dark:text-blue-100"
+                          placeholder="Description"
+                        />
+                      ) : (
+                        <span className="text-xs font-medium">{r.description ?? ''}</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {/* Actions */}
+                      {editingId === r.id ? (
+                        <div className="flex gap-2 justify-end">
+                          <button onClick={() => handleEdit(r.id)} className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"><Check size={16} /></button>
+                          <button onClick={() => setEditingId(null)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-2 py-1 rounded"><X size={16} /></button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            onClick={() => {
                               setEditingId(r.id);
                               setEditValue(r.name);
                               setEditType(r.serviceTypeId);
                               setEditPort(r.defaultPort ?? '');
                               setEditDesc(r.description ?? '');
-                            }} className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"><Edit2 size={14} /></button>
-                            <button onClick={() => handleDelete(r.id)} className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"><Trash2 size={14} /></button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                            }}
+                            className="p-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none"
+                            title="Edit"
+                          >
+                            <Edit2 size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(r.id)}
+                            className="p-1 text-red-500 hover:text-red-700 focus:outline-none"
+                            title="Delete"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
+      </div>
       </div>
   );
 }
 
 
+
 export function ServiceCatalogPageWithLayout() {
   return (
-    <DashboardLayout title="Service Catalogs">
+    <DashboardLayout>
       <ServiceCatalogPage />
     </DashboardLayout>
   );

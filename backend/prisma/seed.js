@@ -1,9 +1,8 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
 async function main() {
-  // Seed Teams (ensure before ApplicationCatalog)
+  // Seed Teams
   await prisma.team.createMany({
     data: [
       { name: 'Platform' },
@@ -12,9 +11,10 @@ async function main() {
     ],
     skipDuplicates: true
   });
-  console.log("✅ Team seed data inserted successfully");
+  const teams = await prisma.team.findMany();
+  console.log(`✅ Team seed data inserted successfully (${teams.length})`);
 
-  // Seed Regions (ensure before Datacenter)
+  // Seed Regions
   await prisma.region.createMany({
     data: [
       { name: 'US-East' },
@@ -23,7 +23,53 @@ async function main() {
     ],
     skipDuplicates: true
   });
-  console.log("✅ Region seed data inserted successfully");
+  const regions = await prisma.region.findMany();
+  console.log(`✅ Region seed data inserted successfully (${regions.length})`);
+
+  // Seed CatalogTypes
+  await prisma.catalogType.createMany({
+    data: [
+      { name: 'Database', description: 'DBs' },
+      { name: 'Cache', description: 'Caching systems' },
+      { name: 'Web', description: 'Web servers' }
+    ],
+    skipDuplicates: true
+  });
+  const catalogTypes = await prisma.catalogType.findMany();
+  console.log(`✅ CatalogType seed data inserted successfully (${catalogTypes.length})`);
+
+  // Seed Catalogs
+  const allTypes = await prisma.catalogType.findMany();
+  const allTeams = await prisma.team.findMany();
+  const typeDb = allTypes.find(t => t.name === 'Database');
+  const typeCache = allTypes.find(t => t.name === 'Cache');
+  let allCatalogs = [];
+  if (typeDb && typeCache && allTeams.length) {
+    await prisma.catalog.createMany({
+      data: [
+        {
+          name: 'PostgreSQL',
+          uniqueId: 'pg-001',
+          defaultPort: 5432,
+          description: 'Open source relational database',
+          catalogTypeId: typeDb.id,
+          teamId: allTeams[0].id
+        },
+        {
+          name: 'Redis',
+          uniqueId: 'redis-001',
+          defaultPort: 6379,
+          description: 'In-memory cache',
+          catalogTypeId: typeCache.id,
+          teamId: allTeams[1].id
+        }
+      ],
+      skipDuplicates: true
+    });
+    // ...existing code...
+  }
+  allCatalogs = await prisma.catalog.findMany();
+  console.log(`✅ Catalog seed data inserted successfully (${allCatalogs.length})`);
 
   // Seed Datacenters
   const allRegions = await prisma.region.findMany();
@@ -49,9 +95,10 @@ async function main() {
       ],
       skipDuplicates: true
     });
-    console.log("✅ Datacenter seed data inserted successfully");
+    // ...existing code...
   }
   const allDatacenters = await prisma.datacenter.findMany();
+  console.log(`✅ Datacenter seed data inserted successfully (${allDatacenters.length})`);
 
   // Seed Hosts (one per datacenter)
   for (const dc of allDatacenters) {
@@ -66,70 +113,8 @@ async function main() {
       }
     });
   }
-  console.log("✅ Host seed data inserted successfully");
-
-  // Seed ServiceOrAppType
-  await prisma.serviceOrAppType.createMany({
-    data: [
-      { name: 'Database' },
-      { name: 'Cache' },
-      { name: 'Web Server' }
-    ],
-    skipDuplicates: true
-  });
-  console.log("✅ ServiceOrAppType seed data inserted successfully");
-
-  // Seed ServiceCatalog
-  const allTypes = await prisma.serviceOrAppType.findMany();
-  const typeDb = allTypes.find(t => t.name === 'Database');
-  const typeCache = allTypes.find(t => t.name === 'Cache');
-  let allServiceCatalogs = [];
-  if (typeDb && typeCache) {
-    await prisma.serviceCatalog.createMany({
-      data: [
-        {
-          name: 'PostgreSQL',
-          defaultPort: 5432,
-          description: 'Open source relational database',
-          serviceTypeId: typeDb.id
-        },
-        {
-          name: 'Redis',
-          defaultPort: 6379,
-          description: 'In-memory cache',
-          serviceTypeId: typeCache.id
-        }
-      ],
-      skipDuplicates: true
-    });
-    console.log("✅ ServiceCatalog seed data inserted successfully");
-  }
-  allServiceCatalogs = await prisma.serviceCatalog.findMany();
-
-  // Seed ApplicationCatalog
-  const allAppTypes = await prisma.serviceOrAppType.findMany();
-  const allTeams = await prisma.team.findMany();
-  if (allAppTypes.length && allTeams.length) {
-    await prisma.applicationCatalog.createMany({
-      data: [
-        {
-          name: 'Demo App',
-          uniqueId: 'app-001',
-          appTypeId: allAppTypes[0].id,
-          teamId: allTeams[0].id
-        },
-        {
-          name: 'Demo App 2',
-          uniqueId: 'app-002',
-          appTypeId: allAppTypes[0].id,
-          teamId: allTeams[0].id
-        }
-      ],
-      skipDuplicates: true
-    });
-    console.log("✅ ApplicationCatalog seed data inserted successfully");
-  }
-  const allCatalogs = await prisma.applicationCatalog.findMany();
+  const hosts = await prisma.host.findMany();
+  console.log(`✅ Host seed data inserted successfully (${hosts.length})`);
 
   // Seed Environments
   await prisma.environment.createMany({
@@ -140,8 +125,9 @@ async function main() {
     ],
     skipDuplicates: true
   });
-  console.log("✅ Environment seed data inserted successfully");
-  const allEnvironments = await prisma.environment.findMany();
+  const environments = await prisma.environment.findMany();
+  console.log(`✅ Environment seed data inserted successfully (${environments.length})`);
+  const allEnvironments = environments;
 
   // Seed Applications (one per datacenter, catalog, and environment)
   for (const dc of allDatacenters) {
@@ -151,34 +137,37 @@ async function main() {
           data: {
             datacenterId: dc.id,
             catalogId: cat.id,
-            environmentId: env.id
+            environmentId: env.id,
+            teamId: cat.teamId
           }
         });
       }
     }
   }
-  console.log("✅ Application seed data inserted successfully");
+  const applications = await prisma.application.findMany();
+  console.log(`✅ Application seed data inserted successfully (${applications.length})`);
 
-  // Seed Services (one per host, using first ServiceCatalog)
+  // Seed Services (one per host, using first Catalog)
   const allHosts = await prisma.host.findMany();
-  if (allServiceCatalogs.length && allHosts.length) {
+  if (allCatalogs.length && allHosts.length) {
     for (const host of allHosts) {
       await prisma.service.create({
         data: {
           datacenterId: host.datacenterId,
           hostId: host.id,
-          catalogId: allServiceCatalogs[0].id
+          catalogId: allCatalogs[0].id
         }
       });
     }
-    console.log("✅ Service seed data inserted successfully");
+    const services = await prisma.service.findMany();
+  console.log(`✅ Service seed data inserted successfully (${services.length})`);
   }
 }
 
 main()
   .then(() => prisma.$disconnect())
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

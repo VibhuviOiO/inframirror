@@ -22,40 +22,33 @@ model Environment {
 model Team {
   id        Int                  @id @default(autoincrement())
   name      String               @unique
-  apps      Application[]        
-  appCatalogs ApplicationCatalog[] 
+  apps      Application[]
+  catalogs  Catalog[]
 }
 
-model ServiceOrAppType {
-  id        Int          @id @default(autoincrement())
-  name      String       @unique
-  services  ServiceCatalog[]
-  apps      ApplicationCatalog[]
+model CatalogType {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  catalogs    Catalog[]
 }
 
-model ServiceCatalog {
-  id             Int          @id @default(autoincrement())
-  name           String
-  defaultPort    Int?
-  description    String?
-  serviceTypeId  Int
-  serviceType    ServiceOrAppType @relation(fields: [serviceTypeId], references: [id])
-  deployments    Service[]
+model Catalog {
+  id          Int       @id @default(autoincrement())
+  name        String
+  uniqueId    String?   @unique
+  defaultPort Int?
+  description String?
+  gitRepoUrl  String?
+  teamId      Int? 
+  team        Team?     @relation(fields: [teamId], references: [id])
+
+  catalogTypeId Int
+  catalogType   CatalogType @relation(fields: [catalogTypeId], references: [id])
+  services     Service[]
+  applications Application[]
 }
 
-model ApplicationCatalog {
-  id             Int          @id @default(autoincrement())
-  name           String
-  uniqueId       String @unique
-  defaultPort    Int?
-  description    String?
-  appTypeId      Int
-  gitRepoUrl     String?
-  teamId         Int
-  team          Team @relation(fields: [teamId], references: [id])
-  appType        ServiceOrAppType @relation(fields: [appTypeId], references: [id])
-  apps           Application[]
-}
 
 model Datacenter {
   id           Int        @id @default(autoincrement())
@@ -98,7 +91,7 @@ model Service {
 
   datacenter      Datacenter     @relation(fields: [datacenterId], references: [id])
   host            Host           @relation(fields: [hostId], references: [id])
-  catalog         ServiceCatalog @relation(fields: [catalogId], references: [id])
+  catalog         Catalog @relation(fields: [catalogId], references: [id])
 }
 
 model Application {
@@ -111,7 +104,7 @@ model Application {
 
   datacenter   Datacenter         @relation(fields: [datacenterId], references: [id])
   host         Host?              @relation(fields: [hostId], references: [id])
-  catalog      ApplicationCatalog @relation(fields: [catalogId], references: [id])
+  catalog      Catalog @relation(fields: [catalogId], references: [id])
   team         Team?              @relation(fields: [teamId], references: [id])
   environment  Environment?       @relation(fields: [environmentId], references: [id])
 }
