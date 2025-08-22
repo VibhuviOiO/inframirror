@@ -1,84 +1,82 @@
-# --- TEAM API ---
-
-# List all teams
-curl http://localhost:8080/teams
+# TEAM API
+```bash
+# List
+curl http://localhost:8080/api/teams
 
 # Get a team by ID (replace 1 with a valid ID)
-curl http://localhost:8080/teams/1
+curl http://localhost:8080/api/teams/1
 
 # Create a new team
-curl -X POST http://localhost:8080/teams \
+curl -X POST http://localhost:8080/api/teams \
   -H "Content-Type: application/json" \
-  -d '{"name":"New Team"}'
+  -d '{"name":"Devops"}'
 
 # Update a team (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/teams/4 \
+curl -X PUT http://localhost:8080/api/teams/1 \
   -H "Content-Type: application/json" \
   -d '{"name":"Updated Team"}'
 
 # Delete a team (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/teams/4
+curl -X DELETE http://localhost:8080/api/teams/1
+```
 
-# --- REGION API ---
-
+# REGION API
+```bash
 # List all regions
-curl http://localhost:8080/regions
+curl http://localhost:8080/api/regions
 
 # Get a region by ID (replace 1 with a valid ID)
-curl http://localhost:8080/regions/1
+curl http://localhost:8080/api/regions/1
 
 # Create a new region
-curl -X POST http://localhost:8080/regions \
+curl -X POST http://localhost:8080/api/regions \
   -H "Content-Type: application/json" \
   -d '{"name":"New Region"}'
 
 # Update a region (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/regions/1 \
+curl -X PUT http://localhost:8080/api/regions/1 \
   -H "Content-Type: application/json" \
   -d '{"name":"Updated Name"}'
 
 # Delete a region (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/regions/1
+curl -X DELETE http://localhost:8080/api/regions/1
+```
 
-# --- DATACENTER API ---
-
+# DATACENTER API
+```bash
 # List all datacenters
-curl http://localhost:8080/datacenters
+curl http://localhost:8080/api/datacenters
 
 # Get a datacenter by ID (replace 1 with a valid ID)
-curl http://localhost:8080/datacenters/1
+curl http://localhost:8080/api/datacenters/1
 
 # Create a new datacenter (replace regionId with a valid region ID)
-curl -X POST http://localhost:8080/datacenters \
+curl -X POST http://localhost:8080/api/datacenters \
   -H "Content-Type: application/json" \
   -d '{"name":"New DC","shortName":"ndc","regionId":1}'
 
 # Update a datacenter (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/datacenters/1 \
+curl -X PUT http://localhost:8080/api/datacenters/1 \
   -H "Content-Type: application/json" \
   -d '{"name":"Updated DC","shortName":"udc","regionId":1}'
 
 # Delete a datacenter (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/datacenters/3
-
-
-
-# --- CLUSTER API ---
-## Cluster API Endpoints
-
-### List all clusters
-```sh
-curl http://localhost:8080/clusters
+curl -X DELETE http://localhost:8080/api/datacenters/3
 ```
+
+
+# CLUSTER API
+
+```bash
+### List all clusters
+curl http://localhost:8080/api/clusters
 
 ### Get a cluster by ID (replace 1 with a valid ID)
-```sh
-curl http://localhost:8080/clusters/1
-```
+curl http://localhost:8080/api/clusters/1
 
 ### Create a new cluster
-```sh
-curl -X POST http://localhost:8080/clusters \
+
+curl -X POST http://localhost:8080/api/clusters \
   -H "Content-Type: application/json" \
   -d '{
     "name": "cluster1",
@@ -86,11 +84,9 @@ curl -X POST http://localhost:8080/clusters \
     "environmentId": 1,
     "datacenterId": 1
   }'
-```
 
 ### Update a cluster (replace 1 with a valid ID)
-```sh
-curl -X PUT http://localhost:8080/clusters/1 \
+curl -X PUT http://localhost:8080/api/clusters/1 \
   -H "Content-Type: application/json" \
   -d '{
     "name": "cluster1-updated",
@@ -98,29 +94,21 @@ curl -X PUT http://localhost:8080/clusters/1 \
     "environmentId": 2,
     "datacenterId": 1
   }'
-```
 
 ### Delete a cluster (replace 1 with a valid ID)
-```sh
-curl -X DELETE http://localhost:8080/clusters/1
+curl -X DELETE http://localhost:8080/api/clusters/1
 ```
 
-# --- HOST API --- 
-## Host API Endpoints
-
+# HOST API
+```bash
 ### List all hosts
-```sh
-curl http://localhost:8080/hosts
-```
+curl http://localhost:8080/api/hosts
 
 ### Get a host by ID (replace 1 with a valid ID)
-```sh
-curl http://localhost:8080/hosts/1
-```
+curl http://localhost:8080/api/hosts/1
 
 ### Create a new host
-```sh
-curl -X POST http://localhost:8080/hosts \
+curl -X POST http://localhost:8080/api/hosts \
   -H "Content-Type: application/json" \
   -d '{
     "datacenterId": 1,
@@ -130,11 +118,9 @@ curl -X POST http://localhost:8080/hosts \
     "kind": "VM",
     "tags": {"os": "ubuntu", "env": "prod"}
   }'
-```
 
 ### Update a host (replace 1 with a valid ID)
-```sh
-curl -X PUT http://localhost:8080/hosts/1 \
+curl -X PUT http://localhost:8080/api/hosts/1 \
   -H "Content-Type: application/json" \
   -d '{
     "hostname": "host1-updated",
@@ -143,119 +129,103 @@ curl -X PUT http://localhost:8080/hosts/1 \
     "kind": "Physical",
     "tags": {"os": "centos"}
   }'
-```
 
 ### Delete a host (replace 1 with a valid ID)
-```sh
-curl -X DELETE http://localhost:8080/hosts/1
-```
+curl -X DELETE http://localhost:8080/api/hosts/1
 
 ## Notes
 - `datacenterId` must reference an existing datacenter.
 - `kind` must be one of: `VM`, `Physical`, `BareMetal`.
 - `tags` is a JSON object for arbitrary metadata (optional).
+```
 
-# --- ENVIRONMENT API ---
-
+# ENVIRONMENT API
+```bash
 # List all environments
-curl http://localhost:8080/environments
+curl http://localhost:8080/api/environments
 
 # Get an environment by ID (replace 1 with a valid ID)
-curl http://localhost:8080/environments/1
+curl http://localhost:8080/api/environments/1
 
 # Create a new environment
-curl -X POST http://localhost:8080/environments \
+curl -X POST http://localhost:8080/api/environments \
   -H "Content-Type: application/json" \
   -d '{"name":"dev"}'
 
 # Update an environment (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/environments/1 \
+curl -X PUT http://localhost:8080/api/environments/1 \
   -H "Content-Type: application/json" \
   -d '{"name":"stage"}'
 
 # Delete an environment (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/environments/1
+curl -X DELETE http://localhost:8080/api/environments/1
+```
 
-# --- APPLICATION API ---
 
-# List all applications
-curl http://localhost:8080/applications
+# SERVICE API
 
-# Get an application by ID (replace 1 with a valid ID)
-curl http://localhost:8080/applications/1
-
-# Create a new application (replace IDs with valid ones)
-curl -X POST http://localhost:8080/applications \
-  -H "Content-Type: application/json" \
-  -d '{"datacenterId":1,"catalogId":1,"environmentId":1}'
-
-# Update an application (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/applications/1 \
-  -H "Content-Type: application/json" \
-  -d '{"datacenterId":1,"catalogId":1,"environmentId":2}'
-
-# Delete an application (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/applications/1
-
-# --- SERVICE API ---
-
+```bash
 # List all services
-curl http://localhost:8080/services
+curl http://localhost:8080/api/services
 
 # Get a service by ID (replace 1 with a valid ID)
-curl http://localhost:8080/services/1
+curl http://localhost:8080/api/services/1
 
 # Create a new service
-curl -X POST http://localhost:8080/services \
+curl -X POST http://localhost:8080/api/services \
   -H "Content-Type: application/json" \
   -d '{"datacenterId":1,"hostId":1,"catalogId":1}'
 
 # Update a service (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/services/1 \
+curl -X PUT http://localhost:8080/api/services/1 \
   -H "Content-Type: application/json" \
   -d '{"datacenterId":1,"hostId":1,"catalogId":1}'
 
 # Delete a service (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/services/1
+curl -X DELETE http://localhost:8080/api/services/1
+```
 
-# --- CATALOG TYPE API ---
+# CATALOG TYPE API
 
+```bash
 # List all catalog types
-curl http://localhost:8080/catalog-types
+curl http://localhost:8080/api/catalog-types
 
 # Get a catalog type by ID (replace 1 with a valid ID)
-curl http://localhost:8080/catalog-types/1
+curl http://localhost:8080/api/catalog-types/1
 
 # Create a new catalog type
-curl -X POST http://localhost:8080/catalog-types \
+curl -X POST http://localhost:8080/api/catalog-types \
   -H "Content-Type: application/json" \
   -d '{"name":"New Type", "description":"Type description"}'
 
 # Update a catalog type (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/catalog-types/1 \
+curl -X PUT http://localhost:8080/api/catalog-types/1 \
   -H "Content-Type: application/json" \
   -d '{"name":"Updated Type", "description":"Updated description"}'
 
 # Delete a catalog type (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/catalog-types/1
+curl -X DELETE http://localhost:8080/api/catalog-types/1
+```
 
-# --- CATALOG API ---
-
+# CATALOG API
+```bash
 # List all catalogs
-curl http://localhost:8080/catalogs
+curl http://localhost:8080/api/catalogs
 
 # Get a catalog by ID (replace 1 with a valid ID)
-curl http://localhost:8080/catalogs/1
+curl http://localhost:8080/api/catalogs/1
 
 # Create a new catalog
-curl -X POST http://localhost:8080/catalogs \
+curl -X POST http://localhost:8080/api/catalogs \
   -H "Content-Type: application/json" \
   -d '{"name":"New Catalog","catalogTypeId":1,"uniqueId":"cat-001","defaultPort":1234,"description":"desc","gitRepoUrl":"https://repo","teamId":1}'
 
 # Update a catalog (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/catalogs/1 \
+curl -X PUT http://localhost:8080/api/catalogs/1 \
   -H "Content-Type: application/json" \
   -d '{"name":"Updated Catalog","catalogTypeId":1,"uniqueId":"cat-001","defaultPort":1234,"description":"desc","gitRepoUrl":"https://repo","teamId":1}'
 
 # Delete a catalog (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/catalogs/1
+curl -X DELETE http://localhost:8080/api/catalogs/1
+```

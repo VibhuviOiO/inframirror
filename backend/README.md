@@ -1,45 +1,30 @@
-### teams
-curl http://localhost:8080/teams
-curl http://localhost:8080/teams/1
-curl -X POST http://localhost:8080/teams -H "Content-Type: application/json" -d '{"name":"New Team"}'
-curl -X PUT http://localhost:8080/teams/1 -H "Content-Type: application/json" -d '{"name":"Updated Team"}'
-curl -X DELETE http://localhost:8080/teams/1
-# Dev Instruction, never apply this to prod. 
+# Backend 
 
-### Use Case 1: Update schema (new fields, new tables, changes)
-You’ve already got an existing DB with tables, but you want to apply changes.
+## Prisma Migrations
+- `schema.prisma` = your desired state (infra code).
+- `migrations/` = your migration history
+- `migrate deploy` = applies only unapplied migrations
 
-```bash
-# 1. Edit prisma/schema.prisma
-#    (add new models, fields, relations, enums, etc.)
+### Development Workflow
+- When you change schema: `npx prisma migrate dev --name add_services_table`
+    - Creates a folder prisma/migrations/20250821_add_services_table/migration.sql
+    - Applies it to your local DB
+    - Updates the Prisma client
 
-# 2. Generate a new migration
-npx prisma migrate dev --name add-service-owner   # descriptive name
+>> Note: Never edit old migration folders once committed. Treat them like git commits.
 
-# 3. Prisma applies migration and updates client
-```
+### Production Workflow
+- On prod you never use `migrate dev`. Only run `npx prisma migrate deploy`.
+    - Reads the migration history
+    - Applies unapplied scripts in order
+    - Doesn’t try to diff schema vs DB (safer!)
 
->> If migration fails because of existing data, adjust manually:
->> Use prisma migrate dev --create-only to only create the SQL
->> Edit SQL migration script
->> Apply again with prisma migrate dev
-
-### Use Case 2: Reset everything from scratch
-
-You don’t care about old data → want a clean DB + seed fresh.
+### Generating SQL Script for Review
+- Generate a SQL script of all unapplied migrations
 
 ```bash
-# 1. Drop everything and re-apply all migrations
-npx prisma migrate reset
-
-# 2. This:
-#    - Drops schema
-#    - Applies *all* migrations in prisma/migrations/
-#    - Runs seed.js
-```
-
-### prod usecase
-
-```bash
-npx prisma migrate deploy
+npx prisma migrate diff \
+  --from-url "$PROD_DB_URL" \
+  --to-schema-datamodel prisma/schema.prisma \
+  --script > migration_patch.sql
 ```

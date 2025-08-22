@@ -1,7 +1,10 @@
+
+import path from 'path';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import type { Request, Response } from 'express';
 import prisma from './prismaClient.js';
-import cors from 'cors'
+import cors from 'cors';
 import { errorHandler } from './middleware/errorHandler.js';
 import environmentRoutes from './routes/environmentRoutes.js';
 import hostRoutes from './routes/hostRoutes.js';
@@ -9,15 +12,21 @@ import teamRoutes from './routes/teamRoutes.js';
 import datacenterRoutes from './routes/datacenterRoutes.js';
 import regionRoutes from './routes/regionRoutes.js';
 import catalogTypeRoutes from './routes/catalogTypeRoutes.js';
-
 import clusterRoutes from './routes/clusterRoutes.js';
-
 import serviceRoutes from './routes/serviceRoutes.js';
 import catalogRoutes from './routes/catalogRoutes.js';
 
 
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const PORT = 8080;
+
+
+// Serve static frontend files
+app.use(express.static(path.join(__dirname, '../public')));
 
 app.use(express.json());
 
@@ -36,17 +45,20 @@ app.get('/health', async (req: Request, res: Response) => {
   }
 });
 
-app.use('/environments', environmentRoutes);
-app.use('/hosts', hostRoutes);
-app.use('/teams', teamRoutes);
-app.use('/datacenters', datacenterRoutes);
-app.use('/catalogs', catalogRoutes);
-app.use('/regions', regionRoutes);
 
-app.use('/clusters', clusterRoutes);
+app.use('/api/environments', environmentRoutes);
+app.use('/api/hosts', hostRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/datacenters', datacenterRoutes);
+app.use('/api/catalogs', catalogRoutes);
+app.use('/api/catalog-types', catalogRoutes);
+app.use('/api/regions', regionRoutes);
+app.use('/api/clusters', clusterRoutes);
+app.use('/api/services', serviceRoutes);
 
-app.use('/services', serviceRoutes);
-
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 
 app.use(errorHandler);
 
