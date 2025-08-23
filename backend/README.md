@@ -5,6 +5,12 @@
 - `migrations/` = your migration history
 - `migrate deploy` = applies only unapplied migrations
 
+## Populate Seed Data:
+
+```bash
+npx prisma db seed
+```
+
 ### Development Workflow
 - When you change schema: `npx prisma migrate dev --name add_services_table`
     - Creates a folder prisma/migrations/20250821_add_services_table/migration.sql

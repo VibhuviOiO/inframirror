@@ -8,48 +8,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum IntegrationType {
+  Database
+  KeyValueStore
+  SearchEngine
+  Cache
+  OrchestrationFramework
+  Container
+  Gateway
+}
+
+enum HostKind {
+  VM
+  Physical
+  BareMetal
+}
+
 model Region {
-  id          Int           @id @default(autoincrement())
-  name        String        @unique
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
   datacenters Datacenter[]
 }
 
 model Environment {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique  // e.g., "dev", "stage", "prod"
-  services  Service[]
+  id        Int                  @id @default(autoincrement())
+  name      String               @unique
   clusters  Cluster[]
-}
-
-model Team {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  services  Service[]
-  catalogs  Catalog[]
-}
-
-model CatalogType {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
-  description String?
-  catalogs    Catalog[]
-}
-
-model Catalog {
-  id          Int       @id @default(autoincrement())
-  name        String
-  uniqueId    String?   @unique
-  defaultPort Int?
-  description String?
-  gitRepoUrl  String?
-  teamId      Int? 
-  team        Team?     @relation(fields: [teamId], references: [id])
-
-  catalogTypeId Int
-  catalogType   CatalogType @relation(fields: [catalogTypeId], references: [id])
-
-  services      Service[]
-  clusters      Cluster[]
+  instances IntegrationInstance[]
 }
 
 model Datacenter {
@@ -61,14 +46,8 @@ model Datacenter {
   regionId     Int
   region       Region     @relation(fields: [regionId], references: [id])
   hosts        Host[]
-  services     Service[]
   clusters     Cluster[]
-}
-
-enum HostKind {
-  VM
-  Physical
-  BareMetal
+  instances IntegrationInstance[]
 }
 
 model Host {
@@ -81,37 +60,45 @@ model Host {
   tags         Json?
 
   datacenter   Datacenter @relation(fields: [datacenterId], references: [id])
-  services     Service[]
+  instances    IntegrationInstance[]
 }
 
 model Cluster {
-  id            Int        @id @default(autoincrement())
+  id            Int                  @id @default(autoincrement())
   name          String
-  catalogId     Int
   environmentId Int?
   datacenterId  Int?
 
-  catalog       Catalog     @relation(fields: [catalogId], references: [id])
-  environment   Environment? @relation(fields: [environmentId], references: [id])
-  datacenter    Datacenter? @relation(fields: [datacenterId], references: [id])
-
-  services      Service[]
+  environment   Environment?         @relation(fields: [environmentId], references: [id])
+  datacenter    Datacenter?          @relation(fields: [datacenterId], references: [id])
+  instances     IntegrationInstance[]
 }
 
-model Service {
-  id              Int         @id @default(autoincrement())
-  datacenterId    Int?
-  hostId          Int
-  catalogId       Int?
-  environmentId   Int?
-  metadata        Json        @db.JsonB
-  clusterId       Int?
-  teamId          Int?
+model Integration {
+  id              Int                  @id @default(autoincrement())
+  name            String               @unique
+  integrationType IntegrationType
+  version         String
+  description     String?
+  updatedAt       DateTime             @updatedAt
+  enabled         Boolean              @default(false)
+  instances       IntegrationInstance[]
+}
 
-  datacenter      Datacenter? @relation(fields: [datacenterId], references: [id])
-  host            Host        @relation(fields: [hostId], references: [id])
-  catalog         Catalog?    @relation(fields: [catalogId], references: [id])
-  environment     Environment? @relation(fields: [environmentId], references: [id])
-  cluster         Cluster?    @relation(fields: [clusterId], references: [id])
-  team            Team?       @relation(fields: [teamId], references: [id])
+model IntegrationInstance {
+  id             Int         @id @default(autoincrement())
+  datacenterId   Int?
+  hostId         Int
+  clusterId      Int?
+  environmentId  Int?
+  integrationId  Int
+  enabled        Boolean     @default(false)
+  port           Int?
+  config         Json?
+
+  host           Host        @relation(fields: [hostId], references: [id])
+  cluster        Cluster?    @relation(fields: [clusterId], references: [id])
+  environment    Environment? @relation(fields: [environmentId], references: [id])
+  integration    Integration @relation(fields: [integrationId], references: [id])
+  datacenter   Datacenter? @relation(fields: [datacenterId], references: [id])
 }

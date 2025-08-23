@@ -7,7 +7,7 @@ const menuGroups = [
     title: "Main",
     items: [
       { name: "Dashboard", icon: Home, href: "/" },
-  { name: "Integration Catalog", icon: Book, href: "/catalog" },
+      { name: "Integrations", icon: Book, href: "/integrations" },
     ],
   },
   {

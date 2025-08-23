@@ -3,9 +3,9 @@ export interface Host {
   datacenterId: number;
   hostname: string;
   privateIP: string;
-  publicIP?: string;
+  publicIP?: string | null;
   kind: 'VM' | 'Physical' | 'BareMetal';
-  tags?: any;
+  tags?: Record<string, any> | null;
 }
 
 export type NewHost = Omit<Host, 'id'>;

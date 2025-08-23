@@ -1,25 +1,3 @@
-# TEAM API
-```bash
-# List
-curl http://localhost:8080/api/teams
-
-# Get a team by ID (replace 1 with a valid ID)
-curl http://localhost:8080/api/teams/1
-
-# Create a new team
-curl -X POST http://localhost:8080/api/teams \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Devops"}'
-
-# Update a team (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/api/teams/1 \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Updated Team"}'
-
-# Delete a team (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/api/teams/1
-```
-
 # REGION API
 ```bash
 # List all regions
@@ -34,12 +12,12 @@ curl -X POST http://localhost:8080/api/regions \
   -d '{"name":"New Region"}'
 
 # Update a region (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/api/regions/1 \
+curl -X PUT http://localhost:8080/api/regions/6 \
   -H "Content-Type: application/json" \
   -d '{"name":"Updated Name"}'
 
 # Delete a region (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/api/regions/1
+curl -X DELETE http://localhost:8080/api/regions/6
 ```
 
 # DATACENTER API
@@ -53,15 +31,15 @@ curl http://localhost:8080/api/datacenters/1
 # Create a new datacenter (replace regionId with a valid region ID)
 curl -X POST http://localhost:8080/api/datacenters \
   -H "Content-Type: application/json" \
-  -d '{"name":"New DC","shortName":"ndc","regionId":1}'
+  -d '{"name":"Virginia","shortName":"VA","regionId":4,"privateCIDR":"10.0.0.0/16","publicCIDR":"52.0.0.0/16"}'
 
 # Update a datacenter (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/api/datacenters/1 \
+curl -X PUT http://localhost:8080/api/datacenters/6 \
   -H "Content-Type: application/json" \
-  -d '{"name":"Updated DC","shortName":"udc","regionId":1}'
+  -d '{"name":"Updated DC","shortName":"udc","regionId":1,"privateCIDR":"10.0.1.0/16","publicCIDR":"52.0.1.0/16"}'
 
 # Delete a datacenter (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/api/datacenters/3
+curl -X DELETE http://localhost:8080/api/datacenters/6
 ```
 
 
@@ -80,23 +58,21 @@ curl -X POST http://localhost:8080/api/clusters \
   -H "Content-Type: application/json" \
   -d '{
     "name": "cluster1",
-    "catalogId": 1,
     "environmentId": 1,
     "datacenterId": 1
   }'
 
 ### Update a cluster (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/api/clusters/1 \
+curl -X PUT http://localhost:8080/api/clusters/6 \
   -H "Content-Type: application/json" \
   -d '{
     "name": "cluster1-updated",
-    "catalogId": 1,
     "environmentId": 2,
     "datacenterId": 1
   }'
 
 ### Delete a cluster (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/api/clusters/1
+curl -X DELETE http://localhost:8080/api/clusters/6
 ```
 
 # HOST API
@@ -162,70 +138,49 @@ curl -X DELETE http://localhost:8080/api/environments/1
 ```
 
 
-# SERVICE API
 
+
+# INTEGRATION API
 ```bash
-# List all services
-curl http://localhost:8080/api/services
+# List all integrations
+curl http://localhost:8080/api/integrations
 
-# Get a service by ID (replace 1 with a valid ID)
-curl http://localhost:8080/api/services/1
+# Get an integration by ID (replace 1 with a valid ID)
+curl http://localhost:8080/api/integrations/1
 
-# Create a new service
-curl -X POST http://localhost:8080/api/services \
+# Create a new integration
+curl -X POST http://localhost:8080/api/integrations \
   -H "Content-Type: application/json" \
-  -d '{"datacenterId":1,"hostId":1,"catalogId":1}'
+  -d '{"name":"Postgres","integrationType":"Database","version":"15.0","description":"Postgres DB","enabled":true}'
 
-# Update a service (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/api/services/1 \
+# Update an integration (replace 1 with a valid ID)
+curl -X PUT http://localhost:8080/api/integrations/1 \
   -H "Content-Type: application/json" \
-  -d '{"datacenterId":1,"hostId":1,"catalogId":1}'
+  -d '{"name":"Postgres-updated","integrationType":"Database","version":"15.1","description":"Updated desc","enabled":false}'
 
-# Delete a service (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/api/services/1
+# Delete an integration (replace 1 with a valid ID)
+curl -X DELETE http://localhost:8080/api/integrations/1
 ```
 
-# CATALOG TYPE API
 
+# INTEGRATION INSTANCE API
 ```bash
-# List all catalog types
-curl http://localhost:8080/api/catalog-types
+# List all integration instances
+curl http://localhost:8080/api/integration-instances
 
-# Get a catalog type by ID (replace 1 with a valid ID)
-curl http://localhost:8080/api/catalog-types/1
+# Get an integration instance by ID (replace 1 with a valid ID)
+curl http://localhost:8080/api/integration-instances/1
 
-# Create a new catalog type
-curl -X POST http://localhost:8080/api/catalog-types \
+# Create a new integration instance
+curl -X POST http://localhost:8080/api/integration-instances \
   -H "Content-Type: application/json" \
-  -d '{"name":"New Type", "description":"Type description"}'
+  -d '{"hostId":1,"integrationId":2,"enabled":true,"port":5432,"config":{"user":"admin"}}'
 
-# Update a catalog type (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/api/catalog-types/1 \
+# Update an integration instance (replace 1 with a valid ID)
+curl -X PUT http://localhost:8080/api/integration-instances/1 \
   -H "Content-Type: application/json" \
-  -d '{"name":"Updated Type", "description":"Updated description"}'
+  -d '{"hostId":1,"integrationId":2,"enabled":false,"port":5433,"config":{"user":"admin2"}}'
 
-# Delete a catalog type (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/api/catalog-types/1
-```
-
-# CATALOG API
-```bash
-# List all catalogs
-curl http://localhost:8080/api/catalogs
-
-# Get a catalog by ID (replace 1 with a valid ID)
-curl http://localhost:8080/api/catalogs/1
-
-# Create a new catalog
-curl -X POST http://localhost:8080/api/catalogs \
-  -H "Content-Type: application/json" \
-  -d '{"name":"New Catalog","catalogTypeId":1,"uniqueId":"cat-001","defaultPort":1234,"description":"desc","gitRepoUrl":"https://repo","teamId":1}'
-
-# Update a catalog (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/api/catalogs/1 \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Updated Catalog","catalogTypeId":1,"uniqueId":"cat-001","defaultPort":1234,"description":"desc","gitRepoUrl":"https://repo","teamId":1}'
-
-# Delete a catalog (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/api/catalogs/1
+# Delete an integration instance (replace 1 with a valid ID)
+curl -X DELETE http://localhost:8080/api/integration-instances/1
 ```

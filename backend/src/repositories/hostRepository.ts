@@ -9,14 +9,31 @@ export async function getById(id: number) {
   return prisma.host.findUnique({ where: { id } });
 }
 
+
 export async function create(data: NewHost) {
-  return prisma.host.create({ data });
+  // Ensure tags is valid JSON and nulls are undefined
+  const { tags, ...rest } = data;
+  return prisma.host.create({
+    data: {
+      ...rest,
+      tags: tags == null ? undefined : JSON.parse(JSON.stringify(tags)),
+    },
+  });
 }
 
 export async function update(id: number, data: Partial<NewHost>) {
-  return prisma.host.update({ where: { id }, data });
+  const { tags, ...rest } = data;
+  return prisma.host.update({
+    where: { id },
+    data: {
+      ...rest,
+      tags: tags == null ? undefined : JSON.parse(JSON.stringify(tags)),
+    },
+  });
 }
 
 export async function remove(id: number) {
   return prisma.host.delete({ where: { id } });
 }
+
+

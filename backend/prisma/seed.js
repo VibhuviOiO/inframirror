@@ -2,18 +2,48 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // --- Seed Teams ---
-  await prisma.team.createMany({
+  // --- Seed Integrations ---
+  await prisma.integration.createMany({
     data: [
-      { name: 'Platform' },
-      { name: 'DevOps' },
-      { name: 'SRE' },
-      { name: 'Networking' },
-      { name: 'Security' }
+      {
+        name: 'PostgreSQL',
+        integrationType: 'Database',
+        version: '15.4',
+        description: 'PostgreSQL open source database',
+        enabled: true
+      },
+      {
+        name: 'Redis',
+        integrationType: 'Cache',
+        version: '7.2',
+        description: 'Redis in-memory key-value store',
+        enabled: true
+      },
+      {
+        name: 'Elasticsearch',
+        integrationType: 'SearchEngine',
+        version: '8.11',
+        description: 'Elasticsearch search engine',
+        enabled: false
+      },
+      {
+        name: 'RabbitMQ',
+        integrationType: 'OrchestrationFramework',
+        version: '3.12',
+        description: 'RabbitMQ message broker',
+        enabled: false
+      },
+      {
+        name: 'Nginx',
+        integrationType: 'Gateway',
+        version: '1.25',
+        description: 'Nginx web server and reverse proxy',
+        enabled: true
+      }
     ],
     skipDuplicates: true
   });
-  console.log(`✅ Seeded Teams`);
+  console.log(`✅ Seeded Integrations`);
 
   // --- Seed Regions ---
   await prisma.region.createMany({
@@ -28,39 +58,9 @@ async function main() {
   });
   console.log(`✅ Seeded Regions`);
 
-  // --- Seed Catalog Types ---
-  await prisma.catalogType.createMany({
-    data: [
-      { name: 'Database', description: 'DBs' },
-      { name: 'Cache', description: 'Caching systems' },
-      { name: 'Web', description: 'Web servers' },
-      { name: 'Messaging', description: 'MQs and brokers' },
-      { name: 'Storage', description: 'Blob/file stores' }
-    ],
-    skipDuplicates: true
-  });
-  console.log(`✅ Seeded CatalogTypes`);
-
-  const allTypes = await prisma.catalogType.findMany();
-  const allTeams = await prisma.team.findMany();
-
-  // --- Seed Catalogs ---
-  await prisma.catalog.createMany({
-    data: [
-      { name: 'PostgreSQL', uniqueId: 'pg-001', defaultPort: 5432, catalogTypeId: (allTypes.find(t => t.name === 'Database') || {}).id, teamId: allTeams[0].id },
-      { name: 'Redis', uniqueId: 'redis-001', defaultPort: 6379, catalogTypeId: (allTypes.find(t => t.name === 'Cache') || {}).id, teamId: allTeams[1].id },
-      { name: 'Nginx', uniqueId: 'nginx-001', defaultPort: 80, catalogTypeId: (allTypes.find(t => t.name === 'Web') || {}).id, teamId: allTeams[2].id },
-      { name: 'Kafka', uniqueId: 'kafka-001', defaultPort: 9092, catalogTypeId: (allTypes.find(t => t.name === 'Messaging') || {}).id, teamId: allTeams[3].id },
-      { name: 'MinIO', uniqueId: 'minio-001', defaultPort: 9000, catalogTypeId: (allTypes.find(t => t.name === 'Storage') || {}).id, teamId: allTeams[4].id }
-    ],
-    skipDuplicates: true
-  });
-  console.log(`✅ Seeded Catalogs`);
-
-  const allCatalogs = await prisma.catalog.findMany(); // ⚡ moved up
+  const allRegions = await prisma.region.findMany();
 
   // --- Seed Datacenters ---
-  const allRegions = await prisma.region.findMany();
   await prisma.datacenter.createMany({
     data: allRegions.map((r, idx) => ({
       name: `${r.name} DC`,
@@ -75,7 +75,8 @@ async function main() {
 
   const allDatacenters = await prisma.datacenter.findMany();
 
-  // --- Seed Environments --- ⚡ moved up before clusters
+
+  // --- Seed Environments ---
   await prisma.environment.createMany({
     data: [
       { name: 'dev' },
@@ -89,12 +90,39 @@ async function main() {
   console.log(`✅ Seeded Environments`);
   const allEnvironments = await prisma.environment.findMany();
 
+  // --- Seed Hosts ---
+  let hostCount = 1;
+  for (const dc of allDatacenters) {
+    await prisma.host.create({
+      data: {
+        datacenterId: dc.id,
+        hostname: `host${hostCount}`,
+        privateIP: `10.0.${hostCount}.10`,
+        publicIP: `10.0.${hostCount}.20`,
+        kind: 'VM',
+        tags: { os: 'ubuntu', env: 'prod' }
+      }
+    });
+    hostCount++;
+    await prisma.host.create({
+      data: {
+        datacenterId: dc.id,
+        hostname: `host${hostCount}`,
+        privateIP: `10.0.${hostCount}.10`,
+        publicIP: `10.0.${hostCount}.20`,
+        kind: 'Physical',
+        tags: { os: 'centos', env: 'stage' }
+      }
+    });
+    hostCount++;
+  }
+  console.log(`✅ Seeded Hosts`);
+
   // --- Seed Clusters ---
   for (let i = 0; i < allDatacenters.length; i++) {
     await prisma.cluster.create({
       data: {
         name: `cluster-${allDatacenters[i].shortName}`,
-        catalogId: allCatalogs[i % allCatalogs.length].id,
         environmentId: allEnvironments[i % allEnvironments.length].id,
         datacenterId: allDatacenters[i].id
       }
@@ -102,34 +130,25 @@ async function main() {
   }
   console.log(`✅ Seeded Clusters`);
 
-  // --- Seed Hosts ---
-  for (const dc of allDatacenters) {
-    await prisma.host.create({
-      data: {
-        datacenterId: dc.id,
-        hostname: `host-${dc.shortName}`,
-        privateIP: `10.${dc.id}.0.10`,
-        publicIP: `52.${dc.id}.0.10`,
-        kind: 'VM',
-        tags: { role: 'seed' }
-      }
-    });
-  }
-  console.log(`✅ Seeded Hosts`);
 
-  // --- Seed Services ---
   const allHosts = await prisma.host.findMany();
+  const allClusters = await prisma.cluster.findMany();
+  const allIntegrations = await prisma.integration.findMany();
+  // --- Seed IntegrationInstances ---
   for (let i = 0; i < allHosts.length; i++) {
-    await prisma.service.create({
+    await prisma.integrationInstance.create({
       data: {
-        datacenterId: allHosts[i].datacenterId,
         hostId: allHosts[i].id,
-        catalogId: allCatalogs[i % allCatalogs.length].id,
-        metadata: { version: "1.0.0" }
+        datacenterId: allHosts[i].datacenterId,
+        clusterId: allClusters[i % allClusters.length]?.id,
+        environmentId: allClusters[i % allClusters.length]?.environmentId,
+        integrationId: allIntegrations[i % allIntegrations.length]?.id,
+        enabled: i % 2 === 0,
+        port: 7000 + i
       }
     });
   }
-  console.log(`✅ Seeded Services`);
+  console.log(`✅ Seeded IntegrationInstances`);
 }
 
 main()

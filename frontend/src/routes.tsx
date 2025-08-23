@@ -26,7 +26,7 @@ const routes = [
     path: "/datacenters",
     element: <DatacentersPage />,
   },
-  { path: "/catalog", element: <CatalogPageWithLayout /> },
+  { path: "/Integrations", element: <CatalogPageWithLayout /> },
   { path: "/hosts", element: <HostsPage /> },
   { path: "/clusters", element: <ClustersPageWithLayout /> },
   { path: "/services", element: <ServicesPage /> },

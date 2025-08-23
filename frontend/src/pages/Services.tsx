@@ -136,6 +136,7 @@ export default function ServicesPage() {
                   <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Datacenter</th>
                   <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Host</th>
                   <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Catalog</th>
+                  <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Custom Port</th>
                   <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100 text-right">Actions</th>
                 </tr>
                 <tr className="bg-blue-50 dark:bg-blue-900/40">
@@ -178,13 +179,12 @@ export default function ServicesPage() {
                       ))}
                     </select>
                   </th>
-                  <th className="px-4 py-1" />
                 </tr>
               </thead>
               <tbody>
                 {filteredRows.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-gray-400">No services found.</td>
+                    <td colSpan={5} className="px-6 py-8 text-center text-gray-400">No services found.</td>
                   </tr>
                 )}
                 {filteredRows.map((r) => (
@@ -238,6 +238,20 @@ export default function ServicesPage() {
                         </select>
                       ) : (
                         catalogMap[r.catalogId] ?? '-'
+                      )}
+                    </td>
+                    {/* Custom Port */}
+                    <td className="px-4 py-3">
+                      {editingId === r.id ? (
+                        <input
+                          type="number"
+                          className="w-full px-2 py-1 border rounded"
+                          value={form.customPort ?? ''}
+                          onChange={e => setForm(f => ({ ...f, customPort: e.target.value === '' ? null : Number(e.target.value) }))}
+                          placeholder="Custom Port"
+                        />
+                      ) : (
+                        r.customPort ?? '-'
                       )}
                     </td>
                     {/* Actions */}

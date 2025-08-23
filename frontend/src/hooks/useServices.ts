@@ -11,6 +11,11 @@ export interface Service {
   datacenterId: number;
   hostId: number;
   catalogId: number;
+  environmentId?: number | null;
+  metadata?: any;
+  clusterId?: number | null;
+  teamId?: number | null;
+  customPort?: number | null;
 }
 
 export function useServices() {

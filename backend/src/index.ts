@@ -6,15 +6,14 @@ import type { Request, Response } from 'express';
 import prisma from './prismaClient.js';
 import cors from 'cors';
 import { errorHandler } from './middleware/errorHandler.js';
+
 import environmentRoutes from './routes/environmentRoutes.js';
 import hostRoutes from './routes/hostRoutes.js';
-import teamRoutes from './routes/teamRoutes.js';
 import datacenterRoutes from './routes/datacenterRoutes.js';
 import regionRoutes from './routes/regionRoutes.js';
-import catalogTypeRoutes from './routes/catalogTypeRoutes.js';
 import clusterRoutes from './routes/clusterRoutes.js';
-import serviceRoutes from './routes/serviceRoutes.js';
-import catalogRoutes from './routes/catalogRoutes.js';
+import integrationRoutes from './routes/integrationRoutes.js';
+import integrationInstanceRoutes from './routes/integrationInstanceRoutes.js';
 
 
 
@@ -46,15 +45,14 @@ app.get('/health', async (req: Request, res: Response) => {
 });
 
 
+
 app.use('/api/environments', environmentRoutes);
 app.use('/api/hosts', hostRoutes);
-app.use('/api/teams', teamRoutes);
 app.use('/api/datacenters', datacenterRoutes);
-app.use('/api/catalogs', catalogRoutes);
-app.use('/api/catalog-types', catalogRoutes);
 app.use('/api/regions', regionRoutes);
 app.use('/api/clusters', clusterRoutes);
-app.use('/api/services', serviceRoutes);
+app.use('/api/integrations', integrationRoutes);
+app.use('/api/integration-instances', integrationInstanceRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));

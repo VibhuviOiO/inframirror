@@ -1,12 +1,12 @@
 import express from 'express';
-import * as service from '../services/teamService.js';
+import * as service from '../services/integrationService.js';
 
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
   try {
-    const teams = await service.getAllTeams();
-    res.json(teams);
+    const integrations = await service.getAllIntegrations();
+    res.json(integrations);
   } catch (err) {
     next(err);
   }
@@ -14,9 +14,9 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const team = await service.getTeamById(Number(req.params.id));
-    if (!team) return res.status(404).json({ error: 'Team not found' });
-    res.json(team);
+    const integration = await service.getIntegrationById(Number(req.params.id));
+    if (!integration) return res.status(404).json({ error: 'Integration not found' });
+    res.json(integration);
   } catch (err) {
     next(err);
   }
@@ -24,7 +24,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const created = await service.createTeam(req.body);
+    const created = await service.createIntegration(req.body);
     res.status(201).json(created);
   } catch (err) {
     next(err);
@@ -33,7 +33,7 @@ router.post('/', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   try {
-    const updated = await service.updateTeam(Number(req.params.id), req.body);
+    const updated = await service.updateIntegration(Number(req.params.id), req.body);
     res.json(updated);
   } catch (err) {
     next(err);
@@ -42,7 +42,7 @@ router.put('/:id', async (req, res, next) => {
 
 router.delete('/:id', async (req, res, next) => {
   try {
-    await service.deleteTeam(Number(req.params.id));
+    await service.deleteIntegration(Number(req.params.id));
     res.status(204).send();
   } catch (err) {
     next(err);
