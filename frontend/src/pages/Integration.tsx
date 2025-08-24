@@ -1,44 +1,43 @@
-import { useMemo, useState, useRef, useEffect } from 'react';
+import { useMemo, useState } from 'react';
+
+type IntegrationType = 'Database' | 'KeyValueStore' | 'SearchEngine' | 'Cache' | 'OrchestrationFramework' | 'Container' | 'Gateway';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Edit2, Trash2, Check, X, ChevronUp, ChevronDown } from 'lucide-react';
-import { useClusters, useCreateCluster, useUpdateCluster, useDeleteCluster, useBulkDeleteClusters } from '../hooks/useClusters';
-import { useDatacenters } from '../hooks/useDatacenters';
-import { useEnvironments } from '../hooks/useEnvironments';
+import { useIntegrations, useCreateIntegration, useUpdateIntegration, useDeleteIntegration } from '../hooks/useIntegration';
 import { toast } from 'sonner';
 
 function Spinner() {
   return <div className="w-5 h-5 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />;
 }
 
-function ClustersPage() {
+function IntegrationPage() {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [addName, setAddName] = useState('');
-  const [addCatalog, setAddCatalog] = useState<number | ''>('');
-  const [addDatacenter, setAddDatacenter] = useState<number | ''>('');
-  const [addEnvironment, setAddEnvironment] = useState<number | ''>('');
+  const [addType, setAddType] = useState('Database');
+  const [addVersion, setAddVersion] = useState('');
+  const [addDescription, setAddDescription] = useState('');
+  const [addEnabled, setAddEnabled] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState('');
-  const [editCatalog, setEditCatalog] = useState<number | ''>('');
-  const [editDatacenter, setEditDatacenter] = useState<number | ''>('');
-  const [editEnvironment, setEditEnvironment] = useState<number | ''>('');
+  const [editType, setEditType] = useState('Database');
+  const [editVersion, setEditVersion] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editEnabled, setEditEnabled] = useState(true);
   const [search, setSearch] = useState('');
 
-  const { data: clusters, isLoading, isError, error, refetch } = useClusters();
-  const { data: datacenters } = useDatacenters();
-  const { data: environments } = useEnvironments();
-  const create = useCreateCluster();
-  const update = useUpdateCluster();
-  const del = useDeleteCluster();
-  const bulkDelete = useBulkDeleteClusters();
+  const { data: integrations, isLoading, isError, error } = useIntegrations();
+  const create = useCreateIntegration();
+  const update = useUpdateIntegration();
+  const del = useDeleteIntegration();
 
   const filteredRows = useMemo(() => {
-    if (!clusters) return [];
-    if (!search.trim()) return clusters;
-    return clusters.filter(r => r.name.toLowerCase().includes(search.trim().toLowerCase()));
-  }, [clusters, search]);
+    if (!integrations) return [];
+    if (!search.trim()) return integrations;
+    return integrations.filter(r => r.name.toLowerCase().includes(search.trim().toLowerCase()));
+  }, [integrations, search]);
 
-  const [sortBy, setSortBy] = useState<'name' | 'datacenter' | 'environment' | null>(null);
+  const [sortBy, setSortBy] = useState<'name' | 'type' | 'version' | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const sortedRows = useMemo(() => {
@@ -49,20 +48,20 @@ function ClustersPage() {
       if (sortBy === 'name') {
         aVal = a.name?.toLowerCase() || '';
         bVal = b.name?.toLowerCase() || '';
-      } else if (sortBy === 'datacenter') {
-        aVal = datacenters?.find(d => d.id === a.datacenterId)?.name?.toLowerCase() || '';
-        bVal = datacenters?.find(d => d.id === b.datacenterId)?.name?.toLowerCase() || '';
-      } else if (sortBy === 'environment') {
-        aVal = environments?.find(e => e.id === a.environmentId)?.name?.toLowerCase() || '';
-        bVal = environments?.find(e => e.id === b.environmentId)?.name?.toLowerCase() || '';
+      } else if (sortBy === 'type') {
+        aVal = a.integrationType || '';
+        bVal = b.integrationType || '';
+      } else if (sortBy === 'version') {
+        aVal = a.version || '';
+        bVal = b.version || '';
       }
       if (aVal < bVal) return sortDir === 'asc' ? -1 : 1;
       if (aVal > bVal) return sortDir === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [filteredRows, sortBy, sortDir, datacenters, environments]);
+  }, [filteredRows, sortBy, sortDir]);
 
-  const handleSort = (col: 'name' | 'datacenter' | 'environment') => {
+  const handleSort = (col: 'name' | 'type' | 'version') => {
     if (sortBy === col) {
       setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
     } else {
@@ -73,13 +72,12 @@ function ClustersPage() {
 
   const handleAdd = async () => {
     if (!addName.trim()) return toast.error('Name is required');
-    if (!addCatalog) return toast.error('Catalog is required');
-    if (!addDatacenter) return toast.error('Datacenter is required');
-    if (!addEnvironment) return toast.error('Environment is required');
+    if (!addType) return toast.error('Type is required');
+    if (!addVersion.trim()) return toast.error('Version is required');
     try {
-      await create.mutateAsync({ name: addName, datacenterId: addDatacenter, environmentId: addEnvironment });
-      setAddName(''); setAddDatacenter(''); setAddEnvironment(''); setAddModalOpen(false);
-      toast.success('Cluster created');
+  await create.mutateAsync({ name: addName, integrationType: addType as IntegrationType, version: addVersion, description: addDescription, enabled: addEnabled });
+      setAddName(''); setAddType('Database'); setAddVersion(''); setAddDescription(''); setAddEnabled(true); setAddModalOpen(false);
+      toast.success('Integration created');
     } catch (err: any) {
       toast.error(err?.message || 'Error');
     }
@@ -87,20 +85,19 @@ function ClustersPage() {
 
   const handleEdit = async (id: number) => {
     if (!editName.trim()) return toast.error('Name is required');
-    if (!editCatalog) return toast.error('Catalog is required');
-    if (!editDatacenter) return toast.error('Datacenter is required');
-    if (!editEnvironment) return toast.error('Environment is required');
+    if (!editType) return toast.error('Type is required');
+    if (!editVersion.trim()) return toast.error('Version is required');
     try {
-      await update.mutateAsync({ id, data: { name: editName, datacenterId: editDatacenter, environmentId: editEnvironment } });
-      setEditingId(null); setEditName(''); setEditDatacenter(''); setEditEnvironment('');
-      toast.success('Cluster updated');
+  await update.mutateAsync({ id, data: { name: editName, integrationType: editType as IntegrationType, version: editVersion, description: editDescription, enabled: editEnabled } });
+      setEditingId(null); setEditName(''); setEditType('Database'); setEditVersion(''); setEditDescription(''); setEditEnabled(true);
+      toast.success('Integration updated');
     } catch (err: any) {
       toast.error(err?.message || 'Error');
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this cluster?')) return;
+    if (!window.confirm('Are you sure you want to delete this integration?')) return;
     try {
       await del.mutateAsync(id);
       toast.success('Deleted');
@@ -127,87 +124,84 @@ function ClustersPage() {
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search clusters..."
+            placeholder="Search integrations..."
             className="w-full sm:w-64 px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-indigo-300 text-sm shadow-sm transition"
             style={{ height: 32, fontSize: '0.925rem' }}
           />
           <div className="flex-1" />
           <button
-            onClick={async () => {
-              if (!selectedIds.length) return;
-              if (!window.confirm(`Delete ${selectedIds.length} selected clusters?`)) return;
-              try {
-                await bulkDelete.mutateAsync(selectedIds);
-                setSelectedIds([]);
-                toast.success('Selected clusters deleted');
-              } catch (err: any) {
-                toast.error(err?.message || 'Bulk delete failed');
-              }
-            }}
-            className="ml-2 inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded shadow-sm transition px-2 py-1 text-sm disabled:opacity-50"
-            style={{ height: 32, fontSize: '0.925rem' }}
-            title="Delete Selected"
-            disabled={!selectedIds.length || bulkDelete.isPending}
-          >
-            <Trash2 size={16} className="mr-1" />
-            Delete
-          </button>
-          <button
             onClick={() => setAddModalOpen(true)}
             className="ml-2 inline-flex items-center justify-center bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 hover:from-blue-700 hover:via-blue-600 hover:to-indigo-600 text-white rounded shadow-sm transition px-2 py-1 text-sm"
             style={{ height: 32, fontSize: '0.925rem' }}
-            title="Add Cluster"
+            title="Add Integration"
           >
-            Add Cluster
+            Add Integration
           </button>
         </div>
       </div>
-      {/* Add Cluster Modal */}
+      {/* Add Integration Modal */}
       {addModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
             <button onClick={() => setAddModalOpen(false)} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
-            <h2 className="text-xl font-bold mb-4 text-blue-900 dark:text-blue-100">Add Cluster</h2>
+            <h2 className="text-xl font-bold mb-4 text-blue-900 dark:text-blue-100">Add Integration</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Name</label>
               <input
                 value={addName}
                 onChange={e => setAddName(e.target.value)}
                 className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                placeholder="Cluster Name"
+                placeholder="Integration Name"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Datacenter</label>
+              <label className="block text-sm font-medium mb-1">Type</label>
               <select
-                value={addDatacenter}
-                onChange={e => setAddDatacenter(Number(e.target.value))}
+                value={addType}
+                onChange={e => setAddType(e.target.value)}
                 className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
               >
-                <option value="">Select Datacenter</option>
-                {datacenters?.map(d => (
-                  <option key={d.id} value={d.id}>{d.name}</option>
-                ))}
+                <option value="Database">Database</option>
+                <option value="KeyValueStore">KeyValueStore</option>
+                <option value="SearchEngine">SearchEngine</option>
+                <option value="Cache">Cache</option>
+                <option value="OrchestrationFramework">OrchestrationFramework</option>
+                <option value="Container">Container</option>
+                <option value="Gateway">Gateway</option>
               </select>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Environment</label>
-              <select
-                value={addEnvironment}
-                onChange={e => setAddEnvironment(Number(e.target.value))}
+              <label className="block text-sm font-medium mb-1">Version</label>
+              <input
+                value={addVersion}
+                onChange={e => setAddVersion(e.target.value)}
                 className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-              >
-                <option value="">Select Environment</option>
-                {environments?.map(e => (
-                  <option key={e.id} value={e.id}>{e.name}</option>
-                ))}
-              </select>
+                placeholder="Version"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Description</label>
+              <input
+                value={addDescription}
+                onChange={e => setAddDescription(e.target.value)}
+                className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
+                placeholder="Description (optional)"
+              />
+            </div>
+            <div className="mb-4 flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={addEnabled}
+                onChange={e => setAddEnabled(e.target.checked)}
+                id="add-enabled"
+              />
+              <label htmlFor="add-enabled" className="text-sm font-medium">Enabled</label>
             </div>
             <div className="flex items-center justify-end gap-2 pt-4">
               <button onClick={() => setAddModalOpen(false)} className="px-4 py-2 rounded border">Cancel</button>
               <button
                 className="px-4 py-2 rounded bg-blue-600 text-white font-semibold disabled:opacity-60"
-                disabled={!addName.trim() || !addCatalog || !addDatacenter || !addEnvironment}
+                disabled={!addName.trim() || !addType || !addVersion.trim()}
                 onClick={handleAdd}
               >
                 Add
@@ -217,7 +211,7 @@ function ClustersPage() {
         </div>
       )}
       <div className="relative mt-2">
-  <div className="relative overflow-x-auto shadow-md">
+        <div className="relative overflow-x-auto shadow-md">
           {isLoading ? (
             <div className="p-8 flex items-center justify-center">
               <Spinner />
@@ -234,9 +228,10 @@ function ClustersPage() {
                       checked={allSelected}
                       onChange={toggleSelectAll}
                       aria-label="Select all"
+                      disabled
                     />
                   </th>
-                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('name')}> 
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('name')}>
                     <div className="flex items-center">
                       Name
                       <span className="ml-1 font-bold">
@@ -252,15 +247,17 @@ function ClustersPage() {
                       </span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('datacenter')}>Datacenter</th>
-                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('environment')}>Environment</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('type')}>Type</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('version')}>Version</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Description</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Enabled</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRows.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-400">No clusters found.</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-400">No integrations found.</td>
                   </tr>
                 )}
                 {sortedRows.map((r, idx) => (
@@ -271,6 +268,7 @@ function ClustersPage() {
                         checked={selectedIds.includes(r.id)}
                         onChange={() => toggleSelectOne(r.id)}
                         aria-label={`Select row ${r.name}`}
+                        disabled
                       />
                     </td>
                     <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{editingId === r.id ? (
@@ -284,24 +282,32 @@ function ClustersPage() {
                       r.name
                     )}</td>
                     <td className="px-6 py-4">{editingId === r.id ? (
-                      <select value={editDatacenter} onChange={e => setEditDatacenter(Number(e.target.value))} className="w-full px-2 py-1 border rounded">
-                        <option value="">Select Datacenter</option>
-                        {datacenters?.map(d => (
-                          <option key={d.id} value={d.id}>{d.name}</option>
-                        ))}
+                      <select value={editType} onChange={e => setEditType(e.target.value)} className="w-full px-2 py-1 border rounded">
+                        <option value="Database">Database</option>
+                        <option value="KeyValueStore">KeyValueStore</option>
+                        <option value="SearchEngine">SearchEngine</option>
+                        <option value="Cache">Cache</option>
+                        <option value="OrchestrationFramework">OrchestrationFramework</option>
+                        <option value="Container">Container</option>
+                        <option value="Gateway">Gateway</option>
                       </select>
                     ) : (
-                      datacenters?.find(d => d.id === r.datacenterId)?.name || ''
+                      r.integrationType
                     )}</td>
                     <td className="px-6 py-4">{editingId === r.id ? (
-                      <select value={editEnvironment} onChange={e => setEditEnvironment(Number(e.target.value))} className="w-full px-2 py-1 border rounded">
-                        <option value="">Select Environment</option>
-                        {environments?.map(e => (
-                          <option key={e.id} value={e.id}>{e.name}</option>
-                        ))}
-                      </select>
+                      <input value={editVersion} onChange={e => setEditVersion(e.target.value)} className="w-full px-2 py-1 border rounded" placeholder="Version" />
                     ) : (
-                      environments?.find(e => e.id === r.environmentId)?.name || ''
+                      r.version
+                    )}</td>
+                    <td className="px-6 py-4">{editingId === r.id ? (
+                      <input value={editDescription || ''} onChange={e => setEditDescription(e.target.value)} className="w-full px-2 py-1 border rounded" placeholder="Description" />
+                    ) : (
+                      r.description || ''
+                    )}</td>
+                    <td className="px-6 py-4">{editingId === r.id ? (
+                      <input type="checkbox" checked={editEnabled} onChange={e => setEditEnabled(e.target.checked)} />
+                    ) : (
+                      r.enabled ? 'Yes' : 'No'
                     )}</td>
                     <td className="px-6 py-4 text-right">
                       {/* Actions */}
@@ -316,8 +322,10 @@ function ClustersPage() {
                             onClick={() => {
                               setEditingId(r.id);
                               setEditName(r.name);
-                              setEditDatacenter(r.datacenterId);
-                              setEditEnvironment(r.environmentId);
+                              setEditType(r.integrationType);
+                              setEditVersion(r.version);
+                              setEditDescription(r.description || '');
+                              setEditEnabled(r.enabled);
                             }}
                             className="p-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none"
                             title="Edit"
@@ -345,12 +353,12 @@ function ClustersPage() {
   );
 }
 
-export function ClustersPageWithLayout() {
+export function IntegrationPageWithLayout() {
   return (
     <DashboardLayout>
-      <ClustersPage />
+      <IntegrationPage />
     </DashboardLayout>
   );
 }
 
-export default ClustersPageWithLayout;
+export default IntegrationPageWithLayout;

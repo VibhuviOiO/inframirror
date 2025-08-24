@@ -16,7 +16,6 @@ const menuGroups = [
       { name: "Datacenters", icon: Building2, href: "/datacenters" },
   { name: "Hosts", icon: Server, href: "/hosts" },
   { name: "Clusters", icon: Network, href: "/clusters" },
-  { name: "Services", icon: Settings2, href: "/services" },
     ],
   }
 ];

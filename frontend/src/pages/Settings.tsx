@@ -3,13 +3,10 @@ import { Settings, Building2, Grid3X3, Layers3, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import CatalogTypePage from './CatalogType';
 import { Cloud } from 'lucide-react';
 const settingsMenu = [
   { name: 'Regions', icon: Building2, href: '/settings/regions' },
-  { name: 'Environments', icon: Cloud, href: '/settings/environments' },
-  { name: 'Catalog Types', icon: Grid3X3, href: '/settings/catalog-types' },
-  { name: 'Teams', icon: Users, href: '/settings/teams' },
+  { name: 'Environments', icon: Cloud, href: '/settings/environments' }
 ];
 
 export default function SettingsPage() {

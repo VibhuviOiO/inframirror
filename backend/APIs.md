@@ -126,15 +126,15 @@ curl http://localhost:8080/api/environments/1
 # Create a new environment
 curl -X POST http://localhost:8080/api/environments \
   -H "Content-Type: application/json" \
-  -d '{"name":"dev"}'
+  -d '{"name":"TEST_2"}'
 
 # Update an environment (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/api/environments/1 \
+curl -X PUT http://localhost:8080/api/environments/11 \
   -H "Content-Type: application/json" \
-  -d '{"name":"stage"}'
+  -d '{"name":"TEST_11"}'
 
 # Delete an environment (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/api/environments/1
+curl -X DELETE http://localhost:8080/api/environments/11
 ```
 
 
@@ -151,15 +151,15 @@ curl http://localhost:8080/api/integrations/1
 # Create a new integration
 curl -X POST http://localhost:8080/api/integrations \
   -H "Content-Type: application/json" \
-  -d '{"name":"Postgres","integrationType":"Database","version":"15.0","description":"Postgres DB","enabled":true}'
+  -d '{"name":"TEST Postgres","integrationType":"Database","version":"15.0","description":"Postgres DB","enabled":true}'
 
 # Update an integration (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/api/integrations/1 \
+curl -X PUT http://localhost:8080/api/integrations/11 \
   -H "Content-Type: application/json" \
-  -d '{"name":"Postgres-updated","integrationType":"Database","version":"15.1","description":"Updated desc","enabled":false}'
+  -d '{"name":"TEST Postgres-updated","integrationType":"Database","version":"15.1","description":"Updated desc","enabled":false}'
 
 # Delete an integration (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/api/integrations/1
+curl -X DELETE http://localhost:8080/api/integrations/11
 ```
 
 
@@ -177,10 +177,10 @@ curl -X POST http://localhost:8080/api/integration-instances \
   -d '{"hostId":1,"integrationId":2,"enabled":true,"port":5432,"config":{"user":"admin"}}'
 
 # Update an integration instance (replace 1 with a valid ID)
-curl -X PUT http://localhost:8080/api/integration-instances/1 \
+curl -X PUT http://localhost:8080/api/integration-instances/21 \
   -H "Content-Type: application/json" \
   -d '{"hostId":1,"integrationId":2,"enabled":false,"port":5433,"config":{"user":"admin2"}}'
 
 # Delete an integration instance (replace 1 with a valid ID)
-curl -X DELETE http://localhost:8080/api/integration-instances/1
+curl -X DELETE http://localhost:8080/api/integration-instances/21
 ```
