@@ -10,7 +10,6 @@ export interface IntegrationInstance {
   id: number;
   hostId: number;
   integrationId: number;
-  enabled: boolean;
   port?: number | null;
   config?: Record<string, any> | null;
 }

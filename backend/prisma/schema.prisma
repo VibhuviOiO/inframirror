@@ -92,7 +92,6 @@ model IntegrationInstance {
   clusterId      Int?
   environmentId  Int?
   integrationId  Int
-  enabled        Boolean     @default(false)
   port           Int?
   config         Json?
 

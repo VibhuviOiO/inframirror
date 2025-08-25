@@ -66,7 +66,7 @@ function ServicesPage() {
     );
   }, [joinedRows, search]);
 
-  const [sortBy, setSortBy] = useState<'hostName' | 'integrationName' | 'datacenterName' | 'regionName' | 'enabled' | null>(null);
+  const [sortBy, setSortBy] = useState<'hostName' | 'integrationName' | 'datacenterName' | 'regionName' | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const sortedRows = useMemo(() => {
@@ -86,9 +86,6 @@ function ServicesPage() {
       } else if (sortBy === 'regionName') {
         aVal = String(a.regionName).toLowerCase() || '';
         bVal = String(b.regionName).toLowerCase() || '';
-      } else if (sortBy === 'enabled') {
-        aVal = a.enabled ? 1 : 0;
-        bVal = b.enabled ? 1 : 0;
       }
       if (aVal < bVal) return sortDir === 'asc' ? -1 : 1;
       if (aVal > bVal) return sortDir === 'asc' ? 1 : -1;
@@ -96,7 +93,7 @@ function ServicesPage() {
     });
   }, [filteredRows, sortBy, sortDir]);
 
-  const handleSort = (col: 'hostName' | 'integrationName' | 'datacenterName' | 'regionName' | 'enabled') => {
+  const handleSort = (col: 'hostName' | 'integrationName' | 'datacenterName' | 'regionName' ) => {
     if (sortBy === col) {
       setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
     } else {
@@ -109,7 +106,7 @@ function ServicesPage() {
     if (!addHostId) return toast.error('Host ID is required');
     if (!addIntegrationId) return toast.error('Integration ID is required');
     try {
-      await create.mutateAsync({ hostId: Number(addHostId), integrationId: Number(addIntegrationId), enabled: addEnabled, port: addPort ? Number(addPort) : undefined, config: addConfig ? JSON.parse(addConfig) : undefined });
+      await create.mutateAsync({ hostId: Number(addHostId), integrationId: Number(addIntegrationId), port: addPort ? Number(addPort) : undefined, config: addConfig ? JSON.parse(addConfig) : undefined });
       setAddHostId(''); setAddIntegrationId(''); setAddEnabled(true); setAddPort(''); setAddConfig(''); setAddModalOpen(false);
       toast.success('Integration instance created');
     } catch (err: any) {
@@ -121,7 +118,7 @@ function ServicesPage() {
     if (!editHostId) return toast.error('Host ID is required');
     if (!editIntegrationId) return toast.error('Integration ID is required');
     try {
-      await update.mutateAsync({ id, data: { hostId: Number(editHostId), integrationId: Number(editIntegrationId), enabled: editEnabled, port: editPort ? Number(editPort) : undefined, config: editConfig ? JSON.parse(editConfig) : undefined } });
+      await update.mutateAsync({ id, data: { hostId: Number(editHostId), integrationId: Number(editIntegrationId), port: editPort ? Number(editPort) : undefined, config: editConfig ? JSON.parse(editConfig) : undefined } });
       setEditingId(null); setEditHostId(''); setEditIntegrationId(''); setEditEnabled(true); setEditPort(''); setEditConfig('');
       toast.success('Integration instance updated');
     } catch (err: any) {
@@ -148,6 +145,10 @@ function ServicesPage() {
   const toggleSelectOne = (id: number) => {
     setSelectedIds(ids => ids.includes(id) ? ids.filter(i => i !== id) : [...ids, id]);
   };
+
+  // Dropdown options
+  const hostOptions = hosts || [];
+  const integrationOptions = integrations || [];
 
   return (
     <div className="space-y-6">
@@ -201,24 +202,30 @@ function ServicesPage() {
             <button onClick={() => setAddModalOpen(false)} className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
             <h2 className="text-xl font-bold mb-4 text-blue-900 dark:text-blue-100">Add Integration Instance</h2>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Host ID</label>
-              <input
+              <label className="block text-sm font-medium mb-1">Host</label>
+              <select
                 value={addHostId}
                 onChange={e => setAddHostId(Number(e.target.value))}
                 className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                placeholder="Host ID"
-                type="number"
-              />
+              >
+                <option value="">Select Host</option>
+                {hostOptions.map(h => (
+                  <option key={h.id} value={h.id}>{h.hostname}</option>
+                ))}
+              </select>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Integration ID</label>
-              <input
+              <label className="block text-sm font-medium mb-1">Integration</label>
+              <select
                 value={addIntegrationId}
                 onChange={e => setAddIntegrationId(Number(e.target.value))}
                 className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                placeholder="Integration ID"
-                type="number"
-              />
+              >
+                <option value="">Select Integration</option>
+                {integrationOptions.map(i => (
+                  <option key={i.id} value={i.id}>{i.name}</option>
+                ))}
+              </select>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Port</label>
@@ -239,15 +246,6 @@ function ServicesPage() {
                 placeholder='{"user":"admin"}'
               />
             </div>
-            <div className="mb-4 flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={addEnabled}
-                onChange={e => setAddEnabled(e.target.checked)}
-                id="add-enabled"
-              />
-              <label htmlFor="add-enabled" className="text-sm font-medium">Enabled</label>
-            </div>
             <div className="flex items-center justify-end gap-2 pt-4">
               <button onClick={() => setAddModalOpen(false)} className="px-4 py-2 rounded border">Cancel</button>
               <button
@@ -261,6 +259,7 @@ function ServicesPage() {
           </div>
         </div>
       )}
+      {/* Edit Modal (inline in table) */}
       <div className="relative mt-2">
         <div className="relative overflow-x-auto shadow-md">
           {isLoading ? (
@@ -277,7 +276,6 @@ function ServicesPage() {
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Datacenter</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Region</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Integration</th>
-                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Enabled</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Port</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Config</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 text-right">Actions</th>
@@ -291,13 +289,34 @@ function ServicesPage() {
                 )}
                 {sortedRows.map((r) => (
                   <tr key={r.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                    <td className="px-4 py-4">{r.hostName}</td>
+                    <td className="px-4 py-4">{editingId === r.id ? (
+                      <select value={editHostId} onChange={e => setEditHostId(Number(e.target.value))} className="w-full px-2 py-1 border rounded">
+                        <option value="">Select Host</option>
+                        {hostOptions.map(h => (
+                          <option key={h.id} value={h.id}>{h.hostname}</option>
+                        ))}
+                      </select>
+                    ) : r.hostName}</td>
                     <td className="px-6 py-4">{r.datacenterName}</td>
                     <td className="px-6 py-4">{r.regionName}</td>
-                    <td className="px-6 py-4">{r.integrationName}</td>
-                    <td className="px-6 py-4">{r.enabled ? 'Yes' : 'No'}</td>
-                    <td className="px-6 py-4">{r.port ?? ''}</td>
-                    <td className="px-6 py-4">{r.config ? JSON.stringify(r.config) : ''}</td>
+                    <td className="px-6 py-4">{editingId === r.id ? (
+                      <select value={editIntegrationId} onChange={e => setEditIntegrationId(Number(e.target.value))} className="w-full px-2 py-1 border rounded">
+                        <option value="">Select Integration</option>
+                        {integrationOptions.map(i => (
+                          <option key={i.id} value={i.id}>{i.name}</option>
+                        ))}
+                      </select>
+                    ) : r.integrationName}</td>
+                    <td className="px-6 py-4">{editingId === r.id ? (
+                      <input value={editPort} onChange={e => setEditPort(Number(e.target.value))} className="w-full px-2 py-1 border rounded" type="number" />
+                    ) : (
+                      r.port ?? ''
+                    )}</td>
+                    <td className="px-6 py-4">{editingId === r.id ? (
+                      <input value={editConfig} onChange={e => setEditConfig(e.target.value)} className="w-full px-2 py-1 border rounded" placeholder='{"user":"admin"}' />
+                    ) : (
+                      r.config ? JSON.stringify(r.config) : ''
+                    )}</td>
                     <td className="px-6 py-4 text-right">
                       {/* Actions */}
                       {editingId === r.id ? (
@@ -312,7 +331,6 @@ function ServicesPage() {
                               setEditingId(r.id);
                               setEditHostId(r.hostId);
                               setEditIntegrationId(r.integrationId);
-                              setEditEnabled(r.enabled);
                               setEditPort(r.port ?? '');
                               setEditConfig(r.config ? JSON.stringify(r.config) : '');
                             }}

@@ -5,7 +5,6 @@ export interface IntegrationInstance {
   clusterId?: number | null;
   environmentId?: number | null;
   integrationId: number;
-  enabled: boolean;
   port?: number | null;
   config?: Record<string, any> | null;
 }

@@ -143,7 +143,6 @@ async function main() {
         clusterId: allClusters[i % allClusters.length]?.id,
         environmentId: allClusters[i % allClusters.length]?.environmentId,
         integrationId: allIntegrations[i % allIntegrations.length]?.id,
-        enabled: i % 2 === 0,
         port: 7000 + i
       }
     });

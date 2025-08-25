@@ -174,7 +174,7 @@ curl http://localhost:8080/api/integration-instances/1
 # Create a new integration instance
 curl -X POST http://localhost:8080/api/integration-instances \
   -H "Content-Type: application/json" \
-  -d '{"hostId":1,"integrationId":2,"enabled":true,"port":5432,"config":{"user":"admin"}}'
+  -d '{"datacenterId": 22,"hostId": 25,"environmentId": 4,"integrationId": 22,"port": 5432,"config": { "integrations": ["Docker"] }}'
 
 # Update an integration instance (replace 1 with a valid ID)
 curl -X PUT http://localhost:8080/api/integration-instances/21 \
