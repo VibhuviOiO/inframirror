@@ -1,7 +1,5 @@
 import Index from "./pages/Index";
 import DatacentersPage from "./pages/Datacenters";
-import DatacentersEnabledServices from "./pages/DatacentersEnabledServices";
-import DatacentersInstances from "./pages/DatacentersInstances";
 import NotFound from "./pages/NotFound";
 import SettingsPage from "./pages/Settings";
 import RegionsPage from "./pages/Regions";
@@ -10,6 +8,9 @@ import EnvironmentsPage from "./pages/Environments";
 import HostsPage from "./pages/Hosts";
 import ClustersPageWithLayout from "./pages/Clusters";
 import IntegrationPageWithLayout from "./pages/Integration";
+import DockerOpsPageWithLayout from "./pages/DockerOps";
+import { Service } from "dockerode";
+import ServicesPageWithLayout from "./pages/Services";
 
 const routes = [
   {
@@ -23,6 +24,7 @@ const routes = [
   { path: "/integrations", element: <IntegrationPageWithLayout /> },
   { path: "/hosts", element: <HostsPage /> },
   { path: "/clusters", element: <ClustersPageWithLayout /> },
+  { path: "/services", element: <ServicesPageWithLayout /> },
   {
     path: "/settings",
     element: <SettingsPage />,
@@ -32,8 +34,7 @@ const routes = [
       { index: true, element: <RegionsPage /> },
     ],
   },
-  { path: "/infrastructure/datacenters/enabled-services", element: <DatacentersEnabledServices /> },
-  { path: "/infrastructure/datacenters/instances", element: <DatacentersInstances /> },
+  { path: "/docker-operations", element: <DockerOpsPageWithLayout /> },
   { path: "*", element: <NotFound /> },
 ];
 

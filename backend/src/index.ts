@@ -14,6 +14,8 @@ import regionRoutes from './routes/regionRoutes.js';
 import clusterRoutes from './routes/clusterRoutes.js';
 import integrationRoutes from './routes/integrationRoutes.js';
 import integrationInstanceRoutes from './routes/integrationInstanceRoutes.js';
+import dockerOpsRoutes from './routes/dockerOpsRoutes.js';
+
 
 
 
@@ -53,6 +55,8 @@ app.use('/api/regions', regionRoutes);
 app.use('/api/clusters', clusterRoutes);
 app.use('/api/integrations', integrationRoutes);
 app.use('/api/integration-instances', integrationInstanceRoutes);
+app.use('/api/dockerops', dockerOpsRoutes);
+
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
