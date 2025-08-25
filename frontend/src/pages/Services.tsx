@@ -2,6 +2,10 @@ import { useMemo, useState } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { Edit2, Trash2, Check, X, ChevronUp, ChevronDown } from 'lucide-react';
 import { useIntegrationInstances, useCreateIntegrationInstance, useUpdateIntegrationInstance, useDeleteIntegrationInstance } from '../hooks/useIntegrationInstances';
+import { useHosts } from '../hooks/useHosts';
+import { useDatacenters } from '../hooks/useDatacenters';
+import { useRegions } from '../hooks/useRegions';
+import { useIntegrations } from '../hooks/useIntegration';
 import { toast } from 'sonner';
 
 function Spinner() {
@@ -25,17 +29,44 @@ function ServicesPage() {
   const [search, setSearch] = useState('');
 
   const { data: instances, isLoading, isError, error } = useIntegrationInstances();
+  const { data: hosts } = useHosts();
+  const { data: datacenters } = useDatacenters();
+  const { data: regions } = useRegions();
+  const { data: integrations } = useIntegrations();
   const create = useCreateIntegrationInstance();
   const update = useUpdateIntegrationInstance();
   const del = useDeleteIntegrationInstance();
 
-  const filteredRows = useMemo(() => {
-    if (!instances) return [];
-    if (!search.trim()) return instances;
-    return instances.filter(r => String(r.hostId).includes(search.trim()) || String(r.integrationId).includes(search.trim()));
-  }, [instances, search]);
+  // Join all data for display
+  const joinedRows = useMemo(() => {
+    if (!instances || !hosts || !datacenters || !regions || !integrations) return [];
+    return instances.map((inst) => {
+      const host = hosts.find(h => h.id === inst.hostId);
+      const datacenter = host ? datacenters.find(d => d.id === host.datacenterId) : undefined;
+      const region = datacenter ? regions.find(r => r.id === datacenter.regionId) : undefined;
+      const integration = integrations.find(i => i.id === inst.integrationId);
+      return {
+        ...inst,
+        hostName: host?.hostname || inst.hostId,
+        datacenterName: datacenter?.name || host?.datacenterId || '',
+        regionName: region?.name || datacenter?.regionId || '',
+        integrationName: integration?.name || inst.integrationId,
+      };
+    });
+  }, [instances, hosts, datacenters, regions, integrations]);
 
-  const [sortBy, setSortBy] = useState<'hostId' | 'integrationId' | 'enabled' | null>(null);
+  const filteredRows = useMemo(() => {
+    if (!joinedRows) return [];
+    if (!search.trim()) return joinedRows;
+    return joinedRows.filter(r =>
+      String(r.hostName).toLowerCase().includes(search.trim().toLowerCase()) ||
+      String(r.integrationName).toLowerCase().includes(search.trim().toLowerCase()) ||
+      String(r.datacenterName).toLowerCase().includes(search.trim().toLowerCase()) ||
+      String(r.regionName).toLowerCase().includes(search.trim().toLowerCase())
+    );
+  }, [joinedRows, search]);
+
+  const [sortBy, setSortBy] = useState<'hostName' | 'integrationName' | 'datacenterName' | 'regionName' | 'enabled' | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const sortedRows = useMemo(() => {
@@ -43,12 +74,18 @@ function ServicesPage() {
     if (!sortBy) return filteredRows;
     return [...filteredRows].sort((a, b) => {
       let aVal, bVal;
-      if (sortBy === 'hostId') {
-        aVal = a.hostId;
-        bVal = b.hostId;
-      } else if (sortBy === 'integrationId') {
-        aVal = a.integrationId;
-        bVal = b.integrationId;
+      if (sortBy === 'hostName') {
+        aVal = String(a.hostName).toLowerCase() || '';
+        bVal = String(b.hostName).toLowerCase() || '';
+      } else if (sortBy === 'integrationName') {
+        aVal = String(a.integrationName).toLowerCase() || '';
+        bVal = String(b.integrationName).toLowerCase() || '';
+      } else if (sortBy === 'datacenterName') {
+        aVal = String(a.datacenterName).toLowerCase() || '';
+        bVal = String(b.datacenterName).toLowerCase() || '';
+      } else if (sortBy === 'regionName') {
+        aVal = String(a.regionName).toLowerCase() || '';
+        bVal = String(b.regionName).toLowerCase() || '';
       } else if (sortBy === 'enabled') {
         aVal = a.enabled ? 1 : 0;
         bVal = b.enabled ? 1 : 0;
@@ -59,7 +96,7 @@ function ServicesPage() {
     });
   }, [filteredRows, sortBy, sortDir]);
 
-  const handleSort = (col: 'hostId' | 'integrationId' | 'enabled') => {
+  const handleSort = (col: 'hostName' | 'integrationName' | 'datacenterName' | 'regionName' | 'enabled') => {
     if (sortBy === col) {
       setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
     } else {
@@ -120,7 +157,7 @@ function ServicesPage() {
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search integration instances..."
+            placeholder="Search services..."
             className="w-full sm:w-64 px-2 py-1 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-indigo-300 text-sm shadow-sm transition"
             style={{ height: 32, fontSize: '0.925rem' }}
           />
@@ -236,73 +273,31 @@ function ServicesPage() {
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead>
                 <tr className="text-left bg-blue-100 dark:bg-blue-950 animate-fade-in">
-                  <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">
-                    <input
-                      type="checkbox"
-                      checked={allSelected}
-                      onChange={toggleSelectAll}
-                      aria-label="Select all"
-                    />
-                  </th>
-                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('hostId')}>Host ID</th>
-                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('integrationId')}>Integration ID</th>
-                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 cursor-pointer select-none" onClick={() => handleSort('enabled')}>Enabled</th>
+                  <th className="px-4 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Host</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Datacenter</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Region</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Integration</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Enabled</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Port</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Config</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredRows.length === 0 && (
+                {sortedRows.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-400">No integration instances found.</td>
+                    <td colSpan={8} className="px-6 py-8 text-center text-gray-400">No services found.</td>
                   </tr>
                 )}
                 {sortedRows.map((r) => (
                   <tr key={r.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                    <td className="px-4 py-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.includes(r.id)}
-                        onChange={() => toggleSelectOne(r.id)}
-                        aria-label={`Select row ${r.id}`}
-                      />
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{editingId === r.id ? (
-                      <input
-                        value={editHostId}
-                        onChange={e => setEditHostId(Number(e.target.value))}
-                        className="w-full px-2 py-1 border rounded"
-                        type="number"
-                      />
-                    ) : (
-                      r.hostId
-                    )}</td>
-                    <td className="px-6 py-4">{editingId === r.id ? (
-                      <input
-                        value={editIntegrationId}
-                        onChange={e => setEditIntegrationId(Number(e.target.value))}
-                        className="w-full px-2 py-1 border rounded"
-                        type="number"
-                      />
-                    ) : (
-                      r.integrationId
-                    )}</td>
-                    <td className="px-6 py-4">{editingId === r.id ? (
-                      <input type="checkbox" checked={editEnabled} onChange={e => setEditEnabled(e.target.checked)} />
-                    ) : (
-                      r.enabled ? 'Yes' : 'No'
-                    )}</td>
-                    <td className="px-6 py-4">{editingId === r.id ? (
-                      <input value={editPort} onChange={e => setEditPort(Number(e.target.value))} className="w-full px-2 py-1 border rounded" type="number" />
-                    ) : (
-                      r.port ?? ''
-                    )}</td>
-                    <td className="px-6 py-4">{editingId === r.id ? (
-                      <input value={editConfig} onChange={e => setEditConfig(e.target.value)} className="w-full px-2 py-1 border rounded" placeholder='{"user":"admin"}' />
-                    ) : (
-                      r.config ? JSON.stringify(r.config) : ''
-                    )}</td>
+                    <td className="px-4 py-4">{r.hostName}</td>
+                    <td className="px-6 py-4">{r.datacenterName}</td>
+                    <td className="px-6 py-4">{r.regionName}</td>
+                    <td className="px-6 py-4">{r.integrationName}</td>
+                    <td className="px-6 py-4">{r.enabled ? 'Yes' : 'No'}</td>
+                    <td className="px-6 py-4">{r.port ?? ''}</td>
+                    <td className="px-6 py-4">{r.config ? JSON.stringify(r.config) : ''}</td>
                     <td className="px-6 py-4 text-right">
                       {/* Actions */}
                       {editingId === r.id ? (
