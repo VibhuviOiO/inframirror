@@ -67,132 +67,103 @@ export default function RegionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight flex items-center gap-2">
-          <span className="inline-block bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-lg shadow-sm">Regions</span>
-        </h1>
-        <div className="flex gap-2 w-full sm:w-auto">
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search regions..."
-            className="w-full sm:w-72 px-4 py-2 rounded-full border-2 border-blue-200 focus:ring-2 focus:ring-blue-300 bg-white dark:bg-gray-900 shadow focus:shadow-lg transition"
-          />
-        </div>
+      <div className="flex flex-col gap-4">
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search regions..."
+          className="w-full px-4 py-2 rounded-full border-2 border-blue-200 focus:ring-2 focus:ring-blue-300 bg-white dark:bg-gray-900 shadow focus:shadow-lg transition"
+        />
       </div>
       <div className="relative mt-4">
-        <div className="overflow-x-auto">
-          <div className="rounded-2xl shadow-xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
-            {isLoading ? (
-              <div className="p-8 flex items-center justify-center">
-                <Spinner />
-              </div>
-            ) : isError ? (
-              <div className="p-8 text-red-600">Error: {(error as Error)?.message}</div>
-            ) : (
-              <table className="min-w-full table-auto">
-                <thead>
-                  <tr className="text-left bg-blue-100 dark:bg-blue-950 animate-fade-in">
-                    <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Region</th>
-                    <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredRows.length === 0 && (
-                    <tr>
-                      <td colSpan={2} className="px-6 py-8 text-center text-gray-400">No regions found.</td>
-                    </tr>
-                  )}
-                  {filteredRows.map((r) => (
-                    <tr key={r.id} className="transition group hover:bg-blue-50 dark:hover:bg-blue-950">
-                      <td className="px-6 py-4 flex items-center gap-3 bg-transparent">
-                        <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-blue-200 text-blue-700 font-bold text-lg shadow-sm">
-                          {r.name.slice(0, 2).toUpperCase()}
-                        </span>
-                        {editingId === r.id ? (
-                          <input
-                            value={editValue}
-                            onChange={e => setEditValue(e.target.value)}
-                            className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                            onKeyDown={e => { if (e.key === 'Enter') handleEdit(r.id); }}
-                            autoFocus
-                          />
-                        ) : (
-                          <span className="text-lg font-medium text-blue-900 dark:text-blue-100">{r.name}</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 bg-transparent">
-                        <div className="flex items-center gap-2">
-                          {editingId === r.id ? (
-                            <>
-                              <button
-                                onClick={() => handleEdit(r.id)}
-                                className="inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white rounded-full p-2 shadow transition"
-                                title="Save"
-                              >
-                                <Check size={18} />
-                              </button>
-                              <button
-                                onClick={() => { setEditingId(null); setEditValue(''); }}
-                                className="inline-flex items-center justify-center bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-full p-2 shadow transition"
-                                title="Cancel"
-                              >
-                                <X size={18} />
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() => { setEditingId(r.id); setEditValue(r.name); }}
-                                className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-800 text-white rounded-full p-2 shadow transition"
-                                title="Edit"
-                              >
-                                <Edit2 size={18} />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(r.id)}
-                                className="inline-flex items-center justify-center bg-red-500 hover:bg-red-700 text-white rounded-full p-2 shadow transition"
-                                title="Delete"
-                              >
-                                <Trash2 size={18} />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                  {/* Add row at the bottom */}
-                  <tr className="bg-blue-50 dark:bg-blue-950 animate-fade-in">
-                    <td className="px-6 py-4 flex items-center gap-3 bg-transparent">
-                      <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-blue-100 text-blue-500 font-bold text-lg shadow-sm">
-                        <Plus size={20} />
-                      </span>
-                      <input
-                        value={addValue}
-                        onChange={e => setAddValue(e.target.value)}
-                        className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-300 shadow-sm"
-                        placeholder="Add new region..."
-                        onKeyDown={e => { if (e.key === 'Enter') handleAdd(); }}
-                      />
-                    </td>
-                    <td className="px-6 py-4 bg-transparent">
-                      <button
-                        onClick={handleAdd}
-                        className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-800 text-white rounded-full px-5 py-2 font-bold shadow-md transition"
-                        title="Add"
-                        style={{ minWidth: 40 }}
-                      >
-                        <Plus size={20} />
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            )}
+        {isLoading ? (
+          <div className="p-8 flex items-center justify-center">
+            <Spinner />
           </div>
-        </div>
+        ) : isError ? (
+          <div className="p-8 text-red-600">Error: {(error as Error)?.message}</div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {/* Region rows */}
+            {filteredRows.length === 0 && (
+              <div className="text-center text-gray-400 py-8">No regions found.</div>
+            )}
+            {filteredRows.map((r) => (
+              <div key={r.id} className="rounded-xl bg-white shadow p-4 flex items-center gap-4 border border-blue-100 animate-fade-in">
+                {editingId === r.id ? (
+                  <input
+                    value={editValue}
+                    onChange={e => setEditValue(e.target.value)}
+                    className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-300 shadow-sm"
+                    onKeyDown={e => { if (e.key === 'Enter') handleEdit(r.id); }}
+                    autoFocus
+                  />
+                ) : (
+                  <span className="text-base font-medium text-blue-900">{r.name}</span>
+                )}
+                <div className="flex items-center gap-2 ml-auto">
+                  {editingId === r.id ? (
+                    <>
+                      <button
+                        onClick={() => handleEdit(r.id)}
+                        className="px-2 py-1 text-green-600 hover:text-green-800 transition"
+                        title="Save"
+                      >
+                        <Check size={18} />
+                      </button>
+                      <button
+                        onClick={() => { setEditingId(null); setEditValue(''); }}
+                        className="px-2 py-1 text-gray-500 hover:text-gray-700 transition"
+                        title="Cancel"
+                      >
+                        <X size={18} />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => { setEditingId(r.id); setEditValue(r.name); }}
+                        className="px-2 py-1 text-blue-600 hover:text-blue-800 transition"
+                        title="Edit"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(r.id)}
+                        className="px-2 py-1 text-red-600 hover:text-red-800 transition"
+                        title="Delete"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+            {/* Add new region row at the bottom */}
+            <div className="rounded-xl bg-white shadow p-4 flex items-center gap-4 border border-blue-100">
+              <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-blue-500 font-bold text-xl shadow-sm">
+                <Plus size={24} />
+              </span>
+              <input
+                value={addValue}
+                onChange={e => setAddValue(e.target.value)}
+                className="w-48 px-3 py-2 border-2 border-blue-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-300 shadow-sm"
+                placeholder="Add new region..."
+                onKeyDown={e => { if (e.key === 'Enter') handleAdd(); }}
+              />
+              <button
+                onClick={handleAdd}
+                className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-800 text-white rounded-full px-5 py-2 font-bold shadow-md transition"
+                title="Add"
+                style={{ minWidth: 40 }}
+              >
+                <Plus size={20} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

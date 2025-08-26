@@ -1,14 +1,21 @@
 import React from "react";
-import { Settings, Database, Layers3, Building2, Cpu, Home, Book, Server, Network, Settings2, Container, AppWindow } from "lucide-react";
+import {
+  Settings,
+  Database,
+  Building2,
+  Home,
+  Server,
+  Network,
+  Container,
+  AppWindow,
+  Blocks,
+} from "lucide-react";
 import clsx from "clsx";
 
 const menuGroups = [
   {
     title: "Main",
-    items: [
-      { name: "Dashboard", icon: Home, href: "/" },
-      { name: "Integrations", icon: Book, href: "/integrations" },
-    ],
+    items: [{ name: "Dashboard", icon: Home, href: "/" }],
   },
   {
     title: "Infrastructure",
@@ -16,15 +23,15 @@ const menuGroups = [
       { name: "Datacenters", icon: Building2, href: "/datacenters" },
       { name: "Hosts", icon: Server, href: "/hosts" },
       { name: "Clusters", icon: Network, href: "/clusters" },
-      { name: "Service", icon: AppWindow, href: "/services" }
+      { name: "Service", icon: AppWindow, href: "/services" },
     ],
   },
   {
     title: "Operations",
     items: [
-      { name: "Docker Ops", icon: Container, href: "/docker-operations" }
+      { name: "Docker Ops", icon: Container, href: "/docker-operations" },
     ],
-  }
+  },
 ];
 
 interface SidebarProps {
@@ -32,14 +39,15 @@ interface SidebarProps {
   setExpanded: (v: boolean) => void;
 }
 
-
 export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
   return (
     <div
-      className={`fixed top-0 left-0 z-20 h-full bg-white border-r-2 border-gray-100 flex flex-col transition-all duration-300 ${expanded ? 'w-72' : 'w-20'}`}
+      className={`fixed top-0 left-0 z-20 h-full bg-white border-r-2 border-gray-100 flex flex-col transition-all duration-300 ${
+        expanded ? "w-72" : "w-20"
+      }`}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: "pointer" }}
     >
       {expanded ? (
         <>
@@ -48,15 +56,21 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
               <Database className="h-6 w-6 text-indigo-600" />
             </div>
             <div>
-              <span className="text-base font-bold tracking-tight text-gray-800">InfraHub</span>
-              <p className="text-xs text-gray-500 tracking-wide mt-1">Management Console</p>
+              <span className="text-base font-bold tracking-tight text-gray-800">
+                InfraHub
+              </span>
+              <p className="text-xs text-gray-500 tracking-wide mt-1">
+                Management Console
+              </p>
             </div>
           </div>
           <nav className="flex-1 flex flex-col justify-between overflow-y-auto px-4 pb-4">
             <div className="space-y-8">
               {menuGroups.map((group) => (
                 <div key={group.title}>
-                  <h3 className="px-2 mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">{group.title}</h3>
+                  <h3 className="px-2 mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    {group.title}
+                  </h3>
                   <ul className="space-y-1">
                     {group.items.map((item) => {
                       const selected = window.location.pathname === item.href;
@@ -71,10 +85,14 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
                                 : "text-gray-700 hover:bg-blue-100 hover:text-blue-700"
                             )}
                           >
-                            <span className={clsx(
-                              "flex items-center justify-center h-8 w-8",
-                              selected ? "ring-2 ring-indigo-500 rounded-full bg-white" : ""
-                            )}>
+                            <span
+                              className={clsx(
+                                "flex items-center justify-center h-8 w-8",
+                                selected
+                                  ? "ring-2 ring-indigo-500 rounded-full bg-white"
+                                  : ""
+                              )}
+                            >
                               <item.icon
                                 className={clsx(
                                   "h-6 w-6 shrink-0",
@@ -95,23 +113,54 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
             </div>
           </nav>
           <div className="border-t border-gray-200 dark:border-gray-700" />
-          <div className="flex items-center justify-center mt-2 mb-2">
+          <div className="flex items-center px-4 mt-2 mb-2">
+            <a
+              href="/integrations"
+              className={clsx(
+                "flex items-center justify-center w-11 h-11 rounded-full bg-indigo-100 border-2 border-white shadow transition-colors",
+                window.location.pathname.startsWith("/integrations")
+                  ? "ring-2 ring-indigo-500"
+                  : "hover:ring-2 hover:ring-indigo-300",
+                window.location.pathname.startsWith("/integrations")
+                  ? "text-indigo-700"
+                  : "text-gray-400 hover:text-indigo-700"
+              )}
+              title="Integrations"
+            >
+              <Blocks className="h-6 w-6" />
+            </a>
+            {expanded && (
+              <a href="/integrations">
+                <span className="ml-3 font-semibold text-gray-800 text-xs">
+                  Integrations
+                </span>
+              </a>
+            )}
+          </div>
+          <div className="border-t border-gray-200 dark:border-gray-700" />
+          <div className="flex items-center px-4 mt-2 mb-2">
             <a
               href="/settings"
               className={clsx(
                 "flex items-center justify-center w-11 h-11 rounded-full bg-indigo-100 border-2 border-white shadow transition-colors",
-                window.location.pathname.startsWith('/settings')
-                  ? 'ring-2 ring-indigo-500'
-                  : 'hover:ring-2 hover:ring-indigo-300',
-                window.location.pathname.startsWith('/settings')
-                  ? 'text-indigo-700'
-                  : 'text-gray-400 hover:text-indigo-700'
+                window.location.pathname.startsWith("/settings")
+                  ? "ring-2 ring-indigo-500"
+                  : "hover:ring-2 hover:ring-indigo-300",
+                window.location.pathname.startsWith("/settings")
+                  ? "text-indigo-700"
+                  : "text-gray-400 hover:text-indigo-700"
               )}
               title="Settings"
             >
               <Settings className="h-6 w-6" />
             </a>
-            {expanded && <span className="ml-3 font-semibold text-gray-800 text-xs">Settings</span>}
+            {expanded && (
+              <a href="/settings">
+                <span className="ml-3 font-semibold text-gray-800 text-xs">
+                  Settings
+                </span>
+              </a>
+            )}
           </div>
         </>
       ) : (
@@ -130,16 +179,28 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
                     <a
                       key={item.name}
                       href={item.href}
-                      className={`relative flex flex-col items-center justify-center gap-3 py-3 rounded-xl transition-colors group ${selected ? 'text-indigo-600 font-bold' : 'text-gray-500 hover:bg-gray-100'}`}
+                      className={`relative flex flex-col items-center justify-center gap-3 py-3 rounded-xl transition-colors group ${
+                        selected
+                          ? "text-indigo-600 font-bold"
+                          : "text-gray-500 hover:bg-gray-100"
+                      }`}
                       style={{ minHeight: 48 }}
                     >
-                      <span className={clsx(
-                        "flex items-center justify-center h-10 w-10",
-                        selected ? "ring-2 ring-indigo-500 rounded-full bg-white" : ""
-                      )}>
+                      <span
+                        className={clsx(
+                          "flex items-center justify-center h-10 w-10",
+                          selected
+                            ? "ring-2 ring-indigo-500 rounded-full bg-white"
+                            : ""
+                        )}
+                      >
                         <item.icon
                           size={24}
-                          className={selected ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-400'}
+                          className={
+                            selected
+                              ? "text-indigo-600"
+                              : "text-gray-400 group-hover:text-indigo-400"
+                          }
                         />
                       </span>
                     </a>
@@ -151,21 +212,64 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
           <div className="border-t border-gray-200 dark:border-gray-700" />
           <div className="flex flex-col items-center">
             <a
+              href="/integrations"
+              className={clsx(
+                "flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-colors group",
+                window.location.pathname.startsWith("/integrations")
+                  ? "text-indigo-600 font-bold"
+                  : "text-gray-500 hover:bg-gray-100"
+              )}
+              style={{ minHeight: 48 }}
+              title="integrations"
+            >
+              <span
+                className={clsx(
+                  "flex items-center justify-center h-10 w-10",
+                  window.location.pathname.startsWith("/integrations")
+                    ? "ring-2 ring-indigo-500 rounded-full bg-white"
+                    : ""
+                )}
+              >
+                <Blocks
+                  size={24}
+                  className={
+                    window.location.pathname.startsWith("/integrations")
+                      ? "text-indigo-600"
+                      : "text-gray-400 group-hover:text-indigo-400"
+                  }
+                />
+              </span>
+            </a>
+          </div>
+          <div className="border-t border-gray-200 dark:border-gray-700" />
+          <div className="flex flex-col items-center">
+            <a
               href="/settings"
               className={clsx(
                 "flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-colors group",
-                window.location.pathname.startsWith('/settings')
-                  ? 'text-indigo-600 font-bold'
-                  : 'text-gray-500 hover:bg-gray-100'
+                window.location.pathname.startsWith("/settings")
+                  ? "text-indigo-600 font-bold"
+                  : "text-gray-500 hover:bg-gray-100"
               )}
               style={{ minHeight: 48 }}
               title="Settings"
             >
-              <span className={clsx(
-                "flex items-center justify-center h-10 w-10",
-                window.location.pathname.startsWith('/settings') ? "ring-2 ring-indigo-500 rounded-full bg-white" : ""
-              )}>
-                <Settings size={24} className={window.location.pathname.startsWith('/settings') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-400'} />
+              <span
+                className={clsx(
+                  "flex items-center justify-center h-10 w-10",
+                  window.location.pathname.startsWith("/settings")
+                    ? "ring-2 ring-indigo-500 rounded-full bg-white"
+                    : ""
+                )}
+              >
+                <Settings
+                  size={24}
+                  className={
+                    window.location.pathname.startsWith("/settings")
+                      ? "text-indigo-600"
+                      : "text-gray-400 group-hover:text-indigo-400"
+                  }
+                />
               </span>
             </a>
           </div>

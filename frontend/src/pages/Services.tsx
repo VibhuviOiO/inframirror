@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { Edit2, Trash2, Check, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { Edit2, Trash2, Check, X, ChevronUp, ChevronDown, MoreVertical } from 'lucide-react';
+import { useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useIntegrationInstances, useCreateIntegrationInstance, useUpdateIntegrationInstance, useDeleteIntegrationInstance } from '../hooks/useIntegrationInstances';
 import { useHosts } from '../hooks/useHosts';
 import { useDatacenters } from '../hooks/useDatacenters';
@@ -13,6 +15,7 @@ function Spinner() {
 }
 
 function ServicesPage() {
+  const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [addHostId, setAddHostId] = useState<number | ''>('');
@@ -149,6 +152,25 @@ function ServicesPage() {
   // Dropdown options
   const hostOptions = hosts || [];
   const integrationOptions = integrations || [];
+
+  // For menu open state per row
+  const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+  const menuRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+
+  // Close menu on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuOpenId !== null && menuRefs.current[menuOpenId]) {
+        if (!(menuRefs.current[menuOpenId]?.contains(e.target as Node))) {
+          setMenuOpenId(null);
+        }
+      }
+    }
+    if (menuOpenId !== null) {
+      document.addEventListener('mousedown', handleClick);
+    }
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [menuOpenId]);
 
   return (
     <div className="space-y-6">
@@ -325,27 +347,79 @@ function ServicesPage() {
                           <button onClick={() => setEditingId(null)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-2 py-1 rounded"><X size={16} /></button>
                         </div>
                       ) : (
-                        <div className="flex gap-2 justify-end">
+                        <div className="relative flex justify-end">
                           <button
-                            onClick={() => {
-                              setEditingId(r.id);
-                              setEditHostId(r.hostId);
-                              setEditIntegrationId(r.integrationId);
-                              setEditPort(r.port ?? '');
-                              setEditConfig(r.config ? JSON.stringify(r.config) : '');
-                            }}
-                            className="p-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none"
-                            title="Edit"
+                            onClick={() => setMenuOpenId(menuOpenId === r.id ? null : r.id)}
+                            className="p-1 text-gray-600 hover:text-blue-700 focus:outline-none"
+                            title="More options"
                           >
-                            <Edit2 size={18} />
+                            <MoreVertical size={20} />
                           </button>
-                          <button
-                            onClick={() => handleDelete(r.id)}
-                            className="p-1 text-red-500 hover:text-red-700 focus:outline-none"
-                            title="Delete"
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                          {menuOpenId === r.id && (
+                            <div
+                              ref={el => (menuRefs.current[r.id] = el)}
+                              className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-50 animate-fade-in max-h-60 overflow-y-auto"
+                              style={{ minWidth: 160 }}
+                            >
+                              <button
+                                onClick={() => {
+                                  setEditingId(r.id);
+                                  setEditHostId(r.hostId);
+                                  setEditIntegrationId(r.integrationId);
+                                  setEditPort(r.port ?? '');
+                                  setEditConfig(r.config ? JSON.stringify(r.config) : '');
+                                  setMenuOpenId(null);
+                                }}
+                                className="w-full text-left px-4 py-2 hover:bg-blue-50 text-blue-700"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => { handleDelete(r.id); setMenuOpenId(null); }}
+                                className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600"
+                              >
+                                Delete
+                              </button>
+                              {/* Dynamic Ops option */}
+                              {(() => {
+                                let ops = null;
+                                let configObj: any = {};
+                                try { configObj = typeof r.config === 'string' ? JSON.parse(r.config) : r.config || {}; } catch {}
+                                const integrations = configObj?.integrations || [];
+                                if (integrations.includes('Docker')) {
+                                  ops = (
+                                    <button
+                                      onClick={() => {
+                                        // Find host IP
+                                        const host = hosts?.find(h => h.id === r.hostId);
+                                        const ip = host?.privateIP || host?.publicIP || '';
+                                        navigate(`/docker-operations?ip=${encodeURIComponent(ip)}&port=${r.port ?? ''}`);
+                                        setMenuOpenId(null);
+                                      }}
+                                      className="w-full text-left px-4 py-2 hover:bg-blue-50 text-blue-900"
+                                    >
+                                      Docker Ops
+                                    </button>
+                                  );
+                                } else if (integrations.includes('Postgres')) {
+                                  ops = (
+                                    <button
+                                      onClick={() => {
+                                        const host = hosts?.find(h => h.id === r.hostId);
+                                        const ip = host?.privateIP || host?.publicIP || '';
+                                        navigate(`/postgres-ops?ip=${encodeURIComponent(ip)}&port=${r.port ?? ''}`);
+                                        setMenuOpenId(null);
+                                      }}
+                                      className="w-full text-left px-4 py-2 hover:bg-blue-50 text-blue-900"
+                                    >
+                                      Postgres Ops
+                                    </button>
+                                  );
+                                }
+                                return ops;
+                              })()}
+                            </div>
+                          )}
                         </div>
                       )}
                     </td>
