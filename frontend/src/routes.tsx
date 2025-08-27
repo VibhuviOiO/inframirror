@@ -11,6 +11,7 @@ import IntegrationPageWithLayout from "./pages/Integration";
 import DockerOpsPageWithLayout from "./pages/DockerOps";
 import { Service } from "dockerode";
 import ServicesPageWithLayout from "./pages/Services";
+import PostgresOpsPageWithLayout from "./pages/PostgresOps";
 
 const routes = [
   {
@@ -35,6 +36,7 @@ const routes = [
     ],
   },
   { path: "/docker-operations", element: <DockerOpsPageWithLayout /> },
+  { path: "/postgres-operations", element: <PostgresOpsPageWithLayout /> },
   { path: "*", element: <NotFound /> },
 ];
 

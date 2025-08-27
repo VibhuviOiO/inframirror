@@ -30,6 +30,7 @@ const menuGroups = [
     title: "Operations",
     items: [
       { name: "Docker Ops", icon: Container, href: "/docker-operations" },
+      { name: "Postgres Ops", icon: Container, href: "/postgres-operations" },
     ],
   },
 ];

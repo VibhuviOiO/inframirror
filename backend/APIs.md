@@ -184,3 +184,18 @@ curl -X PUT http://localhost:8080/api/integration-instances/21 \
 # Delete an integration instance (replace 1 with a valid ID)
 curl -X DELETE http://localhost:8080/api/integration-instances/21
 ```
+# POSTGRES API 
+```bash
+# list tables in given paramaters. 
+
+ curl -X POST http://localhost:8080/api/postgresops/tables \
+  -H "Content-Type: application/json" \
+  -d '{
+    "host": "127.0.0.1",
+    "port": 5432,
+    "database": "inframirror",
+    "user": "inframirror",
+    "password": "inframirror"
+  }'
+{"tables":["_prisma_migrations","Environment","Region","Datacenter","Host","Cluster","IntegrationInstance","Integration"]}%                                
+```
