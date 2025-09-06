@@ -39,7 +39,8 @@ function DockerDesktopInspiredOperations() {
     { key: 'Stats', label: 'Stats', icon: <BarChart2 size={16} className="inline-block" /> },
   ];
 
-  const [activeTab, setActiveTab] = useState('Logs');
+  const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [tabMenuOpen, setTabMenuOpen] = useState(false);
 
   const [logs, setLogs] = useState('');
   const [logsLoading, setLogsLoading] = useState(false);
@@ -175,7 +176,7 @@ function DockerDesktopInspiredOperations() {
                   </span>
                 </div>
               </div>
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center relative">
                 <button title="Start" className="p-2 rounded hover:bg-blue-100 dark:hover:bg-blue-900">
                   <Play size={18} className="text-blue-600 dark:text-blue-400" />
                 </button>
@@ -191,6 +192,27 @@ function DockerDesktopInspiredOperations() {
                 <button title="Delete" className="p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-700">
                   <Trash2 size={18} className="text-gray-600 dark:text-gray-400" />
                 </button>
+                {/* Three vertical dots icon (More) */}
+                <button
+                  title="More"
+                  className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                  onClick={() => setTabMenuOpen(v => !v)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-more-vertical"><circle cx="12" cy="6" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="18" r="1"/></svg>
+                </button>
+                {tabMenuOpen && (
+                  <div className="absolute right-0 top-10 z-30 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded shadow-lg min-w-[120px]">
+                    {tabs.map(tab => (
+                      <button
+                        key={tab.key}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-blue-950 text-gray-700 dark:text-gray-200"
+                        onClick={() => { setActiveTab(tab.key); setTabMenuOpen(false); }}
+                      >
+                        {tab.icon} {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
             </>
@@ -199,7 +221,7 @@ function DockerDesktopInspiredOperations() {
           )}
         </div>
 
-        {selectedContainer && (
+        {selectedContainer && activeTab && (
           <div className="flex gap-6 px-8 pt-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
             {tabs.map(tab => (
               <button
@@ -256,7 +278,7 @@ function DockerDesktopInspiredOperations() {
             </div>
           </div>
         )}
-        {selectedContainer && activeTab !== 'Logs' && (
+        {selectedContainer && activeTab && activeTab !== 'Logs' && (
           <div className="text-sm text-gray-700 dark:text-gray-200 flex items-center justify-center h-full">
             <span className="opacity-60">{tabs.find(t => t.key === activeTab)?.label} feature coming soon...</span>
           </div>
