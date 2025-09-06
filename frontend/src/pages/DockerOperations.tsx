@@ -298,9 +298,7 @@ function Spinner() {
 }
 
 function InspectTabUI({ container, host, port, onClose }) {
-  const [activeSection, setActiveSection] = useState('');
-  const [highlighted, setHighlighted] = useState('');
-  const valueRefs = useRef({});
+  const [search, setSearch] = useState('');
   const {
     data: inspect,
     isLoading,
@@ -313,42 +311,52 @@ function InspectTabUI({ container, host, port, onClose }) {
     size: true,
   }, !!container.Id);
 
-  // Top-level keys to show as pills
-  const sectionKeys = [
-    'Platform', 'Cmd', 'State', 'Image', 'PortBindings', 'Runtime', 'Mounts', 'Volumes', 'Env', 'Labels', 'Networks'
-  ];
-
   // Helper to pretty-print JSON
   function pretty(obj) {
     return JSON.stringify(obj, null, 2);
   }
 
-  // Scroll and highlight effect
-  function handleSectionClick(key) {
-    setActiveSection(activeSection === key ? '' : key);
-    setHighlighted(key);
-    setTimeout(() => setHighlighted(''), 2000);
-    setTimeout(() => {
-      if (valueRefs.current[key]) {
-        valueRefs.current[key].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Filter JSON by key or value
+  function filterJson(obj, searchText) {
+    if (!searchText.trim()) return obj;
+    const lower = searchText.trim().toLowerCase();
+    function match(val) {
+      if (val == null) return false;
+      if (typeof val === 'object') return Object.values(val).some(match);
+      return String(val).toLowerCase().includes(lower);
+    }
+    function filter(obj) {
+      if (typeof obj !== 'object' || obj == null) return obj;
+      if (Array.isArray(obj)) {
+        return obj.filter(item => match(item) || filter(item));
       }
-    }, 100);
+      const result = {};
+      for (const [k, v] of Object.entries(obj)) {
+        if (k.toLowerCase().includes(lower) || match(v)) {
+          result[k] = v;
+        } else if (typeof v === 'object' && v != null) {
+          const filtered = filter(v);
+          if (filtered && (Array.isArray(filtered) ? filtered.length : Object.keys(filtered).length)) {
+            result[k] = filtered;
+          }
+        }
+      }
+      return result;
+    }
+    return filter(obj);
   }
 
   return (
     <div className="w-full flex flex-col gap-2 pt-4">
-      <div className="flex items-center gap-2 mb-2">
-        {sectionKeys.map(key => (
-          <button
-            key={key}
-            className={`px-3 py-1 rounded-full border border-blue-300 bg-blue-50 text-blue-700 text-xs font-semibold transition ${activeSection === key ? 'bg-blue-600 text-white' : ''}`}
-            onClick={() => handleSectionClick(key)}
-            style={{ minWidth: 70 }}
-          >
-            {key}
-          </button>
-        ))}
-        <div className="flex-1" />
+      <div className="flex items-center mb-2 gap-2 w-full justify-between">
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search JSON..."
+          className="pl-2 pr-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none"
+          style={{ width: '220px' }}
+        />
         <button
           className="p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-700"
           onClick={onClose}
@@ -367,25 +375,9 @@ function InspectTabUI({ container, host, port, onClose }) {
           <div className="p-4 text-red-600">Error: {error.message}</div>
         )}
         {inspect && (
-          <div className="p-4 whitespace-pre-wrap break-words font-mono text-xs h-full">
-            {sectionKeys.map(key => (
-              inspect[key] !== undefined && (
-                <div
-                  key={key}
-                  ref={el => valueRefs.current[key] = el}
-                  className={highlighted === key ? 'bg-yellow-200 transition-all duration-500' : ''}
-                  style={{ marginBottom: 12, padding: 4, borderRadius: 4 }}
-                >
-                  <span className="font-bold text-blue-700">{key}:</span>
-                  <pre className="inline whitespace-pre-wrap break-words font-mono text-xs" style={{ marginLeft: 8 }}>{pretty(inspect[key])}</pre>
-                </div>
-              )
-            ))}
-            {/* Show full JSON below if no section selected */}
-            {!activeSection && (
-              <pre className="mt-2">{pretty(inspect)}</pre>
-            )}
-          </div>
+          <pre className="p-4 whitespace-pre-wrap break-words font-mono text-xs h-full">
+            {pretty(filterJson(inspect, search))}
+          </pre>
         )}
       </div>
     </div>
