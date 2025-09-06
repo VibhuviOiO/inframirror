@@ -223,7 +223,7 @@ function DockerDesktopInspiredOperations() {
                         </button>
                       </div>
                     </div>
-                    <div className="relative border bg-gray-100 dark:bg-gray-800 w-full text-xs font-mono shadow-inner overflow-x-auto overflow-y-auto flex-1 h-full">
+                    <div className="relative border bg-gray-100 dark:bg-gray-800 w-full text-xs font-mono shadow-inner overflow-x-auto overflow-y-auto flex-1 h-full min-h-[300px] max-h-[500px]">
                       {logsLoadingState[container.Id] && (
                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
                           <Spinner />
@@ -232,6 +232,7 @@ function DockerDesktopInspiredOperations() {
                       <div
                         ref={el => logsBoxRefs.current[container.Id] = el}
                         className="p-4 whitespace-pre-wrap break-words font-mono text-xs h-full"
+                        style={{ minHeight: '300px', maxHeight: '500px', overflowY: 'auto', overflowX: 'auto' }}
                         dangerouslySetInnerHTML={{ __html: ansi_up.ansi_to_html((() => {
                           const logs = logsState[container.Id] || '';
                           const search = searchLogsState[container.Id] || '';
