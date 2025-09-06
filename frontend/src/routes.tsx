@@ -8,7 +8,6 @@ import EnvironmentsPage from "./pages/Environments";
 import HostsPage from "./pages/Hosts";
 import ClustersPageWithLayout from "./pages/Clusters";
 import IntegrationPageWithLayout from "./pages/Integration";
-import DockerOpsPageWithLayout from "./pages/DockerOps";
 import { Service } from "dockerode";
 import ServicesPageWithLayout from "./pages/Services";
 import PostgresOpsPageWithLayout from "./pages/PostgresOps";
@@ -36,8 +35,7 @@ const routes = [
       { index: true, element: <RegionsPage /> },
     ],
   },
-  { path: "/docker-operations", element: <DockerOpsPageWithLayout /> },
-  { path: "/docker-ops", element: <DockerOperationsPageWithLayout /> },
+  { path: "/docker-operations", element: <DockerOperationsPageWithLayout /> },
   { path: "/postgres-operations", element: <PostgresOpsPageWithLayout /> },
   { path: "*", element: <NotFound /> },
 ];

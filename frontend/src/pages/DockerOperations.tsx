@@ -19,6 +19,7 @@ function DockerDesktopInspiredOperations() {
   const params: DockerListContainersParams = { host, port, protocol: 'http', all: true };
 
   const [search, setSearch] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { data: containers, isLoading } = useDockerContainers(params);
   const filteredContainers = useMemo(() => {
     if (!containers) return [];
@@ -75,43 +76,54 @@ function DockerDesktopInspiredOperations() {
     if (selectedContainer && activeTab === 'Logs') fetchLogs();
   }, [selectedContainer, activeTab]);
 
-  return (
-    <div className="flex h-[calc(100vh-64px)] bg-gray-50 dark:bg-gray-900">
-      <aside className="w-72 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search containers..."
-            className="w-full px-3 py-2 border rounded-lg bg-gray-50 dark:bg-gray-900 text-sm"
-          />
-        </div>
-        <div className="flex-1 overflow-y-auto">
-          {isLoading ? (
-            <div className="p-8 flex items-center justify-center"><Spinner /></div>
-          ) : (
-            <ul className="divide-y divide-gray-100 dark:divide-gray-800">
-              {filteredContainers.map(c => (
-                <li
-                  key={c.Id}
-                  className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950 transition ${selectedId === c.Id ? 'bg-blue-100 dark:bg-blue-900' : ''}`}
-                  onClick={() => setSelectedId(c.Id)}
-                >
-                  <span className="w-2 h-2 rounded-full" style={{ background: c.State === 'running' ? '#22c55e' : '#f87171' }} />
-                  <span className="font-semibold text-gray-800 dark:text-gray-100">{c.Names[0]}</span>
-                  <span className="text-xs text-gray-400">{c.Image}</span>
-                </li>
-              ))}
-              {filteredContainers.length === 0 && (
-                <li className="px-4 py-8 text-center text-gray-400">No containers found.</li>
-              )}
-            </ul>
-          )}
-        </div>
-      </aside>
+  function getUptime(created: number) {
+    if (!created) return '-';
+    const now = Math.floor(Date.now() / 1000);
+    const seconds = now - created;
+    if (seconds < 60) return `${seconds}s ago`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return `${Math.floor(seconds / 86400)}d ago`;
+  }
 
-      <main className="flex-1 flex flex-col">
+  return (
+    <div className="min-h-[calc(100vh-64px)] bg-gray-50 dark:bg-gray-900">
+      <main className="flex flex-col">
+        <div className="px-8 pt-8 pb-2 flex items-center gap-4">
+          <div className="w-full max-w-lg relative">
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onFocus={() => setDropdownOpen(true)}
+              onBlur={() => setTimeout(() => setDropdownOpen(false), 150)}
+              placeholder="Search containers..."
+              className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-900 text-sm shadow"
+              style={{ minWidth: 220 }}
+            />
+            {dropdownOpen && (
+              <div className="absolute left-0 right-0 mt-2 z-20 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                {isLoading ? (
+                  <div className="p-4 text-center text-gray-400"><Spinner /></div>
+                ) : filteredContainers.length === 0 ? (
+                  <div className="p-4 text-center text-gray-400">No containers found.</div>
+                ) : (
+                  filteredContainers.map(c => (
+                    <div
+                      key={c.Id}
+                      className={`px-4 py-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950 transition flex items-center gap-2 ${selectedId === c.Id ? 'bg-blue-100 dark:bg-blue-900' : ''}`}
+                      onMouseDown={() => { setSelectedId(c.Id); setSearch(''); setDropdownOpen(false); }}
+                    >
+                      <span className="w-2 h-2 rounded-full" style={{ background: c.State === 'running' ? '#22c55e' : '#f87171' }} />
+                      <span className="font-semibold text-gray-800 dark:text-gray-100">{c.Names[0]}</span>
+                      <span className="text-xs text-gray-400">{c.Image}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        </div>
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
           {selectedContainer ? (
             <>
@@ -120,9 +132,23 @@ function DockerDesktopInspiredOperations() {
                   <span className="font-bold text-xl text-gray-800 dark:text-gray-100">{selectedContainer.Names[0]}</span>
                   <span className="text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200">{selectedContainer.Image}</span>
                   <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">ID: {selectedContainer.Id.slice(0, 12)}</span>
-                  <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">Port: {selectedContainer.Ports?.[0]?.PublicPort || '-'}</span>
+                  {selectedContainer.Ports && selectedContainer.Ports.length > 0 ? (
+                    Array.from(new Set(selectedContainer.Ports.map(p =>
+                      p.PublicPort ? `${p.PublicPort}:${p.PrivatePort}` : `:${p.PrivatePort}`
+                    ))).map((portStr, idx) => (
+                      <span
+                        key={portStr}
+                        className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-700 mr-1"
+                      >
+                        {portStr}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">-</span>
+                  )}
+                  <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">Status: {selectedContainer.Status}</span>
                   <span className={`text-xs px-2 py-1 rounded ${selectedContainer.State === 'running' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{selectedContainer.State}</span>
-                  <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">Uptime: {/* TODO: calculate uptime */}</span>
+                  <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">Uptime: {getUptime(selectedContainer.Created)}</span>
                 </div>
               </div>
               <div className="flex gap-2 items-center">
