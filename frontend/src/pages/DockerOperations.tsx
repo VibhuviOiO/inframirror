@@ -2,8 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getContainerLogs, useDockerContainers, DockerListContainersParams } from '../hooks/useDockerOps';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { Play, Pause, RotateCcw, StopCircle, Trash2, FileText, Search, Terminal, FolderOpen, BarChart2, Clipboard, Download, ChevronDown } from 'lucide-react';
-import { X } from 'lucide-react';
+import { Play, Pause, RotateCcw, StopCircle, Trash2, FileText, Search, Terminal, FolderOpen, BarChart2, Clipboard, Download, ChevronDown, X } from 'lucide-react';
 import { AnsiUp } from 'ansi_up';
 const ansi_up = new AnsiUp();
 
@@ -245,18 +244,27 @@ function DockerDesktopInspiredOperations() {
                   </div>
                 )}
                 {activeTabs?.[container.Id] && activeTabs?.[container.Id] !== 'Logs' && (
-                  <div className="flex flex-col items-center justify-center h-full px-0">
-                    <div className="flex w-full justify-end mb-2">
-                      <button
-                        className="p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-700"
-                        onClick={() => setActiveTabs(prev => ({ ...prev, [container.Id]: null }))}
-                        title="Close tab"
-                      >
-                        <X size={18} className="text-red-600 dark:text-red-400" />
-                      </button>
-                    </div>
-                    <span className="opacity-60 text-sm text-gray-700 dark:text-gray-200">{tabs.find(t => t.key === activeTabs?.[container.Id])?.label} feature coming soon...</span>
-                  </div>
+                    activeTabs?.[container.Id] === 'Inspect' ? (
+                      <InspectTabUI
+                        container={container}
+                        host={host}
+                        port={port}
+                        onClose={() => setActiveTabs(prev => ({ ...prev, [container.Id]: null }))}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full px-0">
+                        <div className="flex w-full justify-end mb-2">
+                          <button
+                            className="p-2 rounded hover:bg-gray-300 dark:text-gray-700"
+                            onClick={() => setActiveTabs(prev => ({ ...prev, [container.Id]: null }))}
+                            title="Close tab"
+                          >
+                            <X size={18} className="text-red-600 dark:text-red-400" />
+                          </button>
+                        </div>
+                        <span className="opacity-60 text-sm text-gray-700 dark:text-gray-200">{tabs.find(t => t.key === activeTabs?.[container.Id])?.label} feature coming soon...</span>
+                      </div>
+                    )
                 )}
               </div>
             </div>
@@ -274,6 +282,113 @@ function DockerOperationsPageWithLayout() {
     <DashboardLayout>
       <DockerDesktopInspiredOperations />
     </DashboardLayout>
+  );
+}
+
+// Inline InspectTabUI component
+import { useDockerInspect } from '../hooks/useDockerOps';
+// Inline Spinner component
+function Spinner() {
+  return (
+    <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+    </svg>
+  );
+}
+
+function InspectTabUI({ container, host, port, onClose }) {
+  const [activeSection, setActiveSection] = useState('');
+  const [highlighted, setHighlighted] = useState('');
+  const valueRefs = useRef({});
+  const {
+    data: inspect,
+    isLoading,
+    error,
+  } = useDockerInspect({
+    host,
+    port,
+    id: container.Id,
+    protocol: container.protocol,
+    size: true,
+  }, !!container.Id);
+
+  // Top-level keys to show as pills
+  const sectionKeys = [
+    'Platform', 'Cmd', 'State', 'Image', 'PortBindings', 'Runtime', 'Mounts', 'Volumes', 'Env', 'Labels', 'Networks'
+  ];
+
+  // Helper to pretty-print JSON
+  function pretty(obj) {
+    return JSON.stringify(obj, null, 2);
+  }
+
+  // Scroll and highlight effect
+  function handleSectionClick(key) {
+    setActiveSection(activeSection === key ? '' : key);
+    setHighlighted(key);
+    setTimeout(() => setHighlighted(''), 2000);
+    setTimeout(() => {
+      if (valueRefs.current[key]) {
+        valueRefs.current[key].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  }
+
+  return (
+    <div className="w-full flex flex-col gap-2 pt-4">
+      <div className="flex items-center gap-2 mb-2">
+        {sectionKeys.map(key => (
+          <button
+            key={key}
+            className={`px-3 py-1 rounded-full border border-blue-300 bg-blue-50 text-blue-700 text-xs font-semibold transition ${activeSection === key ? 'bg-blue-600 text-white' : ''}`}
+            onClick={() => handleSectionClick(key)}
+            style={{ minWidth: 70 }}
+          >
+            {key}
+          </button>
+        ))}
+        <div className="flex-1" />
+        <button
+          className="p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-700"
+          onClick={onClose}
+          title="Close tab"
+        >
+          <X size={18} className="text-red-600 dark:text-red-400" />
+        </button>
+      </div>
+      <div className="relative border bg-gray-100 dark:bg-gray-800 w-full text-xs font-mono shadow-inner overflow-x-auto overflow-y-auto flex-1 h-full min-h-[300px] max-h-[500px]">
+        {isLoading && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+            <Spinner />
+          </div>
+        )}
+        {error && (
+          <div className="p-4 text-red-600">Error: {error.message}</div>
+        )}
+        {inspect && (
+          <div className="p-4 whitespace-pre-wrap break-words font-mono text-xs h-full">
+            {sectionKeys.map(key => (
+              inspect[key] !== undefined && (
+                <div
+                  key={key}
+                  ref={el => valueRefs.current[key] = el}
+                  className={highlighted === key ? 'bg-yellow-200 transition-all duration-500' : ''}
+                  style={{ marginBottom: 12, padding: 4, borderRadius: 4 }}
+                >
+                  <span className="font-bold text-blue-700">{key}:</span>
+                  <pre className="inline whitespace-pre-wrap break-words font-mono text-xs" style={{ marginLeft: 8 }}>{pretty(inspect[key])}</pre>
+                </div>
+              )
+            ))}
+            {/* Show full JSON below if no section selected */}
+            {!activeSection && (
+              <pre className="mt-2">{pretty(inspect)}</pre>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

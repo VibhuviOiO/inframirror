@@ -211,3 +211,32 @@ export function useDockerContainers(params: DockerListContainersParams, enabled 
     select: (data) => Array.isArray(data) ? data : [],
   });
 }
+
+export interface DockerInspectParams {
+  host: string;
+  port: number | string;
+  protocol?: string;
+  ca?: string;
+  cert?: string;
+  key?: string;
+  id: string;
+  size?: boolean;
+}
+
+export function useDockerInspect(params: DockerInspectParams, enabled = true) {
+  return useQuery({
+    queryKey: ['docker-inspect', params],
+    queryFn: async () => {
+      const { id, ...rest } = params;
+      const searchParams = new URLSearchParams();
+      Object.entries(rest).forEach(([key, value]) => {
+        if (value === undefined) return;
+        searchParams.append(key, String(value));
+      });
+      const url = apiUrl(`/dockerops/containers/${id}/inspect?${searchParams.toString()}`);
+      const { data } = await axios.get(url);
+      return data;
+    },
+    enabled,
+  });
+}

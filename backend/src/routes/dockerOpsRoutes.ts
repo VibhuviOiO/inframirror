@@ -110,4 +110,26 @@ router.get('/containers/:id/logs', (req, res) => {
   });
 });
 
+// GET /api/dockerops/containers/:id/inspect
+router.get('/containers/:id/inspect', async (req, res) => {
+  const { host, port, protocol, ca, cert, key, size } = req.query;
+  const { id } = req.params;
+  if (!host || !port || !id) {
+    return res.status(400).json({ message: 'host, port, and container id are required' });
+  }
+  try {
+    const docker = createDockerClient({ host, port, protocol, ca, cert, key });
+    const container = docker.getContainer(id);
+    // dockerode: inspect([options], callback) or inspect(options)
+    const opts: any = {};
+    if (size !== undefined) opts.size = size === 'true';
+    const info = await container.inspect(opts);
+    res.status(200).json(info);
+  } catch (err: any) {
+    if (err.statusCode === 404) {
+      return res.status(404).json({ message: 'No such container' });
+    }
+    res.status(500).json({ message: err.message });
+  }
+});
 export default router;
