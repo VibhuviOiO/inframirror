@@ -2,6 +2,8 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getContainerLogs, useDockerContainers, DockerListContainersParams } from '../hooks/useDockerOps';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
+import { Play, Pause, RotateCcw, StopCircle, Trash2, FileText, Search, Terminal, FolderOpen, BarChart2, Clipboard, Download, ChevronDown } from 'lucide-react';
+
 import { AnsiUp } from 'ansi_up';
 const ansi_up = new AnsiUp();
 
@@ -30,12 +32,13 @@ function DockerDesktopInspiredOperations() {
   const selectedContainer = containers?.find(c => c.Id === selectedId) || null;
 
   const tabs = [
-    { key: 'Logs', label: 'Logs', icon: '📄' },
-    { key: 'Inspect', label: 'Inspect', icon: '🔍' },
-    { key: 'Exec', label: 'Exec', icon: '💻' },
-    { key: 'Files', label: 'Files', icon: '🗂️' },
-    { key: 'Stats', label: 'Stats', icon: '📊' },
+    { key: 'Logs', label: 'Logs', icon: <FileText size={16} className="inline-block" /> },
+    { key: 'Inspect', label: 'Inspect', icon: <Search size={16} className="inline-block" /> },
+    { key: 'Exec', label: 'Exec', icon: <Terminal size={16} className="inline-block" /> },
+    { key: 'Files', label: 'Files', icon: <FolderOpen size={16} className="inline-block" /> },
+    { key: 'Stats', label: 'Stats', icon: <BarChart2 size={16} className="inline-block" /> },
   ];
+
   const [activeTab, setActiveTab] = useState('Logs');
 
   const [logs, setLogs] = useState('');
@@ -153,21 +156,22 @@ function DockerDesktopInspiredOperations() {
               </div>
               <div className="flex gap-2 items-center">
                 <button title="Start" className="p-2 rounded hover:bg-blue-100 dark:hover:bg-blue-900">
-                  <span role="img" aria-label="Start">▶️</span>
+                  <Play size={18} className="text-blue-600 dark:text-blue-400" />
                 </button>
                 <button title="Pause" className="p-2 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900">
-                  <span role="img" aria-label="Pause">⏸️</span>
+                  <Pause size={18} className="text-yellow-600 dark:text-yellow-400" />
                 </button>
                 <button title="Restart" className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-800">
-                  <span role="img" aria-label="Restart">🔄</span>
+                  <RotateCcw size={18} className="text-gray-600 dark:text-gray-400" />
                 </button>
-                <button title="Stop" className="p-2 rounded hover:bg-red-100 dark:hover:bg-red-900">
-                  <span role="img" aria-label="Stop">⏹️</span>
+                <button title="Stop" className="p-2 rounded hover:bg-red-100 dark:bg-red-900">
+                  <StopCircle size={18} className="text-red-600 dark:text-red-400" />
                 </button>
                 <button title="Delete" className="p-2 rounded hover:bg-gray-300 dark:hover:bg-gray-700">
-                  <span role="img" aria-label="Delete">🗑️</span>
+                  <Trash2 size={18} className="text-gray-600 dark:text-gray-400" />
                 </button>
               </div>
+
             </>
           ) : (
             <span className="text-lg text-gray-400">Select a container to view details</span>
@@ -205,22 +209,22 @@ function DockerDesktopInspiredOperations() {
                     </span>
                   </div>
                   <button title="Copy logs" className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" onClick={() => filteredLogs && navigator.clipboard.writeText(filteredLogs)}>
-                    <span role="img" aria-label="Copy">📋</span>
-                  </button>
-                  <button title="Download logs" className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" onClick={() => {
-                    const blob = new Blob([filteredLogs], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${selectedContainer.Names[0]}-logs.txt`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                  }}>
-                    <span role="img" aria-label="Download">⬇️</span>
-                  </button>
-                  <button title="Auto-scroll" className={`p-2 rounded ${autoScroll ? 'bg-blue-100 dark:bg-blue-900' : ''}`} onClick={() => setAutoScroll(v => !v)}>
-                    <span role="img" aria-label="Auto-scroll">🔽</span>
-                  </button>
+                      <Clipboard size={16} />
+                    </button>
+                    <button title="Download logs" className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" onClick={() => {
+                      const blob = new Blob([filteredLogs], { type: 'text/plain' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `${selectedContainer.Names[0]}-logs.txt`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}>
+                      <Download size={16} />
+                    </button>
+                    <button title="Auto-scroll" className={`p-2 rounded ${autoScroll ? 'bg-blue-100 dark:bg-blue-900' : ''}`} onClick={() => setAutoScroll(v => !v)}>
+                      <ChevronDown size={16} />
+                    </button>
                 </div>
                 <div className="relative border bg-gray-100 dark:bg-gray-800 w-full text-xs font-mono shadow-inner overflow-x-auto overflow-y-auto flex-1 h-full">
                   {logsLoading && (
