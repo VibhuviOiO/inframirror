@@ -34,3 +34,5 @@ npx prisma migrate diff \
   --to-schema-datamodel prisma/schema.prisma \
   --script > migration_patch.sql
 ```
+
+

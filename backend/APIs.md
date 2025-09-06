@@ -199,3 +199,15 @@ curl -X DELETE http://localhost:8080/api/integration-instances/21
   }'
 {"tables":["_prisma_migrations","Environment","Region","Datacenter","Host","Cluster","IntegrationInstance","Integration"]}%                                
 ```
+
+# GET API CONTAINERS
+
+curl "http://localhost:8080/api/dockerops/containers?host=192.168.0.104&port=2375&protocol=http&all=true"
+
+curl "http://localhost:8080/api/dockerops/containers/<container_id>/logs?host=192.168.0.104&port=2375&protocol=http&stdout=true&stderr=true&tail=100"
+
+curl "http://localhost:8080/api/dockerops/containers/<container_id>/logs?host=192.168.0.104&port=2375&protocol=http&stdout=true&stderr=true&follow=true"
+
+curl "http://localhost:8080/api/dockerops/containers/b70cd93dd5809810fa87aa066b68403d48df42dbc1667a4640d7209d545fc432/logs?host=192.168.0.104&port=2375&protocol=http&stdout=true&stderr=true&tail=100"
+
+curl "http://localhost:8080/api/dockerops/containers/b70cd93dd5809810fa87aa066b68403d48df42dbc1667a4640d7209d545fc432/logs?host=192.168.0.104&port=2375&protocol=http&stdout=true&stderr=true&follow=true"

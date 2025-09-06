@@ -63,60 +63,7 @@ export const DashboardContent = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div>
-  <h1 className="text-base font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back! Here's what's happening with your system.</p>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((metric, index) => (
-          <MetricsCard key={index} {...metric} />
-        ))}
-      </div>
-
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <ChartCard
-          title="Monthly Sales"
-          description="Sales performance over the last 12 months"
-          data={monthlySalesData}
-          type="bar"
-        />
-        <ChartCard
-          title="Revenue vs Profit"
-          description="Revenue and profit comparison"
-          data={revenueData}
-          type="line"
-        />
-      </div>
-
-      {/* Additional Stats Card */}
-      <div className="rounded-xl border border-gray-200 bg-card p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-sm font-semibold text-card-foreground">Monthly Target</h3>
-            <p className="text-sm text-muted-foreground">Target you've set for each month</p>
-          </div>
-          <div className="text-right">
-            <div className="text-base font-bold text-primary">75.55%</div>
-            <div className="text-sm text-success">+10%</div>
-          </div>
-        </div>
-        <div className="mt-4">
-          <div className="flex justify-between text-sm text-muted-foreground mb-2">
-            <span>Progress</span>
-            <span>$32,875 / $45,000</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-primary h-2 rounded-full" style={{ width: '75.55%' }}></div>
-          </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            You earn $3287 today, it's higher than last month. Keep up your good work!
-          </p>
-        </div>
-      </div>
+      
     </div>
   );
 };

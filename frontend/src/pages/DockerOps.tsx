@@ -1,5 +1,7 @@
 
 import { useState, useMemo } from 'react';
+import { getContainerLogs, streamContainerLogs } from '../hooks/useDockerOps';
+import AnsiToHtml from 'ansi-to-html';
 import { useLocation } from 'react-router-dom';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { useDockerContainers, DockerContainer, DockerListContainersParams } from '../hooks/useDockerOps';
@@ -53,6 +55,81 @@ function DockerOpsPage() {
     return containers.filter(c => c.Names.some(name => name.toLowerCase().includes(search.trim().toLowerCase())) || c.Image.toLowerCase().includes(search.trim().toLowerCase()));
   }, [containers, search]);
 
+  // Modal state
+  const [showLogsModal, setShowLogsModal] = useState(false);
+  const [selectedContainer, setSelectedContainer] = useState<DockerContainer | null>(null);
+  const [logFilters, setLogFilters] = useState({
+    stdout: true,
+    stderr: true,
+    follow: false,
+    tail: '100',
+    timestamps: false,
+    since: '',
+    until: '',
+  });
+  const [logs, setLogs] = useState('');
+  const ansiConverter = new AnsiToHtml({ fg: '#e5e7eb', bg: '#18181b', newline: true, colors: [
+    '#000000', '#e06c75', '#98c379', '#e5c07b', '#61afef', '#c678dd', '#56b6c2', '#abb2bf',
+    '#545454', '#d19a66', '#b5bd68', '#f0c674', '#81a2be', '#b294bb', '#8abeb7', '#ffffff'
+  ] });
+  const [logsLoading, setLogsLoading] = useState(false);
+  const [logsError, setLogsError] = useState('');
+
+  function openLogsModal(container: DockerContainer) {
+    setSelectedContainer(container);
+    setShowLogsModal(true);
+    setLogs('');
+    setLogsError('');
+  }
+  function closeLogsModal() {
+    setShowLogsModal(false);
+    setSelectedContainer(null);
+    setLogs('');
+    setLogsError('');
+  }
+
+  async function handleFetchLogs(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedContainer) return;
+    setLogs('');
+    setLogsError('');
+    setLogsLoading(true);
+    try {
+      const params = {
+        host,
+        port,
+        containerId: selectedContainer.Id,
+        ...logFilters,
+        since: logFilters.since ? Number(logFilters.since) : undefined,
+        until: logFilters.until ? Number(logFilters.until) : undefined,
+      };
+      if (logFilters.follow) {
+        // Live streaming
+        setLogs('');
+        await streamContainerLogs({
+          host,
+          port,
+          containerId: selectedContainer.Id,
+          stdout: logFilters.stdout,
+          stderr: logFilters.stderr,
+          tail: logFilters.tail,
+          timestamps: logFilters.timestamps,
+          since: logFilters.since ? Number(logFilters.since) : undefined,
+          until: logFilters.until ? Number(logFilters.until) : undefined,
+          onChunk: (chunk: string) => setLogs(prev => prev + chunk),
+        });
+      } else {
+        // Static logs
+        const result = await getContainerLogs(params);
+        setLogs(result);
+      }
+    } catch (err: any) {
+      setLogsError(err?.message || 'Failed to fetch logs');
+    } finally {
+      setLogsLoading(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -101,12 +178,13 @@ function DockerOpsPage() {
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">State</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Ports</th>
                   <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Created</th>
+                  <th className="px-6 py-4 text-base font-bold text-blue-800 dark:text-blue-100">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRows.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-400">No containers found.</td>
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-400">No containers found.</td>
                   </tr>
                 )}
                 {filteredRows.map((c: DockerContainer) => (
@@ -123,6 +201,12 @@ function DockerOpsPage() {
                       ))}
                     </td>
                     <td className="px-6 py-4">{new Date(c.Created * 1000).toLocaleString()}</td>
+                    <td className="px-6 py-4">
+                      <button
+                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-semibold shadow"
+                        onClick={() => openLogsModal(c)}
+                      >View Logs</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -130,6 +214,72 @@ function DockerOpsPage() {
           )}
         </div>
       </div>
+
+      {/* Logs Modal */}
+      {showLogsModal && selectedContainer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-[98vw] p-0 relative animate-fade-in" style={{ minHeight: '90vh', maxHeight: '98vh', display: 'flex', flexDirection: 'column' }}>
+            <button
+              className="absolute top-6 right-10 text-gray-500 hover:text-gray-800 dark:hover:text-white text-3xl z-10"
+              onClick={closeLogsModal}
+              aria-label="Close"
+              style={{ background: 'rgba(0,0,0,0.08)', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none' }}
+            >&times;</button>
+            <div className="px-10 pt-10 pb-2 flex items-center justify-between" style={{ borderBottom: '1px solid #e5e7eb' }}>
+              <h2 className="text-2xl font-bold text-blue-700 dark:text-blue-200">Container Logs: {selectedContainer.Names.join(', ')}</h2>
+              {/* ...existing code... */}
+            </div>
+            <form className="px-10 py-4 flex flex-wrap gap-6 items-end bg-gray-50 dark:bg-gray-800" onSubmit={handleFetchLogs}>
+              <label className="flex items-center gap-2 text-base">
+                <input type="checkbox" checked={logFilters.stdout} onChange={e => setLogFilters(f => ({ ...f, stdout: e.target.checked }))} /> Stdout
+              </label>
+              <label className="flex items-center gap-2 text-base">
+                <input type="checkbox" checked={logFilters.stderr} onChange={e => setLogFilters(f => ({ ...f, stderr: e.target.checked }))} /> Stderr
+              </label>
+              <label className="flex items-center gap-2 text-base">
+                <input type="checkbox" checked={logFilters.follow} onChange={e => setLogFilters(f => ({ ...f, follow: e.target.checked }))} /> Follow (Live)
+              </label>
+              <label className="text-base">Tail
+                <input type="text" value={logFilters.tail} onChange={e => setLogFilters(f => ({ ...f, tail: e.target.value }))} className="ml-2 px-2 py-1 border rounded w-20" />
+              </label>
+              <label className="flex items-center gap-2 text-base">
+                <input type="checkbox" checked={logFilters.timestamps} onChange={e => setLogFilters(f => ({ ...f, timestamps: e.target.checked }))} /> Timestamps
+              </label>
+              <label className="text-base">Since
+                <input type="text" value={logFilters.since} onChange={e => setLogFilters(f => ({ ...f, since: e.target.value }))} className="ml-2 px-2 py-1 border rounded w-24" placeholder="Unix time" />
+              </label>
+              <label className="text-base">Until
+                <input type="text" value={logFilters.until} onChange={e => setLogFilters(f => ({ ...f, until: e.target.value }))} className="ml-2 px-2 py-1 border rounded w-24" placeholder="Unix time" />
+              </label>
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-base font-semibold shadow"
+                disabled={logsLoading}
+              >{logsLoading ? 'Loading...' : 'Fetch Logs'}</button>
+            </form>
+            {logsError && <div className="text-red-600 mb-3">{logsError}</div>}
+            <div
+              className="flex-1 border-2 border-gray-300 dark:border-gray-700 rounded-b-xl px-8 py-4 overflow-auto text-xs font-mono shadow-inner"
+              style={{ fontSize: '0.8rem', background: '#18181b', color: '#e5e7eb', whiteSpace: 'pre', minHeight: '50vh', maxHeight: 'calc(80vh - 120px)' }}
+            >
+              {logsLoading && !logs ? (
+                <Spinner />
+              ) : logs ? (
+                <div
+                  style={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: '0.8rem', background: 'transparent', color: '#e5e7eb' }}
+                  dangerouslySetInnerHTML={{ __html:
+                    ansiConverter
+                      .toHtml(logs)
+                      .replace(/[\x00-\x1F\x7F-\x9F�]+/g, '')
+                  }}
+                />
+              ) : (
+                <span className="text-gray-500">No logs yet.</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

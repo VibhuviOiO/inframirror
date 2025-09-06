@@ -1,8 +1,119 @@
+// Get container logs (static)
+export async function getContainerLogs({
+  host,
+  port,
+  protocol = 'http',
+  ca,
+  cert,
+  key,
+  containerId,
+  stdout = true,
+  stderr = true,
+  since,
+  until,
+  timestamps,
+  tail,
+}: {
+  host: string;
+  port: string | number;
+  protocol?: string;
+  ca?: string;
+  cert?: string;
+  key?: string;
+  containerId: string;
+  stdout?: boolean;
+  stderr?: boolean;
+  since?: number;
+  until?: number;
+  timestamps?: boolean;
+  tail?: string | number;
+}) {
+  const params = new URLSearchParams({
+    host,
+    port: String(port),
+    protocol,
+    ...(ca ? { ca } : {}),
+    ...(cert ? { cert } : {}),
+    ...(key ? { key } : {}),
+    stdout: String(stdout),
+    stderr: String(stderr),
+    follow: 'false',
+    ...(since ? { since: String(since) } : {}),
+    ...(until ? { until: String(until) } : {}),
+    ...(timestamps ? { timestamps: String(timestamps) } : {}),
+    ...(tail ? { tail: String(tail) } : {}),
+  });
+  const url = apiUrl(`/dockerops/containers/${containerId}/logs?${params.toString()}`);
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(await response.text());
+  const data = await response.json();
+  return data.logs;
+}
+
+// Stream container logs (live)
+export async function streamContainerLogs({
+  host,
+  port,
+  protocol = 'http',
+  ca,
+  cert,
+  key,
+  containerId,
+  stdout = true,
+  stderr = true,
+  since,
+  until,
+  timestamps,
+  tail,
+  onChunk,
+}: {
+  host: string;
+  port: string | number;
+  protocol?: string;
+  ca?: string;
+  cert?: string;
+  key?: string;
+  containerId: string;
+  stdout?: boolean;
+  stderr?: boolean;
+  since?: number;
+  until?: number;
+  timestamps?: boolean;
+  tail?: string | number;
+  onChunk: (chunk: string) => void;
+}) {
+  const params = new URLSearchParams({
+    host,
+    port: String(port),
+    protocol,
+    ...(ca ? { ca } : {}),
+    ...(cert ? { cert } : {}),
+    ...(key ? { key } : {}),
+    stdout: String(stdout),
+    stderr: String(stderr),
+    follow: 'true',
+    ...(since ? { since: String(since) } : {}),
+    ...(until ? { until: String(until) } : {}),
+    ...(timestamps ? { timestamps: String(timestamps) } : {}),
+    ...(tail ? { tail: String(tail) } : {}),
+  });
+  const url = apiUrl(`/dockerops/containers/${containerId}/logs?${params.toString()}`);
+  const response = await fetch(url);
+  if (!response.body) throw new Error('No stream available');
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value);
+    onChunk(chunk);
+  }
+}
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
-function apiUrl(path: string) {
+export function apiUrl(path: string) {
   return `${API_BASE}${path}`;
 }
 
