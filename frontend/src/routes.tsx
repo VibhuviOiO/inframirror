@@ -12,6 +12,7 @@ import DockerOpsPageWithLayout from "./pages/DockerOps";
 import { Service } from "dockerode";
 import ServicesPageWithLayout from "./pages/Services";
 import PostgresOpsPageWithLayout from "./pages/PostgresOps";
+import DockerOperationsPageWithLayout from "./pages/DockerOperations";
 
 const routes = [
   {
@@ -36,6 +37,7 @@ const routes = [
     ],
   },
   { path: "/docker-operations", element: <DockerOpsPageWithLayout /> },
+  { path: "/docker-ops", element: <DockerOperationsPageWithLayout /> },
   { path: "/postgres-operations", element: <PostgresOpsPageWithLayout /> },
   { path: "*", element: <NotFound /> },
 ];

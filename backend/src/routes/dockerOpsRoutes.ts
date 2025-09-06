@@ -5,6 +5,26 @@ import { Readable } from 'stream';
 
 const router = express.Router();
 
+const ANSI_REGEX = /\u001b\[[0-9;]*m/g;
+function demuxDockerStream(buffer: Buffer): string {
+  let cursor = 0;
+  let result = '';
+
+  while (cursor + 8 <= buffer.length) {
+    const length = buffer.readUInt32BE(cursor + 4);
+    const start = cursor + 8;
+    const end = start + length;
+
+    if (end > buffer.length) break; // incomplete frame
+
+    result += buffer.slice(start, end).toString('utf8');
+    cursor = end;
+  }
+
+  return result;
+}
+
+
 function createDockerClient({ host, port, protocol = 'http', ca, cert, key }: any) {
   const opts: any = { host, port, protocol };
   if (ca) opts.ca = fs.readFileSync(ca);
@@ -66,34 +86,26 @@ router.get('/containers/:id/logs', (req, res) => {
   };
 
   container.logs({ ...logOpts, stream: true }, (err, streamOrBuffer) => {
-    if (err) {
-      return res.status(500).json({ message: err.message });
-    }
-    // If follow=true, streamOrBuffer is a stream; else it's a Buffer
-    if (logOpts.follow && streamOrBuffer && typeof (streamOrBuffer as any).on === 'function') {
-      res.setHeader('Content-Type', 'application/octet-stream');
-      res.setHeader('Connection', 'keep-alive');
-      if (logOpts.follow && streamOrBuffer instanceof Readable) {
-        const logStream = streamOrBuffer;
-        logStream.on('data', (chunk: Buffer) => res.write(chunk));
-        logStream.on('end', () => res.end());
-        logStream.on('error', (err: Error) => {
-          res.status(500).json({ message: err.message });
-        });
-        req.on('close', () => {
-          if (typeof logStream.destroy === 'function') logStream.destroy();
-        });
-      } else if (Buffer.isBuffer(streamOrBuffer)) {
-        // Non-streaming: streamOrBuffer is Buffer
-        const logs = streamOrBuffer;
-        res.status(200).json({ logs: logs ? logs.toString() : '' });
-      } else {
-        res.status(500).json({ message: 'Unknown log stream type' });
-      }
+    if (err) return res.status(500).json({ message: err.message });
+
+    if (logOpts.follow && streamOrBuffer instanceof Readable) {
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      const logStream = streamOrBuffer;
+      logStream.on('data', (chunk: Buffer) => {
+        res.write(demuxDockerStream(chunk));
+      });
+      logStream.on('end', () => res.end());
+      logStream.on('error', (err: Error) => {
+        res.status(500).json({ message: err.message });
+      });
+      req.on('close', () => {
+        if (typeof logStream.destroy === 'function') logStream.destroy();
+      });
     } else {
-      // Non-streaming: streamOrBuffer is Buffer
+      // Buffer mode (non-follow)
       const logs = streamOrBuffer as Buffer;
-      res.status(200).json({ logs: logs ? logs.toString() : '' });
+      const cleanLogs = demuxDockerStream(logs);
+      res.status(200).json({ logs: cleanLogs });
     }
   });
 });
