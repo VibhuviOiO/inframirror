@@ -131,27 +131,48 @@ function DockerDesktopInspiredOperations() {
           {selectedContainer ? (
             <>
               <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-4">
-                  <span className="font-bold text-xl text-gray-800 dark:text-gray-100">{selectedContainer.Names[0]}</span>
-                  <span className="text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200">{selectedContainer.Image}</span>
-                  <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">ID: {selectedContainer.Id.slice(0, 12)}</span>
+                {/* Container Name (no leading slash) */}
+                <span className="font-bold text-2xl text-gray-800 dark:text-gray-100">
+                  {selectedContainer.Names[0].replace(/^\//, '')}
+                </span>
+                {/* Info badges in a single line below name */}
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  {/* Image:tag as single badge with tag icon */}
+                  <span className="text-[11px] px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="inline-block" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41a2 2 0 0 0 0-2.82l-7.18-7.18a2 2 0 0 0-2.82 0l-5.18 5.18a2 2 0 0 0 0 2.82l7.18 7.18a2 2 0 0 0 2.82 0z"/><path d="M7 7h.01"/></svg>
+                    {selectedContainer.Image}
+                  </span>
+                  {/* Ports */}
                   {selectedContainer.Ports && selectedContainer.Ports.length > 0 ? (
                     Array.from(new Set(selectedContainer.Ports.map(p =>
                       p.PublicPort ? `${p.PublicPort}:${p.PrivatePort}` : `:${p.PrivatePort}`
                     ))).map((portStr, idx) => (
                       <span
                         key={portStr}
-                        className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-700 mr-1"
+                        className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-700"
+                        style={{ lineHeight: '1.2' }}
                       >
                         {portStr}
                       </span>
                     ))
                   ) : (
-                    <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">-</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200" style={{ lineHeight: '1.2' }}>-</span>
                   )}
-                  <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">Status: {selectedContainer.Status}</span>
-                  <span className={`text-xs px-2 py-1 rounded ${selectedContainer.State === 'running' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{selectedContainer.State}</span>
-                  <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">Uptime: {getUptime(selectedContainer.Created)}</span>
+                  {/* Status/Uptime/Started badges, UI-friendly wording */}
+                  <span className={`text-[11px] px-2 py-1 rounded flex items-center gap-2 ${selectedContainer.State === 'running' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {/* Status: Running/Exited/Paused */}
+                    <span className="font-semibold">{selectedContainer.State.charAt(0).toUpperCase() + selectedContainer.State.slice(1)}</span>
+                    {/* Uptime with clock icon */}
+                    <span className="flex items-center gap-1 text-gray-700 dark:text-gray-200" title="How long the container has been running">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="inline-block" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      Up for {getUptime(selectedContainer.Created)}
+                    </span>
+                    {/* Started time badge */}
+                    <span className="flex items-center gap-1 text-gray-700 dark:text-gray-200" title="When the container was started">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="inline-block" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                      Started {new Date(selectedContainer.Created * 1000).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}
+                    </span>
+                  </span>
                 </div>
               </div>
               <div className="flex gap-2 items-center">
@@ -190,63 +211,56 @@ function DockerDesktopInspiredOperations() {
           </div>
         )}
 
-  <div className="px-8 py-6 bg-gray-50 dark:bg-gray-900">
-          {selectedContainer && activeTab === 'Logs' && (
-            <div className="flex flex-col justify-start w-full">
-              <div className="w-full">
-                <div className="flex items-center justify-end mb-2 px-2 gap-2">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={searchLogs}
-                      onChange={e => setSearchLogs(e.target.value)}
-                      placeholder="Search logs..."
-                      className="pl-8 pr-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none"
-                      style={{ width: '180px' }}
-                    />
-                    <span className="absolute left-2 top-1.5 text-gray-400">
-                      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    </span>
-                  </div>
-                  <button title="Copy logs" className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" onClick={() => filteredLogs && navigator.clipboard.writeText(filteredLogs)}>
-                      <Clipboard size={16} />
-                    </button>
-                    <button title="Download logs" className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" onClick={() => {
-                      const blob = new Blob([filteredLogs], { type: 'text/plain' });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = `${selectedContainer.Names[0]}-logs.txt`;
-                      a.click();
-                      URL.revokeObjectURL(url);
-                    }}>
-                      <Download size={16} />
-                    </button>
-                    <button title="Auto-scroll" className={`p-2 rounded ${autoScroll ? 'bg-blue-100 dark:bg-blue-900' : ''}`} onClick={() => setAutoScroll(v => !v)}>
-                      <ChevronDown size={16} />
-                    </button>
-                </div>
-                <div className="relative border bg-gray-100 dark:bg-gray-800 w-full text-xs font-mono shadow-inner overflow-x-auto overflow-y-auto flex-1 h-full">
-                  {logsLoading && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
-                      <Spinner />
-                    </div>
-                  )}
-                  <div
-                    ref={logsBoxRef}
-                    className="p-4 whitespace-pre-wrap break-words font-mono text-xs h-full"
-                    dangerouslySetInnerHTML={{ __html: ansi_up.ansi_to_html(filteredLogs) }}
-                  />
-                </div>
+        {selectedContainer && activeTab === 'Logs' && (
+          <div className="flex flex-col justify-start w-full px-8">
+            <div className="flex items-center justify-end mb-2 px-4 gap-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchLogs}
+                  onChange={e => setSearchLogs(e.target.value)}
+                  placeholder="Search logs..."
+                  className="pl-2 pr-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none"
+                  style={{ width: '180px' }}
+                />
               </div>
+              <button title="Copy logs" className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" onClick={() => filteredLogs && navigator.clipboard.writeText(filteredLogs)}>
+                <Clipboard size={16} />
+              </button>
+              <button title="Download logs" className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" onClick={() => {
+                const blob = new Blob([filteredLogs], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${selectedContainer.Names[0]}-logs.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}>
+                <Download size={16} />
+              </button>
+              <button title="Auto-scroll" className={`p-2 rounded ${autoScroll ? 'bg-blue-100 dark:bg-blue-900' : ''}`} onClick={() => setAutoScroll(v => !v)}>
+                <ChevronDown size={16} />
+              </button>
             </div>
-          )}
-          {selectedContainer && activeTab !== 'Logs' && (
-            <div className="text-sm text-gray-700 dark:text-gray-200 flex items-center justify-center h-full">
-              <span className="opacity-60">{tabs.find(t => t.key === activeTab)?.label} feature coming soon...</span>
+            <div className="relative border bg-gray-100 dark:bg-gray-800 w-full text-xs font-mono shadow-inner overflow-x-auto overflow-y-auto flex-1 h-full">
+              {logsLoading && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+                  <Spinner />
+                </div>
+              )}
+              <div
+                ref={logsBoxRef}
+                className="p-4 whitespace-pre-wrap break-words font-mono text-xs h-full"
+                dangerouslySetInnerHTML={{ __html: ansi_up.ansi_to_html(filteredLogs) }}
+              />
             </div>
-          )}
-        </div>
+          </div>
+        )}
+        {selectedContainer && activeTab !== 'Logs' && (
+          <div className="text-sm text-gray-700 dark:text-gray-200 flex items-center justify-center h-full">
+            <span className="opacity-60">{tabs.find(t => t.key === activeTab)?.label} feature coming soon...</span>
+          </div>
+        )}
       </main>
     </div>
   );
