@@ -7,7 +7,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }} # e.g. VibhuviOiO/inframirror
 
 jobs:
   build-and-push:
@@ -29,6 +28,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          tags: |
+            # latest tag
+            type=raw,value=latest
+
+            # branch tag (strips "release-")
+            type=ref,event=branch,prefix=,suffix=,pattern=release-(\d+\.\d+\.\d+),group=1
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -36,6 +47,5 @@ jobs:
           file: ./Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME,, }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME,, }}:${{ github.ref_name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
