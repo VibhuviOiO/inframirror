@@ -8,11 +8,7 @@ import { Play, Pause, RotateCcw, StopCircle, Trash2, FileText, Search, Terminal,
 import { AnsiUp } from 'ansi_up';
 const ansi_up = new AnsiUp();
 import { ContainerFilter } from '@/components/container/ContainerFilter';
-import { CpuStatsChart } from '../components/container/DockerStatsDashboard/CpuStatsChart';
-import { MemoryStatsDonut } from '../components/container/DockerStatsDashboard/MemoryStatsDonut';
-import { NetworkStatsGraph } from '../components/container/DockerStatsDashboard/NetworkStatsGraph';
-import { DiskIoStatsBar } from '../components/container/DockerStatsDashboard/DiskIoStatsBar';
-import { PidStatsCard } from '../components/container/DockerStatsDashboard/PidStatsCard';
+import { DockerStatsSummary } from '../components/container/DockerStatsDashboard/DockerStatsSummary';
 import { useDockerStats } from '../hooks/useDockerOps';
 
 function DockerDesktopInspiredOperations() {
@@ -586,7 +582,7 @@ function ContainerCard({
                     <X size={18} className="text-red-600 dark:text-red-400" />
                   </button>
                 </div>
-                <span className="opacity-60 text-sm text-gray-700 dark:text-gray-200">{tabs.find(t => t.key === activeTab)?.label} feature coming soon...</span>
+                {/* Removed 'feature coming soon...' placeholder */}
               </div>
             )
         )}
@@ -596,16 +592,9 @@ function ContainerCard({
             {statsQuery.isLoading && <div className="text-xs text-gray-400">Loading stats...</div>}
             {statsQuery.isError && <div className="text-xs text-red-500">Error loading stats</div>}
             {statsQuery.data && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <CpuStatsChart stats={statsQuery.data} />
-                  <MemoryStatsDonut stats={statsQuery.data} />
-                  <PidStatsCard stats={statsQuery.data} />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <NetworkStatsGraph stats={statsQuery.data} />
-                  <DiskIoStatsBar stats={statsQuery.data} />
-                </div>
+              <div className="relative">
+                {/* Only one close button remains, duplicate removed */}
+                <DockerStatsSummary stats={statsQuery.data} />
               </div>
             )}
             {!statsQuery.data && !statsQuery.isLoading && !statsQuery.isError && (
