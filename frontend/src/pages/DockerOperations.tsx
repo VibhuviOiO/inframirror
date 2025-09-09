@@ -99,14 +99,6 @@ function DockerDesktopInspiredOperations() {
     });
   }, [containers, search, statusFilter, imageFilter]);
 
-  const tabs = [
-    { key: 'Logs', label: 'Logs', icon: <FileText size={16} className="inline-block" /> },
-    { key: 'Inspect', label: 'Inspect', icon: <Search size={16} className="inline-block" /> },
-    { key: 'Exec', label: 'Exec', icon: <Terminal size={16} className="inline-block" /> },
-    { key: 'Files', label: 'Files', icon: <FolderOpen size={16} className="inline-block" /> },
-    { key: 'Stats', label: 'Stats', icon: <BarChart2 size={16} className="inline-block" /> },
-  ];
-
   const [activeTabs, setActiveTabs] = useState<{ [id: string]: string | null }>({});
   const [tabMenusOpen, setTabMenusOpen] = useState<{ [id: string]: boolean }>({});
   const [logsState, setLogsState] = useState<{ [id: string]: string }>({});
@@ -114,15 +106,6 @@ function DockerDesktopInspiredOperations() {
   const [autoScrollState, setAutoScrollState] = useState<{ [id: string]: boolean }>({});
   const [searchLogsState, setSearchLogsState] = useState<{ [id: string]: string }>({});
   const logsBoxRefs = useRef<{ [id: string]: HTMLDivElement | null }>({});
-
-  function getUptime(created: number): string {
-    const now = Date.now() / 1000;
-    const seconds = Math.max(0, Math.floor(now - created));
-    if (seconds < 60) return `${seconds}s`;
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
-    return `${Math.floor(seconds / 86400)}d`;
-  }
 
   async function fetchLogs(containerId: string) {
     setLogsLoadingState(prev => ({ ...prev, [containerId]: true }));
@@ -299,9 +282,6 @@ function InspectTabUI({ container, host, port, onClose }) {
   return (
     <div className="w-full flex flex-col gap-2 pt-4">
       <div className="flex items-center mb-2 gap-2 w-full justify-between">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-8 pb-2">
-  <ContainerFilter value={search} onChange={setSearch} />
-</div>
         <input
           type="text"
           value={search}
@@ -404,8 +384,6 @@ function ContainerCard({
   const tabs = [
     { key: 'Logs', label: 'Logs', icon: <FileText size={16} className="inline-block" /> },
     { key: 'Inspect', label: 'Inspect', icon: <Search size={16} className="inline-block" /> },
-    { key: 'Exec', label: 'Exec', icon: <Terminal size={16} className="inline-block" /> },
-    { key: 'Files', label: 'Files', icon: <FolderOpen size={16} className="inline-block" /> },
     { key: 'Stats', label: 'Stats', icon: <BarChart2 size={16} className="inline-block" /> },
   ];
 
