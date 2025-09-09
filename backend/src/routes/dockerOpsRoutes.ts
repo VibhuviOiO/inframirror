@@ -132,4 +132,33 @@ router.get('/containers/:id/inspect', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+// GET /api/dockerops/containers/:id/stats
+router.get('/containers/:id/stats', async (req, res) => {
+  const { host, port, protocol, ca, cert, key, stream } = req.query;
+  const { id } = req.params;
+  if (!host || !port || !id) {
+    return res.status(400).json({ message: 'host, port, and container id are required' });
+  }
+  try {
+    const docker = createDockerClient({ host, port, protocol, ca, cert, key });
+    const container = docker.getContainer(id);
+    // dockerode: container.stats([options], callback)
+    const opts: any = { stream: stream === 'true' };
+    container.stats(opts, (err, stats) => {
+      if (err) return res.status(500).json({ message: err.message });
+      if (opts.stream && stats instanceof Readable) {
+        res.setHeader('Content-Type', 'application/json');
+        stats.pipe(res);
+        req.on('close', () => {
+          if (typeof stats.destroy === 'function') stats.destroy();
+        });
+      } else {
+        res.status(200).json(stats);
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
 export default router;
