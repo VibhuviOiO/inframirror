@@ -240,3 +240,47 @@ export function useDockerInspect(params: DockerInspectParams, enabled = true) {
     enabled,
   });
 }
+
+export interface DockerStatsParams {
+  host: string;
+  port: number | string;
+  protocol?: string;
+  ca?: string;
+  cert?: string;
+  key?: string;
+  id: string;
+  stream?: boolean;
+}
+
+export interface DockerStats {
+  name: string;
+  id: string;
+  read: string;
+  preread: string;
+  pids_stats: Record<string, any>;
+  blkio_stats: Record<string, any>;
+  num_procs: number;
+  storage_stats: Record<string, any>;
+  cpu_stats: Record<string, any>;
+  precpu_stats: Record<string, any>;
+  memory_stats: Record<string, any>;
+  networks?: Record<string, any>;
+}
+
+export function useDockerStats(params: DockerStatsParams, enabled = true) {
+  return useQuery<DockerStats>({
+    queryKey: ['docker-stats', params],
+    queryFn: async () => {
+      const { id, ...rest } = params;
+      const searchParams = new URLSearchParams();
+      Object.entries(rest).forEach(([key, value]) => {
+        if (value === undefined) return;
+        searchParams.append(key, String(value));
+      });
+      const url = apiUrl(`/dockerops/containers/${id}/stats?${searchParams.toString()}`);
+      const { data } = await axios.get(url);
+      return data;
+    },
+    enabled,
+  });
+}

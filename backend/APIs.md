@@ -213,3 +213,27 @@ curl "http://localhost:8080/api/dockerops/containers/b70cd93dd5809810fa87aa066b6
 curl "http://localhost:8080/api/dockerops/containers/b70cd93dd5809810fa87aa066b68403d48df42dbc1667a4640d7209d545fc432/logs?host=192.168.0.104&port=2375&protocol=http&stdout=true&stderr=true&follow=true"
 
 curl "http://localhost:8080/api/dockerops/containers/b70cd93dd5809810fa87aa066b68403d48df42dbc1667a4640d7209d545fc432/inspect?host=192.168.0.104&port=2375"
+
+curl "http://localhost:8080//api/dockerops/containers/b70cd93dd5809810fa87aa066b68403d48df42dbc1667a4640d7209d545fc432/stats?host=192.168.0.104&port=2375"
+
+http://localhost:8080/api/dockerops/containers/b6f00abd2660/stats?host=192.168.0.104&port=2375
+
+## Docker Container Stats API
+
+**Endpoint:**
+```
+GET /api/dockerops/containers/:id/stats?host=<HOST_IP>&port=<PORT>&stream=false
+```
+
+**Sample Request:**
+```
+GET /api/dockerops/containers/1234567890abcdef/stats?host=192.168.0.104&port=2375&stream=false
+```
+
+- `id`: Docker container ID
+- `host`: Target Docker host IP
+- `port`: Target Docker host port (usually 2375)
+- `stream`: Set to `false` for a single stats snapshot, or `true` for a live stream
+
+**Response:**
+Returns container stats in JSON format.
