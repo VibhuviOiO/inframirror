@@ -53,16 +53,23 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
       {expanded ? (
         <>
           <div className="flex items-center gap-3 mb-8 px-8 pt-8">
-            <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center shadow-lg">
-              <Database className="h-6 w-6 text-indigo-600" />
+            <div className="h-12 w-12 flex items-center justify-center overflow-hidden">
+              <img src="/inframirror.png" alt="InfraMirror Logo" className="h-11 w-11 object-contain" />
             </div>
             <div>
-              <span className="text-base font-bold tracking-tight text-gray-800">
-                InfraHub
+              <span
+                className="text-2xl font-extrabold tracking-tight"
+                style={{
+                  background: 'linear-gradient(90deg, #4F46E5 0%, #EC4899 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  color: 'transparent',
+                  display: 'inline-block',
+                }}
+              >
+                Infra Mirror
               </span>
-              <p className="text-xs text-gray-500 tracking-wide mt-1">
-                Management Console
-              </p>
             </div>
           </div>
           <nav className="flex-1 flex flex-col justify-between overflow-y-auto px-4 pb-4">
@@ -167,8 +174,8 @@ export default function Sidebar({ expanded, setExpanded }: SidebarProps) {
       ) : (
         <>
           <div className="flex items-center justify-center h-20 border-b border-gray-100 group relative">
-            <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center shadow">
-              <Database className="h-7 w-7 text-indigo-600" />
+            <div className="h-14 w-14 flex items-center justify-center overflow-hidden">
+              <img src="/inframirror.png" alt="InfraMirror Logo" className="h-12 w-12 object-contain" />
             </div>
           </div>
           <div className="flex-1 flex flex-col gap-2 mt-6 overflow-y-auto">

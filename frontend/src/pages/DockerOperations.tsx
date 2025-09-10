@@ -360,10 +360,25 @@ function ContainerCard({
     return `${Math.floor(seconds / 86400)}d`;
   }
 
-  async function fetchLogsContainer(containerId: string) {
+  // Log range state per container
+  const [logRangeState, setLogRangeState] = useState<{ [id: string]: string }>({});
+
+  // Helper to get 'since' timestamp for hours
+  function getSince(hoursAgo: number) {
+    return Math.floor(Date.now() / 1000) - hoursAgo * 3600;
+  }
+
+  async function fetchLogsContainer(containerId: string, range?: string) {
     setLogsLoadingState(prev => ({ ...prev, [containerId]: true }));
     try {
-      const result = await getContainerLogs({ host, port, containerId });
+      let params: any = { host, port, containerId };
+      const selected = range || logRangeState[containerId] || '100';
+      if (selected.endsWith('h')) {
+        params.since = getSince(Number(selected.replace('h', '')));
+      } else {
+        params.tail = Number(selected);
+      }
+      const result = await getContainerLogs(params);
       setLogsState(prev => ({ ...prev, [containerId]: result }));
     } catch {
       setLogsState(prev => ({ ...prev, [containerId]: 'Failed to fetch logs' }));
@@ -470,8 +485,25 @@ function ContainerCard({
                 onChange={e => setSearchLogsState(prev => ({ ...prev, [container.Id]: e.target.value }))}
                 placeholder="Search logs..."
                 className="pl-2 pr-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none"
-                style={{ width: '180px' }}
+                style={{ width: '140px' }}
               />
+              {/* Log range selector */}
+              <select
+                value={logRangeState[container.Id] || '100'}
+                onChange={e => {
+                  setLogRangeState(prev => ({ ...prev, [container.Id]: e.target.value }));
+                  fetchLogsContainer(container.Id, e.target.value);
+                }}
+                className="px-2 py-1 rounded border border-blue-200 bg-white dark:bg-gray-900 text-xs text-gray-700 dark:text-gray-200"
+                style={{ minWidth: 90, height: 28 }}
+              >
+                <option value="100">Last 100</option>
+                <option value="500">Last 500</option>
+                <option value="1000">Last 1000</option>
+                <option value="1h">Last 1 hour</option>
+                <option value="6h">Last 6 hours</option>
+                <option value="24h">Last 24 hours</option>
+              </select>
               {/* Switch to toggle log order */}
               <div className="flex items-center gap-2 ml-2">
                 <label className="flex items-center gap-1 text-xs text-gray-700 dark:text-gray-200">
