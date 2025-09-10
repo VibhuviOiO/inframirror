@@ -37,6 +37,7 @@ COPY --from=builder /app/backend/dist ./dist
 COPY --from=builder /app/backend/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/backend/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/frontend/dist ./public
+COPY backend/prisma ./prisma
 
 RUN mkdir -p /app/config
 ENV NODE_ENV=production
