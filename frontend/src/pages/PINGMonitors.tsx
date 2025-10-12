@@ -533,7 +533,7 @@ const PINGMonitorsContent: React.FC = () => {
             key={monitor.id} 
             monitor={monitor} 
             onClick={() => {
-              navigate(`/monitors/${monitor.id}`);
+              navigate(`/monitors/${monitor.monitorId}`);
             }}
           />
         ))}

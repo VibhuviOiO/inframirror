@@ -378,53 +378,86 @@ const MonitorDetailContent: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate API calls - replace with real API
-    setTimeout(() => {
-      // Mock monitor details
-      setMonitor({
-        id: Number(id),
-        monitorId: 'us-east-1-build-info',
-        monitorName: 'Build Info API',
-        monitorType: 'HTTP',
-        targetHost: 'api.example.com',
-        targetPort: 443,
-        targetPath: '/v1/build-info',
-        httpMethod: 'GET',
-        agentId: 'api-monitor-us-east-1@us-east-1-agent-01',
-        agentRegion: 'us-east-1',
-        expectedStatusCode: 200,
-        createdAt: '2025-01-01T00:00:00Z'
-      });
+    const fetchMonitorData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch monitor history using the proper API endpoint
+        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}monitors/history/${id}`;
+        console.log('Fetching from URL:', apiUrl);
+        
+        const historyResponse = await fetch(apiUrl);
+        console.log('Response status:', historyResponse.status);
+        
+        if (!historyResponse.ok) {
+          throw new Error(`Failed to fetch monitor history: ${historyResponse.status}`);
+        }
+        
+        const historyData = await historyResponse.json();
+        
+        if (historyData.length === 0) {
+          setLoading(false);
+          return;
+        }
 
-      // Mock history data
-      const mockHistory: MonitorHistory[] = [];
-      for (let i = 0; i < 200; i++) {
-        const time = new Date(Date.now() - i * 30000); // Every 30 seconds
-        const success = Math.random() > 0.1; // 90% success rate
-        mockHistory.push({
-          id: i,
-          executedAt: time.toISOString(),
-          success,
-          responseTime: success ? Math.floor(Math.random() * 500) + 100 : Math.floor(Math.random() * 5000) + 1000,
-          responseStatusCode: success ? 200 : Math.random() > 0.5 ? 404 : 500,
-          errorMessage: success ? undefined : 'Connection timeout',
-          rawResponseBody: success ? '{"status":"ok","version":"1.0.0"}' : undefined
+        // Get monitor details from the first record
+        const firstRecord = historyData[0];
+        setMonitor({
+          id: firstRecord.id,
+          monitorId: firstRecord.monitorId,
+          monitorName: firstRecord.monitorName,
+          monitorType: firstRecord.monitorType,
+          targetHost: firstRecord.targetHost,
+          targetPort: firstRecord.targetPort,
+          targetPath: firstRecord.targetPath,
+          httpMethod: firstRecord.httpMethod,
+          agentId: firstRecord.agentId,
+          agentRegion: firstRecord.agentRegion,
+          expectedStatusCode: firstRecord.expectedStatusCode,
+          createdAt: firstRecord.executedAt
         });
+
+        // Process history data
+        const processedHistory: MonitorHistory[] = historyData.map((item: any) => ({
+          id: item.id,
+          executedAt: item.executedAt,
+          success: item.success,
+          responseTime: item.responseTime,
+          responseStatusCode: item.responseStatusCode,
+          errorMessage: item.errorMessage,
+          rawResponseBody: item.rawResponseBody
+        }));
+        
+        setHistory(processedHistory);
+
+        // Calculate stats from history data
+        const successfulChecks = processedHistory.filter(h => h.success).length;
+        const totalChecks = processedHistory.length;
+        const avgResponseTime = processedHistory.reduce((sum, h) => sum + (h.responseTime || 0), 0) / totalChecks;
+        const successRate = totalChecks > 0 ? (successfulChecks / totalChecks) * 100 : 0;
+        const uptime = successRate; // Simplified uptime calculation
+        const incidents = processedHistory.filter(h => !h.success).length;
+        const lastFailure = processedHistory.find(h => !h.success);
+
+        setStats({
+          uptime: Math.round(uptime * 10) / 10,
+          avgResponseTime: Math.round(avgResponseTime),
+          totalChecks,
+          successRate: Math.round(successRate * 10) / 10,
+          incidents,
+          lastIncident: lastFailure?.executedAt
+        });
+
+      } catch (error) {
+        console.error('Error fetching monitor data:', error);
+      } finally {
+        setLoading(false);
       }
-      setHistory(mockHistory);
+    };
 
-      // Mock stats
-      setStats({
-        uptime: 99.2,
-        avgResponseTime: 245,
-        totalChecks: mockHistory.length,
-        successRate: 90,
-        incidents: 3,
-        lastIncident: '2025-10-12T15:30:00Z'
-      });
-
-      setLoading(false);
-    }, 1000);
+    if (id) {
+      fetchMonitorData();
+    }
   }, [id]);
 
   const latestCheck = history[0];
@@ -452,7 +485,7 @@ const MonitorDetailContent: React.FC = () => {
         <div className="text-center space-y-4">
           <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto" />
           <h2 className="text-xl font-semibold">Monitor not found</h2>
-          <Button onClick={() => navigate('/monitors')}>
+          <Button onClick={() => navigate('/monitors/http')}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Monitors
           </Button>
@@ -465,7 +498,7 @@ const MonitorDetailContent: React.FC = () => {
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => navigate('/monitors')}>
+        <Button variant="ghost" onClick={() => navigate('/monitors/http')}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>

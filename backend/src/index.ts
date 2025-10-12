@@ -16,6 +16,7 @@ import integrationRoutes from './routes/integrationRoutes.js';
 import integrationInstanceRoutes from './routes/integrationInstanceRoutes.js';
 import dockerOpsRoutes from './routes/dockerOpsRoutes.js';
 import postgresOpsRoutes from './routes/postgresOpsRoutes.js';
+import monitorRoutes from './routes/monitorRoutes.js';
 
 
 
@@ -58,6 +59,7 @@ app.use('/api/integrations', integrationRoutes);
 app.use('/api/integration-instances', integrationInstanceRoutes);
 app.use('/api/dockerops', dockerOpsRoutes);
 app.use('/api/postgresops', postgresOpsRoutes);
+app.use('/api/monitors', monitorRoutes);
 
 
 app.get('*', (req, res) => {

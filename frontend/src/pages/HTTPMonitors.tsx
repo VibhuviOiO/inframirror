@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useHTTPMonitors, type Monitor } from "../hooks/useMonitors";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Globe,
@@ -28,47 +29,7 @@ import {
 import { cn } from "@/lib/utils";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
-interface HTTPMonitor {
-  id: number;
-  monitorId: string;
-  monitorName: string;
-  monitorType: 'HTTP';
-  targetHost: string;
-  targetPort?: number;
-  targetPath?: string;
-  
-  // HTTP-specific fields
-  httpMethod?: string;
-  expectedStatusCode?: number;
-  
-  // Execution Context
-  executedAt: string;
-  agentId: string;
-  agentRegion: string;
-  
-  // Response Data
-  success: boolean;
-  responseTime?: number;
-  responseSizeBytes?: number;
-  responseStatusCode?: number;
-  responseContentType?: string;
-  responseServer?: string;
-  responseCacheStatus?: string;
-  
-  // Network Performance
-  dnsLookupMs?: number;
-  tcpConnectMs?: number;
-  tlsHandshakeMs?: number;
-  timeToFirstByteMs?: number;
-  
-  // Error Tracking
-  errorMessage?: string;
-  errorType?: string;
-  
-  // Raw Data
-  rawResponseBody?: string;
-  rawResponseHeaders?: any;
-}
+type HTTPMonitor = Monitor;
 
 const HTTPStatusBadge: React.FC<{ 
   status: number | undefined, 
@@ -281,130 +242,32 @@ const HTTPMonitorCard: React.FC<{ monitor: HTTPMonitor, onClick: () => void }> =
 
 const HTTPMonitorsContent: React.FC = () => {
   const navigate = useNavigate();
-  const [monitors, setMonitors] = useState<HTTPMonitor[]>([]);
-  const [filteredMonitors, setFilteredMonitors] = useState<HTTPMonitor[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
   const [methodFilter, setMethodFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
+  
+  // Prepare filters for API call
+  const filters = {
+    ...(regionFilter !== 'all' && { agentRegion: regionFilter }),
+    ...(statusFilter === 'success' && { success: true }),
+    ...(statusFilter === 'failure' && { success: false }),
+    ...(searchQuery && { targetHost: searchQuery }),
+    limit: 100,
+    sortBy: 'executedAt' as const,
+    sortOrder: 'desc' as const
+  };
 
-  // Mock data - replace with real API calls
-  useEffect(() => {
-    setTimeout(() => {
-      const mockData: HTTPMonitor[] = [
-        {
-          id: 1,
-          monitorId: 'us-east-1-build-info',
-          monitorName: 'Build Info API',
-          monitorType: 'HTTP',
-          targetHost: 'api.example.com',
-          targetPort: 443,
-          targetPath: '/v1/build-info',
-          httpMethod: 'GET',
-          expectedStatusCode: 200,
-          agentId: 'api-monitor-us-east-1@us-east-1-agent-01',
-          agentRegion: 'us-east-1',
-          executedAt: new Date().toISOString(),
-          success: true,
-          responseTime: 245,
-          responseSizeBytes: 1024,
-          responseStatusCode: 200,
-          responseContentType: 'application/json; charset=utf-8',
-          responseServer: 'nginx/1.20.1',
-          responseCacheStatus: 'HIT',
-          dnsLookupMs: 15,
-          tcpConnectMs: 45,
-          tlsHandshakeMs: 67,
-          timeToFirstByteMs: 123,
-          rawResponseBody: '{"status":"ok","version":"1.0.0"}'
-        },
-        {
-          id: 2,
-          monitorId: 'us-west-2-api-health',
-          monitorName: 'Health Check Endpoint',
-          monitorType: 'HTTP',
-          targetHost: 'health.example.com',
-          targetPort: 80,
-          targetPath: '/health',
-          httpMethod: 'GET',
-          expectedStatusCode: 200,
-          agentId: 'api-monitor-us-west-2@us-west-2-agent-01',
-          agentRegion: 'us-west-2',
-          executedAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-          success: false,
-          responseTime: 5000,
-          responseStatusCode: 504,
-          responseContentType: 'text/html',
-          responseServer: 'Apache/2.4.41',
-          dnsLookupMs: 25,
-          tcpConnectMs: 4800,
-          errorMessage: 'Gateway timeout',
-          errorType: 'TIMEOUT'
-        },
-        {
-          id: 3,
-          monitorId: 'eu-west-1-user-api',
-          monitorName: 'User Management API',
-          monitorType: 'HTTP',
-          targetHost: 'users.example.com',
-          targetPort: 443,
-          targetPath: '/api/v2/users',
-          httpMethod: 'POST',
-          expectedStatusCode: 201,
-          agentId: 'api-monitor-eu-west-1@eu-west-1-agent-01',
-          agentRegion: 'eu-west-1',
-          executedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-          success: true,
-          responseTime: 156,
-          responseSizeBytes: 512,
-          responseStatusCode: 201,
-          responseContentType: 'application/json',
-          responseServer: 'Express.js',
-          dnsLookupMs: 8,
-          tcpConnectMs: 23,
-          tlsHandshakeMs: 45,
-          timeToFirstByteMs: 89
-        }
-      ];
-      setMonitors(mockData);
-      setFilteredMonitors(mockData);
-      setLoading(false);
-    }, 1000);
-  }, []);
+  const { data: monitors = [], isLoading: loading, error } = useHTTPMonitors(filters);
 
-  // Filter logic
-  useEffect(() => {
-    let filtered = monitors;
-
-    if (searchQuery) {
-      filtered = filtered.filter(monitor => 
-        monitor.monitorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.targetHost.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.agentRegion.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.targetPath?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(monitor => {
-        if (statusFilter === 'healthy') return monitor.success && monitor.responseStatusCode && monitor.responseStatusCode < 300;
-        if (statusFilter === 'error') return !monitor.success || (monitor.responseStatusCode && monitor.responseStatusCode >= 400);
-        if (statusFilter === 'redirect') return monitor.responseStatusCode && monitor.responseStatusCode >= 300 && monitor.responseStatusCode < 400;
-        return true;
-      });
-    }
-
-    if (regionFilter !== 'all') {
-      filtered = filtered.filter(monitor => monitor.agentRegion === regionFilter);
-    }
-
-    if (methodFilter !== 'all') {
-      filtered = filtered.filter(monitor => monitor.httpMethod === methodFilter);
-    }
-
-    setFilteredMonitors(filtered);
-  }, [monitors, searchQuery, statusFilter, regionFilter, methodFilter]);
+  // Client-side filtering for additional filters not handled by API
+  const filteredMonitors = monitors.filter(monitor => {
+    if (methodFilter !== 'all' && monitor.httpMethod !== methodFilter) return false;
+    if (statusFilter === 'healthy' && (!monitor.success || !monitor.responseStatusCode || monitor.responseStatusCode >= 300)) return false;
+    if (statusFilter === 'error' && (monitor.success && monitor.responseStatusCode && monitor.responseStatusCode < 400)) return false;
+    if (statusFilter === 'redirect' && (!monitor.responseStatusCode || monitor.responseStatusCode < 300 || monitor.responseStatusCode >= 400)) return false;
+    return true;
+  });
 
   const stats = {
     total: monitors.length,
@@ -432,6 +295,22 @@ const HTTPMonitorsContent: React.FC = () => {
             ))}
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card className="p-12 text-center">
+          <div className="space-y-3">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
+            <h3 className="text-lg font-semibold">Failed to load HTTP monitors</h3>
+            <p className="text-muted-foreground">
+              {error instanceof Error ? error.message : 'An error occurred while fetching monitor data'}
+            </p>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -559,7 +438,7 @@ const HTTPMonitorsContent: React.FC = () => {
             key={monitor.id} 
             monitor={monitor} 
             onClick={() => {
-              navigate(`/monitors/${monitor.id}`);
+              navigate(`/monitors/${monitor.monitorId}`);
             }}
           />
         ))}
