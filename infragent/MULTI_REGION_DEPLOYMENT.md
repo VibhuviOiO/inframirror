@@ -234,39 +234,6 @@ monitors:
 
 ### Automated Multi-Region Deployment
 
-**Deploy to All Regions:**
-```bash
-#!/bin/bash
-# deploy-all-regions.sh
-
-REGIONS=("us-east-1" "us-west-2" "eu-west-1")
-DB_PASSWORD="your-secure-password"
-
-for region in "${REGIONS[@]}"; do
-    echo "🚀 Deploying Infragent to $region region..."
-    
-    # Copy region-specific configuration
-    cp configs/monitors-${region}.yml ./configs/
-    
-    # Deploy to region
-    docker-compose -f docker-compose-${region}.yml up -d
-    
-    # Verify deployment
-    echo "⏳ Waiting for $region agent to start..."
-    sleep 30
-    
-    # Health check
-    AGENT_URL="http://${region}-agent.example.com:8081"
-    if curl -s ${AGENT_URL}/health | grep -q "healthy"; then
-        echo "✅ $region agent is healthy"
-    else
-        echo "❌ $region agent health check failed"
-    fi
-done
-
-echo "🎯 Multi-region deployment complete!"
-```
-
 ### Region-Specific Environment Files
 
 **Chicago Environment (.env.chicago):**
