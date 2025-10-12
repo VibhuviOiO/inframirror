@@ -114,7 +114,17 @@ export async function getLatestMonitors(filters?: MonitorFilters) {
 
 // Protocol-specific convenience methods using deduplicated latest data
 export async function getHTTPMonitors(filters?: MonitorFilters) {
-  return getLatestMonitors({ ...filters, monitorType: 'HTTP' });
+  // Get both HTTP and HTTPS monitors for the HTTP page
+  const httpMonitors = await getLatestMonitors({ ...filters, monitorType: 'HTTP' });
+  const httpsMonitors = await getLatestMonitors({ ...filters, monitorType: 'HTTPS' });
+  
+  // Combine and sort by execution time (most recent first)
+  const allMonitors = [...httpMonitors, ...httpsMonitors];
+  return allMonitors.sort((a, b) => {
+    const timeA = a?.executedAt ? new Date(a.executedAt).getTime() : 0;
+    const timeB = b?.executedAt ? new Date(b.executedAt).getTime() : 0;
+    return timeB - timeA;
+  });
 }
 
 export async function getTCPMonitors(filters?: MonitorFilters) {

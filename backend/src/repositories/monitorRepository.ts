@@ -73,7 +73,9 @@ export async function getLatestForEachMonitor(filters?: MonitorFilters) {
     monitorType,
     agentRegion,
     success,
-    targetHost
+    targetHost,
+    activeOnly,
+    maxAge = 15 // Default to 15 minutes
   } = filters || {};
 
   // Build the where clause
@@ -85,6 +87,14 @@ export async function getLatestForEachMonitor(filters?: MonitorFilters) {
     whereClause.targetHost = {
       contains: targetHost,
       mode: 'insensitive'
+    };
+  }
+
+  // Add activeOnly filter - only show monitors with recent activity
+  if (activeOnly) {
+    const cutoffTime = new Date(Date.now() - (maxAge * 60 * 1000)); // Convert minutes to milliseconds
+    whereClause.executedAt = {
+      gte: cutoffTime
     };
   }
 
@@ -105,6 +115,14 @@ export async function getLatestForEachMonitor(filters?: MonitorFilters) {
         monitorWhere.targetHost = {
           contains: targetHost,
           mode: 'insensitive'
+        };
+      }
+
+      // Add activeOnly filter for individual monitor lookup
+      if (activeOnly) {
+        const cutoffTime = new Date(Date.now() - (maxAge * 60 * 1000));
+        monitorWhere.executedAt = {
+          gte: cutoffTime
         };
       }
 

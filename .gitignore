@@ -46,6 +46,7 @@ postgres-data/
 
 # Sensitive infrastructure files
 marathon-state.json
+real_api_calls.txt
 *-state.json
 
 # Editor directories and files

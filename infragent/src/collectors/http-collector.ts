@@ -71,6 +71,14 @@ export class HttpCollector extends BaseCollector {
     return 'HTTP' as MonitorType;
   }
 
+  // Determine monitor type based on URL protocol
+  private getMonitorTypeForUrl(url: string): MonitorType {
+    if (url.startsWith('https://') || url.includes('443')) {
+      return 'HTTPS' as MonitorType;
+    }
+    return 'HTTP' as MonitorType;
+  }
+
   async collect(): Promise<MonitorResult[]> {
     const results: MonitorResult[] = [];
 
@@ -93,7 +101,11 @@ export class HttpCollector extends BaseCollector {
 
   private async monitorHttpTarget(target: HttpTarget): Promise<MonitorResult> {
     const startTime = Date.now();
+    // The target.url should already be the full URL from expandTargetsFromConfig
     const baseResult = this.createBaseResult(target.name, this.extractHost(target.url));
+    
+    // Override monitor type based on actual URL protocol
+    baseResult.monitorType = this.getMonitorTypeForUrl(target.url);
     
     // Merge target config with defaults
     const config = {

@@ -171,6 +171,7 @@ enum HostKind {
 
 enum MonitorType {
   HTTP
+  HTTPS
   TCP
   UDP
   PING

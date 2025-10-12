@@ -13,7 +13,7 @@ export interface Monitor {
   // Monitor Configuration
   monitorId: string;
   monitorName?: string | null;
-  monitorType: 'HTTP' | 'TCP' | 'UDP' | 'PING' | 'DNS';
+  monitorType: 'HTTP' | 'HTTPS' | 'TCP' | 'UDP' | 'PING' | 'DNS';
   targetHost: string;
   targetPort?: number | null;
   targetPath?: string | null;
@@ -77,6 +77,8 @@ export interface MonitorFilters {
   offset?: number;
   sortBy?: 'executedAt' | 'responseTime' | 'monitorId';
   sortOrder?: 'asc' | 'desc';
+  activeOnly?: boolean; // Show only monitors with recent activity
+  maxAge?: number; // Max age in minutes for considering monitors active (default: 15)
 }
 
 export interface MonitorStats {

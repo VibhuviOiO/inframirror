@@ -62,7 +62,9 @@ router.get('/http', async (req, res, next) => {
       limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
       offset: req.query.offset ? parseInt(req.query.offset as string) : undefined,
       sortBy: req.query.sortBy as 'executedAt' | 'responseTime' | 'monitorId',
-      sortOrder: req.query.sortOrder as 'asc' | 'desc'
+      sortOrder: req.query.sortOrder as 'asc' | 'desc',
+      activeOnly: req.query.activeOnly ? req.query.activeOnly === 'true' : undefined,
+      maxAge: req.query.maxAge ? parseInt(req.query.maxAge as string) : undefined
     };
 
     // Remove undefined values
