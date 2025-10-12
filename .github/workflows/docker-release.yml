@@ -1,4 +1,8 @@
 name: Build and Publish Backend+Frontend
+permissions:
+  contents: read
+  packages: write
+  id-token: write
 
 on:
   push:
