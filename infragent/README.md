@@ -10,8 +10,6 @@ A lightweight, modular monitoring agent that supports multiple protocols and pro
 - **Production Ready**: Docker deployment, PostgreSQL storage, health endpoints
 - **Modular Architecture**: Plugin-based collectors for easy extensibility
 
-## Quick Start
-
 ### Docker Deployment (Recommended)
 
 ```bash
