@@ -1,0 +1,42 @@
+# Infragent Configuration Example
+# Copy to agent.yml and customize for your environment
+
+agent:
+  name: "infragent"
+  interval: 30
+  timeout: 10000
+  health:
+    enabled: true
+    port: 8081
+    endpoints:
+      health: "/health"
+      metrics: "/metrics"
+
+storage:
+  postgresql:
+    enabled: true
+    connection:
+      host: "${DATABASE_HOST:-localhost}"
+      port: ${DATABASE_PORT:-5432}
+      database: "${DATABASE_NAME:-inframirror}"
+      username: "${DATABASE_USER:-inframirror}"
+      password: "${DATABASE_PASSWORD:-inframirror}"
+      ssl: false
+    pool:
+      min_connections: 2
+      max_connections: 10
+      idle_timeout_ms: 30000
+      connection_timeout_ms: 5000
+    batching:
+      enabled: true
+      batch_size: 100
+      flush_interval_ms: 10000
+
+logging:
+  level: "info"
+  pretty: true
+
+features:
+  hot_reload: true
+  self_monitoring: true
+  prometheus_metrics: true

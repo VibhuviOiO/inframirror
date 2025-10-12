@@ -1,0 +1,178 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Region {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  datacenters Datacenter[]
+}
+
+model Environment {
+  id        Int                   @id @default(autoincrement())
+  name      String                @unique
+  clusters  Cluster[]
+  instances IntegrationInstance[]
+}
+
+model Datacenter {
+  id          Int                   @id @default(autoincrement())
+  name        String
+  shortName   String
+  privateCIDR String?
+  publicCIDR  String?
+  regionId    Int
+  clusters    Cluster[]
+  region      Region                @relation(fields: [regionId], references: [id])
+  hosts       Host[]
+  instances   IntegrationInstance[]
+}
+
+model Host {
+  id           Int                   @id @default(autoincrement())
+  datacenterId Int
+  hostname     String                @unique
+  privateIP    String
+  publicIP     String?
+  kind         HostKind
+  tags         Json?
+  datacenter   Datacenter            @relation(fields: [datacenterId], references: [id])
+  instances    IntegrationInstance[]
+}
+
+model Cluster {
+  id            Int                   @id @default(autoincrement())
+  name          String
+  environmentId Int?
+  datacenterId  Int?
+  datacenter    Datacenter?           @relation(fields: [datacenterId], references: [id])
+  environment   Environment?          @relation(fields: [environmentId], references: [id])
+  instances     IntegrationInstance[]
+}
+
+model Integration {
+  id              Int                   @id @default(autoincrement())
+  name            String                @unique
+  integrationType IntegrationType
+  version         String
+  description     String?
+  updatedAt       DateTime              @updatedAt
+  enabled         Boolean               @default(false)
+  instances       IntegrationInstance[]
+}
+
+model IntegrationInstance {
+  id            Int          @id @default(autoincrement())
+  datacenterId  Int?
+  hostId        Int
+  clusterId     Int?
+  environmentId Int?
+  integrationId Int
+  port          Int?
+  config        Json?
+  cluster       Cluster?     @relation(fields: [clusterId], references: [id])
+  datacenter    Datacenter?  @relation(fields: [datacenterId], references: [id])
+  environment   Environment? @relation(fields: [environmentId], references: [id])
+  host          Host         @relation(fields: [hostId], references: [id])
+  integration   Integration  @relation(fields: [integrationId], references: [id])
+}
+
+model Monitors {
+  id                     Int         @id @default(autoincrement())
+  
+  // Monitor Configuration
+  monitorId              String
+  monitorName            String?
+  monitorType            MonitorType
+  targetHost             String      // hostname/IP for all monitor types
+  targetPort             Int?        // for TCP/UDP/HTTP
+  targetPath             String?     // for HTTP requests
+  
+  // HTTP-specific fields
+  httpMethod             String?     // GET, POST, etc. (only for HTTP)
+  expectedStatusCode     Int?        // only for HTTP
+  
+  // DNS-specific fields
+  dnsQueryType           String?     // A, AAAA, MX, CNAME, etc. (only for DNS)
+  dnsExpectedResponse    String?     // expected DNS response (only for DNS)
+  
+  // Execution Context
+  executedAt             DateTime    @default(now())
+  agentId                String?
+  agentRegion            String?
+  
+  // Universal Response Data
+  success                Boolean
+  responseTime           Int?        // milliseconds (all monitor types)
+  responseSizeBytes      Int?        // response size (HTTP/DNS)
+  
+  // HTTP Response Data
+  responseStatusCode     Int?        // HTTP status code (only for HTTP)
+  responseContentType    String?     // Content-Type header (only for HTTP)
+  responseServer         String?     // Server header (only for HTTP)
+  responseCacheStatus    String?     // Cache status (only for HTTP)
+  
+  // Network Performance Metrics
+  dnsLookupMs           Int?         // DNS resolution time (all types)
+  tcpConnectMs          Int?         // TCP connection time (TCP/HTTP)
+  tlsHandshakeMs        Int?         // TLS handshake time (HTTPS/secure TCP)
+  timeToFirstByteMs     Int?         // TTFB (HTTP)
+  
+  // PING-specific metrics
+  packetLoss            Float?       // packet loss percentage (only for PING)
+  jitterMs              Int?         // network jitter (only for PING)
+  
+  // DNS-specific response
+  dnsResponseValue      String?      // actual DNS response value (only for DNS)
+  
+  // Error Tracking
+  errorMessage          String?
+  errorType             String?
+  
+  // Raw Data (conditional - only when rawResponseSave=true)
+  rawResponseHeaders    Json?        // HTTP headers (only for HTTP)
+  rawResponseBody       String?      // HTTP response body (only for HTTP)
+  rawRequestHeaders     Json?        // HTTP request headers (only for HTTP)
+  rawNetworkData        Json?        // raw network data for other protocols
+  
+  // Indexes
+  @@index([monitorId])
+  @@index([executedAt(sort: Desc)])
+  @@index([success])
+  @@index([monitorType])
+  @@index([targetHost])
+  @@index([responseTime(sort: Desc)])
+  @@index([agentRegion])
+  @@index([errorType])
+  @@map("monitors")
+}
+
+enum IntegrationType {
+  Database
+  KeyValueStore
+  SearchEngine
+  Cache
+  OrchestrationFramework
+  Container
+  Gateway
+}
+
+enum HostKind {
+  VM
+  Physical
+  BareMetal
+}
+
+enum MonitorType {
+  HTTP
+  TCP
+  UDP
+  PING
+  DNS
+}

@@ -1,0 +1,45 @@
+# Infragent Monitor Configuration Examples
+# Copy to monitors.yml and customize for your infrastructure
+
+# HTTP/HTTPS Monitoring
+http:
+  enabled: true
+  defaults:
+    interval_seconds: 30
+    timeout_seconds: 15
+    user_agent: "Infragent/1.0"
+    
+  targets:
+    # Example: Public API health check
+    - name: "github-api"
+      url: "https://api.github.com/status"
+      method: "GET"
+      expected_status: [200]
+      interval_seconds: 60
+      
+    # Example: Your website
+    - name: "my-website"
+      url: "https://example.com"
+      method: "GET"
+      expected_status: [200, 301, 302]
+      interval_seconds: 120
+
+# TCP Port Monitoring  
+tcp:
+  enabled: true
+  defaults:
+    interval_seconds: 30
+    timeout_seconds: 5
+    
+  targets:
+    # Example: Database connection
+    - name: "database-server"
+      host: "localhost"
+      port: 5432
+      description: "PostgreSQL database"
+      
+    # Example: Web service
+    - name: "api-server"  
+      host: "10.0.0.100"
+      port: 8080
+      description: "API server port"

@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output  
+dist/
+
+# Environment files
+.env
+.env.local
+
+# Logs
+*.log
+coverage/
+.nyc_output/
+
+# OS files
+.DS_Store
+
+# Package files
+*.tgz
+
+# Private configuration files (use examples as templates)
+configs/agent.yml
+configs/monitors.yml
+examples
