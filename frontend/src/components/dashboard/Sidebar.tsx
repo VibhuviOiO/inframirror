@@ -12,6 +12,9 @@ import {
   Menu,
   ChevronLeft,
   ChevronRight,
+  Activity,
+  Globe,
+  Zap,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -19,6 +22,16 @@ const menuGroups = [
   {
     title: "Main",
     items: [{ name: "Dashboard", icon: Home, href: "/" }],
+  },
+  {
+    title: "Monitoring",
+    items: [
+      { name: "Overview", icon: Activity, href: "/monitoring" },
+      { name: "HTTP(S)", icon: Globe, href: "/monitors/http" },
+      { name: "TCP", icon: Network, href: "/monitors/tcp" },
+      { name: "PING", icon: Zap, href: "/monitors/ping" },
+      { name: "DNS", icon: Database, href: "/monitors/dns" },
+    ],
   },
   {
     title: "Infrastructure", 

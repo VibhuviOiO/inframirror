@@ -13,29 +13,68 @@ services:
       - "5432:5432"
     volumes:
       - ./tmp/pgdata:/var/lib/postgresql/data
-
-  infragent:
+  agent-us-east-1:
     image: infragent:latest
-    container_name: infragent
-    restart: unless-stopped
-    depends_on:
-      - postgres
+    container_name: infragent-us-east-1
+    hostname: us-east-1-agent-01
     environment:
-      DATABASE_URL: postgresql://inframirror:inframirror@postgres:5432/inframirror
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
-      DATABASE_NAME: inframirror
-      DATABASE_USER: inframirror
-      DATABASE_PASSWORD: inframirror
-      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # Agent Identity
+      - AGENT_NAME=api-monitor-us-east-1
+      - DATACENTER=us-east-1
+      - AGENT_HOST=us-east-1-agent-01
+      
+      # Database Connection
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=inframirror
+      - DATABASE_USER=inframirror
+      - DATABASE_PASSWORD=inframirror
+      
+      # Configuration
+      - MONITORS_CONFIG=/app/configs/monitors-us-east-1.yml
+      - LOG_LEVEL=info
+      
     volumes:
-      - ./tmp/configs/agent.yml:/app/configs/agent.yml:ro
-      - ./tmp/configs/monitors.yml:/app/configs/monitors.yml:ro
+      - ./tmp/config/monitors-us-east-1.yml:/app/configs/monitors-us-east-1.yml:ro
+      - ./tmp/config/agent-us-east-1.yml:/app/configs/agent.yml:ro
+      - agent1_logs:/app/logs
+    
     ports:
-      - "${HEALTH_PORT:-8081}:8081"
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+      - "8081:8081"  # Health endpoints
+    restart: unless-stopped
+
+  # Agent 2 - US West 2 (Search & Discovery APIs)
+  agent-us-west-2:
+    image: infragent:latest
+    container_name: infragent-us-west-2
+    hostname: us-west-2-agent-01
+    environment:
+      # Agent Identity
+      - AGENT_NAME=api-monitor-us-west-2
+      - DATACENTER=us-west-2
+      - AGENT_HOST=us-west-2-agent-01
+      
+      # Database Connection
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=inframirror
+      - DATABASE_USER=inframirror
+      - DATABASE_PASSWORD=inframirror
+      
+      # Configuration
+      - MONITORS_CONFIG=/app/configs/monitors-us-west-2.yml
+      - LOG_LEVEL=info
+      
+    volumes:
+      - ./tmp/config/monitors-us-west-2.yml:/app/configs/monitors-us-west-2.yml:ro
+      - ./tmp/config/agent-us-west-2.yml:/app/configs/agent.yml:ro
+      - agent2_logs:/app/logs
+    
+    ports:
+      - "8082:8081"  # Health endpoints (mapped to avoid conflict)
+      
+    restart: unless-stopped
+
+volumes:
+  agent1_logs:
+  agent2_logs:
