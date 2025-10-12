@@ -27,11 +27,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: inframirror
-  
-permissions:
-  contents: read
-  packages: write
-  id-token: write
 
 jobs:
   build-and-push:
