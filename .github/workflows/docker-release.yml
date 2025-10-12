@@ -1,20 +1,38 @@
-name: Build and Publish Docker Image
+name: Build and Publish Backend+Frontend
 
 on:
   push:
     branches:
       - main
       - release-*
+    paths:
+      - 'backend/**'
+      - 'frontend/**' 
+      - 'docker/**'
+      - 'Dockerfile'
+      - 'package*.json'
+      - '.github/workflows/docker-release.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'docker/**' 
+      - 'Dockerfile'
+      - 'package*.json'
 
 env:
   REGISTRY: ghcr.io
+  IMAGE_NAME: inframirror
+  
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,24 +50,36 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata for Docker
+      - name: Set lowercase organization name
+        id: lowercase
+        run: |
+          echo "org_lower=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Extract metadata for Backend+Frontend
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          images: ${{ env.REGISTRY }}/${{ steps.lowercase.outputs.org_lower }}/${{ env.IMAGE_NAME }}
           tags: |
-            # latest tag
-            type=raw,value=latest
+            # latest tag for main branch
+            type=raw,value=latest,enable={{is_default_branch}}
+            # branch name
+            type=ref,event=branch
+            # version tags for release branches  
+            type=ref,event=branch,prefix=v,suffix=,pattern=release-(.+)
+            # short commit hash for PRs and development
+            type=sha,prefix={{branch}}-,format=short
+            # PR number for pull requests
+            type=ref,event=pr,prefix=pr-
 
-            # branch tag (strips "release-")
-            type=ref,event=branch,prefix=,suffix=,pattern=release-(\d+\.\d+\.\d+),group=1
-
-      - name: Build and push Docker image
+      - name: Build and push Backend+Frontend image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
