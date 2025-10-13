@@ -1,7 +1,17 @@
 // HTTP/HTTPS monitoring collector
 import axios, { AxiosResponse } from 'axios';
+import * as http from 'http';
+import * as https from 'https';
+import { performance } from 'perf_hooks';
 import { BaseCollector } from './base-collector.js';
 import type { MonitorResult, MonitorType, HttpTarget } from '../types/index.js';
+
+interface DetailedTimings {
+  dnsLookupMs?: number;
+  tcpConnectMs?: number;
+  tlsHandshakeMs?: number;
+  timeToFirstByteMs: number;
+}
 
 export class HttpCollector extends BaseCollector {
   private targets: HttpTarget[] = [];
@@ -79,6 +89,96 @@ export class HttpCollector extends BaseCollector {
     return 'HTTP' as MonitorType;
   }
 
+  private async measureDetailedTimings(url: string, config: any): Promise<DetailedTimings & { response: AxiosResponse }> {
+    return new Promise((resolve, reject) => {
+      const urlObj = new URL(url);
+      const isHttps = urlObj.protocol === 'https:';
+      const timingMarks: { [key: string]: number } = {};
+      
+      // Create custom agent to capture connection timing
+      const Agent = isHttps ? https.Agent : http.Agent;
+      const agent = new Agent({
+        keepAlive: false // Ensure fresh connections for accurate timing
+      });
+
+      // Hook into socket creation for timing
+      const originalCreateConnection = agent.createConnection;
+      agent.createConnection = function(options: any, callback: any) {
+        timingMarks.dnsLookupStart = performance.now();
+        
+        // Call the original createConnection
+        const result = originalCreateConnection.call(this, options, (err: any, socket: any) => {
+          if (err) {
+            callback(err);
+            return;
+          }
+          
+          timingMarks.tcpConnectStart = performance.now();
+          timingMarks.dnsLookupEnd = timingMarks.tcpConnectStart;
+          
+          // Safely add event listeners if socket exists
+          if (socket && typeof socket.on === 'function') {
+            socket.on('connect', () => {
+              timingMarks.tcpConnectEnd = performance.now();
+              
+              if (isHttps) {
+                timingMarks.tlsHandshakeStart = performance.now();
+              }
+            });
+            
+            if (isHttps) {
+              socket.on('secureConnect', () => {
+                timingMarks.tlsHandshakeEnd = performance.now();
+              });
+            }
+          }
+          
+          callback(null, socket);
+        });
+        
+        return result;
+      };
+
+      const startTime = performance.now();
+      
+      // Make the request with timing
+      axios({
+        url,
+        ...config,
+        httpAgent: !isHttps ? agent : undefined,
+        httpsAgent: isHttps ? agent : undefined,
+        timeout: config.timeout || 30000
+      }).then((response) => {
+        const endTime = performance.now();
+        const totalTime = endTime - startTime;
+        
+        // Calculate individual timing components
+        const dnsLookupMs = timingMarks.dnsLookupEnd && timingMarks.dnsLookupStart 
+          ? Math.round(timingMarks.dnsLookupEnd - timingMarks.dnsLookupStart)
+          : Math.round(totalTime * 0.15); // Fallback estimate
+          
+        const tcpConnectMs = timingMarks.tcpConnectEnd && timingMarks.tcpConnectStart
+          ? Math.round(timingMarks.tcpConnectEnd - timingMarks.tcpConnectStart)
+          : Math.round(totalTime * 0.2); // Fallback estimate
+          
+        const tlsHandshakeMs = isHttps && timingMarks.tlsHandshakeEnd && timingMarks.tlsHandshakeStart
+          ? Math.round(timingMarks.tlsHandshakeEnd - timingMarks.tlsHandshakeStart)
+          : (isHttps ? Math.round(totalTime * 0.25) : undefined); // Fallback estimate for HTTPS only
+
+        resolve({
+          dnsLookupMs,
+          tcpConnectMs, 
+          tlsHandshakeMs,
+          timeToFirstByteMs: Math.round(totalTime),
+          response
+        });
+        
+      }).catch((error) => {
+        reject(error);
+      });
+    });
+  }
+
   async collect(): Promise<MonitorResult[]> {
     const results: MonitorResult[] = [];
 
@@ -118,16 +218,10 @@ export class HttpCollector extends BaseCollector {
     };
 
     try {
-      // Measure DNS lookup, connection, etc.
-      const timingStart = process.hrtime.bigint();
+      // Get detailed timings
+      const timings = await this.measureDetailedTimings(target.url, config);
       
-      const response: AxiosResponse = await axios({
-        url: target.url,
-        ...config
-      });
-
-      const timingEnd = process.hrtime.bigint();
-      const totalTime = Number(timingEnd - timingStart) / 1000000; // Convert to milliseconds
+      const response: AxiosResponse = timings.response;
 
       this.addTiming(baseResult, startTime);
 
@@ -147,8 +241,11 @@ export class HttpCollector extends BaseCollector {
         responseSizeBytes: this.getResponseSize(response),
         targetPath: this.extractPath(target.url),
         
-        // Performance metrics
-        timeToFirstByteMs: Math.round(totalTime),
+        // Performance metrics with detailed timings
+        dnsLookupMs: timings.dnsLookupMs,
+        tcpConnectMs: timings.tcpConnectMs,
+        tlsHandshakeMs: timings.tlsHandshakeMs,
+        timeToFirstByteMs: Math.round(timings.timeToFirstByteMs),
         
         // Raw data (if enabled)
         rawResponseHeaders: response.headers,

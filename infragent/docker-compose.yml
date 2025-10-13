@@ -1,0 +1,25 @@
+# Infragent - Infrastructure Monitoring Agent
+# Agent only - connects to external PostgreSQL
+services:
+  infragent:
+    image: infragent:latest
+    container_name: infragent
+    environment:
+      DATABASE_URL: postgresql://inframirror:inframirror@localhost:5432/inframirror
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: inframirror
+      DATABASE_USER: inframirror
+      DATABASE_PASSWORD: inframirror
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - ./configs/agent.yml:/app/configs/agent.yml:ro
+      - ./configs/monitors.yml:/app/configs/monitors.yml:ro
+    ports:
+      - "${HEALTH_PORT:-8081}:8081"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s

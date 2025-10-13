@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -129,7 +130,11 @@ const PerformanceMetrics: React.FC<{ monitor: HTTPMonitor }> = ({ monitor }) => 
   );
 };
 
-const HTTPMonitorCard: React.FC<{ monitor: HTTPMonitor, onClick: () => void }> = ({ monitor, onClick }) => {
+const HTTPMonitorCard: React.FC<{ 
+  monitor: HTTPMonitor, 
+  onClick: () => void,
+  onShowResponseBody: (responseBody: { name: string, body: string }) => void
+}> = ({ monitor, onClick, onShowResponseBody }) => {
   const lastCheck = new Date(monitor.executedAt);
   const isRecent = Date.now() - lastCheck.getTime() < 5 * 60 * 1000; // 5 minutes
   
@@ -347,7 +352,17 @@ const HTTPMonitorCard: React.FC<{ monitor: HTTPMonitor, onClick: () => void }> =
               )}
 
               {monitor.rawResponseBody && (
-                <Badge variant="outline" className="text-xs text-blue-600">
+                <Badge 
+                  variant="outline" 
+                  className="text-xs text-blue-600 cursor-pointer hover:bg-blue-50 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onShowResponseBody({
+                      name: monitor.monitorName,
+                      body: monitor.rawResponseBody!
+                    });
+                  }}
+                >
                   <Eye className="w-3 h-3 mr-1" />
                   Body
                 </Badge>
@@ -397,6 +412,7 @@ const HTTPMonitorsContent: React.FC = () => {
   const [methodFilter, setMethodFilter] = useState('all');
   const [showActiveOnly, setShowActiveOnly] = useState(true);
   const [activeWindow, setActiveWindow] = useState(15); // minutes
+  const [selectedResponseBody, setSelectedResponseBody] = useState<{ name: string, body: string } | null>(null);
   
   // Prepare filters for API call (excluding search - handled client-side for smoother UX)
   const filters = useMemo(() => ({
@@ -729,20 +745,6 @@ const HTTPMonitorsContent: React.FC = () => {
         </div>
       </div>
 
-      {/* Active Monitoring Status */}
-      {showActiveOnly && filteredMonitors.length > 0 && (
-        <div className="flex items-center gap-2 mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-          <Activity className="w-4 h-4 text-green-600" />
-          <span className="text-sm font-medium text-green-800 dark:text-green-200">
-            Showing {filteredMonitors.length} active monitors with activity in the last {activeWindow} minutes
-          </span>
-          <Badge variant="outline" className="ml-auto text-green-700 border-green-300">
-            <Clock className="w-3 h-3 mr-1" />
-            Updated: {new Date().toLocaleTimeString()}
-          </Badge>
-        </div>
-      )}
-
       {/* Monitor Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {filteredMonitors.map(monitor => (
@@ -752,6 +754,7 @@ const HTTPMonitorsContent: React.FC = () => {
             onClick={() => {
               navigate(`/monitors/${monitor.monitorId}`);
             }}
+            onShowResponseBody={setSelectedResponseBody}
           />
         ))}
       </div>
@@ -767,6 +770,23 @@ const HTTPMonitorsContent: React.FC = () => {
           </div>
         </Card>
       )}
+
+      {/* Response Body Dialog */}
+      <Dialog open={!!selectedResponseBody} onOpenChange={() => setSelectedResponseBody(null)}>
+        <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>Response Body</DialogTitle>
+            <DialogDescription>
+              Raw response body for monitor: {selectedResponseBody?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            <pre className="bg-gray-50 p-4 rounded-lg overflow-auto max-h-96 text-sm font-mono whitespace-pre-wrap border">
+              {selectedResponseBody?.body}
+            </pre>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

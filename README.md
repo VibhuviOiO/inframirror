@@ -42,3 +42,7 @@ Docker image is automatically built and pushed to GitHub Container Registry (`gh
 - The frontend is built and served from the backend container's `/public` directory.
 - Backend serves API at `/api` and static files for SPA frontend.
 - Database initialization and seeding are optional for development.
+
+## APIS REF
+- [Public APIs List](https://github.com/public-apis/public-apis?tab=readme-ov-file#calendar)
+
