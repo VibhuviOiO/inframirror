@@ -252,6 +252,46 @@ curl -X POST /api/agents/us-east-1-agent-01/register
 - **Testing**: Comprehensive testing in staging environment
 - **Documentation**: Clear rollback procedures
 
+## Future Feature Requirements
+
+### Retries Configuration
+**Status**: Not currently implemented - requires future development
+
+The monitoring system should support configurable retry logic for failed checks:
+
+```yaml
+# Proposed retry configuration structure
+monitors:
+  - name: "api-monitor"
+    url: "/api/health"
+    retry_policy:
+      max_attempts: 3        # Total attempts (1 initial + 2 retries)
+      backoff_strategy: "exponential"  # linear, exponential, fixed
+      base_delay_ms: 1000    # Initial retry delay
+      max_delay_ms: 10000    # Maximum delay between retries
+      timeout_per_attempt: 5000  # Timeout for each individual attempt
+```
+
+**Implementation Priority**: Medium - Add after database-driven configuration is complete
+
+**Database Schema Addition**:
+```sql
+-- Add retry configuration to monitor config JSONB
+ALTER TABLE agent_monitors 
+ADD COLUMN retry_config JSONB DEFAULT '{
+  "max_attempts": 1,
+  "backoff_strategy": "fixed", 
+  "base_delay_ms": 1000,
+  "max_delay_ms": 5000,
+  "timeout_per_attempt": 5000
+}';
+```
+
+**Frontend Filter Impact**: 
+- Currently retries filter is placeholder in UI
+- Will need retry count tracking in monitor results
+- Add retry statistics to monitoring dashboard
+
 ## Success Criteria
 
 ### Phase 1 Success

@@ -74,6 +74,7 @@ interface MonitorHistory {
   responseStatusCode?: number;
   errorType?: string;
   errorMessage?: string;
+  agentRegion?: string;
 }
 
 interface MonitorDetails {
@@ -110,6 +111,7 @@ const MonitorDetailContent: React.FC = () => {
   const [availabilityTimeRange, setAvailabilityTimeRange] = useState('24h');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
+  const [selectedDatacenter, setSelectedDatacenter] = useState<string>('all');
 
   // Filter history based on availability time range
   const filteredHistory = React.useMemo(() => {
@@ -326,7 +328,8 @@ const MonitorDetailContent: React.FC = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+          {/* Row 1: Title and Controls */}
+          <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
               <Button 
                 variant="ghost" 
@@ -337,51 +340,104 @@ const MonitorDetailContent: React.FC = () => {
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                <span className="font-semibold text-gray-900">{monitor.url}</span>
-                <Button variant="outline" size="sm">Edit</Button>
+              <div>
+                <h1 className="font-bold text-2xl text-gray-900">{monitor.monitorName || `Monitor ${id}`}</h1>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="text-blue-600"
-              >
-                <Play className="w-4 h-4 mr-2" />
-                Schedule now
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setAutoRefresh(!autoRefresh)}
-                className={`${autoRefresh ? 'bg-green-50 text-green-700 border-green-200' : ''}`}
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
-                {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
-              </Button>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <div className="text-2xl font-bold text-green-600">
+                  {(() => {
+                    const successCount = filteredHistory.filter(h => h.success).length;
+                    const totalCount = filteredHistory.length;
+                    const uptime = totalCount > 0 ? ((successCount / totalCount) * 100).toFixed(2) : '100.00';
+                    return `${uptime}%`;
+                  })()}
+                </div>
+                <div className="text-xs text-gray-500">Uptime</div>
+              </div>
+              
+              <div className="flex flex-col items-end gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setAutoRefresh(!autoRefresh)}
+                  className={`${autoRefresh ? 'bg-green-50 text-green-700 border-green-200' : ''}`}
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
+                  {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
+                </Button>
+                
+                {/* Status Badge */}
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const successCount = filteredHistory.filter(h => h.success).length;
+                    const totalCount = filteredHistory.length;
+                    const uptime = totalCount > 0 ? (successCount / totalCount) * 100 : 100;
+                    
+                    if (uptime >= 99) {
+                      return (
+                        <>
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                          <span className="text-sm text-green-600 font-medium">Check is passing</span>
+                        </>
+                      );
+                    } else if (uptime >= 95) {
+                      return (
+                        <>
+                          <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                          <span className="text-sm text-yellow-600 font-medium">Check has issues</span>
+                        </>
+                      );
+                    } else {
+                      return (
+                        <>
+                          <XCircle className="w-4 h-4 text-red-500" />
+                          <span className="text-sm text-red-600 font-medium">Check is failing</span>
+                        </>
+                      );
+                    }
+                  })()}
+                </div>
+              </div>
             </div>
           </div>
           
-          {/* Monitor Info */}
-          <div className="mt-4 flex items-center gap-6">
-            <div className="text-sm text-gray-600">
-              GET {monitor.url} • 
-              <span className="text-green-600 ml-1">
-                42 SSL days remaining
-              </span> • 
-              🇺🇸 🇩🇪 •
-              <span className="ml-1">via</span>
+          {/* Row 2: Monitor Details */}
+          <div className="mt-3 flex items-center justify-between">
+            <div className="flex items-center gap-8 text-sm">
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-gray-500" />
+                <span className="font-medium">URL:</span>
+                <span className="font-mono text-blue-600">{monitor.url}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Network className="w-4 h-4 text-gray-500" />
+                <span className="font-medium">Method:</span>
+                <Badge variant="secondary">GET</Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-gray-500" />
+                <span className="font-medium">Protocol:</span>
+                <Badge variant="outline">HTTPS</Badge>
+              </div>
             </div>
-          </div>
-          
-          {/* Status Badge */}
-          <div className="mt-3">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-green-600 font-medium">Check is passing</span>
+            
+            <div className="flex items-center gap-8 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span>
+                  {(() => {
+                    const uniqueDatacenters = [...new Set(history.map(h => h.agentRegion).filter(Boolean))];
+                    return `${uniqueDatacenters.length} datacenter${uniqueDatacenters.length !== 1 ? 's' : ''} • ${uniqueDatacenters.join(', ')}`;
+                  })()}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span>Every 30 seconds</span>
+              </div>
             </div>
           </div>
         </div>
@@ -389,61 +445,68 @@ const MonitorDetailContent: React.FC = () => {
 
       <div className="flex h-screen">
         {/* Left Panel - Main Content */}
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-4">
           {/* Filter Bar */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-gray-500" />
-                <Button variant="outline" size="sm">Custom</Button>
+          <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-gray-500" />
+                  <Button variant="outline" size="sm">Custom</Button>
+                </div>
+                
+                <div className="flex items-center gap-1">
+                  <Button 
+                    variant={availabilityTimeRange === '1h' ? 'default' : 'outline'} 
+                    size="sm"
+                    onClick={() => setAvailabilityTimeRange('1h')}
+                  >
+                    Today
+                  </Button>
+                  <Button 
+                    variant={availabilityTimeRange === '1h' ? 'default' : 'outline'} 
+                    size="sm"
+                    onClick={() => setAvailabilityTimeRange('1h')}
+                  >
+                    1hr
+                  </Button>
+                  <Button 
+                    variant={availabilityTimeRange === '6h' ? 'default' : 'outline'} 
+                    size="sm"
+                    onClick={() => setAvailabilityTimeRange('6h')}
+                  >
+                    3hr
+                  </Button>
+                  <Button 
+                    variant={availabilityTimeRange === '24h' ? 'default' : 'outline'} 
+                    size="sm"
+                    onClick={() => setAvailabilityTimeRange('24h')}
+                  >
+                    24hr
+                  </Button>
+                  <Button 
+                    variant={availabilityTimeRange === '7d' ? 'default' : 'outline'} 
+                    size="sm"
+                    onClick={() => setAvailabilityTimeRange('7d')}
+                  >
+                    7d
+                  </Button>
+                  <Button 
+                    variant={availabilityTimeRange === '30d' ? 'default' : 'outline'} 
+                    size="sm"
+                    onClick={() => setAvailabilityTimeRange('30d')}
+                  >
+                    30d
+                  </Button>
+                </div>
+                
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Location
+                </Button>
               </div>
               
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant={availabilityTimeRange === '1h' ? 'default' : 'outline'} 
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('1h')}
-                >
-                  Today
-                </Button>
-                <Button 
-                  variant={availabilityTimeRange === '1h' ? 'default' : 'outline'} 
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('1h')}
-                >
-                  1hr
-                </Button>
-                <Button 
-                  variant={availabilityTimeRange === '6h' ? 'default' : 'outline'} 
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('6h')}
-                >
-                  3hr
-                </Button>
-                <Button 
-                  variant={availabilityTimeRange === '24h' ? 'default' : 'outline'} 
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('24h')}
-                >
-                  24hr
-                </Button>
-                <Button 
-                  variant={availabilityTimeRange === '7d' ? 'default' : 'outline'} 
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('7d')}
-                >
-                  7d
-                </Button>
-                <Button 
-                  variant={availabilityTimeRange === '30d' ? 'default' : 'outline'} 
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('30d')}
-                >
-                  30d
-                </Button>
-              </div>
-              
-              <div className="flex items-center gap-2 ml-auto">
+              <div className="flex items-center gap-3">
                 <Badge variant="secondary" className="bg-green-100 text-green-800">
                   <CheckCircle className="w-3 h-3 mr-1" />
                   Passed
@@ -462,23 +525,15 @@ const MonitorDetailContent: React.FC = () => {
                 </Button>
               </div>
             </div>
-            
-            {/* Location Filter */}
-            <div className="mt-3">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                Location
-              </Button>
-            </div>
           </div>
 
           {/* Summary Stats */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <div className="text-sm text-gray-600 mb-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+            <div className="text-sm text-gray-600 mb-3">
               Oct 12 11:00 - Oct 12 11:29 · {filteredHistory.length} results
             </div>
             
-            <div className="grid grid-cols-3 gap-8 mb-6">
+            <div className="grid grid-cols-3 gap-6 mb-4">
               <div>
                 <div className="text-2xl font-light text-gray-900 mb-1">
                   {filteredHistory.filter(h => h.success).length}
@@ -509,7 +564,7 @@ const MonitorDetailContent: React.FC = () => {
             </div>
 
             {/* Histogram Chart */}
-            <div className="h-64">
+            <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={chartData} 
@@ -572,7 +627,7 @@ const MonitorDetailContent: React.FC = () => {
           </div>
 
           {/* Error Groups */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
             <div className="flex items-center gap-2 mb-4">
               <h3 className="text-lg font-medium">Error Groups</h3>
               <Badge variant="secondary" className="bg-pink-100 text-pink-800">
@@ -621,12 +676,7 @@ const MonitorDetailContent: React.FC = () => {
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">
-                      {result.agentRegion === 'us-west-2' ? 'Oregon 🇺🇸' : 
-                       result.agentRegion === 'us-east-1' ? 'N. Virginia 🇺🇸' :
-                       result.agentRegion === 'eu-west-1' ? 'Ireland 🇪🇺' :
-                       result.agentRegion === 'eu-central-1' ? 'Frankfurt 🇩🇪' :
-                       result.agentRegion === 'ap-southeast-1' ? 'Singapore 🇸🇬' :
-                       result.agentRegion || 'Unknown Region'}
+                      {result.agentRegion || 'Unknown Region'}
                     </div>
                     <div className="text-xs text-gray-500 flex items-center gap-2">
                       <span>{result.responseTime}ms</span>

@@ -1,6 +1,18 @@
 # Infragent - Infrastructure Monitoring Agent
 # Agent only - connects to external PostgreSQL
 services:
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: adminpassword
+    ports:
+      - "8090:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
   postgres:
     image: postgres:16
     container_name: postgres
