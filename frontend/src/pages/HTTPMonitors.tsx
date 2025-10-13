@@ -176,9 +176,6 @@ const HTTPMonitorCard: React.FC<{
       case 'export':
         handleExportData();
         break;
-      case 'open-url':
-        window.open(fullUrl, '_blank');
-        break;
       default:
         break;
     }
@@ -291,10 +288,6 @@ const HTTPMonitorCard: React.FC<{
                   <Download className="mr-2 h-4 w-4" />
                   Export Data
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={(e) => handleMenuAction('open-url', e)}>
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Open URL
-                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem disabled className="opacity-50 text-red-600">
                   <Trash2 className="mr-2 h-4 w-4" />
@@ -309,9 +302,21 @@ const HTTPMonitorCard: React.FC<{
         <div className="space-y-3">
           {/* URL */}
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-mono bg-muted px-2 py-1 rounded text-xs break-all">
+            <span className="font-mono bg-muted px-2 py-1 rounded text-xs break-all flex-1">
               {fullUrl}
             </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(fullUrl, '_blank');
+              }}
+              title="Open URL in new tab"
+            >
+              <ExternalLink className="w-3 h-3" />
+            </Button>
           </div>
 
           {/* Response Details */}
