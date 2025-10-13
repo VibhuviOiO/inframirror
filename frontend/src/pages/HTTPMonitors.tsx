@@ -13,9 +13,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useHTTPMonitors, type Monitor } from "../hooks/useMonitors";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
   Globe,
   Clock, 
@@ -42,7 +45,10 @@ import {
   Download,
   Bell,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
+  Grid3X3,
+  List,
+  Info
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
@@ -409,6 +415,457 @@ const HTTPMonitorCard: React.FC<{
   );
 };
 
+// Enhanced flexible table view component
+const HTTPMonitorTable: React.FC<{ 
+  monitors: HTTPMonitor[], 
+  onNavigate: (monitorId: string) => void,
+  onShowResponseBody: (responseBody: { name: string, body: string }) => void,
+  columns: any,
+  onColumnChange: (column: string, enabled: boolean) => void
+}> = ({ monitors, onNavigate, onShowResponseBody, columns, onColumnChange }) => {
+
+  const formatUrl = (monitor: HTTPMonitor) => {
+    const protocol = monitor.monitorType.toLowerCase();
+    const port = monitor.targetPort && monitor.targetPort !== (protocol === 'https' ? 443 : 80) 
+      ? `:${monitor.targetPort}` : '';
+    return `${protocol}://${monitor.targetHost}${port}${monitor.targetPath || ''}`;
+  };
+
+  const truncateText = (text: string, maxLength: number) => {
+    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+  };
+
+  const handleCopyUrl = (url: string) => {
+    navigator.clipboard.writeText(url);
+  };
+
+  const openUrl = (url: string) => {
+    window.open(url, '_blank');
+  };
+
+  const handleExportData = async (monitor: HTTPMonitor) => {
+    try {
+      const fullUrl = formatUrl(monitor);
+      // Get monitor history data from the last execution time
+      const response = await fetch(`/api/monitors/history/${monitor.monitorId}?limit=100`);
+      if (!response.ok) throw new Error('Failed to fetch monitor data');
+      
+      const data = await response.json();
+      
+      // Create CSV content
+      const csvHeader = 'Timestamp,Status Code,Success,Response Time (ms),DNS Lookup (ms),TCP Connect (ms),TLS Handshake (ms),Agent Region,Target URL\n';
+      const csvRows = data.map((record: any) => {
+        const timestamp = new Date(record.executedAt).toISOString();
+        return `${timestamp},${record.responseStatusCode || 'N/A'},${record.success},${record.responseTime || 'N/A'},${record.dnsLookupMs || 'N/A'},${record.tcpConnectMs || 'N/A'},${record.tlsHandshakeMs || 'N/A'},${record.agentRegion || monitor.agentRegion},${fullUrl}`;
+      }).join('\n');
+
+      const csvContent = csvHeader + csvRows;
+      
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${monitor.monitorName}-export-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Failed to export data:', error);
+      // You might want to show a toast notification here
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Column Configuration */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          Showing {monitors.length} monitors
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm">
+              <Settings className="w-4 h-4 mr-2" />
+              Columns
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end">
+            <DropdownMenuLabel>Select Columns</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {Object.entries(columns).map(([key, enabled]) => (
+              <DropdownMenuCheckboxItem
+                key={key}
+                checked={enabled as boolean}
+                onCheckedChange={(checked) => onColumnChange(key, checked)}
+              >
+                {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Enhanced Table */}
+      <div className="rounded-md border bg-background overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {columns.name && <TableHead className="min-w-[200px]">Monitor Name</TableHead>}
+              {columns.status && <TableHead className="min-w-[120px]">Status</TableHead>}
+              {columns.url && <TableHead className="min-w-[300px]">URL</TableHead>}
+              {columns.method && <TableHead className="min-w-[80px]">Method</TableHead>}
+              {columns.region && <TableHead className="min-w-[120px]">Region</TableHead>}
+              {columns.responseTime && <TableHead className="min-w-[120px]">Response Time</TableHead>}
+              {columns.dnsLookup && <TableHead className="min-w-[100px]">DNS</TableHead>}
+              {columns.tcpConnect && <TableHead className="min-w-[100px]">TCP</TableHead>}
+              {columns.tlsHandshake && <TableHead className="min-w-[100px]">TLS</TableHead>}
+              {columns.responseSize && <TableHead className="min-w-[100px]">Size</TableHead>}
+              {columns.contentType && <TableHead className="min-w-[120px]">Content Type</TableHead>}
+              {columns.server && <TableHead className="min-w-[120px]">Server</TableHead>}
+              {columns.lastCheck && <TableHead className="min-w-[120px]">Last Check</TableHead>}
+              {columns.actions && <TableHead className="min-w-[120px]">Actions</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {monitors.map((monitor) => {
+              const lastCheck = new Date(monitor.executedAt);
+              const isRecent = Date.now() - lastCheck.getTime() < 5 * 60 * 1000;
+              const fullUrl = formatUrl(monitor);
+
+              return (
+                <TableRow 
+                  key={monitor.id} 
+                  className="cursor-pointer hover:bg-muted/30 transition-colors"
+                  onClick={() => onNavigate(monitor.monitorId)}
+                >
+                  {/* Monitor Name */}
+                  {columns.name && (
+                    <TableCell className="font-medium">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="truncate max-w-[180px]">
+                              {monitor.monitorName}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{monitor.monitorName}</p>
+                            <p className="text-xs text-muted-foreground">ID: {monitor.monitorId}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  )}
+
+                  {/* Status */}
+                  {columns.status && (
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div>
+                                <HTTPStatusBadge 
+                                  status={monitor.responseStatusCode} 
+                                  success={monitor.success} 
+                                  size="sm" 
+                                />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Status: {monitor.responseStatusCode || 'N/A'}</p>
+                              <p>Success: {monitor.success ? 'Yes' : 'No'}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        
+                        {monitor.rawResponseBody && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge 
+                                  variant="outline" 
+                                  className="text-xs text-blue-600 cursor-pointer hover:bg-blue-50 transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onShowResponseBody({
+                                      name: monitor.monitorName,
+                                      body: monitor.rawResponseBody!
+                                    });
+                                  }}
+                                >
+                                  <Eye className="w-3 h-3 mr-1" />
+                                  Body
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>View response body</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                    </TableCell>
+                  )}
+
+                  {/* URL */}
+                  {columns.url && (
+                    <TableCell>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center gap-2 font-mono text-xs">
+                              <span className="truncate max-w-[250px]">
+                                {truncateText(fullUrl, 50)}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 flex-shrink-0"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openUrl(fullUrl);
+                                }}
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-md break-all">{fullUrl}</p>
+                            <p className="text-xs text-muted-foreground">Click icon to open</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  )}
+
+                  {/* Method */}
+                  {columns.method && (
+                    <TableCell>
+                      <Badge variant="outline" className="text-xs">
+                        {monitor.httpMethod}
+                      </Badge>
+                    </TableCell>
+                  )}
+
+                  {/* Region */}
+                  {columns.region && (
+                    <TableCell>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="outline" className="text-xs">
+                              <MapPin className="w-3 h-3 mr-1" />
+                              {monitor.agentRegion}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Agent: {monitor.agentId}</p>
+                            <p>Region: {monitor.agentRegion}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  )}
+
+                  {/* Response Time */}
+                  {columns.responseTime && (
+                    <TableCell>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center gap-1">
+                              <Timer className="w-3 h-3" />
+                              <span className={cn(
+                                "font-mono text-xs",
+                                monitor.responseTime > 1000 ? "text-red-600" :
+                                monitor.responseTime > 500 ? "text-yellow-600" : "text-green-600"
+                              )}>
+                                {monitor.responseTime}ms
+                              </span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Total Response Time: {monitor.responseTime}ms</p>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {monitor.dnsLookupMs && <p>DNS: {monitor.dnsLookupMs}ms</p>}
+                              {monitor.tcpConnectMs && <p>TCP: {monitor.tcpConnectMs}ms</p>}
+                              {monitor.tlsHandshakeMs && <p>TLS: {monitor.tlsHandshakeMs}ms</p>}
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  )}
+
+                  {/* DNS Lookup */}
+                  {columns.dnsLookup && (
+                    <TableCell>
+                      <div className="font-mono text-xs text-muted-foreground">
+                        {monitor.dnsLookupMs ? `${monitor.dnsLookupMs}ms` : '-'}
+                      </div>
+                    </TableCell>
+                  )}
+
+                  {/* TCP Connect */}
+                  {columns.tcpConnect && (
+                    <TableCell>
+                      <div className="font-mono text-xs text-muted-foreground">
+                        {monitor.tcpConnectMs ? `${monitor.tcpConnectMs}ms` : '-'}
+                      </div>
+                    </TableCell>
+                  )}
+
+                  {/* TLS Handshake */}
+                  {columns.tlsHandshake && (
+                    <TableCell>
+                      <div className="font-mono text-xs text-muted-foreground">
+                        {monitor.tlsHandshakeMs ? `${monitor.tlsHandshakeMs}ms` : '-'}
+                      </div>
+                    </TableCell>
+                  )}
+
+                  {/* Response Size */}
+                  {columns.responseSize && (
+                    <TableCell>
+                      <div className="font-mono text-xs text-muted-foreground">
+                        {monitor.responseSizeBytes ? `${(monitor.responseSizeBytes / 1024).toFixed(1)}KB` : '-'}
+                      </div>
+                    </TableCell>
+                  )}
+
+                  {/* Content Type */}
+                  {columns.contentType && (
+                    <TableCell>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="text-xs truncate max-w-[100px]">
+                              {monitor.responseContentType ? monitor.responseContentType.split(';')[0] : '-'}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{monitor.responseContentType || 'No content type'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  )}
+
+                  {/* Server */}
+                  {columns.server && (
+                    <TableCell>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="text-xs truncate max-w-[100px]">
+                              {monitor.responseServer || '-'}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Server: {monitor.responseServer || 'Unknown'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  )}
+
+                  {/* Last Check */}
+                  {columns.lastCheck && (
+                    <TableCell>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge 
+                              variant="outline" 
+                              className={cn(
+                                "text-xs font-mono",
+                                isRecent ? "text-green-600 border-green-200" : "text-amber-600 border-amber-200"
+                              )}
+                            >
+                              <Activity className="w-3 h-3 mr-1" />
+                              {isRecent ? 'Just now' : `${Math.floor((Date.now() - lastCheck.getTime()) / (1000 * 60))}m ago`}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Last executed: {lastCheck.toLocaleString()}</p>
+                            <p>Status: {isRecent ? 'Recently active' : 'Older result'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  )}
+
+                  {/* Actions */}
+                  {columns.actions && (
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem onClick={(e) => {
+                              e.stopPropagation();
+                              onNavigate(monitor.monitorId);
+                            }}>
+                              <ExternalLink className="mr-2 h-4 w-4" />
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem disabled className="opacity-50">
+                              <Settings className="mr-2 h-4 w-4" />
+                              Edit Monitor
+                            </DropdownMenuItem>
+                            <DropdownMenuItem disabled className="opacity-50">
+                              <Copy className="mr-2 h-4 w-4" />
+                              Duplicate
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem disabled className="opacity-50">
+                              <RefreshCw className="mr-2 h-4 w-4" />
+                              Run Test Now
+                            </DropdownMenuItem>
+                            <DropdownMenuItem disabled className="opacity-50">
+                              <Pause className="mr-2 h-4 w-4" />
+                              Pause Monitor
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem disabled className="opacity-50">
+                              <Bell className="mr-2 h-4 w-4" />
+                              Alert Settings
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => {
+                              e.stopPropagation();
+                              handleExportData(monitor);
+                            }}>
+                              <Download className="mr-2 h-4 w-4" />
+                              Export Data
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem disabled className="opacity-50 text-red-600">
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete Monitor
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </TableCell>
+                  )}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+};
+
 const HTTPMonitorsContent: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -418,6 +875,25 @@ const HTTPMonitorsContent: React.FC = () => {
   const [showActiveOnly, setShowActiveOnly] = useState(true);
   const [activeWindow, setActiveWindow] = useState(15); // minutes
   const [selectedResponseBody, setSelectedResponseBody] = useState<{ name: string, body: string } | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
+  
+  // Table column configuration
+  const [tableColumns, setTableColumns] = useState({
+    name: true,
+    status: true,
+    url: true,
+    method: true,
+    region: true,
+    responseTime: true,
+    dnsLookup: false,
+    tcpConnect: false,
+    tlsHandshake: false,
+    responseSize: false,
+    contentType: false,
+    server: false,
+    lastCheck: true,
+    actions: true
+  });
   
   // Prepare filters for API call (excluding search - handled client-side for smoother UX)
   const filters = useMemo(() => ({
@@ -664,6 +1140,28 @@ const HTTPMonitorsContent: React.FC = () => {
               {new Date().toLocaleTimeString()}
             </span>
           </div>
+
+          {/* View Toggle */}
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded p-1">
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('grid')}
+              className="h-6 px-2 text-xs"
+            >
+              <Grid3X3 className="w-3 h-3 mr-1" />
+              Grid
+            </Button>
+            <Button
+              variant={viewMode === 'table' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('table')}
+              className="h-6 px-2 text-xs"
+            >
+              <List className="w-3 h-3 mr-1" />
+              Table
+            </Button>
+          </div>
         </div>
 
         {/* Results Count and Active Filters Section */}
@@ -750,19 +1248,31 @@ const HTTPMonitorsContent: React.FC = () => {
         </div>
       </div>
 
-      {/* Monitor Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        {filteredMonitors.map(monitor => (
-          <HTTPMonitorCard 
-            key={monitor.id} 
-            monitor={monitor} 
-            onClick={() => {
-              navigate(`/monitors/${monitor.monitorId}`);
-            }}
-            onShowResponseBody={setSelectedResponseBody}
-          />
-        ))}
-      </div>
+      {/* Monitor Display */}
+      {viewMode === 'grid' ? (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          {filteredMonitors.map(monitor => (
+            <HTTPMonitorCard 
+              key={monitor.id} 
+              monitor={monitor} 
+              onClick={() => {
+                navigate(`/monitors/${monitor.monitorId}`);
+              }}
+              onShowResponseBody={setSelectedResponseBody}
+            />
+          ))}
+        </div>
+      ) : (
+        <HTTPMonitorTable 
+          monitors={filteredMonitors}
+          onNavigate={(monitorId) => navigate(`/monitors/${monitorId}`)}
+          onShowResponseBody={setSelectedResponseBody}
+          columns={tableColumns}
+          onColumnChange={(column, enabled) => {
+            setTableColumns(prev => ({ ...prev, [column]: enabled }));
+          }}
+        />
+      )}
 
       {filteredMonitors.length === 0 && (
         <Card className="p-12 text-center">
