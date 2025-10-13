@@ -1,0 +1,104 @@
+# Inframan Agent Configuration
+# Main agent settings, storage, and performance configuration
+
+agent:
+  # Agent Identity
+  name: "inframan"
+  version: "1.0.0"
+  hostname: "${HOSTNAME}"
+  region: "${INFRAMAN_REGION:-us-east-1}"
+  environment: "${INFRAMAN_ENV:-production}"
+  
+  # Performance Settings
+  performance:
+    max_memory_mb: 150
+    max_cpu_percent: 2
+    worker_pool_size: 10
+    concurrent_collectors: 5
+    
+  # Buffer & Batching
+  buffering:
+    max_buffer_size: 1000        # Max metrics in memory
+    flush_interval_seconds: 10   # Flush every 10 seconds
+    batch_size: 100             # Batch insert size
+    
+  # Scheduler Settings
+  scheduler:
+    default_interval_seconds: 30  # Default collection interval
+    max_jitter_seconds: 5        # Add randomness to prevent thundering herd
+    retry_attempts: 3            # Retry failed collections
+    retry_backoff: "exponential" # linear or exponential
+    
+  # Health & Monitoring  
+  health:
+    enabled: true
+    port: 8080
+    endpoints:
+      health: "/health"          # Agent health check
+      metrics: "/metrics"        # Prometheus-style agent metrics  
+      config: "/config"          # Current configuration
+      status: "/status"          # Collector status
+
+# Storage Configuration
+storage:
+  # PostgreSQL Storage (Primary)
+  postgresql:
+    enabled: true
+    connection:
+      host: "${DB_HOST:-localhost}"
+      port: "${DB_PORT:-5432}"
+      database: "${DB_NAME:-inframirror}"
+      username: "${DB_USER:-inframirror}"
+      password: "${DB_PASSWORD}"
+      ssl: false
+      
+    # Performance Settings
+    pool:
+      min_connections: 2
+      max_connections: 10
+      idle_timeout_ms: 30000
+      connection_timeout_ms: 5000
+      
+    # Batch Settings  
+    batching:
+      enabled: true
+      batch_size: 100
+      flush_interval_ms: 10000
+      max_retries: 3
+      
+  # File Storage (Backup/Fallback)
+  file:
+    enabled: false
+    path: "/var/log/inframan/metrics.jsonl"
+    rotation:
+      max_size_mb: 100
+      max_files: 10
+      compress: true
+      
+  # Future: Additional storage adapters
+  # elasticsearch:
+  #   enabled: false
+  # prometheus:
+  #   enabled: false
+
+# Logging Configuration
+logging:
+  level: "${LOG_LEVEL:-info}"    # debug, info, warn, error
+  format: "json"                 # json, text  
+  output: "stdout"               # stdout, file, both
+  file:
+    path: "/var/log/inframan/agent.log"
+    max_size_mb: 50
+    max_files: 5
+    
+# Security (Future)
+security:
+  api_key_header: "X-Inframan-Key" 
+  encryption:
+    enabled: false
+    
+# Feature Flags
+features:
+  hot_reload: true              # Configuration hot-reload
+  self_monitoring: true         # Monitor the agent itself
+  prometheus_metrics: true      # Expose Prometheus metrics

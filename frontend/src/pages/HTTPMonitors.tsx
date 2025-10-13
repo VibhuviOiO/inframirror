@@ -136,6 +136,23 @@ const PerformanceMetrics: React.FC<{ monitor: HTTPMonitor }> = ({ monitor }) => 
   );
 };
 
+// Helper function to determine response time status
+const getResponseTimeStatus = (
+  responseTime: number | undefined, 
+  warningThreshold?: number | null, 
+  criticalThreshold?: number | null
+) => {
+  if (!responseTime) return 'failed';
+  
+  // Use monitor-specific thresholds or defaults
+  const warning = warningThreshold ?? 500;   // ms
+  const critical = criticalThreshold ?? 1000; // ms
+  
+  if (responseTime < warning) return 'healthy';
+  if (responseTime < critical) return 'warning';
+  return 'critical';
+};
+
 const HTTPMonitorCard: React.FC<{ 
   monitor: HTTPMonitor, 
   onClick: () => void,
@@ -937,79 +954,98 @@ const HTTPMonitorsContent: React.FC = () => {
     actions: true
   });
 
-  // Calculate status distribution based on response time thresholds
-  const getResponseTimeStatus = (
-    responseTime: number | undefined, 
-    warningThreshold?: number | null, 
-    criticalThreshold?: number | null
-  ) => {
-    if (!responseTime) return 'failed';
-    
-    // Use monitor-specific thresholds or defaults
-    const warning = warningThreshold ?? 500;   // ms
-    const critical = criticalThreshold ?? 1000; // ms
-    
-    if (responseTime < warning) return 'healthy';
-    if (responseTime < critical) return 'warning';
-    return 'critical';
-  };
+
   
   // Prepare filters for API call (excluding search - handled client-side for smoother UX)
   const filters = useMemo(() => ({
+    // Only pass region filter to API, handle status filtering client-side for better UX
     ...(regionFilter !== 'all' && { agentRegion: regionFilter }),
-    ...(statusFilter === 'success' && { success: true }),
-    ...(statusFilter === 'failure' && { success: false }),
     activeOnly: showActiveOnly,
     maxAge: activeWindow,
     limit: 100,
     sortBy: 'executedAt' as const,
     sortOrder: 'desc' as const
-  }), [regionFilter, statusFilter, showActiveOnly, activeWindow]);
+  }), [regionFilter, showActiveOnly, activeWindow]);
 
   const { data: monitors = [], isLoading: loading, error } = useHTTPMonitors(filters);
 
+  // Get unique regions/datacenters from the actual data
+  const uniqueRegions = useMemo(() => {
+    const regions = [...new Set(monitors.map(m => m.agentRegion).filter(Boolean))];
+    return regions.sort();
+  }, [monitors]);
+
   // Client-side filtering for all filters including search
   const filteredMonitors = useMemo(() => {
+    if (!monitors || monitors.length === 0) return [];
+    
     return monitors.filter(monitor => {
+      // Early returns for better performance
+      
       // Method filter
-      if (methodFilter !== 'all' && monitor.httpMethod !== methodFilter) return false;
+      if (methodFilter !== 'all' && monitor.httpMethod !== methodFilter) {
+        return false;
+      }
+      
+      // Region/Datacenter filter
+      if (regionFilter !== 'all' && monitor.agentRegion !== regionFilter) {
+        return false;
+      }
       
       // Status filters
-      if (statusFilter === 'healthy' && (!monitor.success || !monitor.responseStatusCode || monitor.responseStatusCode >= 300)) return false;
-      if (statusFilter === 'error' && (monitor.success && monitor.responseStatusCode && monitor.responseStatusCode < 400)) return false;
-      if (statusFilter === 'redirect' && (!monitor.responseStatusCode || monitor.responseStatusCode < 300 || monitor.responseStatusCode >= 400)) return false;
+      if (statusFilter !== 'all') {
+        if (statusFilter === 'healthy') {
+          // Healthy: successful response with 2xx status code
+          if (!monitor.success || !monitor.responseStatusCode || 
+              monitor.responseStatusCode < 200 || monitor.responseStatusCode >= 300) {
+            return false;
+          }
+        } else if (statusFilter === 'error') {
+          // Error: failed response OR 4xx/5xx status codes
+          if (monitor.success && monitor.responseStatusCode && monitor.responseStatusCode < 400) {
+            return false;
+          }
+        }
+      }
       
       // Response time status filter
       if (responseTimeFilter !== 'all') {
         const rtStatus = getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs);
-        if (responseTimeFilter !== rtStatus) return false;
+        if (responseTimeFilter !== rtStatus) {
+          return false;
+        }
       }
       
-      // Active monitoring filter - client-side for immediate feedback
+      // Active monitoring filter - moved to server-side, kept for safety
       if (showActiveOnly) {
         const monitorTime = new Date(monitor.executedAt).getTime();
-        const cutoffTime = Date.now() - (activeWindow * 60 * 1000); // Convert minutes to milliseconds
-        if (monitorTime < cutoffTime) return false;
+        const cutoffTime = Date.now() - (activeWindow * 60 * 1000);
+        if (monitorTime < cutoffTime) {
+          return false;
+        }
       }
       
       // Search filtering - applied client-side for smooth UX
-      if (searchQuery.trim()) {
+      if (searchQuery && searchQuery.trim()) {
         const searchLower = searchQuery.toLowerCase().trim();
         
-        const matchesHost = monitor.targetHost?.toLowerCase().includes(searchLower);
-        const matchesName = monitor.monitorName?.toLowerCase().includes(searchLower);
-        const matchesId = monitor.monitorId?.toLowerCase().includes(searchLower);
-        const matchesRegion = monitor.agentRegion?.toLowerCase().includes(searchLower);
-        const matchesPath = monitor.targetPath?.toLowerCase().includes(searchLower);
+        const searchFields = [
+          monitor.targetHost,
+          monitor.monitorName,
+          monitor.monitorId,
+          monitor.agentRegion,
+          monitor.targetPath
+        ].filter(Boolean).map(field => field.toLowerCase());
         
-        if (!matchesHost && !matchesName && !matchesId && !matchesRegion && !matchesPath) {
+        const hasMatch = searchFields.some(field => field.includes(searchLower));
+        if (!hasMatch) {
           return false;
         }
       }
       
       return true;
     });
-  }, [monitors, methodFilter, statusFilter, responseTimeFilter, searchQuery, showActiveOnly, activeWindow]);
+  }, [monitors, methodFilter, regionFilter, statusFilter, responseTimeFilter, searchQuery, showActiveOnly, activeWindow]);
 
   const stats = useMemo(() => {
     const statusDistribution = filteredMonitors.reduce((acc, monitor) => {
@@ -1175,16 +1211,16 @@ const HTTPMonitorsContent: React.FC = () => {
               
               <DropdownMenuLabel>Response Time Status</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setResponseTimeFilter('healthy')}>
-                🟢 Fast (&lt;500ms)
+                🟢 Fast Response
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setResponseTimeFilter('warning')}>
-                🟡 Slow (500-1000ms)
+                🟡 Slow Response
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setResponseTimeFilter('critical')}>
-                🔴 Very Slow (&gt;1000ms)
+                🔴 Very Slow Response
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setResponseTimeFilter('failed')}>
-                ⚫ Failed
+                ⚫ Failed Response
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               
@@ -1197,13 +1233,18 @@ const HTTPMonitorsContent: React.FC = () => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               
-              <DropdownMenuLabel>Region Filters</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => setRegionFilter('us-east-1')}>
-                Region: US East 1
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setRegionFilter('us-west-2')}>
-                Region: US West 2
-              </DropdownMenuItem>
+              <DropdownMenuLabel>Datacenter Filters</DropdownMenuLabel>
+              {uniqueRegions.length > 0 ? (
+                uniqueRegions.map((region) => (
+                  <DropdownMenuItem key={region} onClick={() => setRegionFilter(region)}>
+                    Datacenter: {region}
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <DropdownMenuItem disabled>
+                  No datacenters available
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -1290,7 +1331,7 @@ const HTTPMonitorsContent: React.FC = () => {
         <div className="px-4 pb-3 border-t border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-2 flex-wrap">
-              {(statusFilter !== 'all' || methodFilter !== 'all' || regionFilter !== 'all' || showActiveOnly) && (
+              {(statusFilter !== 'all' || methodFilter !== 'all' || regionFilter !== 'all' || responseTimeFilter !== 'all' || showActiveOnly) && (
                 <>
                   <span className="text-xs text-gray-500 mr-1">Active filters:</span>
                   
@@ -1332,6 +1373,24 @@ const HTTPMonitorsContent: React.FC = () => {
                       </button>
                     </div>
                   )}
+                  
+                  {responseTimeFilter !== 'all' && (
+                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-800 dark:text-teal-200 rounded text-xs">
+                      <span className="font-medium">responseTime:</span>
+                      <span>
+                        {responseTimeFilter === 'healthy' && 'fast'}
+                        {responseTimeFilter === 'warning' && 'slow'}
+                        {responseTimeFilter === 'critical' && 'very slow'}
+                        {responseTimeFilter === 'failed' && 'failed'}
+                      </span>
+                      <button
+                        onClick={() => setResponseTimeFilter('all')}
+                        className="ml-1 hover:bg-teal-200 dark:hover:bg-teal-800 rounded-sm p-0.5 leading-none"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
 
                   {showActiveOnly && (
                     <div className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 rounded text-xs">
@@ -1352,6 +1411,7 @@ const HTTPMonitorsContent: React.FC = () => {
                       setStatusFilter('all');
                       setMethodFilter('all');
                       setRegionFilter('all');
+                      setResponseTimeFilter('all');
                       setShowActiveOnly(false);
                     }}
                     className="text-xs text-gray-500 hover:text-gray-700 underline ml-2"
