@@ -69,7 +69,8 @@ export class ConfigManager {
     const infragentConfig: MonitorConfig = {
       global: {
         ...config.global,
-        include_response_body: config.global?.include_response_body || false
+        include_response_body: config.global?.include_response_body || false,
+        response_time_thresholds: config.global?.response_time_thresholds
       },
       http: {
         enabled: false,
@@ -108,7 +109,8 @@ export class ConfigManager {
                   timeout_seconds: m.timeout,
                   interval_seconds: m.interval,
                   retryCount: m.retryCount,
-                  include_response_body: m.include_response_body
+                  include_response_body: m.include_response_body,
+                  thresholds: m.thresholds
                 }))
             };
             if (httpGroup.monitors.length > 0) {
@@ -157,7 +159,8 @@ export class ConfigManager {
             headers: m.headers || {},
             timeout_seconds: m.timeout,
             interval_seconds: m.interval,
-            retryCount: m.retryCount
+            retryCount: m.retryCount,
+            thresholds: m.thresholds
           }));
         
         if (httpMonitors.length > 0) {
@@ -166,6 +169,53 @@ export class ConfigManager {
             description: group.description,
             baseUrl: group.baseUrl,
             monitors: httpMonitors
+          });
+        }
+      }
+    }
+
+    // Handle direct monitors array (outside of groups)
+    if (config.monitors && Array.isArray(config.monitors)) {
+      for (const monitor of config.monitors) {
+        const type = (monitor.type || 'HTTP').toUpperCase();
+        if (['HTTP', 'HTTPS'].includes(type)) {
+          // Add to HTTP targets as a standalone group
+          if (!infragentConfig.http!.groups) infragentConfig.http!.groups = [];
+          infragentConfig.http!.groups.push({
+            name: `Standalone - ${monitor.name}`,
+            monitors: [{
+              name: monitor.name,
+              url: monitor.url || `https://${monitor.host}${monitor.path || ''}`,
+              method: monitor.method || 'GET',
+              headers: monitor.headers || {},
+              timeout_seconds: monitor.timeout,
+              interval_seconds: monitor.interval,
+              retryCount: monitor.retryCount || monitor.retries,
+              thresholds: monitor.thresholds
+            }]
+          });
+        } else if (type === 'DNS') {
+          infragentConfig.dns!.targets.push({
+            name: monitor.name,
+            domain: monitor.host,
+            record_type: monitor.recordType || 'A',
+            timeout_seconds: monitor.timeout,
+            interval_seconds: monitor.interval
+          });
+        } else if (type === 'TCP') {
+          infragentConfig.tcp!.targets.push({
+            name: monitor.name,
+            host: monitor.host,
+            port: monitor.port || 80,
+            timeout_seconds: monitor.timeout,
+            interval_seconds: monitor.interval
+          });
+        } else if (type === 'PING') {
+          infragentConfig.ping!.targets.push({
+            name: monitor.name,
+            host: monitor.host,
+            timeout_seconds: monitor.timeout,
+            interval_seconds: monitor.interval
           });
         }
       }

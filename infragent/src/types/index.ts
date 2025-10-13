@@ -44,6 +44,10 @@ export interface MonitorResult {
   tlsHandshakeMs?: number;
   timeToFirstByteMs?: number;
   
+  // Performance Thresholds
+  warningThresholdMs?: number;
+  criticalThresholdMs?: number;
+  
   // PING-specific
   packetLoss?: number;
   jitterMs?: number;
@@ -206,6 +210,12 @@ export interface HttpTarget {
   interval_seconds?: number;
   retryCount?: number;  // For RR compatibility
   include_response_body?: boolean;  // Monitor-specific response body inclusion
+  thresholds?: ResponseTimeThresholds;  // Performance thresholds
+}
+
+export interface ResponseTimeThresholds {
+  warning: number;   // Warning threshold in milliseconds
+  critical: number;  // Critical threshold in milliseconds
 }
 
 export interface TcpMonitorConfig {
@@ -283,6 +293,10 @@ export interface DnsTarget {
   nameserver?: string;
   timeout_seconds?: number;
   interval_seconds?: number;
+  thresholds?: {
+    warning: number;
+    critical: number;
+  };
 }
 
 export interface GlobalMonitorConfig {
@@ -294,6 +308,7 @@ export interface GlobalMonitorConfig {
     enabled: boolean;
   };
   tags: Record<string, string>;
+  response_time_thresholds?: ResponseTimeThresholds;  // Global default thresholds
 }
 
 // Base interfaces for extensibility

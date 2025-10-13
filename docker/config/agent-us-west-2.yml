@@ -1,0 +1,47 @@
+# Agent Configuration for US West 2 - Search & Discovery APIs
+agent:
+  name: "${AGENT_NAME:-api-monitor-us-west-2}"
+  datacenter: "${DATACENTER:-us-west-2}"
+  host: "${AGENT_HOST:-us-west-2-agent-01}"
+  version: "1.0.0"
+  interval: 30
+  timeout: 10000
+  health:
+    enabled: true
+    port: 8081
+    endpoints:
+      health: "/health"
+      metrics: "/metrics"
+
+# Monitor configuration file path  
+monitors:
+  configFile: "${MONITORS_CONFIG:-./monitors-us-west-2.yml}"
+
+storage:
+  postgresql:
+    enabled: true
+    connection:
+      host: "${DATABASE_HOST:-postgres}"
+      port: ${DATABASE_PORT:-5432}
+      database: "${DATABASE_NAME:-inframirror}"
+      username: "${DATABASE_USER:-inframirror}"
+      password: "${DATABASE_PASSWORD:-inframirror}"
+      ssl: false
+    pool:
+      min_connections: 2
+      max_connections: 10
+      idle_timeout_ms: 30000
+      connection_timeout_ms: 5000
+    batching:
+      enabled: true
+      batch_size: 50
+      flush_interval_ms: 15000
+
+logging:
+  level: "info"
+  pretty: true
+
+features:
+  hot_reload: true
+  self_monitoring: true
+  prometheus_metrics: true

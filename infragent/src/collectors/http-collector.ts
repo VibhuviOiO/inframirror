@@ -16,11 +16,13 @@ interface DetailedTimings {
 export class HttpCollector extends BaseCollector {
   private targets: HttpTarget[] = [];
   private defaults: any = {};
+  private fullConfig: any = {};
 
   constructor(config: any) {
     super('HTTP', config?.enabled || false);
     
     if (config) {
+      this.fullConfig = config;
       // Support both old targets[] format and new groups[] format
       this.targets = this.expandTargetsFromConfig(config);
       this.defaults = {
@@ -28,6 +30,18 @@ export class HttpCollector extends BaseCollector {
         // Merge global settings into defaults
         include_response_body: config.global?.include_response_body || false
       };
+      
+      // DEBUG: Log received configuration
+      console.log('🔧 HTTP Collector Config:', JSON.stringify({
+        enabled: config.enabled,
+        groupCount: config.groups?.length || 0,
+        targetCount: this.targets.length,
+        targets: this.targets.map(t => ({
+          name: t.name,
+          url: t.url,
+          thresholds: t.thresholds
+        }))
+      }, null, 2));
     }
   }
 
@@ -53,7 +67,9 @@ export class HttpCollector extends BaseCollector {
             headers: { 
               ...(group.defaults?.headers || {}), 
               ...(monitor.headers || {}) 
-            }
+            },
+            // Merge threshold configuration
+            thresholds: monitor.thresholds || group.defaults?.thresholds || this.getGlobalThresholds()
           }));
           allTargets.push(...groupTargets);
         }
@@ -61,6 +77,11 @@ export class HttpCollector extends BaseCollector {
     }
 
     return allTargets;
+  }
+
+  private getGlobalThresholds(): { warning: number; critical: number } {
+    // Default thresholds if not specified in config
+    return this.fullConfig?.global?.response_time_thresholds || { warning: 500, critical: 1000 };
   }
 
   private buildFullUrl(url: string, baseUrl?: string): string {
@@ -229,6 +250,16 @@ export class HttpCollector extends BaseCollector {
       const expectedStatus = target.expected_status;
       const isStatusValid = expectedStatus ? expectedStatus.includes(response.status) : true; // Always valid if no expected status
 
+      // Get thresholds for this monitor
+      const thresholds = target.thresholds || this.getGlobalThresholds();
+      
+      // DEBUG: Log threshold resolution
+      console.log(`🎯 Thresholds for ${target.name}:`, {
+        target_thresholds: target.thresholds,
+        global_thresholds: this.getGlobalThresholds(),
+        final_thresholds: thresholds
+      });
+
       const result: MonitorResult = {
         ...baseResult,
         success: isStatusValid,
@@ -246,6 +277,10 @@ export class HttpCollector extends BaseCollector {
         tcpConnectMs: timings.tcpConnectMs,
         tlsHandshakeMs: timings.tlsHandshakeMs,
         timeToFirstByteMs: Math.round(timings.timeToFirstByteMs),
+        
+        // Performance thresholds
+        warningThresholdMs: thresholds.warning,
+        criticalThresholdMs: thresholds.critical,
         
         // Raw data (if enabled)
         rawResponseHeaders: response.headers,

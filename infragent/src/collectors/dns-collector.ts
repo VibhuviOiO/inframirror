@@ -47,6 +47,13 @@ export class DnsCollector extends BaseCollector {
     return results;
   }
 
+  private getGlobalThresholds() {
+    return {
+      warning: this.defaults.thresholds?.warning || 500,
+      critical: this.defaults.thresholds?.critical || 1000
+    };
+  }
+
   private async monitorDnsTarget(target: DnsTarget): Promise<MonitorResult> {
     const startTime = Date.now();
     const executedAt = new Date();
@@ -63,6 +70,9 @@ export class DnsCollector extends BaseCollector {
       const dnsResult = await Promise.race([lookupPromise, timeoutPromise]) as any;
       const responseTime = Date.now() - startTime;
 
+      // Get thresholds for this monitor
+      const thresholds = target.thresholds || this.getGlobalThresholds();
+
       return {
         monitorId: `dns-${target.name.replace(/\s+/g, '-').toLowerCase()}`,
         monitorName: target.name,
@@ -73,6 +83,11 @@ export class DnsCollector extends BaseCollector {
         responseTime,
         dnsQueryType: target.record_type || 'A',
         dnsResponseValue: JSON.stringify(dnsResult.addresses || []),
+        
+        // Performance thresholds
+        warningThresholdMs: thresholds.warning,
+        criticalThresholdMs: thresholds.critical,
+        
         rawNetworkData: {
           recordType: target.record_type || 'A',
           recordCount: dnsResult.addresses?.length || 0
@@ -81,6 +96,9 @@ export class DnsCollector extends BaseCollector {
 
     } catch (error) {
       const responseTime = Date.now() - startTime;
+      
+      // Get thresholds for this monitor (even for failures)
+      const thresholds = target.thresholds || this.getGlobalThresholds();
       
       return {
         monitorId: `dns-${target.name.replace(/\s+/g, '-').toLowerCase()}`,
@@ -91,7 +109,11 @@ export class DnsCollector extends BaseCollector {
         success: false,
         responseTime,
         dnsQueryType: target.record_type || 'A',
-        errorMessage: error instanceof Error ? error.message : String(error)
+        errorMessage: error instanceof Error ? error.message : String(error),
+        
+        // Performance thresholds
+        warningThresholdMs: thresholds.warning,
+        criticalThresholdMs: thresholds.critical
       };
     }
   }

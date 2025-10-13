@@ -84,64 +84,43 @@ model IntegrationInstance {
 }
 
 model Monitors {
-  id                     Int         @id @default(autoincrement())
-  
-  // Monitor Configuration
-  monitorId              String
-  monitorName            String?
-  monitorType            MonitorType
-  targetHost             String      // hostname/IP for all monitor types
-  targetPort             Int?        // for TCP/UDP/HTTP
-  targetPath             String?     // for HTTP requests
-  
-  // HTTP-specific fields
-  httpMethod             String?     // GET, POST, etc. (only for HTTP)
-  expectedStatusCode     Int?        // only for HTTP
-  
-  // DNS-specific fields
-  dnsQueryType           String?     // A, AAAA, MX, CNAME, etc. (only for DNS)
-  dnsExpectedResponse    String?     // expected DNS response (only for DNS)
-  
-  // Execution Context
-  executedAt             DateTime    @default(now())
-  agentId                String?
-  agentRegion            String?
-  
-  // Universal Response Data
-  success                Boolean
-  responseTime           Int?        // milliseconds (all monitor types)
-  responseSizeBytes      Int?        // response size (HTTP/DNS)
-  
-  // HTTP Response Data
-  responseStatusCode     Int?        // HTTP status code (only for HTTP)
-  responseContentType    String?     // Content-Type header (only for HTTP)
-  responseServer         String?     // Server header (only for HTTP)
-  responseCacheStatus    String?     // Cache status (only for HTTP)
-  
-  // Network Performance Metrics
-  dnsLookupMs           Int?         // DNS resolution time (all types)
-  tcpConnectMs          Int?         // TCP connection time (TCP/HTTP)
-  tlsHandshakeMs        Int?         // TLS handshake time (HTTPS/secure TCP)
-  timeToFirstByteMs     Int?         // TTFB (HTTP)
-  
-  // PING-specific metrics
-  packetLoss            Float?       // packet loss percentage (only for PING)
-  jitterMs              Int?         // network jitter (only for PING)
-  
-  // DNS-specific response
-  dnsResponseValue      String?      // actual DNS response value (only for DNS)
-  
-  // Error Tracking
-  errorMessage          String?
-  errorType             String?
-  
-  // Raw Data (conditional - only when rawResponseSave=true)
-  rawResponseHeaders    Json?        // HTTP headers (only for HTTP)
-  rawResponseBody       String?      // HTTP response body (only for HTTP)
-  rawRequestHeaders     Json?        // HTTP request headers (only for HTTP)
-  rawNetworkData        Json?        // raw network data for other protocols
-  
-  // Indexes
+  id                  Int         @id @default(autoincrement())
+  monitorId           String
+  monitorName         String?
+  monitorType         MonitorType
+  targetHost          String
+  targetPort          Int?
+  targetPath          String?
+  httpMethod          String?
+  expectedStatusCode  Int?
+  dnsQueryType        String?
+  dnsExpectedResponse String?
+  executedAt          DateTime    @default(now())
+  agentId             String?
+  agentRegion         String?
+  success             Boolean
+  responseTime        Int?
+  responseSizeBytes   Int?
+  responseStatusCode  Int?
+  responseContentType String?
+  responseServer      String?
+  responseCacheStatus String?
+  dnsLookupMs         Int?
+  tcpConnectMs        Int?
+  tlsHandshakeMs      Int?
+  timeToFirstByteMs   Int?
+  packetLoss          Float?
+  jitterMs            Int?
+  dnsResponseValue    String?
+  errorMessage        String?
+  errorType           String?
+  rawResponseHeaders  Json?
+  rawResponseBody     String?
+  rawRequestHeaders   Json?
+  rawNetworkData      Json?
+  criticalThresholdMs Int?
+  warningThresholdMs  Int?
+
   @@index([monitorId])
   @@index([executedAt(sort: Desc)])
   @@index([success])
@@ -171,9 +150,9 @@ enum HostKind {
 
 enum MonitorType {
   HTTP
-  HTTPS
   TCP
   UDP
   PING
   DNS
+  HTTPS
 }

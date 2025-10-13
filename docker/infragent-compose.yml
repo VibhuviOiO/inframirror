@@ -35,8 +35,8 @@ services:
       - LOG_LEVEL=info
       
     volumes:
-      - ./tmp/config/monitors-us-east-1.yml:/app/configs/monitors-us-east-1.yml:ro
-      - ./tmp/config/agent-us-east-1.yml:/app/configs/agent.yml:ro
+      - ./config/monitors-us-east-1.yml:/app/configs/monitors-us-east-1.yml:ro
+      - ./config/agent-us-east-1.yml:/app/configs/agent.yml:ro
       - agent1_logs:/app/logs
     
     ports:
@@ -66,8 +66,8 @@ services:
       - LOG_LEVEL=info
       
     volumes:
-      - ./tmp/config/monitors-us-west-2.yml:/app/configs/monitors-us-west-2.yml:ro
-      - ./tmp/config/agent-us-west-2.yml:/app/configs/agent.yml:ro
+      - ./config/monitors-us-west-2.yml:/app/configs/monitors-us-west-2.yml:ro
+      - ./config/agent-us-west-2.yml:/app/configs/agent.yml:ro
       - agent2_logs:/app/logs
     
     ports:

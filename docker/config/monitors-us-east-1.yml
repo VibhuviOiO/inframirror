@@ -1,0 +1,55 @@
+# US East 1 - Core API Monitoring
+# Monitors: buildInfo, platform APIs, recommendations
+
+global:
+  default_interval_seconds: 90
+  default_timeout_seconds: 30
+  default_retry_attempts: 3
+  # Performance Thresholds (in milliseconds)
+  response_time_thresholds:
+    warning: 500      # Yellow threshold
+    critical: 1000    # Red threshold
+
+serviceGroups:
+  - name: "Core Platform APIs - us-east-1"
+    description: "Essential RichRelevance platform APIs from us-east-1"
+    services:
+      - name: "Public IP Info "
+        baseUrl: "https://ipinfo.io"
+        monitors:
+          - name: "us-east-1-public-ip-info"
+            url: "/json"
+            method: "GET"
+            type: "HTTPS"
+            interval: 60
+            timeout: 15
+            retryCount: 2
+            include_response_body: true
+            thresholds:
+              warning: 300    # Custom warning threshold (ms)
+              critical: 800   # Custom critical threshold (ms)
+      - name: "SpaceX API"
+        baseUrl: "https://api.spacexdata.com"
+        monitors:
+          - name: "us-east-1-spacex-launches"
+            url: "/v5/launches/latest"
+            method: "GET"
+            type: "HTTPS"
+            interval: 120
+            timeout: 20
+            retryCount: 2
+            include_response_body: true
+            thresholds:
+              warning: 600    # Custom warning threshold (ms)
+              critical: 1200  # Custom critical threshold (ms)
+monitors:
+  - name: "us-east-1-spacexdata-com-dns"
+    host: "spacexdata.com"
+    type: "DNS"
+    recordType: "A"
+    interval: 600
+    timeout: 10
+    retryCount: 2
+    thresholds:
+      warning: 100     # DNS queries should be fast
+      critical: 300    # Slower DNS is critical

@@ -329,15 +329,33 @@ const HTTPMonitorCard: React.FC<{
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-wrap">
               {monitor.responseTime && (
-                <Badge variant="outline" className={cn(
-                  "text-xs font-mono",
-                  monitor.responseTime < 200 ? "text-green-600" :
-                  monitor.responseTime < 500 ? "text-yellow-600" :
-                  monitor.responseTime < 1000 ? "text-orange-600" : "text-red-600"
-                )}>
-                  <Clock className="w-3 h-3 mr-1" />
-                  {monitor.responseTime}ms
-                </Badge>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className={cn(
+                        "text-xs font-mono flex items-center gap-1 cursor-help",
+                        getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'healthy' ? "text-green-600 border-green-200" :
+                        getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'warning' ? "text-yellow-600 border-yellow-200" :
+                        getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'critical' ? "text-red-600 border-red-200" : "text-gray-600"
+                      )}>
+                        <Clock className="w-3 h-3" />
+                        {monitor.responseTime}ms
+                        <div className={cn(
+                          "w-1.5 h-1.5 rounded-full ml-1",
+                          getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'healthy' ? "bg-green-500" :
+                          getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'warning' ? "bg-yellow-500" :
+                          getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'critical' ? "bg-red-500" : "bg-gray-500"
+                        )}></div>
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Response Time: {monitor.responseTime}ms</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Thresholds: 🟢 &lt;{monitor.warningThresholdMs ?? 500}ms, 🟡 {monitor.warningThresholdMs ?? 500}-{monitor.criticalThresholdMs ?? 1000}ms, 🔴 &gt;{monitor.criticalThresholdMs ?? 1000}ms
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               )}
 
               {/* Activity Status */}
@@ -421,8 +439,9 @@ const HTTPMonitorTable: React.FC<{
   onNavigate: (monitorId: string) => void,
   onShowResponseBody: (responseBody: { name: string, body: string }) => void,
   columns: any,
-  onColumnChange: (column: string, enabled: boolean) => void
-}> = ({ monitors, onNavigate, onShowResponseBody, columns, onColumnChange }) => {
+  onColumnChange: (column: string, enabled: boolean) => void,
+  getResponseTimeStatus: (responseTime: number | undefined, warningThreshold?: number | null, criticalThreshold?: number | null) => 'healthy' | 'warning' | 'critical' | 'failed'
+}> = ({ monitors, onNavigate, onShowResponseBody, columns, onColumnChange, getResponseTimeStatus }) => {
 
   const formatUrl = (monitor: HTTPMonitor) => {
     const protocol = monitor.monitorType.toLowerCase();
@@ -677,20 +696,42 @@ const HTTPMonitorTable: React.FC<{
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-2">
                               <Timer className="w-3 h-3" />
                               <span className={cn(
                                 "font-mono text-xs",
-                                monitor.responseTime > 1000 ? "text-red-600" :
-                                monitor.responseTime > 500 ? "text-yellow-600" : "text-green-600"
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'healthy' ? "text-green-600" :
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'warning' ? "text-yellow-600" :
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'critical' ? "text-red-600" : "text-gray-600"
                               )}>
                                 {monitor.responseTime}ms
                               </span>
+                              <div className={cn(
+                                "w-2 h-2 rounded-full",
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'healthy' ? "bg-green-500" :
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'warning' ? "bg-yellow-500" :
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'critical' ? "bg-red-500" : "bg-gray-500"
+                              )}></div>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Total Response Time: {monitor.responseTime}ms</p>
-                            <div className="text-xs text-muted-foreground mt-1">
+                            <div className="text-xs mt-2">
+                              <p className={cn(
+                                "font-semibold",
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'healthy' ? "text-green-600" :
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'warning' ? "text-yellow-600" :
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'critical' ? "text-red-600" : "text-gray-600"
+                              )}>
+                                Status: {getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'healthy' ? '🟢 Healthy' :
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'warning' ? '🟡 Warning' :
+                                getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs) === 'critical' ? '🔴 Critical' : '⚫ Failed'}
+                              </p>
+                              <p className="text-muted-foreground mt-1">
+                                Thresholds: 🟢 &lt;{monitor.warningThresholdMs ?? 500}ms, 🟡 {monitor.warningThresholdMs ?? 500}-{monitor.criticalThresholdMs ?? 1000}ms, 🔴 &gt;{monitor.criticalThresholdMs ?? 1000}ms
+                              </p>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-2 border-t pt-2">
                               {monitor.dnsLookupMs && <p>DNS: {monitor.dnsLookupMs}ms</p>}
                               {monitor.tcpConnectMs && <p>TCP: {monitor.tcpConnectMs}ms</p>}
                               {monitor.tlsHandshakeMs && <p>TLS: {monitor.tlsHandshakeMs}ms</p>}
@@ -872,6 +913,7 @@ const HTTPMonitorsContent: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
   const [methodFilter, setMethodFilter] = useState('all');
+  const [responseTimeFilter, setResponseTimeFilter] = useState('all');
   const [showActiveOnly, setShowActiveOnly] = useState(true);
   const [activeWindow, setActiveWindow] = useState(15); // minutes
   const [selectedResponseBody, setSelectedResponseBody] = useState<{ name: string, body: string } | null>(null);
@@ -894,6 +936,23 @@ const HTTPMonitorsContent: React.FC = () => {
     lastCheck: true,
     actions: true
   });
+
+  // Calculate status distribution based on response time thresholds
+  const getResponseTimeStatus = (
+    responseTime: number | undefined, 
+    warningThreshold?: number | null, 
+    criticalThreshold?: number | null
+  ) => {
+    if (!responseTime) return 'failed';
+    
+    // Use monitor-specific thresholds or defaults
+    const warning = warningThreshold ?? 500;   // ms
+    const critical = criticalThreshold ?? 1000; // ms
+    
+    if (responseTime < warning) return 'healthy';
+    if (responseTime < critical) return 'warning';
+    return 'critical';
+  };
   
   // Prepare filters for API call (excluding search - handled client-side for smoother UX)
   const filters = useMemo(() => ({
@@ -920,6 +979,12 @@ const HTTPMonitorsContent: React.FC = () => {
       if (statusFilter === 'error' && (monitor.success && monitor.responseStatusCode && monitor.responseStatusCode < 400)) return false;
       if (statusFilter === 'redirect' && (!monitor.responseStatusCode || monitor.responseStatusCode < 300 || monitor.responseStatusCode >= 400)) return false;
       
+      // Response time status filter
+      if (responseTimeFilter !== 'all') {
+        const rtStatus = getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs);
+        if (responseTimeFilter !== rtStatus) return false;
+      }
+      
       // Active monitoring filter - client-side for immediate feedback
       if (showActiveOnly) {
         const monitorTime = new Date(monitor.executedAt).getTime();
@@ -944,15 +1009,27 @@ const HTTPMonitorsContent: React.FC = () => {
       
       return true;
     });
-  }, [monitors, methodFilter, statusFilter, searchQuery, showActiveOnly, activeWindow]);
+  }, [monitors, methodFilter, statusFilter, responseTimeFilter, searchQuery, showActiveOnly, activeWindow]);
 
-  const stats = useMemo(() => ({
-    total: filteredMonitors.length,
-    healthy: filteredMonitors.filter(m => m.success && m.responseStatusCode && m.responseStatusCode < 300).length,
-    errors: filteredMonitors.filter(m => !m.success || (m.responseStatusCode && m.responseStatusCode >= 400)).length,
-    redirects: filteredMonitors.filter(m => m.responseStatusCode && m.responseStatusCode >= 300 && m.responseStatusCode < 400).length,
-    avgResponseTime: Math.round(filteredMonitors.reduce((acc, m) => acc + (m.responseTime || 0), 0) / filteredMonitors.length) || 0
-  }), [filteredMonitors]);
+  const stats = useMemo(() => {
+    const statusDistribution = filteredMonitors.reduce((acc, monitor) => {
+      if (!monitor.success) {
+        acc.failed += 1;
+      } else {
+        const status = getResponseTimeStatus(monitor.responseTime, monitor.warningThresholdMs, monitor.criticalThresholdMs);
+        acc[status] += 1;
+      }
+      return acc;
+    }, { healthy: 0, warning: 0, critical: 0, failed: 0 });
+
+    return {
+      total: filteredMonitors.length,
+      healthy: filteredMonitors.filter(m => m.success && m.responseStatusCode && m.responseStatusCode < 300).length,
+      errors: filteredMonitors.filter(m => !m.success || (m.responseStatusCode && m.responseStatusCode >= 400)).length,
+      redirects: filteredMonitors.filter(m => m.responseStatusCode && m.responseStatusCode >= 300 && m.responseStatusCode < 400).length,
+      responseTimeDistribution: statusDistribution
+    };
+  }, [filteredMonitors]);
 
   if (loading) {
     return (
@@ -1043,9 +1120,32 @@ const HTTPMonitorsContent: React.FC = () => {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.avgResponseTime}ms</p>
-              <p className="text-xs text-muted-foreground">Avg Response</p>
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground text-center mb-2">Response Time Distribution</p>
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="font-medium text-green-600">{stats.responseTimeDistribution.healthy}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                  <span className="font-medium text-yellow-600">{stats.responseTimeDistribution.warning}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <span className="font-medium text-red-600">{stats.responseTimeDistribution.critical}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                  <span className="font-medium text-gray-600">{stats.responseTimeDistribution.failed}</span>
+                </div>
+              </div>
+              <div className="flex text-[10px] text-muted-foreground justify-between mt-1">
+                <span>&lt;500ms</span>
+                <span>500-1000ms</span>
+                <span>&gt;1000ms</span>
+                <span>Failed</span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -1063,19 +1163,41 @@ const HTTPMonitorsContent: React.FC = () => {
                 Add filter
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
+            <DropdownMenuContent align="start" className="w-52">
+              <DropdownMenuLabel>Status Filters</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setStatusFilter('healthy')}>
-                Status: Healthy
+                🟢 Status: Healthy
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setStatusFilter('error')}>
-                Status: Error
+                🔴 Status: Error
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              
+              <DropdownMenuLabel>Response Time Status</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => setResponseTimeFilter('healthy')}>
+                🟢 Fast (&lt;500ms)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setResponseTimeFilter('warning')}>
+                🟡 Slow (500-1000ms)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setResponseTimeFilter('critical')}>
+                🔴 Very Slow (&gt;1000ms)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setResponseTimeFilter('failed')}>
+                ⚫ Failed
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              
+              <DropdownMenuLabel>Request Filters</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setMethodFilter('GET')}>
                 Method: GET
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setMethodFilter('POST')}>
                 Method: POST
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              
+              <DropdownMenuLabel>Region Filters</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => setRegionFilter('us-east-1')}>
                 Region: US East 1
               </DropdownMenuItem>
@@ -1271,6 +1393,7 @@ const HTTPMonitorsContent: React.FC = () => {
           onColumnChange={(column, enabled) => {
             setTableColumns(prev => ({ ...prev, [column]: enabled }));
           }}
+          getResponseTimeStatus={getResponseTimeStatus}
         />
       )}
 

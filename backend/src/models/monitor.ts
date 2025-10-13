@@ -39,6 +39,10 @@ export interface Monitor {
   tlsHandshakeMs?: number | null;
   timeToFirstByteMs?: number | null;
   
+  // Performance Thresholds
+  warningThresholdMs?: number | null;
+  criticalThresholdMs?: number | null;
+  
   // PING-specific metrics
   packetLoss?: number | null;
   jitterMs?: number | null;
