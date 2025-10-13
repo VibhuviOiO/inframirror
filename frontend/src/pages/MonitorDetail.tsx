@@ -111,38 +111,64 @@ const MonitorDetailContent: React.FC = () => {
   const [availabilityTimeRange, setAvailabilityTimeRange] = useState('24h');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
+  const [customStartTime, setCustomStartTime] = useState('');
+  const [customEndTime, setCustomEndTime] = useState('');
+  const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
   const [selectedDatacenter, setSelectedDatacenter] = useState<string>('all');
 
-  // Filter history based on availability time range
+  // Filter history based on availability time range and datacenter
   const filteredHistory = React.useMemo(() => {
     const now = new Date();
     let startTime = new Date();
+    let endTime = now;
 
-    switch (availabilityTimeRange) {
-      case '1h':
-        startTime = new Date(now.getTime() - 1 * 60 * 60 * 1000);
-        break;
-      case '6h':
-        startTime = new Date(now.getTime() - 6 * 60 * 60 * 1000);
-        break;
-      case '24h':
-        startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        break;
-      case '7d':
-        startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case '30d':
-        startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        break;
-      default:
-        startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    if (availabilityTimeRange === 'custom' && customStartDate && customEndDate) {
+      // Handle custom date range
+      const startDateTime = customStartTime 
+        ? `${customStartDate}T${customStartTime}` 
+        : `${customStartDate}T00:00:00`;
+      const endDateTime = customEndTime 
+        ? `${customEndDate}T${customEndTime}` 
+        : `${customEndDate}T23:59:59`;
+      
+      startTime = new Date(startDateTime);
+      endTime = new Date(endDateTime);
+    } else {
+      // Handle predefined time ranges
+      switch (availabilityTimeRange) {
+        case '1h':
+          startTime = new Date(now.getTime() - 1 * 60 * 60 * 1000);
+          break;
+        case '6h':
+          startTime = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+          break;
+        case '24h':
+          startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          break;
+        case '7d':
+          startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case '30d':
+          startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          break;
+        default:
+          startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      }
     }
 
     return history.filter(item => {
       const itemDate = new Date(item.executedAt);
-      return itemDate >= startTime;
+      const timeInRange = itemDate >= startTime && itemDate <= endTime;
+      const datacenterMatch = selectedDatacenter === 'all' || item.agentRegion === selectedDatacenter;
+      return timeInRange && datacenterMatch;
     });
-  }, [history, availabilityTimeRange]);
+  }, [history, availabilityTimeRange, customStartDate, customEndDate, customStartTime, customEndTime, selectedDatacenter]);
+
+  // Get unique datacenters for dropdown
+  const uniqueDatacenters = React.useMemo(() => {
+    const datacenters = [...new Set(history.map(h => h.agentRegion).filter(Boolean))];
+    return datacenters.sort();
+  }, [history]);
 
   // Prepare chart data for histogram with more granular time buckets
   const chartData = React.useMemo(() => {
@@ -452,58 +478,99 @@ const MonitorDetailContent: React.FC = () => {
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4 text-gray-500" />
-                  <Button variant="outline" size="sm">Custom</Button>
+                  <Button 
+                    variant={availabilityTimeRange === 'custom' ? 'default' : 'outline'} 
+                    size="sm"
+                    onClick={() => {
+                      setShowCustomDatePicker(!showCustomDatePicker);
+                      if (!showCustomDatePicker) {
+                        setAvailabilityTimeRange('custom');
+                      }
+                    }}
+                  >
+                    Custom
+                  </Button>
                 </div>
                 
                 <div className="flex items-center gap-1">
                   <Button 
                     variant={availabilityTimeRange === '1h' ? 'default' : 'outline'} 
                     size="sm"
-                    onClick={() => setAvailabilityTimeRange('1h')}
+                    onClick={() => {
+                      setAvailabilityTimeRange('1h');
+                      setShowCustomDatePicker(false);
+                    }}
                   >
                     Today
                   </Button>
                   <Button 
                     variant={availabilityTimeRange === '1h' ? 'default' : 'outline'} 
                     size="sm"
-                    onClick={() => setAvailabilityTimeRange('1h')}
+                    onClick={() => {
+                      setAvailabilityTimeRange('1h');
+                      setShowCustomDatePicker(false);
+                    }}
                   >
                     1hr
                   </Button>
                   <Button 
                     variant={availabilityTimeRange === '6h' ? 'default' : 'outline'} 
                     size="sm"
-                    onClick={() => setAvailabilityTimeRange('6h')}
+                    onClick={() => {
+                      setAvailabilityTimeRange('6h');
+                      setShowCustomDatePicker(false);
+                    }}
                   >
                     3hr
                   </Button>
                   <Button 
                     variant={availabilityTimeRange === '24h' ? 'default' : 'outline'} 
                     size="sm"
-                    onClick={() => setAvailabilityTimeRange('24h')}
+                    onClick={() => {
+                      setAvailabilityTimeRange('24h');
+                      setShowCustomDatePicker(false);
+                    }}
                   >
                     24hr
                   </Button>
                   <Button 
                     variant={availabilityTimeRange === '7d' ? 'default' : 'outline'} 
                     size="sm"
-                    onClick={() => setAvailabilityTimeRange('7d')}
+                    onClick={() => {
+                      setAvailabilityTimeRange('7d');
+                      setShowCustomDatePicker(false);
+                    }}
                   >
                     7d
                   </Button>
                   <Button 
                     variant={availabilityTimeRange === '30d' ? 'default' : 'outline'} 
                     size="sm"
-                    onClick={() => setAvailabilityTimeRange('30d')}
+                    onClick={() => {
+                      setAvailabilityTimeRange('30d');
+                      setShowCustomDatePicker(false);
+                    }}
                   >
                     30d
                   </Button>
                 </div>
                 
-                <Button variant="outline" size="sm" className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Location
-                </Button>
+                <Select value={selectedDatacenter} onValueChange={setSelectedDatacenter}>
+                  <SelectTrigger className="w-48">
+                    <div className="flex items-center gap-2">
+                      <Server className="w-4 h-4 text-gray-500" />
+                      <SelectValue placeholder="All Datacenters" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Datacenters ({uniqueDatacenters.length})</SelectItem>
+                    {uniqueDatacenters.map((datacenter) => (
+                      <SelectItem key={datacenter} value={datacenter}>
+                        {datacenter}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="flex items-center gap-3">
@@ -525,6 +592,78 @@ const MonitorDetailContent: React.FC = () => {
                 </Button>
               </div>
             </div>
+            
+            {/* Custom Date/Time Picker */}
+            {showCustomDatePicker && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="startDate" className="text-sm font-medium">From</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="startDate"
+                        type="date"
+                        value={customStartDate}
+                        onChange={(e) => setCustomStartDate(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Input
+                        type="time"
+                        value={customStartTime}
+                        onChange={(e) => setCustomStartTime(e.target.value)}
+                        className="w-32"
+                        placeholder="HH:MM"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="endDate" className="text-sm font-medium">To</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="endDate"
+                        type="date"
+                        value={customEndDate}
+                        onChange={(e) => setCustomEndDate(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Input
+                        type="time"
+                        value={customEndTime}
+                        onChange={(e) => setCustomEndTime(e.target.value)}
+                        className="w-32"
+                        placeholder="HH:MM"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end gap-2 mt-3">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      setShowCustomDatePicker(false);
+                      setAvailabilityTimeRange('24h');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    size="sm"
+                    onClick={() => {
+                      if (customStartDate && customEndDate) {
+                        setAvailabilityTimeRange('custom');
+                        setShowCustomDatePicker(false);
+                      }
+                    }}
+                    disabled={!customStartDate || !customEndDate}
+                  >
+                    Apply Custom Range
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Summary Stats */}
