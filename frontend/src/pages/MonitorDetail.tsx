@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   ArrowLeft, 
   Activity, 
@@ -20,10 +22,29 @@ import {
   LineChart,
   Zap,
   Database,
-  Timer
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+  Timer,
+  RefreshCw,
+  Filter,
+  Search,
+  Network,
+  Server,
+  Eye,
+  EyeOff,
+  Settings,
+  Info,
+  Users,
+  Shield,
+  Bell,
+  Play,
+  Pause,
+  MoreHorizontal,
+  Download,
+  Share,
+  Star,
+  ChevronDown,
+  XCircle,
+  AlertTriangle
+} from 'lucide-react';
 import {
   LineChart as RechartsLineChart,
   AreaChart,
@@ -35,7 +56,14 @@ import {
   ResponsiveContainer,
   Line,
   BarChart,
-  Bar
+  Bar,
+  ComposedChart,
+  Scatter,
+  ScatterChart,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
 } from 'recharts';
 
 interface MonitorHistory {
@@ -44,330 +72,30 @@ interface MonitorHistory {
   success: boolean;
   responseTime: number;
   responseStatusCode?: number;
+  errorType?: string;
   errorMessage?: string;
-  rawResponseBody?: string;
 }
 
 interface MonitorDetails {
   id: number;
-  monitorId: string;
   monitorName: string;
-  monitorType: 'HTTP' | 'TCP' | 'UDP' | 'PING' | 'DNS';
-  targetHost: string;
-  targetPort?: number;
-  targetPath?: string;
-  httpMethod?: string;
-  agentId: string;
-  agentRegion: string;
-  expectedStatusCode?: number;
+  url: string;
+  monitorType: string;
+  frequency: number;
+  enabled: boolean;
+  warningThresholdMs?: number;
+  criticalThresholdMs?: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface MonitorStats {
-  uptime: number;
-  avgResponseTime: number;
   totalChecks: number;
-  successRate: number;
-  incidents: number;
-  lastIncident?: string;
+  successfulChecks: number;
+  failedChecks: number;
+  averageResponseTime: number;
+  uptimePercentage: number;
 }
-
-const StatusIndicator: React.FC<{ status: number | undefined, success: boolean }> = ({ status, success }) => {
-  if (!success || !status) {
-    return (
-      <div className="flex items-center gap-2 text-red-600">
-        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-        <span className="font-medium">Down</span>
-        <Badge variant="destructive" className="text-xs">
-          {status || 'No Response'}
-        </Badge>
-      </div>
-    );
-  }
-
-  if (status >= 200 && status < 300) {
-    return (
-      <div className="flex items-center gap-2 text-green-600">
-        <div className="w-2 h-2 bg-green-500 rounded-full" />
-        <span className="font-medium">Operational</span>
-        <Badge variant="default" className="bg-green-500 text-xs">
-          {status}
-        </Badge>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-2 text-yellow-600">
-      <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-      <span className="font-medium">Degraded</span>
-      <Badge variant="secondary" className="bg-yellow-500 text-white text-xs">
-        {status}
-      </Badge>
-    </div>
-  );
-};
-
-const MetricCard: React.FC<{
-  title: string;
-  value: string | number;
-  change?: string;
-  trend?: 'up' | 'down' | 'stable';
-  icon: React.ReactNode;
-  suffix?: string;
-}> = ({ title, value, change, trend, icon, suffix }) => {
-  return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              {icon}
-              {title}
-            </p>
-            <div className="space-y-1">
-              <p className="text-2xl font-bold">
-                {value}
-                {suffix && <span className="text-lg text-muted-foreground ml-1">{suffix}</span>}
-              </p>
-              {change && (
-                <p className={cn(
-                  "text-xs flex items-center gap-1",
-                  trend === 'up' ? "text-green-600" : trend === 'down' ? "text-red-600" : "text-muted-foreground"
-                )}>
-                  {trend === 'up' && <TrendingUp className="w-3 h-3" />}
-                  {trend === 'down' && <TrendingDown className="w-3 h-3" />}
-                  {change}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-const ResponseTimeChart: React.FC<{ data: MonitorHistory[] }> = ({ data }) => {
-  const chartData = data.slice(-50).map(item => ({
-    time: new Date(item.executedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    responseTime: item.responseTime,
-    success: item.success
-  }));
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <LineChart className="w-5 h-5" />
-          Response Time Trend
-        </CardTitle>
-        <CardDescription>
-          Last 50 checks - Lower is better
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-              <XAxis 
-                dataKey="time" 
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis 
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `${value}ms`}
-              />
-              <Tooltip 
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px'
-                }}
-                formatter={(value: number, name) => [
-                  `${value}ms`,
-                  'Response Time'
-                ]}
-              />
-              <Area
-                type="monotone"
-                dataKey="responseTime"
-                stroke="#3b82f6"
-                strokeWidth={2}
-                fill="url(#colorResponseTime)"
-                fillOpacity={0.6}
-              />
-              <defs>
-                <linearGradient id="colorResponseTime" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-const UptimeChart: React.FC<{ data: MonitorHistory[] }> = ({ data }) => {
-  // Group data by hour for uptime calculation
-  const hourlyData = data.reduce((acc: Record<string, { total: number, successful: number }>, item) => {
-    const hour = new Date(item.executedAt).toISOString().slice(0, 13);
-    if (!acc[hour]) {
-      acc[hour] = { total: 0, successful: 0 };
-    }
-    acc[hour].total++;
-    if (item.success) {
-      acc[hour].successful++;
-    }
-    return acc;
-  }, {});
-
-  const chartData = Object.entries(hourlyData).slice(-24).map(([hour, stats]) => ({
-    time: new Date(hour + ':00:00').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    uptime: (stats.successful / stats.total) * 100,
-    total: stats.total
-  }));
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BarChart3 className="w-5 h-5" />
-          Uptime by Hour
-        </CardTitle>
-        <CardDescription>
-          Last 24 hours - Percentage of successful checks
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-              <XAxis 
-                dataKey="time" 
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis 
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                domain={[0, 100]}
-                tickFormatter={(value) => `${value}%`}
-              />
-              <Tooltip 
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px'
-                }}
-                formatter={(value: number) => [
-                  `${value.toFixed(1)}%`,
-                  'Uptime'
-                ]}
-              />
-              <Bar
-                dataKey="uptime"
-                fill="#10b981"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-const HistoryTable: React.FC<{ data: MonitorHistory[] }> = ({ data }) => {
-  const [timeRange, setTimeRange] = useState('24h');
-  
-  const filteredData = data.slice(0, 100); // Show last 100 checks
-
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Database className="w-5 h-5" />
-              Check History
-            </CardTitle>
-            <CardDescription>
-              Recent monitoring results
-            </CardDescription>
-          </div>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1h">Last Hour</SelectItem>
-              <SelectItem value="24h">Last 24h</SelectItem>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2 max-h-96 overflow-y-auto">
-          {filteredData.map((item, index) => (
-            <div
-              key={item.id}
-              className={cn(
-                "flex items-center justify-between p-3 rounded-lg border",
-                item.success ? "bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800" 
-                             : "bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                {item.success ? (
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 text-red-600" />
-                )}
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">
-                      {new Date(item.executedAt).toLocaleString()}
-                    </span>
-                    {item.responseStatusCode && (
-                      <Badge 
-                        variant={item.success ? "default" : "destructive"}
-                        className="text-xs font-mono"
-                      >
-                        {item.responseStatusCode}
-                      </Badge>
-                    )}
-                  </div>
-                  {item.errorMessage && (
-                    <p className="text-xs text-red-600 dark:text-red-400">
-                      {item.errorMessage}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Timer className="w-4 h-4" />
-                <span className="font-mono">{item.responseTime}ms</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
 
 const MonitorDetailContent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -376,116 +104,215 @@ const MonitorDetailContent: React.FC = () => {
   const [history, setHistory] = useState<MonitorHistory[]>([]);
   const [stats, setStats] = useState<MonitorStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState('24h');
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [availabilityTimeRange, setAvailabilityTimeRange] = useState('24h');
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
+
+  // Filter history based on availability time range
+  const filteredHistory = React.useMemo(() => {
+    const now = new Date();
+    let startTime = new Date();
+
+    switch (availabilityTimeRange) {
+      case '1h':
+        startTime = new Date(now.getTime() - 1 * 60 * 60 * 1000);
+        break;
+      case '6h':
+        startTime = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+        break;
+      case '24h':
+        startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        break;
+      case '7d':
+        startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case '30d':
+        startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        break;
+      default:
+        startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    }
+
+    return history.filter(item => {
+      const itemDate = new Date(item.executedAt);
+      return itemDate >= startTime;
+    });
+  }, [history, availabilityTimeRange]);
+
+  // Prepare chart data for histogram with more granular time buckets
+  const chartData = React.useMemo(() => {
+    if (filteredHistory.length === 0) return [];
+    
+    // Create more time buckets for better visualization
+    const now = new Date();
+    const buckets: Record<string, { total: number, successful: number, errors: number }> = {};
+    let bucketSize: number;
+    let bucketCount: number;
+    
+    // Determine bucket size based on time range to get ~50-100 bars
+    switch (availabilityTimeRange) {
+      case '1h':
+        bucketSize = 2 * 60 * 1000; // 2 minutes
+        bucketCount = 30;
+        break;
+      case '6h':
+        bucketSize = 5 * 60 * 1000; // 5 minutes  
+        bucketCount = 72;
+        break;
+      case '24h':
+        bucketSize = 30 * 60 * 1000; // 30 minutes
+        bucketCount = 48;
+        break;
+      case '7d':
+        bucketSize = 3 * 60 * 60 * 1000; // 3 hours
+        bucketCount = 56;
+        break;
+      case '30d':
+        bucketSize = 12 * 60 * 60 * 1000; // 12 hours
+        bucketCount = 60;
+        break;
+      default:
+        bucketSize = 30 * 60 * 1000; // 30 minutes
+        bucketCount = 48;
+    }
+    
+    // Generate time buckets
+    const startTime = new Date(now.getTime() - (bucketCount * bucketSize));
+    for (let i = 0; i < bucketCount; i++) {
+      const bucketStart = new Date(startTime.getTime() + (i * bucketSize));
+      const bucketKey = bucketStart.toISOString();
+      buckets[bucketKey] = { total: 0, successful: 0, errors: 0 };
+    }
+    
+    // Fill buckets with data
+    filteredHistory.forEach(item => {
+      const itemTime = new Date(item.executedAt);
+      const bucketIndex = Math.floor((itemTime.getTime() - startTime.getTime()) / bucketSize);
+      if (bucketIndex >= 0 && bucketIndex < bucketCount) {
+        const bucketStart = new Date(startTime.getTime() + (bucketIndex * bucketSize));
+        const bucketKey = bucketStart.toISOString();
+        if (buckets[bucketKey]) {
+          buckets[bucketKey].total++;
+          if (item.success) {
+            buckets[bucketKey].successful++;
+          } else {
+            buckets[bucketKey].errors++;
+          }
+        }
+      }
+    });
+    
+    // Convert to chart data
+    return Object.entries(buckets)
+      .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+      .map(([timestamp, stats]) => {
+        const date = new Date(timestamp);
+        const successRate = stats.total > 0 ? (stats.successful / stats.total) * 100 : 100;
+        let barColor = '#e5e7eb'; // Gray for no data
+        
+        if (stats.total > 0) {
+          if (successRate >= 100) {
+            barColor = '#10b981'; // Green for 100% success
+          } else if (successRate >= 95) {
+            barColor = '#f59e0b'; // Yellow for 95-99% success
+          } else {
+            barColor = '#ef4444'; // Red for <95% success
+          }
+        }
+        
+        return {
+          time: bucketSize < 3600000 
+            ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : bucketSize < 86400000
+            ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : date.toLocaleDateString([], { month: 'short', day: 'numeric' }),
+          fullTime: date.toLocaleString(),
+          count: stats.total,
+          successful: stats.successful,
+          errors: stats.errors,
+          fill: barColor,
+          successRate: Math.round(successRate)
+        };
+      });
+  }, [filteredHistory, availabilityTimeRange]);
+
+  // Auto-refresh effect
+  useEffect(() => {
+    if (!autoRefresh) return;
+    
+    const interval = setInterval(() => {
+      fetchMonitorData();
+      setLastRefresh(new Date());
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, [autoRefresh, id]);
+
+  const fetchMonitorData = async () => {
+    if (!id) return;
+    
+    try {
+      setLoading(true);
+      
+      // Fetch latest monitor data using the correct endpoint
+      const monitorResponse = await fetch(`/api/monitors/latest/${id}`);
+      if (monitorResponse.ok) {
+        const monitorData = await monitorResponse.json();
+        // Transform the data to match our interface
+        const transformedMonitor = {
+          id: monitorData.id || parseInt(id),
+          monitorName: monitorData.monitorId || `Monitor ${id}`,
+          url: monitorData.targetHost || 'Unknown URL',
+          monitorType: monitorData.monitorType || 'HTTPS',
+          frequency: 60, // Default frequency
+          enabled: true, // Default enabled
+          warningThresholdMs: monitorData.warningThresholdMs,
+          criticalThresholdMs: monitorData.criticalThresholdMs,
+          createdAt: monitorData.executedAt || new Date().toISOString(),
+          updatedAt: monitorData.executedAt || new Date().toISOString()
+        };
+        setMonitor(transformedMonitor);
+      }
+
+      // Fetch monitor history using the correct endpoint
+      const historyResponse = await fetch(`/api/monitors/history/${id}?limit=1000`);
+      if (historyResponse.ok) {
+        const historyData = await historyResponse.json();
+        setHistory(Array.isArray(historyData) ? historyData : []);
+      }
+
+    } catch (error) {
+      console.error('Error fetching monitor data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchMonitorData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch monitor history using the proper API endpoint
-        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}monitors/history/${id}`;
-        console.log('Fetching from URL:', apiUrl);
-        
-        const historyResponse = await fetch(apiUrl);
-        console.log('Response status:', historyResponse.status);
-        
-        if (!historyResponse.ok) {
-          throw new Error(`Failed to fetch monitor history: ${historyResponse.status}`);
-        }
-        
-        const historyData = await historyResponse.json();
-        
-        if (historyData.length === 0) {
-          setLoading(false);
-          return;
-        }
-
-        // Get monitor details from the first record
-        const firstRecord = historyData[0];
-        setMonitor({
-          id: firstRecord.id,
-          monitorId: firstRecord.monitorId,
-          monitorName: firstRecord.monitorName,
-          monitorType: firstRecord.monitorType,
-          targetHost: firstRecord.targetHost,
-          targetPort: firstRecord.targetPort,
-          targetPath: firstRecord.targetPath,
-          httpMethod: firstRecord.httpMethod,
-          agentId: firstRecord.agentId,
-          agentRegion: firstRecord.agentRegion,
-          expectedStatusCode: firstRecord.expectedStatusCode,
-          createdAt: firstRecord.executedAt
-        });
-
-        // Process history data
-        const processedHistory: MonitorHistory[] = historyData.map((item: any) => ({
-          id: item.id,
-          executedAt: item.executedAt,
-          success: item.success,
-          responseTime: item.responseTime,
-          responseStatusCode: item.responseStatusCode,
-          errorMessage: item.errorMessage,
-          rawResponseBody: item.rawResponseBody
-        }));
-        
-        setHistory(processedHistory);
-
-        // Calculate stats from history data
-        const successfulChecks = processedHistory.filter(h => h.success).length;
-        const totalChecks = processedHistory.length;
-        const avgResponseTime = processedHistory.reduce((sum, h) => sum + (h.responseTime || 0), 0) / totalChecks;
-        const successRate = totalChecks > 0 ? (successfulChecks / totalChecks) * 100 : 0;
-        const uptime = successRate; // Simplified uptime calculation
-        const incidents = processedHistory.filter(h => !h.success).length;
-        const lastFailure = processedHistory.find(h => !h.success);
-
-        setStats({
-          uptime: Math.round(uptime * 10) / 10,
-          avgResponseTime: Math.round(avgResponseTime),
-          totalChecks,
-          successRate: Math.round(successRate * 10) / 10,
-          incidents,
-          lastIncident: lastFailure?.executedAt
-        });
-
-      } catch (error) {
-        console.error('Error fetching monitor data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchMonitorData();
-    }
+    fetchMonitorData();
   }, [id]);
-
-  const latestCheck = history[0];
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-muted rounded mb-4"></div>
-            <div className="grid grid-cols-4 gap-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-24 bg-muted rounded"></div>
-              ))}
-            </div>
-          </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-muted-foreground">Loading monitor details...</p>
         </div>
       </div>
     );
   }
 
-  if (!monitor || !stats) {
+  if (!monitor) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center space-y-4">
-          <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto" />
-          <h2 className="text-xl font-semibold">Monitor not found</h2>
-          <Button onClick={() => navigate('/monitors/http')}>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <AlertCircle className="w-8 h-8 mx-auto mb-4 text-red-500" />
+          <p className="text-muted-foreground">Monitor not found</p>
+          <Button variant="outline" onClick={() => navigate('/monitors')} className="mt-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Monitors
           </Button>
@@ -495,139 +322,343 @@ const MonitorDetailContent: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => navigate('/monitors/http')}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <Globe className="w-6 h-6 text-blue-500" />
-            <h1 className="text-2xl font-bold">{monitor.monitorName}</h1>
-          </div>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              {monitor.agentRegion}
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => navigate('/monitors')}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                <span className="font-semibold text-gray-900">{monitor.url}</span>
+                <Button variant="outline" size="sm">Edit</Button>
+              </div>
             </div>
-            <Badge variant="outline">{monitor.monitorType}</Badge>
-            <span className="font-mono">
-              {monitor.httpMethod} {monitor.targetHost}
-              {monitor.targetPort && monitor.targetPort !== 80 && monitor.targetPort !== 443 ? `:${monitor.targetPort}` : ''}
-              {monitor.targetPath}
-            </span>
+            
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="text-blue-600"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Schedule now
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`${autoRefresh ? 'bg-green-50 text-green-700 border-green-200' : ''}`}
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
+                {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
+              </Button>
+            </div>
+          </div>
+          
+          {/* Monitor Info */}
+          <div className="mt-4 flex items-center gap-6">
+            <div className="text-sm text-gray-600">
+              GET {monitor.url} • 
+              <span className="text-green-600 ml-1">
+                42 SSL days remaining
+              </span> • 
+              🇺🇸 🇩🇪 •
+              <span className="ml-1">via</span>
+            </div>
+          </div>
+          
+          {/* Status Badge */}
+          <div className="mt-3">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-green-500" />
+              <span className="text-green-600 font-medium">Check is passing</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Current Status */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold">Current Status</h3>
-              <StatusIndicator 
-                status={latestCheck?.responseStatusCode} 
-                success={latestCheck?.success || false}
-              />
-              <p className="text-sm text-muted-foreground">
-                Last checked: {latestCheck ? new Date(latestCheck.executedAt).toLocaleString() : 'Never'}
-              </p>
+      <div className="flex h-screen">
+        {/* Left Panel - Main Content */}
+        <div className="flex-1 p-6">
+          {/* Filter Bar */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-gray-500" />
+                <Button variant="outline" size="sm">Custom</Button>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant={availabilityTimeRange === '1h' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('1h')}
+                >
+                  Today
+                </Button>
+                <Button 
+                  variant={availabilityTimeRange === '1h' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('1h')}
+                >
+                  1hr
+                </Button>
+                <Button 
+                  variant={availabilityTimeRange === '6h' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('6h')}
+                >
+                  3hr
+                </Button>
+                <Button 
+                  variant={availabilityTimeRange === '24h' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('24h')}
+                >
+                  24hr
+                </Button>
+                <Button 
+                  variant={availabilityTimeRange === '7d' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('7d')}
+                >
+                  7d
+                </Button>
+                <Button 
+                  variant={availabilityTimeRange === '30d' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('30d')}
+                >
+                  30d
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-2 ml-auto">
+                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Passed
+                </Badge>
+                <Badge variant="secondary" className="bg-red-100 text-red-800">
+                  <XCircle className="w-3 h-3 mr-1" />
+                  Failed
+                </Badge>
+                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                  <AlertTriangle className="w-3 h-3 mr-1" />
+                  Degraded
+                </Badge>
+                <Button variant="ghost" size="sm">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Has retries
+                </Button>
+              </div>
             </div>
-            <div className="text-right space-y-1">
-              <p className="text-2xl font-bold">{stats.uptime}%</p>
-              <p className="text-sm text-muted-foreground">30-day uptime</p>
+            
+            {/* Location Filter */}
+            <div className="mt-3">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                Location
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          title="Avg Response Time"
-          value={stats.avgResponseTime}
-          suffix="ms"
-          change="12ms faster than yesterday"
-          trend="up"
-          icon={<Zap className="w-4 h-4" />}
-        />
-        <MetricCard
-          title="Success Rate"
-          value={`${stats.successRate}%`}
-          change="0.2% improvement"
-          trend="up"
-          icon={<CheckCircle className="w-4 h-4" />}
-        />
-        <MetricCard
-          title="Total Checks"
-          value={stats.totalChecks.toLocaleString()}
-          change="24 in last hour"
-          icon={<Activity className="w-4 h-4" />}
-        />
-        <MetricCard
-          title="Incidents (30d)"
-          value={stats.incidents}
-          change={stats.lastIncident ? `Last: ${new Date(stats.lastIncident).toLocaleDateString()}` : "No recent incidents"}
-          trend={stats.incidents > 0 ? "down" : "stable"}
-          icon={<AlertCircle className="w-4 h-4" />}
-        />
-      </div>
-
-      {/* Charts and History */}
-      <Tabs defaultValue="charts" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="charts">Charts</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
-          <TabsTrigger value="config">Configuration</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="charts" className="space-y-6">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <ResponseTimeChart data={history} />
-            <UptimeChart data={history} />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="history">
-          <HistoryTable data={history} />
-        </TabsContent>
-
-        <TabsContent value="config">
-          <Card>
-            <CardHeader>
-              <CardTitle>Monitor Configuration</CardTitle>
-              <CardDescription>
-                Configuration details for this monitor
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Monitor ID</label>
-                    <code className="block p-2 bg-muted rounded text-sm">{monitor.monitorId}</code>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Agent ID</label>
-                    <code className="block p-2 bg-muted rounded text-sm">{monitor.agentId}</code>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Target Host</label>
-                    <code className="block p-2 bg-muted rounded text-sm">{monitor.targetHost}</code>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Expected Status</label>
-                    <code className="block p-2 bg-muted rounded text-sm">{monitor.expectedStatusCode}</code>
-                  </div>
+          {/* Summary Stats */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <div className="text-sm text-gray-600 mb-4">
+              Oct 12 11:00 - Oct 12 11:29 · {filteredHistory.length} results
+            </div>
+            
+            <div className="grid grid-cols-3 gap-8 mb-6">
+              <div>
+                <div className="text-2xl font-light text-gray-900 mb-1">
+                  {filteredHistory.filter(h => h.success).length}
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-gray-600">Passed results: {filteredHistory.filter(h => h.success).length}</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              
+              <div>
+                <div className="text-2xl font-light text-gray-900 mb-1">0</div>
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                  <span className="text-gray-600">Degraded results: 0</span>
+                </div>
+              </div>
+              
+              <div>
+                <div className="text-2xl font-light text-gray-900 mb-1">
+                  {filteredHistory.filter(h => !h.success).length}
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <span className="text-gray-600">Failed results: {filteredHistory.filter(h => !h.success).length}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Histogram Chart */}
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart 
+                  data={chartData} 
+                  margin={{ top: 20, right: 5, left: 5, bottom: 20 }}
+                  barCategoryGap="2%"
+                >
+                  <XAxis 
+                    dataKey="time" 
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+                    tick={{ fill: '#6b7280' }}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis 
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+                    tick={{ fill: '#6b7280' }}
+                    domain={[0, 'dataMax + 1']}
+                  />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                    formatter={(value: number, name: string, props: any) => {
+                      const data = props.payload;
+                      if (data.count === 0) {
+                        return ['No data', 'Checks'];
+                      }
+                      return [
+                        `${data.count} checks (${data.successful} ✓, ${data.errors} ✗)`,
+                        `${data.successRate}% uptime`
+                      ];
+                    }}
+                    labelFormatter={(label, payload) => {
+                      if (payload?.[0]) {
+                        const data = payload[0].payload;
+                        return data.fullTime;
+                      }
+                      return label;
+                    }}
+                  />
+                  <Bar
+                    dataKey="count"
+                    stroke="none"
+                    radius={[1, 1, 0, 0]}
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Error Groups */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <h3 className="text-lg font-medium">Error Groups</h3>
+              <Badge variant="secondary" className="bg-pink-100 text-pink-800">
+                beta
+              </Badge>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 text-sm font-medium text-gray-600">MESSAGE</th>
+                    <th className="text-left py-3 text-sm font-medium text-gray-600">FIRST SEEN</th>
+                    <th className="text-left py-3 text-sm font-medium text-gray-600">LAST SEEN</th>
+                    <th className="text-left py-3 text-sm font-medium text-gray-600">EVENTS</th>
+                    <th className="text-left py-3 text-sm font-medium text-gray-600">LOCATIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colSpan={5} className="text-center py-8 text-gray-500">
+                      No errors found for selected filters.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Panel - Run Results */}
+        <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
+          <div className="p-4 border-b border-gray-200">
+            <h3 className="font-medium text-gray-900">Run results</h3>
+            <div className="text-sm text-gray-500 mt-1">Last 24 hours</div>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto">
+            {filteredHistory.slice(0, 50).map((result, index) => (
+              <div key={result.id} className="flex items-center gap-3 p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
+                <div className="flex items-center gap-2 flex-1">
+                  {result.success ? (
+                    <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">
+                      {result.agentRegion === 'us-west-2' ? 'Oregon 🇺🇸' : 
+                       result.agentRegion === 'us-east-1' ? 'N. Virginia 🇺🇸' :
+                       result.agentRegion === 'eu-west-1' ? 'Ireland 🇪🇺' :
+                       result.agentRegion === 'eu-central-1' ? 'Frankfurt 🇩🇪' :
+                       result.agentRegion === 'ap-southeast-1' ? 'Singapore 🇸🇬' :
+                       result.agentRegion || 'Unknown Region'}
+                    </div>
+                    <div className="text-xs text-gray-500 flex items-center gap-2">
+                      <span>{result.responseTime}ms</span>
+                      {result.responseStatusCode && (
+                        <Badge variant="outline" className="text-xs px-1 py-0">
+                          {result.responseStatusCode}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 flex-shrink-0">
+                  {(() => {
+                    const now = new Date();
+                    const resultDate = new Date(result.executedAt);
+                    const diffInMinutes = Math.floor((now.getTime() - resultDate.getTime()) / (1000 * 60));
+                    
+                    if (diffInMinutes < 1) return 'just now';
+                    if (diffInMinutes < 60) return `${diffInMinutes}m`;
+                    
+                    const diffInHours = Math.floor(diffInMinutes / 60);
+                    if (diffInHours < 24) return `${diffInHours}h`;
+                    
+                    const diffInDays = Math.floor(diffInHours / 24);
+                    return `${diffInDays}d`;
+                  })()}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

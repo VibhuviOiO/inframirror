@@ -15,7 +15,6 @@ import DockerOperationsPageWithLayout from "./pages/DockerOperations";
 
 // Monitoring Pages
 import MonitoringDashboard from "./pages/MonitoringDashboard";
-import Monitors from "./pages/Monitors";
 import MonitorDetail from "./pages/MonitorDetail";
 import HTTPMonitors from "./pages/HTTPMonitors";
 import TCPMonitors from "./pages/TCPMonitors";
@@ -49,7 +48,7 @@ const routes = [
   
   // Monitoring Routes
   { path: "/monitoring", element: <MonitoringDashboard /> },
-  { path: "/monitors", element: <Monitors /> },
+  { path: "/monitors", element: <HTTPMonitors /> },
   { path: "/monitors/http", element: <HTTPMonitors /> },
   { path: "/monitors/tcp", element: <TCPMonitors /> },
   { path: "/monitors/ping", element: <PINGMonitors /> },
