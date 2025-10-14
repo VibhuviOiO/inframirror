@@ -82,8 +82,8 @@ const HTTPMonitorsContent: React.FC = () => {
     method: 'all',
     region: 'all',
     responseTime: 'all',
-    showActiveOnly: false,  // Changed to false to show all monitors
-    activeWindow: 60        // Increased to 60 minutes for when it's enabled
+    showActiveOnly: true,   // Show only recent monitors by default
+    activeWindow: 5         // Show monitors from last 5 minutes
   });
   const [sortConfig, setSortConfig] = useState<SortConfig>({ field: 'executedAt', direction: 'desc' });
   const [preferences, setPreferences] = useState({ viewMode: 'table' as ViewMode, exportFormat: 'csv' as const });
@@ -601,15 +601,73 @@ const HTTPMonitorsContent: React.FC = () => {
                           </TableCell>
                           
                           <TableCell>
-                            <div className="flex items-center space-x-2">
-                              <Timer className="w-3 h-3" />
-                              <span className={`font-mono text-sm ${
-                                (monitor.responseTime || 0) < 200 ? 'text-green-600' :
-                                (monitor.responseTime || 0) < 1000 ? 'text-yellow-600' : 'text-red-600'
-                              }`}>
-                                {monitor.responseTime || 0}ms
-                              </span>
-                            </div>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center space-x-2 cursor-help">
+                                    <Timer className="w-3 h-3" />
+                                    <span className={`font-mono text-sm ${
+                                      (monitor.responseTime || 0) < 200 ? 'text-green-600' :
+                                      (monitor.responseTime || 0) < 1000 ? 'text-yellow-600' : 'text-red-600'
+                                    }`}>
+                                      {monitor.responseTime || 0}ms
+                                    </span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs bg-gray-50 border-gray-200">
+                                  <div className="space-y-2">
+                                    <div className="font-semibold border-b border-gray-300 pb-1">Response Time Details</div>
+                                    <div className="space-y-1 text-xs">
+                                      <div className="flex justify-between">
+                                        <span className="text-muted-foreground">Total Response:</span>
+                                        <span className="font-mono">{monitor.responseTime || 0}ms</span>
+                                      </div>
+                                      {monitor.dnsLookupMs !== null && monitor.dnsLookupMs !== undefined && (
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">DNS Lookup:</span>
+                                          <span className="font-mono">{monitor.dnsLookupMs}ms</span>
+                                        </div>
+                                      )}
+                                      {monitor.tcpConnectMs !== null && monitor.tcpConnectMs !== undefined && (
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">TCP Connect:</span>
+                                          <span className="font-mono">{monitor.tcpConnectMs}ms</span>
+                                        </div>
+                                      )}
+                                      {monitor.tlsHandshakeMs !== null && monitor.tlsHandshakeMs !== undefined && (
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">TLS Handshake:</span>
+                                          <span className="font-mono">{monitor.tlsHandshakeMs}ms</span>
+                                        </div>
+                                      )}
+                                      {monitor.timeToFirstByteMs !== null && monitor.timeToFirstByteMs !== undefined && (
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">Time to First Byte:</span>
+                                          <span className="font-mono">{monitor.timeToFirstByteMs}ms</span>
+                                        </div>
+                                      )}
+                                      <div className="border-t pt-1 mt-2">
+                                        <div className="font-semibold mb-1">Thresholds</div>
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">Warning:</span>
+                                          <span className="font-mono text-yellow-600">{monitor.warningThresholdMs || 500}ms</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">Critical:</span>
+                                          <span className="font-mono text-red-600">{monitor.criticalThresholdMs || 1000}ms</span>
+                                        </div>
+                                      </div>
+                                      {monitor.responseSizeBytes !== null && monitor.responseSizeBytes !== undefined && (
+                                        <div className="flex justify-between border-t pt-1 mt-1">
+                                          <span className="text-muted-foreground">Response Size:</span>
+                                          <span className="font-mono">{(monitor.responseSizeBytes / 1024).toFixed(2)} KB</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </TableCell>
                           
                           <TableCell>
@@ -718,7 +776,7 @@ const HTTPMonitorsContent: React.FC = () => {
       {/* Response Body Modal - Simplified for now */}
       {selectedResponseBody && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="max-w-4xl max-h-[80vh] m-4">
+          <Card className="max-w-4xl max-h-[80vh] m-4 border-2 border-blue-200 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Response Body</h3>
@@ -726,7 +784,7 @@ const HTTPMonitorsContent: React.FC = () => {
                   Close
                 </Button>
               </div>
-              <pre className="bg-gray-50 p-4 rounded-lg overflow-auto max-h-96 text-sm font-mono whitespace-pre-wrap">
+              <pre className="bg-gray-100 p-4 rounded-lg overflow-auto max-h-96 text-sm font-mono whitespace-pre-wrap border border-gray-300">
                 {selectedResponseBody.body}
               </pre>
             </CardContent>
