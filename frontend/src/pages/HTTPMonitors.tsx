@@ -63,8 +63,15 @@ const HTTPMonitorsContent: React.FC = () => {
   const navigate = useNavigate();
   const { data: monitors = [], isLoading, error, refetch } = useHTTPMonitors();
   
+  // Debug logging
+  console.log('HTTPMonitors - Raw data:', monitors);
+  console.log('HTTPMonitors - isLoading:', isLoading);
+  console.log('HTTPMonitors - error:', error);
+  
   // Convert Monitor[] to HTTPMonitor[] for our components
   const httpMonitors = transformMonitorData(monitors);
+  
+  console.log('HTTPMonitors - Transformed data:', httpMonitors);
   
   // State management
 
@@ -75,8 +82,8 @@ const HTTPMonitorsContent: React.FC = () => {
     method: 'all',
     region: 'all',
     responseTime: 'all',
-    showActiveOnly: true,
-    activeWindow: 5
+    showActiveOnly: false,  // Changed to false to show all monitors
+    activeWindow: 60        // Increased to 60 minutes for when it's enabled
   });
   const [sortConfig, setSortConfig] = useState<SortConfig>({ field: 'executedAt', direction: 'desc' });
   const [preferences, setPreferences] = useState({ viewMode: 'table' as ViewMode, exportFormat: 'csv' as const });
