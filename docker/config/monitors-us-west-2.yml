@@ -82,3 +82,29 @@ serviceGroups:
             thresholds:
               warning: 500    # Simple lookup should be fast
               critical: 1000
+monitors:
+  - name: "us-west-2-raspberry-pi-tcp-80000"
+    host: "192.168.0.104"
+    port: 8000
+    type: "TCP"
+    interval: 180
+    timeout: 10
+    retryCount: 2
+  - name: "us-west-2-swag-ping"
+    host: "192.168.1.64"
+    type: "PING"
+    interval: 120
+    timeout: 10
+    retryCount: 2
+  - name: "us-west-2-iphone-ping"
+    host: "192.168.0.100"
+    type: "PING"
+    interval: 120
+    timeout: 10
+    retryCount: 2
+  - name: "us-west-2-raspberry-pi-ping"
+    host: "192.168.0.104"
+    type: "PING"
+    interval: 120
+    timeout: 10
+    retryCount: 2

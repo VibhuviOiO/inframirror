@@ -88,5 +88,6 @@ services:
     restart: unless-stopped
 
 volumes:
+  pgadmin_data:
   agent1_logs:
   agent2_logs:

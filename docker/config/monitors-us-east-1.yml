@@ -43,13 +43,11 @@ serviceGroups:
               warning: 600    # Custom warning threshold (ms)
               critical: 1200  # Custom critical threshold (ms)
 monitors:
-  - name: "us-east-1-spacexdata-com-dns"
-    host: "spacexdata.com"
-    type: "DNS"
-    recordType: "A"
-    interval: 600
+  monitors:
+  - name: "us-west-2-raspberry-pi-periphery-8120"
+    host: "192.168.0.104"
+    port: 8120
+    type: "TCP"
+    interval: 180
     timeout: 10
     retryCount: 2
-    thresholds:
-      warning: 100     # DNS queries should be fast
-      critical: 300    # Slower DNS is critical

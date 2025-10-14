@@ -1,597 +1,692 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
-  Globe,
-  Clock, 
-  AlertCircle, 
-  CheckCircle, 
-  Search, 
+  LayoutDashboard,
+  Grid3X3,
+  Search,
+  Activity,
+  CheckCircle,
+  AlertTriangle,
+  Timer,
   Filter,
+  SortAsc,
+  SortDesc,
+  ExternalLink,
+  Eye,
   MoreVertical,
   MapPin,
-  Timer,
-  TrendingUp,
-  TrendingDown,
-  Activity,
-  Signal,
-  Hash
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+  Globe,
+  X,
+  Network,
+  Server,
+  Zap
+} from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+// Import the dedicated MonitorFilters component
+import { MonitorFilters } from '../components/monitoring/components/MonitorFilters';
+import { useDNSMonitors, type Monitor } from "../hooks/useMonitors";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
-interface DNSMonitor {
-  id: number;
-  monitorId: string;
-  monitorName: string;
+// Import types from monitoring module
+import { 
+  FilterState, 
+  SortConfig, 
+  ViewMode
+} from '../components/monitoring/types';
+
+// DNS Monitor extends Monitor with DNS-specific fields  
+interface DNSMonitor extends Monitor {
   monitorType: 'DNS';
-  targetHost: string;
-  
-  // Execution Context
-  executedAt: string;
-  agentId: string;
-  agentRegion: string;
-  
-  // Response Data
-  success: boolean;
-  responseTime?: number;
-  
-  // Network Performance
-  dnsLookupMs?: number;
-  
-  // DNS-specific fields
   dnsQueryType?: string;
   dnsExpectedResponse?: string;
   dnsResponseValue?: string;
-  
-  // Error Tracking
-  errorMessage?: string;
-  errorType?: string;
 }
 
-const DNSStatusBadge: React.FC<{ 
-  success: boolean,
-  expected?: string,
-  actual?: string,
-  size?: 'sm' | 'default' | 'lg' 
-}> = ({ success, expected, actual, size = 'default' }) => {
-  if (!success) {
-    return (
-      <Badge variant="destructive" className={cn(
-        "animate-pulse",
-        size === 'sm' && "text-xs px-2 py-0.5",
-        size === 'lg' && "text-sm px-3 py-1"
-      )}>
-        <AlertCircle className="w-3 h-3 mr-1" />
-        Failed
-      </Badge>
-    );
-  }
+interface ResponseBodyData {
+  name: string;
+  body: string;
+  contentType?: string | null;
+  size?: number | null;
+  timestamp: Date;
+}
 
-  // Check if response matches expected
-  if (expected && actual) {
-    const matches = expected.toLowerCase() === actual.toLowerCase();
-    return (
-      <Badge variant={matches ? "default" : "secondary"} className={cn(
-        matches ? "bg-green-500 hover:bg-green-600 text-white" : "bg-yellow-500 hover:bg-yellow-600 text-white",
-        size === 'sm' && "text-xs px-2 py-0.5",
-        size === 'lg' && "text-sm px-3 py-1"
-      )}>
-        <CheckCircle className="w-3 h-3 mr-1" />
-        {matches ? 'Matched' : 'Unexpected'}
-      </Badge>
-    );
-  }
-
-  return (
-    <Badge variant="default" className={cn(
-      "bg-green-500 hover:bg-green-600 text-white",
-      size === 'sm' && "text-xs px-2 py-0.5",
-      size === 'lg' && "text-sm px-3 py-1"
-    )}>
-      <CheckCircle className="w-3 h-3 mr-1" />
-      Resolved
-    </Badge>
-  );
-};
-
-const DNSMetrics: React.FC<{ monitor: DNSMonitor }> = ({ monitor }) => {
-  const metrics = [
-    { 
-      label: 'Query Type', 
-      value: monitor.dnsQueryType, 
-      icon: Hash,
-      unit: '',
-      color: 'text-blue-600'
-    },
-    { 
-      label: 'DNS Lookup', 
-      value: monitor.dnsLookupMs, 
-      icon: Signal,
-      unit: 'ms',
-      color: monitor.dnsLookupMs && monitor.dnsLookupMs < 50 ? 'text-green-600' : 
-             monitor.dnsLookupMs && monitor.dnsLookupMs < 100 ? 'text-yellow-600' : 'text-red-600'
-    },
-  ].filter(m => m.value !== undefined);
-
-  if (metrics.length === 0) return null;
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-3">
-      {metrics.map((metric) => {
-        const Icon = metric.icon;
-        return (
-          <div key={metric.label} className="flex items-center gap-1 text-xs bg-muted/50 px-2 py-1 rounded">
-            <Icon className="w-3 h-3" />
-            <span className="text-muted-foreground">{metric.label}:</span>
-            <span className={cn("font-mono font-medium", metric.color || "text-foreground")}>
-              {metric.value}{metric.unit}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const DNSMonitorCard: React.FC<{ monitor: DNSMonitor, onClick: () => void }> = ({ monitor, onClick }) => {
-  const lastCheck = new Date(monitor.executedAt);
-  const isRecent = Date.now() - lastCheck.getTime() < 5 * 60 * 1000; // 5 minutes
-  const responseMatches = monitor.dnsExpectedResponse && monitor.dnsResponseValue && 
-    monitor.dnsExpectedResponse.toLowerCase() === monitor.dnsResponseValue.toLowerCase();
-
-  return (
-    <Card className={cn(
-      "cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02]",
-      "border-l-4",
-      monitor.success && (!monitor.dnsExpectedResponse || responseMatches)
-        ? "border-l-green-500 hover:border-l-green-600" 
-        : monitor.success && monitor.dnsExpectedResponse && !responseMatches
-        ? "border-l-yellow-500 hover:border-l-yellow-600"
-        : "border-l-red-500 hover:border-l-red-600"
-    )} onClick={onClick}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1 flex-1 min-w-0">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Globe className="w-5 h-5 text-blue-500" />
-              <span className="truncate">{monitor.monitorName || monitor.monitorId}</span>
-            </CardTitle>
-            <CardDescription className="flex items-center gap-2">
-              <MapPin className="w-3 h-3" />
-              {monitor.agentRegion}
-              <span className="text-muted-foreground">•</span>
-              <Badge variant="outline" className="text-xs">
-                {monitor.dnsQueryType || 'DNS'}
-              </Badge>
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            <DNSStatusBadge 
-              success={monitor.success} 
-              expected={monitor.dnsExpectedResponse}
-              actual={monitor.dnsResponseValue}
-              size="sm"
-            />
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <MoreVertical className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          {/* Target Host */}
-          <div className="flex items-center gap-2 text-sm">
-            <Signal className="w-4 h-4 text-muted-foreground" />
-            <span className="font-mono bg-muted px-2 py-1 rounded text-xs">
-              {monitor.targetHost}
-            </span>
-          </div>
-
-          {/* Response Time */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {monitor.responseTime && (
-                <Badge variant="outline" className={cn(
-                  "text-xs font-mono",
-                  monitor.responseTime < 50 ? "text-green-600" :
-                  monitor.responseTime < 100 ? "text-yellow-600" :
-                  monitor.responseTime < 200 ? "text-orange-600" : "text-red-600"
-                )}>
-                  <Clock className="w-3 h-3 mr-1" />
-                  {monitor.responseTime}ms
-                </Badge>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              {isRecent ? 'Just now' : lastCheck.toLocaleTimeString()}
-            </div>
-          </div>
-
-          {/* DNS Response */}
-          {monitor.dnsResponseValue && (
-            <div className="space-y-2">
-              <div className="text-xs text-muted-foreground">Response:</div>
-              <div className="font-mono text-xs bg-muted px-2 py-1 rounded break-all">
-                {monitor.dnsResponseValue}
-              </div>
-              {monitor.dnsExpectedResponse && (
-                <div>
-                  <div className="text-xs text-muted-foreground">Expected:</div>
-                  <div className="font-mono text-xs bg-muted/50 px-2 py-1 rounded break-all">
-                    {monitor.dnsExpectedResponse}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* DNS Metrics */}
-          <DNSMetrics monitor={monitor} />
-
-          {/* Error Message */}
-          {monitor.errorMessage && (
-            <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded">
-              <span className="font-medium">{monitor.errorType || 'Error'}:</span> {monitor.errorMessage}
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
+// Transform Monitor data to DNSMonitor for our components
+const transformMonitorData = (monitors: Monitor[]): DNSMonitor[] => {
+  return monitors.filter(m => m.monitorType === 'DNS') as DNSMonitor[];
 };
 
 const DNSMonitorsContent: React.FC = () => {
   const navigate = useNavigate();
-  const [monitors, setMonitors] = useState<DNSMonitor[]>([]);
-  const [filteredMonitors, setFilteredMonitors] = useState<DNSMonitor[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [regionFilter, setRegionFilter] = useState('all');
-  const [queryTypeFilter, setQueryTypeFilter] = useState('all');
-  const [performanceFilter, setPerformanceFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
+  const { data: monitors = [], isLoading, error, refetch } = useDNSMonitors();
+  
+  // Convert Monitor[] to DNSMonitor[] for our components
+  const dnsMonitors = transformMonitorData(monitors);
+  
+  // State management
 
-  // Mock data - replace with real API calls
-  useEffect(() => {
-    setTimeout(() => {
-      const mockData: DNSMonitor[] = [
-        {
-          id: 1,
-          monitorId: 'us-east-1-google-dns',
-          monitorName: 'Google DNS A Record',
-          monitorType: 'DNS',
-          targetHost: 'google.com',
-          agentId: 'dns-monitor-us-east-1@us-east-1-agent-01',
-          agentRegion: 'us-east-1',
-          executedAt: new Date().toISOString(),
-          success: true,
-          responseTime: 35,
-          dnsLookupMs: 23,
-          dnsQueryType: 'A',
-          dnsExpectedResponse: '142.250.191.46',
-          dnsResponseValue: '142.250.191.46'
-        },
-        {
-          id: 2,
-          monitorId: 'us-west-2-mx-record',
-          monitorName: 'Email MX Record',
-          monitorType: 'DNS',
-          targetHost: 'example.com',
-          agentId: 'dns-monitor-us-west-2@us-west-2-agent-01',
-          agentRegion: 'us-west-2',
-          executedAt: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
-          success: true,
-          responseTime: 52,
-          dnsLookupMs: 45,
-          dnsQueryType: 'MX',
-          dnsExpectedResponse: 'mail.example.com',
-          dnsResponseValue: 'mail.example.com'
-        },
-        {
-          id: 3,
-          monitorId: 'eu-west-1-txt-record',
-          monitorName: 'SPF TXT Record',
-          monitorType: 'DNS',
-          targetHost: 'example.org',
-          agentId: 'dns-monitor-eu-west-1@eu-west-1-agent-01',
-          agentRegion: 'eu-west-1',
-          executedAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-          success: true,
-          responseTime: 78,
-          dnsLookupMs: 62,
-          dnsQueryType: 'TXT',
-          dnsExpectedResponse: 'v=spf1 include:_spf.google.com ~all',
-          dnsResponseValue: 'v=spf1 include:_spf.example.org ~all'
-        },
-        {
-          id: 4,
-          monitorId: 'us-east-1-cname-record',
-          monitorName: 'CDN CNAME',
-          monitorType: 'DNS',
-          targetHost: 'cdn.example.com',
-          agentId: 'dns-monitor-us-east-1@us-east-1-agent-02',
-          agentRegion: 'us-east-1',
-          executedAt: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
-          success: true,
-          responseTime: 125,
-          dnsLookupMs: 98,
-          dnsQueryType: 'CNAME',
-          dnsExpectedResponse: 'cdn-provider.example.net',
-          dnsResponseValue: 'cdn-provider.example.net'
-        },
-        {
-          id: 5,
-          monitorId: 'us-west-2-failed-dns',
-          monitorName: 'Failed DNS Lookup',
-          monitorType: 'DNS',
-          targetHost: 'nonexistent-domain.invalid',
-          agentId: 'dns-monitor-us-west-2@us-west-2-agent-02',
-          agentRegion: 'us-west-2',
-          executedAt: new Date(Date.now() - 4 * 60 * 1000).toISOString(),
-          success: false,
-          dnsLookupMs: 5000,
-          dnsQueryType: 'A',
-          errorMessage: 'Name or service not known',
-          errorType: 'NXDOMAIN'
-        }
-      ];
-      setMonitors(mockData);
-      setFilteredMonitors(mockData);
-      setLoading(false);
-    }, 1000);
-  }, []);
+  const [selectedResponseBody, setSelectedResponseBody] = useState<ResponseBodyData | null>(null);
+  const [filters, setFilters] = useState<FilterState>({
+    search: '',
+    status: 'all',
+    method: 'all',
+    region: 'all',
+    responseTime: 'all',
+    showActiveOnly: true,
+    activeWindow: 5
+  });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ field: 'executedAt', direction: 'desc' });
+  const [preferences, setPreferences] = useState({ viewMode: 'table' as ViewMode, exportFormat: 'csv' as const });
+  
+  // Filtering logic
+  const filteredMonitors = useMemo(() => {
+    let filtered = dnsMonitors;
 
-  // Filter logic
-  useEffect(() => {
-    let filtered = monitors;
-
-    if (searchQuery) {
+    // Search filter
+    if (filters.search.trim()) {
+      const searchTerm = filters.search.toLowerCase();
       filtered = filtered.filter(monitor => 
-        monitor.monitorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.targetHost.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.agentRegion.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.dnsQueryType?.toLowerCase().includes(searchQuery.toLowerCase())
+        (monitor.monitorName || monitor.monitorId).toLowerCase().includes(searchTerm) ||
+        monitor.targetHost.toLowerCase().includes(searchTerm) ||
+        monitor.monitorId.toLowerCase().includes(searchTerm)
       );
     }
 
-    if (statusFilter !== 'all') {
+    // Status filter
+    if (filters.status !== 'all') {
+      if (filters.status === 'healthy') {
+        filtered = filtered.filter(monitor => monitor.success);
+      } else if (filters.status === 'error') {
+        filtered = filtered.filter(monitor => !monitor.success);
+      }
+    }
+
+    // TCP doesn't have methods like HTTP, so skip method filtering
+
+    // Region filter
+    if (filters.region !== 'all') {
+      filtered = filtered.filter(monitor => monitor.agentRegion === filters.region);
+    }
+
+    // Response time filter
+    if (filters.responseTime !== 'all') {
       filtered = filtered.filter(monitor => {
-        if (statusFilter === 'resolved') return monitor.success;
-        if (statusFilter === 'matched') return monitor.success && monitor.dnsExpectedResponse && monitor.dnsResponseValue && 
-          monitor.dnsExpectedResponse.toLowerCase() === monitor.dnsResponseValue.toLowerCase();
-        if (statusFilter === 'unmatched') return monitor.success && monitor.dnsExpectedResponse && monitor.dnsResponseValue && 
-          monitor.dnsExpectedResponse.toLowerCase() !== monitor.dnsResponseValue.toLowerCase();
-        if (statusFilter === 'failed') return !monitor.success;
-        return true;
+        const rt = monitor.responseTime || 0;
+        const warningThreshold = monitor.warningThresholdMs || 500;
+        const criticalThreshold = monitor.criticalThresholdMs || 1000;
+        
+        switch (filters.responseTime) {
+          case 'healthy': return monitor.success && rt < warningThreshold;
+          case 'warning': return monitor.success && rt >= warningThreshold && rt < criticalThreshold;
+          case 'critical': return monitor.success && rt >= criticalThreshold;
+          case 'failed': return !monitor.success;
+          default: return true;
+        }
       });
     }
 
-    if (regionFilter !== 'all') {
-      filtered = filtered.filter(monitor => monitor.agentRegion === regionFilter);
-    }
-
-    if (queryTypeFilter !== 'all') {
-      filtered = filtered.filter(monitor => monitor.dnsQueryType === queryTypeFilter);
-    }
-
-    if (performanceFilter !== 'all') {
+    // Time window filter (show only recent monitors)
+    if (filters.showActiveOnly) {
+      const cutoffTime = Date.now() - (filters.activeWindow * 60 * 1000);
       filtered = filtered.filter(monitor => {
-        if (!monitor.dnsLookupMs) return false;
-        if (performanceFilter === 'excellent') return monitor.dnsLookupMs < 50;
-        if (performanceFilter === 'good') return monitor.dnsLookupMs >= 50 && monitor.dnsLookupMs < 100;
-        if (performanceFilter === 'fair') return monitor.dnsLookupMs >= 100 && monitor.dnsLookupMs < 200;
-        if (performanceFilter === 'poor') return monitor.dnsLookupMs >= 200;
-        return true;
+        const executedTime = new Date(monitor.executedAt).getTime();
+        return executedTime >= cutoffTime;
       });
     }
 
-    setFilteredMonitors(filtered);
-  }, [monitors, searchQuery, statusFilter, regionFilter, queryTypeFilter, performanceFilter]);
+    // Apply sorting
+    const sortedFiltered = [...filtered].sort((a, b) => {
+      const aVal = a[sortConfig.field];
+      const bVal = b[sortConfig.field];
+      
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return sortConfig.direction === 'asc' 
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal);
+      }
+      
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortConfig.direction === 'asc' 
+          ? aVal - bVal
+          : bVal - aVal;
+      }
+      
+      return 0;
+    });
 
-  const stats = {
-    total: monitors.length,
-    resolved: monitors.filter(m => m.success).length,
-    matched: monitors.filter(m => m.success && m.dnsExpectedResponse && m.dnsResponseValue && 
-      m.dnsExpectedResponse.toLowerCase() === m.dnsResponseValue.toLowerCase()).length,
-    failed: monitors.filter(m => !m.success).length,
-    avgResponseTime: Math.round(monitors.filter(m => m.responseTime).reduce((acc, m) => acc + (m.responseTime || 0), 0) / monitors.filter(m => m.responseTime).length) || 0,
-    avgDnsLookup: Math.round(monitors.filter(m => m.dnsLookupMs).reduce((acc, m) => acc + (m.dnsLookupMs || 0), 0) / monitors.filter(m => m.dnsLookupMs).length) || 0
-  };
+    return sortedFiltered;
+  }, [dnsMonitors, filters, sortConfig]);
 
-  if (loading) {
+  const isConnected = true; // Placeholder for real-time connection
+
+  // Get unique values for filter options
+  const uniqueRegions = useMemo(() => 
+    [...new Set(dnsMonitors.map(m => m.agentRegion).filter(Boolean))], 
+    [dnsMonitors]
+  );
+  
+  const uniqueMethods: string[] = []; // DNS doesn't have HTTP methods  // Event handlers
+  const handleNavigateToMonitor = useCallback((monitorId: string) => {
+    navigate(`/monitors/${monitorId}`);
+  }, [navigate]);
+
+  const handleShowResponseBody = useCallback((data: ResponseBodyData) => {
+    setSelectedResponseBody(data);
+  }, []);
+
+  const handleExportMonitor = useCallback(async (monitor: DNSMonitor) => {
+    try {
+      console.log('Export functionality will be implemented with full monitoring system');
+    } catch (error) {
+      console.error('Export failed:', error);
+    }
+  }, []);
+
+  const handleViewModeChange = useCallback((mode: ViewMode) => {
+    setPreferences(prev => ({ ...prev, viewMode: mode }));
+  }, []);
+
+  const handleFiltersChange = useCallback((newFilters: Partial<FilterState>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const updateSort = useCallback((field: keyof DNSMonitor) => {
+    setSortConfig(prev => ({
+      field,
+      direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  }, []);
+
+  // Loading and error states
+  if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="space-y-6">
-          <div className="flex items-center gap-2">
-            <Globe className="w-8 h-8 animate-pulse" />
-            <h1 className="text-3xl font-bold">Loading DNS Monitors...</h1>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="h-16 bg-muted rounded"></div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+      <div className="flex items-center justify-center min-h-96">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <Card className="p-12 text-center">
+        <div className="space-y-3">
+          <div className="text-red-500 text-lg font-semibold">Error loading monitors</div>
+          <p className="text-muted-foreground">{error.message}</p>
+          <Button onClick={() => refetch()} variant="outline">
+            Try Again
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="space-y-1">
+        <div>
           <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Globe className="w-8 h-8 text-blue-500" />
+            <Globe className="w-8 h-8 text-purple-500" />
             DNS Monitors
           </h1>
-          <p className="text-muted-foreground">
-            DNS resolution monitoring with record validation
+          <p className="text-muted-foreground mt-2">
+            Monitor DNS resolution performance and nameserver responses
           </p>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-xs ${
+            isConnected ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+            <span>{isConnected ? 'Live' : 'Offline'}</span>
+          </div>
+          
+          <Button variant="outline" onClick={() => refetch()} size="sm">
+            <Search className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
         </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+      {/* Statistics Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.total}</p>
-              <p className="text-xs text-muted-foreground">Total Monitors</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">{stats.resolved}</p>
-              <p className="text-xs text-muted-foreground">Resolved</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">{stats.matched}</p>
-              <p className="text-xs text-muted-foreground">Matched</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-red-600">{stats.failed}</p>
-              <p className="text-xs text-muted-foreground">Failed</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.avgResponseTime}ms</p>
-              <p className="text-xs text-muted-foreground">Avg Response</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.avgDnsLookup}ms</p>
-              <p className="text-xs text-muted-foreground">Avg DNS</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search monitors, domains, record types..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                <Activity className="w-4 h-4 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Monitors</p>
+                <p className="text-2xl font-semibold">{dnsMonitors.length}</p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-36">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="resolved">Resolved</SelectItem>
-                  <SelectItem value="matched">Matched</SelectItem>
-                  <SelectItem value="unmatched">Unmatched</SelectItem>
-                  <SelectItem value="failed">Failed</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={queryTypeFilter} onValueChange={setQueryTypeFilter}>
-                <SelectTrigger className="w-32">
-                  <Hash className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="A">A Record</SelectItem>
-                  <SelectItem value="AAAA">AAAA Record</SelectItem>
-                  <SelectItem value="CNAME">CNAME</SelectItem>
-                  <SelectItem value="MX">MX Record</SelectItem>
-                  <SelectItem value="TXT">TXT Record</SelectItem>
-                  <SelectItem value="NS">NS Record</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={performanceFilter} onValueChange={setPerformanceFilter}>
-                <SelectTrigger className="w-36">
-                  <Timer className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Performance</SelectItem>
-                  <SelectItem value="excellent">&lt;50ms</SelectItem>
-                  <SelectItem value="good">50-100ms</SelectItem>
-                  <SelectItem value="fair">100-200ms</SelectItem>
-                  <SelectItem value="poor">&gt;200ms</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={regionFilter} onValueChange={setRegionFilter}>
-                <SelectTrigger className="w-32">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Regions</SelectItem>
-                  <SelectItem value="us-east-1">US East 1</SelectItem>
-                  <SelectItem value="us-west-2">US West 2</SelectItem>
-                  <SelectItem value="eu-west-1">EU West 1</SelectItem>
-                </SelectContent>
-              </Select>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                <CheckCircle className="w-4 h-4 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Healthy</p>
+                <p className="text-2xl font-semibold">{dnsMonitors.filter(m => m.success).length}</p>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Monitor Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        {filteredMonitors.map(monitor => (
-          <DNSMonitorCard 
-            key={monitor.id} 
-            monitor={monitor} 
-            onClick={() => {
-              navigate(`/monitors/${monitor.monitorId}`);
-            }}
-          />
-        ))}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                <AlertTriangle className="w-4 h-4 text-red-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Issues</p>
+                <p className="text-2xl font-semibold">{dnsMonitors.filter(m => !m.success).length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                <Timer className="w-4 h-4 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Avg Response</p>
+                <p className="text-2xl font-semibold">
+                  {dnsMonitors.length > 0 ? Math.round(dnsMonitors.reduce((sum, m) => sum + (m.responseTime || 0), 0) / dnsMonitors.length) : 0}ms
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {filteredMonitors.length === 0 && (
-        <Card className="p-12 text-center">
-          <div className="space-y-3">
-            <Search className="w-12 h-12 text-muted-foreground mx-auto" />
-            <h3 className="text-lg font-semibold">No DNS monitors found</h3>
-            <p className="text-muted-foreground">
-              Try adjusting your filters or search criteria
-            </p>
+      {/* Monitors Content */}
+      <div className="space-y-6">
+          {/* Filters - Using dedicated MonitorFilters component */}
+          <MonitorFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            uniqueRegions={uniqueRegions}
+            uniqueMethods={uniqueMethods}
+            viewMode={preferences.viewMode}
+            onViewModeChange={handleViewModeChange}
+            onRefresh={handleRefresh}
+          />
+
+          {/* Results Count */}
+          <div className="flex justify-end">
+            <div className="text-sm text-muted-foreground">
+              Showing {filteredMonitors.length} of {dnsMonitors.length} monitors
+            </div>
           </div>
-        </Card>
+
+          {/* Monitor Display */}
+          {preferences.viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+              {filteredMonitors.map(monitor => (
+                <Card 
+                  key={monitor.id}
+                  className="cursor-pointer hover:shadow-md transition-shadow"
+                  onClick={() => handleNavigateToMonitor(monitor.monitorId)}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                      <h3 className="font-semibold text-lg mb-2">{monitor.monitorName || monitor.monitorId}</h3>
+                      <p className="text-sm text-muted-foreground mb-3 font-mono">
+                        {monitor.targetHost}
+                      </p>                        <div className="flex items-center space-x-4 text-sm">
+                          <div className="flex items-center space-x-1">
+                            <div className={`w-2 h-2 rounded-full ${monitor.success ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                            <span>{monitor.success ? 'Healthy' : 'Down'}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Timer className="w-3 h-3" />
+                            <span>{monitor.responseTime || 0}ms</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <MapPin className="w-3 h-3" />
+                            <span className="text-muted-foreground">{monitor.agentRegion || 'unknown'}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2 mt-2">
+                          <Badge variant="outline" className="text-xs">
+                            DNS Query
+                          </Badge>
+
+                        </div>
+                      </div>
+                      
+                      <div className="text-right">
+                        <Badge 
+                          variant={monitor.success ? "default" : "destructive"} 
+                          className={monitor.success ? "bg-green-500 hover:bg-green-600" : ""}
+                        >
+                          {monitor.success ? 'Resolved' : 'Failed'}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            /* Table View */
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => updateSort('monitorId')}
+                      >
+                        <div className="flex items-center">
+                          Monitor Name
+                          {sortConfig.field === 'monitorId' && (
+                            sortConfig.direction === 'asc' ? 
+                              <SortAsc className="w-3 h-3 ml-1" /> : 
+                              <SortDesc className="w-3 h-3 ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => updateSort('success')}
+                      >
+                        <div className="flex items-center">
+                          Status
+                          {sortConfig.field === 'success' && (
+                            sortConfig.direction === 'asc' ? 
+                              <SortAsc className="w-3 h-3 ml-1" /> : 
+                              <SortDesc className="w-3 h-3 ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead>Target</TableHead>
+                      <TableHead>
+                        <div className="flex items-center">
+                          Type
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => updateSort('agentRegion')}
+                      >
+                        <div className="flex items-center">
+                          Region
+                          {sortConfig.field === 'agentRegion' && (
+                            sortConfig.direction === 'asc' ? 
+                              <SortAsc className="w-3 h-3 ml-1" /> : 
+                              <SortDesc className="w-3 h-3 ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => updateSort('responseTime')}
+                      >
+                        <div className="flex items-center">
+                          Response Time
+                          {sortConfig.field === 'responseTime' && (
+                            sortConfig.direction === 'asc' ? 
+                              <SortAsc className="w-3 h-3 ml-1" /> : 
+                              <SortDesc className="w-3 h-3 ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => updateSort('executedAt')}
+                      >
+                        <div className="flex items-center">
+                          Last Check
+                          {sortConfig.field === 'executedAt' && (
+                            sortConfig.direction === 'asc' ? 
+                              <SortAsc className="w-3 h-3 ml-1" /> : 
+                              <SortDesc className="w-3 h-3 ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredMonitors.map((monitor) => {
+                      const lastCheck = new Date(monitor.executedAt);
+                      const target = monitor.targetHost;
+                      
+                      return (
+                        <TableRow 
+                          key={monitor.id} 
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleNavigateToMonitor(monitor.monitorId)}
+                        >
+                          <TableCell className="font-medium">
+                            <div className="max-w-[200px] truncate">
+                              {monitor.monitorName || monitor.monitorId}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {monitor.monitorId}
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <Badge 
+                                variant={monitor.success ? "default" : "destructive"}
+                                className={monitor.success ? "bg-green-500 hover:bg-green-600" : ""}
+                              >
+                                <div className={`w-2 h-2 rounded-full mr-1 ${
+                                  monitor.success ? 'bg-white' : 'bg-white'
+                                }`}></div>
+                                {monitor.success ? 'Resolved' : 'Failed'}
+                              </Badge>
+                              {monitor.rawResponseBody && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 w-6 p-0"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                        handleShowResponseBody({
+                                          name: monitor.monitorName || monitor.monitorId,
+                                          body: monitor.rawResponseBody!,
+                                          contentType: monitor.responseContentType,
+                                          size: monitor.responseSizeBytes,
+                                          timestamp: new Date(monitor.executedAt)
+                                        });
+                                        }}
+                                      >
+                                        <Eye className="w-3 h-3" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>View response body</TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <span className="font-mono text-xs max-w-[250px] truncate">
+                                {target}
+                              </span>
+
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <Badge variant="outline" className="text-xs">
+                              TCP
+                            </Badge>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="flex items-center space-x-1">
+                              <MapPin className="w-3 h-3 text-muted-foreground" />
+                              <span className="text-sm">{monitor.agentRegion || 'unknown'}</span>
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <Timer className="w-3 h-3" />
+                              <span className={`font-mono text-sm ${
+                                (monitor.responseTime || 0) < 200 ? 'text-green-600' :
+                                (monitor.responseTime || 0) < 1000 ? 'text-yellow-600' : 'text-red-600'
+                              }`}>
+                                {monitor.responseTime || 0}ms
+                              </span>
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="text-sm text-muted-foreground">
+                              {lastCheck.toLocaleTimeString()}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {lastCheck.toLocaleDateString()}
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                  <MoreVertical className="w-3 h-3" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleNavigateToMonitor(monitor.monitorId);
+                                  }}
+                                >
+                                  <ExternalLink className="w-4 h-4 mr-2" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // TCP connections can't be opened in browser
+                                  }}
+                                >
+                                  <Globe className="w-4 h-4 mr-2" />
+                                  Open URL
+                                </DropdownMenuItem>
+                                {monitor.rawResponseBody && (
+                                  <DropdownMenuItem 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleShowResponseBody({
+                                        name: monitor.monitorName || monitor.monitorId,
+                                        body: monitor.rawResponseBody!,
+                                        contentType: monitor.responseContentType,
+                                        size: monitor.responseSizeBytes,
+                                        timestamp: new Date(monitor.executedAt)
+                                      });
+                                    }}
+                                  >
+                                    <Eye className="w-4 h-4 mr-2" />
+                                    View Response
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Empty State */}
+          {filteredMonitors.length === 0 && dnsMonitors.length > 0 && (
+            <Card className="p-12 text-center">
+              <div className="space-y-3">
+                <Filter className="w-12 h-12 text-muted-foreground mx-auto" />
+                <h3 className="text-lg font-semibold">No monitors match your filters</h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your search criteria or clearing filters
+                </p>
+                <Button variant="outline" onClick={() => handleFiltersChange({
+                  search: '',
+                  status: 'all',
+                  method: 'all',
+                  region: 'all',
+                  responseTime: 'all',
+                  showActiveOnly: true,
+                  activeWindow: 5
+                })}>
+                  <X className="w-4 h-4 mr-2" />
+                  Clear All Filters
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {/* No Data State */}
+          {dnsMonitors.length === 0 && (
+            <Card className="p-12 text-center">
+              <div className="space-y-3">
+                <Search className="w-12 h-12 text-muted-foreground mx-auto" />
+                <h3 className="text-lg font-semibold">No DNS Monitors Found</h3>
+                <p className="text-muted-foreground">
+                  No DNS monitoring data available at the moment
+                </p>
+              </div>
+            </Card>
+          )}
+      </div>
+
+      {/* Response Body Modal - Simplified for now */}
+      {selectedResponseBody && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="max-w-4xl max-h-[80vh] m-4">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Response Body</h3>
+                <Button variant="outline" onClick={() => setSelectedResponseBody(null)}>
+                  Close
+                </Button>
+              </div>
+              <pre className="bg-gray-50 p-4 rounded-lg overflow-auto max-h-96 text-sm font-mono whitespace-pre-wrap">
+                {selectedResponseBody.body}
+              </pre>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );

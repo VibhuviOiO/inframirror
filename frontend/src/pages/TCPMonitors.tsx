@@ -1,496 +1,690 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
-  Network,
-  Clock, 
-  AlertCircle, 
-  CheckCircle, 
-  Search, 
+  LayoutDashboard,
+  Grid3X3,
+  Search,
+  Activity,
+  CheckCircle,
+  AlertTriangle,
+  Timer,
   Filter,
+  SortAsc,
+  SortDesc,
+  ExternalLink,
+  Eye,
   MoreVertical,
   MapPin,
-  Zap,
-  Timer,
-  Lock,
-  Unlock,
-  Server,
-  Activity
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+  Globe,
+  X,
+  Network,
+  Server
+} from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+// Import the dedicated MonitorFilters component
+import { MonitorFilters } from '../components/monitoring/components/MonitorFilters';
+import { useTCPMonitors, type Monitor } from "../hooks/useMonitors";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
-interface TCPMonitor {
-  id: number;
-  monitorId: string;
-  monitorName: string;
+// Import types from monitoring module
+import { 
+  FilterState, 
+  SortConfig, 
+  ViewMode
+} from '../components/monitoring/types';
+
+// TCP Monitor extends Monitor with TCP-specific fields
+interface TCPMonitor extends Monitor {
   monitorType: 'TCP';
-  targetHost: string;
   targetPort: number;
-  
-  // Execution Context
-  executedAt: string;
-  agentId: string;
-  agentRegion: string;
-  
-  // Response Data
-  success: boolean;
-  responseTime?: number;
-  
-  // Network Performance
-  dnsLookupMs?: number;
-  tcpConnectMs?: number;
-  tlsHandshakeMs?: number;
-  
-  // Error Tracking
-  errorMessage?: string;
-  errorType?: string;
 }
 
-const TCPStatusBadge: React.FC<{ 
-  success: boolean,
-  size?: 'sm' | 'default' | 'lg' 
-}> = ({ success, size = 'default' }) => {
-  if (!success) {
-    return (
-      <Badge variant="destructive" className={cn(
-        "animate-pulse",
-        size === 'sm' && "text-xs px-2 py-0.5",
-        size === 'lg' && "text-sm px-3 py-1"
-      )}>
-        <AlertCircle className="w-3 h-3 mr-1" />
-        Down
-      </Badge>
-    );
-  }
+interface ResponseBodyData {
+  name: string;
+  body: string;
+  contentType?: string | null;
+  size?: number | null;
+  timestamp: Date;
+}
 
-  return (
-    <Badge variant="default" className={cn(
-      "bg-green-500 hover:bg-green-600 text-white",
-      size === 'sm' && "text-xs px-2 py-0.5",
-      size === 'lg' && "text-sm px-3 py-1"
-    )}>
-      <CheckCircle className="w-3 h-3 mr-1" />
-      Connected
-    </Badge>
-  );
-};
-
-const TCPPerformanceMetrics: React.FC<{ monitor: TCPMonitor }> = ({ monitor }) => {
-  const metrics = [
-    { label: 'DNS Lookup', value: monitor.dnsLookupMs, icon: Network },
-    { label: 'TCP Connect', value: monitor.tcpConnectMs, icon: Zap },
-    { label: 'TLS Handshake', value: monitor.tlsHandshakeMs, icon: Lock },
-  ].filter(m => m.value !== undefined && m.value > 0);
-
-  if (metrics.length === 0) return null;
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 mt-3">
-      {metrics.map((metric) => {
-        const Icon = metric.icon;
-        return (
-          <div key={metric.label} className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
-            <Icon className="w-3 h-3" />
-            <span>{metric.label}:</span>
-            <span className="font-mono font-medium">{metric.value}ms</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const TCPMonitorCard: React.FC<{ monitor: TCPMonitor, onClick: () => void }> = ({ monitor, onClick }) => {
-  const lastCheck = new Date(monitor.executedAt);
-  const isRecent = Date.now() - lastCheck.getTime() < 5 * 60 * 1000; // 5 minutes
-  const isSecure = monitor.tlsHandshakeMs && monitor.tlsHandshakeMs > 0;
-  
-  // Common secure TCP ports
-  const commonSecurePorts = [443, 993, 995, 465, 587, 636, 989, 990];
-  const likelySecure = commonSecurePorts.includes(monitor.targetPort);
-
-  return (
-    <Card className={cn(
-      "cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02]",
-      "border-l-4",
-      monitor.success 
-        ? "border-l-green-500 hover:border-l-green-600" 
-        : "border-l-red-500 hover:border-l-red-600"
-    )} onClick={onClick}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1 flex-1 min-w-0">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                {isSecure || likelySecure ? <Lock className="w-4 h-4 text-green-600" /> : <Unlock className="w-4 h-4 text-gray-400" />}
-                <Network className="w-5 h-5 text-blue-500" />
-              </div>
-              <span className="truncate">{monitor.monitorName || monitor.monitorId}</span>
-            </CardTitle>
-            <CardDescription className="flex items-center gap-2">
-              <MapPin className="w-3 h-3" />
-              {monitor.agentRegion}
-              <span className="text-muted-foreground">•</span>
-              <Badge variant="outline" className="text-xs">
-                TCP
-              </Badge>
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            <TCPStatusBadge 
-              success={monitor.success} 
-              size="sm"
-            />
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <MoreVertical className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          {/* Target */}
-          <div className="flex items-center gap-2 text-sm">
-            <Server className="w-4 h-4 text-muted-foreground" />
-            <span className="font-mono bg-muted px-2 py-1 rounded text-xs">
-              {monitor.targetHost}:{monitor.targetPort}
-            </span>
-            {likelySecure && (
-              <Badge variant="outline" className="text-xs">
-                SSL/TLS
-              </Badge>
-            )}
-          </div>
-
-          {/* Response Time */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {monitor.responseTime && (
-                <Badge variant="outline" className={cn(
-                  "text-xs font-mono",
-                  monitor.responseTime < 100 ? "text-green-600" :
-                  monitor.responseTime < 300 ? "text-yellow-600" :
-                  monitor.responseTime < 1000 ? "text-orange-600" : "text-red-600"
-                )}>
-                  <Clock className="w-3 h-3 mr-1" />
-                  {monitor.responseTime}ms
-                </Badge>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              {isRecent ? 'Just now' : lastCheck.toLocaleTimeString()}
-            </div>
-          </div>
-
-          {/* Performance Metrics */}
-          <TCPPerformanceMetrics monitor={monitor} />
-
-          {/* Error Message */}
-          {monitor.errorMessage && (
-            <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded">
-              <span className="font-medium">{monitor.errorType || 'Error'}:</span> {monitor.errorMessage}
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
+// Transform Monitor data to TCPMonitor for our components
+const transformMonitorData = (monitors: Monitor[]): TCPMonitor[] => {
+  return monitors.filter(m => m.monitorType === 'TCP') as TCPMonitor[];
 };
 
 const TCPMonitorsContent: React.FC = () => {
   const navigate = useNavigate();
-  const [monitors, setMonitors] = useState<TCPMonitor[]>([]);
-  const [filteredMonitors, setFilteredMonitors] = useState<TCPMonitor[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [regionFilter, setRegionFilter] = useState('all');
-  const [portFilter, setPortFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
+  const { data: monitors = [], isLoading, error, refetch } = useTCPMonitors();
+  
+  // Convert Monitor[] to TCPMonitor[] for our components
+  const tcpMonitors = transformMonitorData(monitors);
+  
+  // State management
 
-  // Mock data - replace with real API calls
-  useEffect(() => {
-    setTimeout(() => {
-      const mockData: TCPMonitor[] = [
-        {
-          id: 1,
-          monitorId: 'us-east-1-database',
-          monitorName: 'PostgreSQL Database',
-          monitorType: 'TCP',
-          targetHost: 'db.example.com',
-          targetPort: 5432,
-          agentId: 'tcp-monitor-us-east-1@us-east-1-agent-01',
-          agentRegion: 'us-east-1',
-          executedAt: new Date().toISOString(),
-          success: true,
-          responseTime: 45,
-          dnsLookupMs: 12,
-          tcpConnectMs: 33
-        },
-        {
-          id: 2,
-          monitorId: 'us-west-2-redis',
-          monitorName: 'Redis Cache',
-          monitorType: 'TCP',
-          targetHost: 'cache.example.com',
-          targetPort: 6379,
-          agentId: 'tcp-monitor-us-west-2@us-west-2-agent-01',
-          agentRegion: 'us-west-2',
-          executedAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-          success: false,
-          responseTime: 5000,
-          dnsLookupMs: 25,
-          tcpConnectMs: 4975,
-          errorMessage: 'Connection refused',
-          errorType: 'CONNECTION_REFUSED'
-        },
-        {
-          id: 3,
-          monitorId: 'eu-west-1-https',
-          monitorName: 'HTTPS Service',
-          monitorType: 'TCP',
-          targetHost: 'secure.example.com',
-          targetPort: 443,
-          agentId: 'tcp-monitor-eu-west-1@eu-west-1-agent-01',
-          agentRegion: 'eu-west-1',
-          executedAt: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
-          success: true,
-          responseTime: 123,
-          dnsLookupMs: 8,
-          tcpConnectMs: 45,
-          tlsHandshakeMs: 70
-        },
-        {
-          id: 4,
-          monitorId: 'us-east-1-smtp',
-          monitorName: 'SMTP Server',
-          monitorType: 'TCP',
-          targetHost: 'mail.example.com',
-          targetPort: 587,
-          agentId: 'tcp-monitor-us-east-1@us-east-1-agent-02',
-          agentRegion: 'us-east-1',
-          executedAt: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
-          success: true,
-          responseTime: 67,
-          dnsLookupMs: 15,
-          tcpConnectMs: 35,
-          tlsHandshakeMs: 17
-        }
-      ];
-      setMonitors(mockData);
-      setFilteredMonitors(mockData);
-      setLoading(false);
-    }, 1000);
-  }, []);
+  const [selectedResponseBody, setSelectedResponseBody] = useState<ResponseBodyData | null>(null);
+  const [filters, setFilters] = useState<FilterState>({
+    search: '',
+    status: 'all',
+    method: 'all',
+    region: 'all',
+    responseTime: 'all',
+    showActiveOnly: true,
+    activeWindow: 5
+  });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ field: 'executedAt', direction: 'desc' });
+  const [preferences, setPreferences] = useState({ viewMode: 'table' as ViewMode, exportFormat: 'csv' as const });
+  
+  // Filtering logic
+  const filteredMonitors = useMemo(() => {
+    let filtered = tcpMonitors;
 
-  // Filter logic
-  useEffect(() => {
-    let filtered = monitors;
-
-    if (searchQuery) {
+    // Search filter
+    if (filters.search.trim()) {
+      const searchTerm = filters.search.toLowerCase();
       filtered = filtered.filter(monitor => 
-        monitor.monitorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.targetHost.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.agentRegion.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.targetPort.toString().includes(searchQuery)
+        (monitor.monitorName || monitor.monitorId).toLowerCase().includes(searchTerm) ||
+        monitor.targetHost.toLowerCase().includes(searchTerm) ||
+        monitor.monitorId.toLowerCase().includes(searchTerm) ||
+        monitor.targetPort.toString().includes(searchTerm)
       );
     }
 
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(monitor => {
-        if (statusFilter === 'connected') return monitor.success;
-        if (statusFilter === 'failed') return !monitor.success;
-        return true;
-      });
-    }
-
-    if (regionFilter !== 'all') {
-      filtered = filtered.filter(monitor => monitor.agentRegion === regionFilter);
-    }
-
-    if (portFilter !== 'all') {
-      const portRanges: Record<string, (port: number) => boolean> = {
-        'common': (port) => [22, 23, 25, 53, 80, 110, 143, 443, 993, 995].includes(port),
-        'database': (port) => [3306, 5432, 1521, 1433, 27017, 6379].includes(port),
-        'mail': (port) => [25, 110, 143, 465, 587, 993, 995].includes(port),
-        'web': (port) => [80, 443, 8080, 8443, 3000, 8000].includes(port),
-        'high': (port) => port > 1024
-      };
-      
-      if (portRanges[portFilter]) {
-        filtered = filtered.filter(monitor => portRanges[portFilter](monitor.targetPort));
+    // Status filter
+    if (filters.status !== 'all') {
+      if (filters.status === 'healthy') {
+        filtered = filtered.filter(monitor => monitor.success);
+      } else if (filters.status === 'error') {
+        filtered = filtered.filter(monitor => !monitor.success);
       }
     }
 
-    setFilteredMonitors(filtered);
-  }, [monitors, searchQuery, statusFilter, regionFilter, portFilter]);
+    // TCP doesn't have methods like HTTP, so skip method filtering
 
-  const stats = {
-    total: monitors.length,
-    connected: monitors.filter(m => m.success).length,
-    failed: monitors.filter(m => !m.success).length,
-    avgResponseTime: Math.round(monitors.reduce((acc, m) => acc + (m.responseTime || 0), 0) / monitors.length) || 0
-  };
+    // Region filter
+    if (filters.region !== 'all') {
+      filtered = filtered.filter(monitor => monitor.agentRegion === filters.region);
+    }
 
-  if (loading) {
+    // Response time filter
+    if (filters.responseTime !== 'all') {
+      filtered = filtered.filter(monitor => {
+        const rt = monitor.responseTime || 0;
+        const warningThreshold = monitor.warningThresholdMs || 500;
+        const criticalThreshold = monitor.criticalThresholdMs || 1000;
+        
+        switch (filters.responseTime) {
+          case 'healthy': return monitor.success && rt < warningThreshold;
+          case 'warning': return monitor.success && rt >= warningThreshold && rt < criticalThreshold;
+          case 'critical': return monitor.success && rt >= criticalThreshold;
+          case 'failed': return !monitor.success;
+          default: return true;
+        }
+      });
+    }
+
+    // Time window filter (show only recent monitors)
+    if (filters.showActiveOnly) {
+      const cutoffTime = Date.now() - (filters.activeWindow * 60 * 1000);
+      filtered = filtered.filter(monitor => {
+        const executedTime = new Date(monitor.executedAt).getTime();
+        return executedTime >= cutoffTime;
+      });
+    }
+
+    // Apply sorting
+    const sortedFiltered = [...filtered].sort((a, b) => {
+      const aVal = a[sortConfig.field];
+      const bVal = b[sortConfig.field];
+      
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return sortConfig.direction === 'asc' 
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal);
+      }
+      
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortConfig.direction === 'asc' 
+          ? aVal - bVal
+          : bVal - aVal;
+      }
+      
+      return 0;
+    });
+
+    return sortedFiltered;
+  }, [tcpMonitors, filters, sortConfig]);
+
+  const isConnected = true; // Placeholder for real-time connection
+
+  // Get unique values for filter options
+  const uniqueRegions = useMemo(() => 
+    [...new Set(tcpMonitors.map(m => m.agentRegion).filter(Boolean))], 
+    [tcpMonitors]
+  );
+  
+  const uniqueMethods: string[] = []; // TCP doesn't have HTTP methods  // Event handlers
+  const handleNavigateToMonitor = useCallback((monitorId: string) => {
+    navigate(`/monitors/${monitorId}`);
+  }, [navigate]);
+
+  const handleShowResponseBody = useCallback((data: ResponseBodyData) => {
+    setSelectedResponseBody(data);
+  }, []);
+
+  const handleExportMonitor = useCallback(async (monitor: TCPMonitor) => {
+    try {
+      console.log('Export functionality will be implemented with full monitoring system');
+    } catch (error) {
+      console.error('Export failed:', error);
+    }
+  }, []);
+
+  const handleViewModeChange = useCallback((mode: ViewMode) => {
+    setPreferences(prev => ({ ...prev, viewMode: mode }));
+  }, []);
+
+  const handleFiltersChange = useCallback((newFilters: Partial<FilterState>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const updateSort = useCallback((field: keyof TCPMonitor) => {
+    setSortConfig(prev => ({
+      field,
+      direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  }, []);
+
+  // Loading and error states
+  if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="space-y-6">
-          <div className="flex items-center gap-2">
-            <Network className="w-8 h-8 animate-pulse" />
-            <h1 className="text-3xl font-bold">Loading TCP Monitors...</h1>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="h-16 bg-muted rounded"></div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+      <div className="flex items-center justify-center min-h-96">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <Card className="p-12 text-center">
+        <div className="space-y-3">
+          <div className="text-red-500 text-lg font-semibold">Error loading monitors</div>
+          <p className="text-muted-foreground">{error.message}</p>
+          <Button onClick={() => refetch()} variant="outline">
+            Try Again
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="space-y-1">
+        <div>
           <h1 className="text-3xl font-bold flex items-center gap-3">
             <Network className="w-8 h-8 text-blue-500" />
             TCP Monitors
           </h1>
-          <p className="text-muted-foreground">
-            TCP port connectivity monitoring with connection timing metrics
+          <p className="text-muted-foreground mt-2">
+            Monitor TCP connection health and performance across your infrastructure
           </p>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-xs ${
+            isConnected ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+            <span>{isConnected ? 'Live' : 'Offline'}</span>
+          </div>
+          
+          <Button variant="outline" onClick={() => refetch()} size="sm">
+            <Search className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
         </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Statistics Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.total}</p>
-              <p className="text-xs text-muted-foreground">Total Monitors</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">{stats.connected}</p>
-              <p className="text-xs text-muted-foreground">Connected</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-red-600">{stats.failed}</p>
-              <p className="text-xs text-muted-foreground">Failed</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.avgResponseTime}ms</p>
-              <p className="text-xs text-muted-foreground">Avg Connect Time</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search monitors, hosts, ports..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                <Activity className="w-4 h-4 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Monitors</p>
+                <p className="text-2xl font-semibold">{tcpMonitors.length}</p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-32">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="connected">Connected</SelectItem>
-                  <SelectItem value="failed">Failed</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={portFilter} onValueChange={setPortFilter}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Ports</SelectItem>
-                  <SelectItem value="common">Common</SelectItem>
-                  <SelectItem value="web">Web (80,443)</SelectItem>
-                  <SelectItem value="database">Database</SelectItem>
-                  <SelectItem value="mail">Mail</SelectItem>
-                  <SelectItem value="high">High (&gt;1024)</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={regionFilter} onValueChange={setRegionFilter}>
-                <SelectTrigger className="w-32">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Regions</SelectItem>
-                  <SelectItem value="us-east-1">US East 1</SelectItem>
-                  <SelectItem value="us-west-2">US West 2</SelectItem>
-                  <SelectItem value="eu-west-1">EU West 1</SelectItem>
-                </SelectContent>
-              </Select>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                <CheckCircle className="w-4 h-4 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Healthy</p>
+                <p className="text-2xl font-semibold">{tcpMonitors.filter(m => m.success).length}</p>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Monitor Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        {filteredMonitors.map(monitor => (
-          <TCPMonitorCard 
-            key={monitor.id} 
-            monitor={monitor} 
-            onClick={() => {
-              navigate(`/monitors/${monitor.monitorId}`);
-            }}
-          />
-        ))}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                <AlertTriangle className="w-4 h-4 text-red-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Issues</p>
+                <p className="text-2xl font-semibold">{tcpMonitors.filter(m => !m.success).length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                <Timer className="w-4 h-4 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Avg Response</p>
+                <p className="text-2xl font-semibold">
+                  {tcpMonitors.length > 0 ? Math.round(tcpMonitors.reduce((sum, m) => sum + (m.responseTime || 0), 0) / tcpMonitors.length) : 0}ms
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {filteredMonitors.length === 0 && (
-        <Card className="p-12 text-center">
-          <div className="space-y-3">
-            <Search className="w-12 h-12 text-muted-foreground mx-auto" />
-            <h3 className="text-lg font-semibold">No TCP monitors found</h3>
-            <p className="text-muted-foreground">
-              Try adjusting your filters or search criteria
-            </p>
+      {/* Monitors Content */}
+      <div className="space-y-6">
+          {/* Filters - Using dedicated MonitorFilters component */}
+          <MonitorFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            uniqueRegions={uniqueRegions}
+            uniqueMethods={uniqueMethods}
+            viewMode={preferences.viewMode}
+            onViewModeChange={handleViewModeChange}
+            onRefresh={handleRefresh}
+          />
+
+          {/* Results Count */}
+          <div className="flex justify-end">
+            <div className="text-sm text-muted-foreground">
+              Showing {filteredMonitors.length} of {tcpMonitors.length} monitors
+            </div>
           </div>
-        </Card>
+
+          {/* Monitor Display */}
+          {preferences.viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+              {filteredMonitors.map(monitor => (
+                <Card 
+                  key={monitor.id}
+                  className="cursor-pointer hover:shadow-md transition-shadow"
+                  onClick={() => handleNavigateToMonitor(monitor.monitorId)}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                      <h3 className="font-semibold text-lg mb-2">{monitor.monitorName || monitor.monitorId}</h3>
+                      <p className="text-sm text-muted-foreground mb-3 font-mono">
+                        {monitor.targetHost}:{monitor.targetPort}
+                      </p>                        <div className="flex items-center space-x-4 text-sm">
+                          <div className="flex items-center space-x-1">
+                            <div className={`w-2 h-2 rounded-full ${monitor.success ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                            <span>{monitor.success ? 'Healthy' : 'Down'}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Timer className="w-3 h-3" />
+                            <span>{monitor.responseTime || 0}ms</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <MapPin className="w-3 h-3" />
+                            <span className="text-muted-foreground">{monitor.agentRegion || 'unknown'}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2 mt-2">
+                          <Badge variant="outline" className="text-xs">
+                            TCP Connection
+                          </Badge>
+
+                        </div>
+                      </div>
+                      
+                      <div className="text-right">
+                        <Badge 
+                          variant={monitor.success ? "default" : "destructive"} 
+                          className={monitor.success ? "bg-green-500 hover:bg-green-600" : ""}
+                        >
+                          {monitor.success ? 'Connected' : 'Failed'}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            /* Table View */
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => updateSort('monitorId')}
+                      >
+                        <div className="flex items-center">
+                          Monitor Name
+                          {sortConfig.field === 'monitorId' && (
+                            sortConfig.direction === 'asc' ? 
+                              <SortAsc className="w-3 h-3 ml-1" /> : 
+                              <SortDesc className="w-3 h-3 ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => updateSort('success')}
+                      >
+                        <div className="flex items-center">
+                          Status
+                          {sortConfig.field === 'success' && (
+                            sortConfig.direction === 'asc' ? 
+                              <SortAsc className="w-3 h-3 ml-1" /> : 
+                              <SortDesc className="w-3 h-3 ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead>Target</TableHead>
+                      <TableHead>
+                        <div className="flex items-center">
+                          Type
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => updateSort('agentRegion')}
+                      >
+                        <div className="flex items-center">
+                          Region
+                          {sortConfig.field === 'agentRegion' && (
+                            sortConfig.direction === 'asc' ? 
+                              <SortAsc className="w-3 h-3 ml-1" /> : 
+                              <SortDesc className="w-3 h-3 ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => updateSort('responseTime')}
+                      >
+                        <div className="flex items-center">
+                          Response Time
+                          {sortConfig.field === 'responseTime' && (
+                            sortConfig.direction === 'asc' ? 
+                              <SortAsc className="w-3 h-3 ml-1" /> : 
+                              <SortDesc className="w-3 h-3 ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => updateSort('executedAt')}
+                      >
+                        <div className="flex items-center">
+                          Last Check
+                          {sortConfig.field === 'executedAt' && (
+                            sortConfig.direction === 'asc' ? 
+                              <SortAsc className="w-3 h-3 ml-1" /> : 
+                              <SortDesc className="w-3 h-3 ml-1" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredMonitors.map((monitor) => {
+                      const lastCheck = new Date(monitor.executedAt);
+                      const target = `${monitor.targetHost}:${monitor.targetPort}`;
+                      
+                      return (
+                        <TableRow 
+                          key={monitor.id} 
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleNavigateToMonitor(monitor.monitorId)}
+                        >
+                          <TableCell className="font-medium">
+                            <div className="max-w-[200px] truncate">
+                              {monitor.monitorName || monitor.monitorId}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {monitor.monitorId}
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <Badge 
+                                variant={monitor.success ? "default" : "destructive"}
+                                className={monitor.success ? "bg-green-500 hover:bg-green-600" : ""}
+                              >
+                                <div className={`w-2 h-2 rounded-full mr-1 ${
+                                  monitor.success ? 'bg-white' : 'bg-white'
+                                }`}></div>
+                                {monitor.success ? 'Connected' : 'Failed'}
+                              </Badge>
+                              {monitor.rawResponseBody && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 w-6 p-0"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                        handleShowResponseBody({
+                                          name: monitor.monitorName || monitor.monitorId,
+                                          body: monitor.rawResponseBody!,
+                                          contentType: monitor.responseContentType,
+                                          size: monitor.responseSizeBytes,
+                                          timestamp: new Date(monitor.executedAt)
+                                        });
+                                        }}
+                                      >
+                                        <Eye className="w-3 h-3" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>View response body</TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <span className="font-mono text-xs max-w-[250px] truncate">
+                                {target}
+                              </span>
+
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <Badge variant="outline" className="text-xs">
+                              TCP
+                            </Badge>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="flex items-center space-x-1">
+                              <MapPin className="w-3 h-3 text-muted-foreground" />
+                              <span className="text-sm">{monitor.agentRegion || 'unknown'}</span>
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <Timer className="w-3 h-3" />
+                              <span className={`font-mono text-sm ${
+                                (monitor.responseTime || 0) < 200 ? 'text-green-600' :
+                                (monitor.responseTime || 0) < 1000 ? 'text-yellow-600' : 'text-red-600'
+                              }`}>
+                                {monitor.responseTime || 0}ms
+                              </span>
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <div className="text-sm text-muted-foreground">
+                              {lastCheck.toLocaleTimeString()}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {lastCheck.toLocaleDateString()}
+                            </div>
+                          </TableCell>
+                          
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                  <MoreVertical className="w-3 h-3" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleNavigateToMonitor(monitor.monitorId);
+                                  }}
+                                >
+                                  <ExternalLink className="w-4 h-4 mr-2" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // TCP connections can't be opened in browser
+                                  }}
+                                >
+                                  <Globe className="w-4 h-4 mr-2" />
+                                  Open URL
+                                </DropdownMenuItem>
+                                {monitor.rawResponseBody && (
+                                  <DropdownMenuItem 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleShowResponseBody({
+                                        name: monitor.monitorName || monitor.monitorId,
+                                        body: monitor.rawResponseBody!,
+                                        contentType: monitor.responseContentType,
+                                        size: monitor.responseSizeBytes,
+                                        timestamp: new Date(monitor.executedAt)
+                                      });
+                                    }}
+                                  >
+                                    <Eye className="w-4 h-4 mr-2" />
+                                    View Response
+                                  </DropdownMenuItem>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Empty State */}
+          {filteredMonitors.length === 0 && tcpMonitors.length > 0 && (
+            <Card className="p-12 text-center">
+              <div className="space-y-3">
+                <Filter className="w-12 h-12 text-muted-foreground mx-auto" />
+                <h3 className="text-lg font-semibold">No monitors match your filters</h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your search criteria or clearing filters
+                </p>
+                <Button variant="outline" onClick={() => handleFiltersChange({
+                  search: '',
+                  status: 'all',
+                  method: 'all',
+                  region: 'all',
+                  responseTime: 'all',
+                  showActiveOnly: true,
+                  activeWindow: 5
+                })}>
+                  <X className="w-4 h-4 mr-2" />
+                  Clear All Filters
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {/* No Data State */}
+          {tcpMonitors.length === 0 && (
+            <Card className="p-12 text-center">
+              <div className="space-y-3">
+                <Search className="w-12 h-12 text-muted-foreground mx-auto" />
+                <h3 className="text-lg font-semibold">No TCP Monitors Found</h3>
+                <p className="text-muted-foreground">
+                  No HTTP monitoring data available at the moment
+                </p>
+              </div>
+            </Card>
+          )}
+      </div>
+
+      {/* Response Body Modal - Simplified for now */}
+      {selectedResponseBody && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="max-w-4xl max-h-[80vh] m-4">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Response Body</h3>
+                <Button variant="outline" onClick={() => setSelectedResponseBody(null)}>
+                  Close
+                </Button>
+              </div>
+              <pre className="bg-gray-50 p-4 rounded-lg overflow-auto max-h-96 text-sm font-mono whitespace-pre-wrap">
+                {selectedResponseBody.body}
+              </pre>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );

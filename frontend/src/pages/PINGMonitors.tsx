@@ -1,555 +1,508 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
-  Zap,
-  Clock, 
-  AlertCircle, 
-  CheckCircle, 
-  Search, 
+  LayoutDashboard,
+  Grid3X3,
+  Search,
+  Activity,
+  CheckCircle,
+  AlertTriangle,
+  Timer,
   Filter,
+  SortAsc,
+  SortDesc,
+  ExternalLink,
+  Eye,
   MoreVertical,
   MapPin,
-  Timer,
-  TrendingUp,
-  TrendingDown,
-  Activity,
-  Signal
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+  Globe,
+  X,
+  Network,
+  Server,
+  Zap
+} from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+// Import the dedicated MonitorFilters component
+import { MonitorFilters } from '../components/monitoring/components/MonitorFilters';
+import { Monitor, usePINGMonitors } from "../hooks/useMonitors";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 
-interface PINGMonitor {
-  id: number;
-  monitorId: string;
-  monitorName: string;
-  monitorType: 'PING';
-  targetHost: string;
-  
-  // Execution Context
-  executedAt: string;
-  agentId: string;
-  agentRegion: string;
-  
-  // Response Data
-  success: boolean;
-  responseTime?: number;
-  
-  // Network Performance
-  dnsLookupMs?: number;
-  
-  // PING-specific metrics
-  packetLoss?: number;
-  jitterMs?: number;
-  
-  // Error Tracking
-  errorMessage?: string;
-  errorType?: string;
+// Import types from monitoring module
+import { 
+  FilterState, 
+  SortConfig, 
+  ViewMode
+} from '../components/monitoring/types';
+
+// PING Monitor extends Monitor with PING-specific fields  
+interface PINGMonitor extends Monitor {
+  // PING specific fields already in Monitor interface
+  packetLoss?: number | null;
+  jitterMs?: number | null;
 }
 
-const PINGStatusBadge: React.FC<{ 
-  success: boolean,
-  packetLoss?: number,
-  size?: 'sm' | 'default' | 'lg' 
-}> = ({ success, packetLoss, size = 'default' }) => {
-  if (!success) {
-    return (
-      <Badge variant="destructive" className={cn(
-        "animate-pulse",
-        size === 'sm' && "text-xs px-2 py-0.5",
-        size === 'lg' && "text-sm px-3 py-1"
-      )}>
-        <AlertCircle className="w-3 h-3 mr-1" />
-        Unreachable
-      </Badge>
-    );
-  }
+interface ResponseBodyData {
+  name: string;
+  body: string;
+  contentType?: string;
+  size?: number;
+  timestamp: Date;
+}
 
-  if (packetLoss !== undefined) {
-    if (packetLoss === 0) {
-      return (
-        <Badge variant="default" className={cn(
-          "bg-green-500 hover:bg-green-600 text-white",
-          size === 'sm' && "text-xs px-2 py-0.5",
-          size === 'lg' && "text-sm px-3 py-1"
-        )}>
-          <CheckCircle className="w-3 h-3 mr-1" />
-          Perfect
-        </Badge>
-      );
-    } else if (packetLoss < 5) {
-      return (
-        <Badge variant="secondary" className={cn(
-          "bg-yellow-500 hover:bg-yellow-600 text-white",
-          size === 'sm' && "text-xs px-2 py-0.5",
-          size === 'lg' && "text-sm px-3 py-1"
-        )}>
-          <Activity className="w-3 h-3 mr-1" />
-          {packetLoss}% Loss
-        </Badge>
-      );
-    } else {
-      return (
-        <Badge variant="destructive" className={cn(
-          size === 'sm' && "text-xs px-2 py-0.5",
-          size === 'lg' && "text-sm px-3 py-1"
-        )}>
-          <AlertCircle className="w-3 h-3 mr-1" />
-          {packetLoss}% Loss
-        </Badge>
-      );
-    }
-  }
-
-  return (
-    <Badge variant="default" className={cn(
-      "bg-green-500 hover:bg-green-600 text-white",
-      size === 'sm' && "text-xs px-2 py-0.5",
-      size === 'lg' && "text-sm px-3 py-1"
-    )}>
-      <CheckCircle className="w-3 h-3 mr-1" />
-      Reachable
-    </Badge>
-  );
+// Transform Monitor data to PINGMonitor for our components
+const transformMonitorData = (monitors: Monitor[]): PINGMonitor[] => {
+  return monitors.filter(m => m.monitorType === 'PING') as PINGMonitor[];
 };
 
-const PINGMetrics: React.FC<{ monitor: PINGMonitor }> = ({ monitor }) => {
-  const metrics = [
-    { 
-      label: 'DNS Lookup', 
-      value: monitor.dnsLookupMs, 
-      icon: Signal,
-      unit: 'ms'
-    },
-    { 
-      label: 'Packet Loss', 
-      value: monitor.packetLoss, 
-      icon: TrendingDown,
-      unit: '%',
-      color: monitor.packetLoss === 0 ? 'text-green-600' : 
-             monitor.packetLoss && monitor.packetLoss < 5 ? 'text-yellow-600' : 'text-red-600'
-    },
-    { 
-      label: 'Jitter', 
-      value: monitor.jitterMs, 
-      icon: Activity,
-      unit: 'ms',
-      color: monitor.jitterMs && monitor.jitterMs < 10 ? 'text-green-600' : 
-             monitor.jitterMs && monitor.jitterMs < 30 ? 'text-yellow-600' : 'text-red-600'
-    },
-  ].filter(m => m.value !== undefined);
+// Hexagon component for hive display
+const HexagonTile: React.FC<{ monitor: PINGMonitor; onClick: () => void }> = ({ monitor, onClick }) => {
+  const getStatusColor = () => {
+    if (!monitor.success) return 'bg-red-500 border-red-600';
+    
+    const responseTime = monitor.responseTime || 0;
+    if (responseTime < 50) return 'bg-green-500 border-green-600';
+    if (responseTime < 100) return 'bg-lime-500 border-lime-600';
+    if (responseTime < 200) return 'bg-yellow-500 border-yellow-600';
+    if (responseTime < 500) return 'bg-orange-500 border-orange-600';
+    return 'bg-red-500 border-red-600';
+  };
 
-  if (metrics.length === 0) return null;
-
+  const displayName = monitor.monitorName || monitor.monitorId.split('-')[0];
+  const colorClasses = getStatusColor();
+  
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 mt-3">
-      {metrics.map((metric) => {
-        const Icon = metric.icon;
-        return (
-          <div key={metric.label} className="flex items-center gap-1 text-xs bg-muted/50 px-2 py-1 rounded">
-            <Icon className="w-3 h-3" />
-            <span className="text-muted-foreground">{metric.label}:</span>
-            <span className={cn("font-mono font-medium", metric.color || "text-foreground")}>
-              {metric.value}{metric.unit}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const PINGMonitorCard: React.FC<{ monitor: PINGMonitor, onClick: () => void }> = ({ monitor, onClick }) => {
-  const lastCheck = new Date(monitor.executedAt);
-  const isRecent = Date.now() - lastCheck.getTime() < 5 * 60 * 1000; // 5 minutes
-
-  return (
-    <Card className={cn(
-      "cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02]",
-      "border-l-4",
-      monitor.success && (!monitor.packetLoss || monitor.packetLoss < 5)
-        ? "border-l-green-500 hover:border-l-green-600" 
-        : "border-l-red-500 hover:border-l-red-600"
-    )} onClick={onClick}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1 flex-1 min-w-0">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2">
-              <Zap className="w-5 h-5 text-orange-500" />
-              <span className="truncate">{monitor.monitorName || monitor.monitorId}</span>
-            </CardTitle>
-            <CardDescription className="flex items-center gap-2">
-              <MapPin className="w-3 h-3" />
-              {monitor.agentRegion}
-              <span className="text-muted-foreground">•</span>
-              <Badge variant="outline" className="text-xs">
-                ICMP
-              </Badge>
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            <PINGStatusBadge 
-              success={monitor.success} 
-              packetLoss={monitor.packetLoss}
-              size="sm"
-            />
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <MoreVertical className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          {/* Target Host */}
-          <div className="flex items-center gap-2 text-sm">
-            <Signal className="w-4 h-4 text-muted-foreground" />
-            <span className="font-mono bg-muted px-2 py-1 rounded text-xs">
-              {monitor.targetHost}
-            </span>
-          </div>
-
-          {/* Response Time */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {monitor.responseTime && (
-                <Badge variant="outline" className={cn(
-                  "text-xs font-mono",
-                  monitor.responseTime < 50 ? "text-green-600" :
-                  monitor.responseTime < 100 ? "text-yellow-600" :
-                  monitor.responseTime < 200 ? "text-orange-600" : "text-red-600"
-                )}>
-                  <Clock className="w-3 h-3 mr-1" />
-                  {monitor.responseTime}ms
-                </Badge>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              {isRecent ? 'Just now' : lastCheck.toLocaleTimeString()}
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            className={`
+              w-24 h-24 ${colorClasses} cursor-pointer 
+              transition-all duration-200 hover:scale-110 hover:brightness-110
+              flex flex-col items-center justify-center text-white text-xs font-semibold
+              border-2 shadow-lg hover:shadow-xl
+            `}
+            style={{ 
+              clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)',
+              margin: '8px'
+            }}
+            onClick={onClick}
+          >
+            <div className="text-center leading-tight">
+              <div className="font-bold text-xs truncate w-16" title={displayName}>
+                {displayName.length > 8 ? `${displayName.slice(0,6)}..` : displayName}
+              </div>
+              <div className="text-xs opacity-90 mt-1">
+                {monitor.success ? `${monitor.responseTime}ms` : 'FAIL'}
+              </div>
             </div>
           </div>
-
-          {/* PING Metrics */}
-          <PINGMetrics monitor={monitor} />
-
-          {/* Error Message */}
-          {monitor.errorMessage && (
-            <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded">
-              <span className="font-medium">{monitor.errorType || 'Error'}:</span> {monitor.errorMessage}
+        </TooltipTrigger>
+        <TooltipContent side="top" className="bg-gray-800 border-gray-700">
+          <div className="text-sm">
+            <div className="font-semibold text-white">{monitor.monitorName || monitor.monitorId}</div>
+            <div className="text-gray-300 mt-1">Target: {monitor.targetHost}</div>
+            <div className="text-gray-300">Region: {monitor.agentRegion}</div>
+            <div className="text-gray-300">
+              Status: {monitor.success ? 
+                `✓ ${monitor.responseTime}ms` : 
+                '✗ Failed'
+              }
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            {monitor.packetLoss !== null && monitor.packetLoss !== undefined && (
+              <div className="text-gray-300">Packet Loss: {monitor.packetLoss}%</div>
+            )}
+            {monitor.jitterMs !== null && monitor.jitterMs !== undefined && (
+              <div className="text-gray-300">Jitter: {monitor.jitterMs}ms</div>
+            )}
+            <div className="text-gray-400 text-xs mt-1">
+              Last check: {new Date(monitor.executedAt).toLocaleTimeString()}
+            </div>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
 const PINGMonitorsContent: React.FC = () => {
   const navigate = useNavigate();
-  const [monitors, setMonitors] = useState<PINGMonitor[]>([]);
-  const [filteredMonitors, setFilteredMonitors] = useState<PINGMonitor[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [regionFilter, setRegionFilter] = useState('all');
-  const [performanceFilter, setPerformanceFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
+  const { data: monitors = [], isLoading, error, refetch } = usePINGMonitors();
+  
+  // Convert Monitor[] to PINGMonitor[] for our components
+  const pingMonitors = transformMonitorData(monitors);
+  
+  // State management
+  const [selectedResponseBody, setSelectedResponseBody] = useState<ResponseBodyData | null>(null);
+  const [filters, setFilters] = useState<FilterState>({
+    search: '',
+    status: 'all',
+    method: 'all',
+    region: 'all',
+    responseTime: 'all',
+    showActiveOnly: true,
+    activeWindow: 5
+  });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ field: 'executedAt', direction: 'desc' });
+  const [preferences, setPreferences] = useState({ viewMode: 'grid' as ViewMode, exportFormat: 'csv' as const });
+  
+  // Filtering logic
+  const filteredMonitors = useMemo(() => {
+    let filtered = pingMonitors;
 
-  // Mock data - replace with real API calls
-  useEffect(() => {
-    setTimeout(() => {
-      const mockData: PINGMonitor[] = [
-        {
-          id: 1,
-          monitorId: 'us-east-1-gateway',
-          monitorName: 'Default Gateway',
-          monitorType: 'PING',
-          targetHost: '8.8.8.8',
-          agentId: 'ping-monitor-us-east-1@us-east-1-agent-01',
-          agentRegion: 'us-east-1',
-          executedAt: new Date().toISOString(),
-          success: true,
-          responseTime: 23,
-          dnsLookupMs: 5,
-          packetLoss: 0,
-          jitterMs: 2
-        },
-        {
-          id: 2,
-          monitorId: 'us-west-2-dns',
-          monitorName: 'Cloudflare DNS',
-          monitorType: 'PING',
-          targetHost: '1.1.1.1',
-          agentId: 'ping-monitor-us-west-2@us-west-2-agent-01',
-          agentRegion: 'us-west-2',
-          executedAt: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
-          success: true,
-          responseTime: 45,
-          dnsLookupMs: 8,
-          packetLoss: 0,
-          jitterMs: 5
-        },
-        {
-          id: 3,
-          monitorId: 'eu-west-1-server',
-          monitorName: 'Application Server',
-          monitorType: 'PING',
-          targetHost: 'app.example.com',
-          agentId: 'ping-monitor-eu-west-1@eu-west-1-agent-01',
-          agentRegion: 'eu-west-1',
-          executedAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-          success: true,
-          responseTime: 156,
-          dnsLookupMs: 15,
-          packetLoss: 2.5,
-          jitterMs: 25
-        },
-        {
-          id: 4,
-          monitorId: 'us-east-1-unreachable',
-          monitorName: 'Unreachable Host',
-          monitorType: 'PING',
-          targetHost: '192.168.255.255',
-          agentId: 'ping-monitor-us-east-1@us-east-1-agent-02',
-          agentRegion: 'us-east-1',
-          executedAt: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
-          success: false,
-          dnsLookupMs: 12,
-          packetLoss: 100,
-          errorMessage: 'Destination host unreachable',
-          errorType: 'HOST_UNREACHABLE'
-        }
-      ];
-      setMonitors(mockData);
-      setFilteredMonitors(mockData);
-      setLoading(false);
-    }, 1000);
-  }, []);
-
-  // Filter logic
-  useEffect(() => {
-    let filtered = monitors;
-
-    if (searchQuery) {
+    // Search filter
+    if (filters.search.trim()) {
+      const searchTerm = filters.search.toLowerCase();
       filtered = filtered.filter(monitor => 
-        monitor.monitorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.targetHost.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        monitor.agentRegion.toLowerCase().includes(searchQuery.toLowerCase())
+        (monitor.monitorName || monitor.monitorId).toLowerCase().includes(searchTerm) ||
+        monitor.targetHost.toLowerCase().includes(searchTerm) ||
+        monitor.monitorId.toLowerCase().includes(searchTerm)
       );
     }
 
-    if (statusFilter !== 'all') {
+    // Status filter
+    if (filters.status !== 'all') {
+      if (filters.status === 'healthy') {
+        filtered = filtered.filter(monitor => monitor.success);
+      } else if (filters.status === 'error') {
+        filtered = filtered.filter(monitor => !monitor.success);
+      }
+    }
+
+    // PING doesn't have methods like HTTP, so skip method filtering
+
+    // Region filter
+    if (filters.region !== 'all') {
+      filtered = filtered.filter(monitor => monitor.agentRegion === filters.region);
+    }
+
+    // Response time filter
+    if (filters.responseTime !== 'all') {
       filtered = filtered.filter(monitor => {
-        if (statusFilter === 'reachable') return monitor.success && (!monitor.packetLoss || monitor.packetLoss < 5);
-        if (statusFilter === 'degraded') return monitor.success && monitor.packetLoss && monitor.packetLoss >= 5;
-        if (statusFilter === 'unreachable') return !monitor.success || (monitor.packetLoss === 100);
-        return true;
+        const rt = monitor.responseTime || 0;
+        const warningThreshold = monitor.warningThresholdMs || 500;
+        const criticalThreshold = monitor.criticalThresholdMs || 1000;
+        
+        switch (filters.responseTime) {
+          case 'healthy': return monitor.success && rt < warningThreshold;
+          case 'warning': return monitor.success && rt >= warningThreshold && rt < criticalThreshold;
+          case 'critical': return monitor.success && rt >= criticalThreshold;
+          case 'failed': return !monitor.success;
+          default: return true;
+        }
       });
     }
 
-    if (regionFilter !== 'all') {
-      filtered = filtered.filter(monitor => monitor.agentRegion === regionFilter);
-    }
-
-    if (performanceFilter !== 'all') {
+    // Time window filter (show only recent monitors)
+    if (filters.showActiveOnly) {
+      const cutoffTime = Date.now() - (filters.activeWindow * 60 * 1000);
       filtered = filtered.filter(monitor => {
-        if (!monitor.responseTime) return false;
-        if (performanceFilter === 'excellent') return monitor.responseTime < 50;
-        if (performanceFilter === 'good') return monitor.responseTime >= 50 && monitor.responseTime < 100;
-        if (performanceFilter === 'fair') return monitor.responseTime >= 100 && monitor.responseTime < 200;
-        if (performanceFilter === 'poor') return monitor.responseTime >= 200;
-        return true;
+        const executedTime = new Date(monitor.executedAt).getTime();
+        return executedTime >= cutoffTime;
       });
     }
 
-    setFilteredMonitors(filtered);
-  }, [monitors, searchQuery, statusFilter, regionFilter, performanceFilter]);
+    // Apply sorting
+    const sortedFiltered = [...filtered].sort((a, b) => {
+      const aVal = a[sortConfig.field as keyof PINGMonitor];
+      const bVal = b[sortConfig.field as keyof PINGMonitor];
+      
+      if (aVal === null || aVal === undefined) return 1;
+      if (bVal === null || bVal === undefined) return -1;
+      
+      let comparison = 0;
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        comparison = aVal.localeCompare(bVal);
+      } else if (typeof aVal === 'number' && typeof bVal === 'number') {
+        comparison = aVal - bVal;
+      } else if (aVal instanceof Date && bVal instanceof Date) {
+        comparison = aVal.getTime() - bVal.getTime();
+      } else {
+        comparison = String(aVal).localeCompare(String(bVal));
+      }
+      
+      return sortConfig.direction === 'asc' ? comparison : -comparison;
+    });
 
-  const stats = {
-    total: monitors.length,
-    reachable: monitors.filter(m => m.success && (!m.packetLoss || m.packetLoss < 5)).length,
-    degraded: monitors.filter(m => m.success && m.packetLoss && m.packetLoss >= 5).length,
-    unreachable: monitors.filter(m => !m.success || m.packetLoss === 100).length,
-    avgResponseTime: Math.round(monitors.filter(m => m.responseTime).reduce((acc, m) => acc + (m.responseTime || 0), 0) / monitors.filter(m => m.responseTime).length) || 0,
-    avgPacketLoss: Math.round((monitors.filter(m => m.packetLoss !== undefined).reduce((acc, m) => acc + (m.packetLoss || 0), 0) / monitors.filter(m => m.packetLoss !== undefined).length) * 10) / 10 || 0
-  };
+    return sortedFiltered;
+  }, [pingMonitors, filters, sortConfig]);
 
-  if (loading) {
+  // Derived values for unique filters
+  const uniqueRegions = useMemo(() => {
+    const regions = new Set(pingMonitors.map(m => m.agentRegion).filter(Boolean));
+    return Array.from(regions).sort();
+  }, [pingMonitors]);
+
+  const uniqueMethods: string[] = []; // PING doesn't have methods
+
+  // Event handlers
+  const handleNavigateToMonitor = useCallback((monitorId: string) => {
+    navigate(`/monitors/${monitorId}`);
+  }, [navigate]);
+
+  const handleViewResponseBody = useCallback((data: ResponseBodyData) => {
+    setSelectedResponseBody(data);
+  }, []);
+
+  const handleExport = useCallback(async () => {
+    try {
+      // Implementation for export functionality
+      console.log('Export functionality not yet implemented');
+    } catch (error) {
+      console.error('Export failed:', error);
+    }
+  }, []);
+
+  const handleViewModeChange = useCallback((mode: ViewMode) => {
+    setPreferences(prev => ({ ...prev, viewMode: mode }));
+  }, []);
+
+  const handleFiltersChange = useCallback((newFilters: Partial<FilterState>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const updateSort = useCallback((field: keyof PINGMonitor) => {
+    setSortConfig(prev => ({
+      field,
+      direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  }, []);
+
+  // Loading and error states
+  if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="space-y-6">
-          <div className="flex items-center gap-2">
-            <Zap className="w-8 h-8 animate-pulse" />
-            <h1 className="text-3xl font-bold">Loading PING Monitors...</h1>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="h-16 bg-muted rounded"></div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+      <div className="flex items-center justify-center min-h-96">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-96 text-center">
+        <AlertTriangle className="w-12 h-12 text-destructive mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Error Loading PING Monitors</h3>
+        <p className="text-muted-foreground mb-4">
+          Failed to load PING monitoring data. Please try again.
+        </p>
+        <Button onClick={() => refetch()}>
+          Retry
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
+    <div className="space-y-6">
+      {/* Header with Stats */}
       <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Zap className="w-8 h-8 text-orange-500" />
-            PING Monitors
-          </h1>
-          <p className="text-muted-foreground">
-            ICMP ping monitoring with packet loss and jitter analysis
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
+            <Zap className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">PING Monitors</h1>
+            <p className="text-muted-foreground">
+              Network connectivity and latency monitoring
+            </p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <ExternalLink className="w-4 h-4 mr-2" />
+            Export
+          </Button>
         </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.total}</p>
-              <p className="text-xs text-muted-foreground">Total Monitors</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Total Monitors</p>
+                <p className="text-2xl font-bold">{pingMonitors.length}</p>
+              </div>
+              <Activity className="w-4 h-4 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
+        
         <Card>
           <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">{stats.reachable}</p>
-              <p className="text-xs text-muted-foreground">Reachable</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Healthy</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {pingMonitors.filter(m => m.success).length}
+                </p>
+              </div>
+              <CheckCircle className="w-4 h-4 text-green-600" />
             </div>
           </CardContent>
         </Card>
+        
         <Card>
           <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-yellow-600">{stats.degraded}</p>
-              <p className="text-xs text-muted-foreground">Degraded</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Errors</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {pingMonitors.filter(m => !m.success).length}
+                </p>
+              </div>
+              <AlertTriangle className="w-4 h-4 text-red-600" />
             </div>
           </CardContent>
         </Card>
+        
         <Card>
           <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-red-600">{stats.unreachable}</p>
-              <p className="text-xs text-muted-foreground">Unreachable</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.avgResponseTime}ms</p>
-              <p className="text-xs text-muted-foreground">Avg RTT</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{stats.avgPacketLoss}%</p>
-              <p className="text-xs text-muted-foreground">Avg Loss</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search monitors, hosts, regions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Avg Response</p>
+                <p className="text-2xl font-bold">
+                  {pingMonitors.length > 0 ? Math.round(pingMonitors.reduce((sum, m) => sum + (m.responseTime || 0), 0) / pingMonitors.length) : 0}ms
+                </p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-36">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="reachable">Reachable</SelectItem>
-                  <SelectItem value="degraded">Degraded</SelectItem>
-                  <SelectItem value="unreachable">Unreachable</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={performanceFilter} onValueChange={setPerformanceFilter}>
-                <SelectTrigger className="w-36">
-                  <Timer className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Performance</SelectItem>
-                  <SelectItem value="excellent">&lt;50ms</SelectItem>
-                  <SelectItem value="good">50-100ms</SelectItem>
-                  <SelectItem value="fair">100-200ms</SelectItem>
-                  <SelectItem value="poor">&gt;200ms</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={regionFilter} onValueChange={setRegionFilter}>
-                <SelectTrigger className="w-32">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Regions</SelectItem>
-                  <SelectItem value="us-east-1">US East 1</SelectItem>
-                  <SelectItem value="us-west-2">US West 2</SelectItem>
-                  <SelectItem value="eu-west-1">EU West 1</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Monitor Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        {filteredMonitors.map(monitor => (
-          <PINGMonitorCard 
-            key={monitor.id} 
-            monitor={monitor} 
-            onClick={() => {
-              navigate(`/monitors/${monitor.monitorId}`);
-            }}
-          />
-        ))}
+          </CardContent>
+        </Card>
       </div>
 
-      {filteredMonitors.length === 0 && (
-        <Card className="p-12 text-center">
-          <div className="space-y-3">
-            <Search className="w-12 h-12 text-muted-foreground mx-auto" />
-            <h3 className="text-lg font-semibold">No PING monitors found</h3>
-            <p className="text-muted-foreground">
-              Try adjusting your filters or search criteria
-            </p>
+      {/* Monitors Content */}
+      <div className="space-y-6">
+          {/* Filters - Using dedicated MonitorFilters component */}
+          <MonitorFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            uniqueRegions={uniqueRegions}
+            uniqueMethods={uniqueMethods}
+            viewMode={preferences.viewMode}
+            onViewModeChange={handleViewModeChange}
+            onRefresh={handleRefresh}
+          />
+
+          {/* Results Count */}
+          <div className="flex justify-end">
+            <div className="text-sm text-muted-foreground">
+              Showing {filteredMonitors.length} of {pingMonitors.length} monitors
+            </div>
           </div>
-        </Card>
-      )}
+
+          {/* Hexagon Hive Display */}
+          {filteredMonitors.length === 0 && pingMonitors.length > 0 && (
+            <Card className="p-12 text-center">
+              <div className="space-y-3">
+                <Filter className="w-12 h-12 text-muted-foreground mx-auto" />
+                <h3 className="text-lg font-semibold">No monitors match your filters</h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your search criteria or clearing filters
+                </p>
+                <Button variant="outline" onClick={() => handleFiltersChange({
+                  search: '',
+                  status: 'all',
+                  method: 'all',
+                  region: 'all',
+                  responseTime: 'all',
+                  showActiveOnly: true,
+                  activeWindow: 5
+                })}>
+                  <X className="w-4 h-4 mr-2" />
+                  Clear All Filters
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {/* No Data State */}
+          {pingMonitors.length === 0 && (
+            <Card className="p-12 text-center">
+              <div className="space-y-3">
+                <Network className="w-12 h-12 text-muted-foreground mx-auto" />
+                <h3 className="text-lg font-semibold">No PING monitors found</h3>
+                <p className="text-muted-foreground">
+                  There are currently no PING monitoring configurations set up.
+                </p>
+              </div>
+            </Card>
+          )}
+
+          {/* Hexagon Display */}
+          {filteredMonitors.length > 0 && (
+            <div className="space-y-4">
+              {/* Status Legend */}
+              <div className="flex justify-center">
+                <div className="flex flex-wrap justify-center gap-4 text-sm bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 bg-green-500 border border-green-600"
+                      style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)' }}
+                    ></div>
+                    <span className="text-green-600">&lt; 50ms</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 bg-lime-500 border border-lime-600"
+                      style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)' }}
+                    ></div>
+                    <span className="text-lime-600">50-100ms</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 bg-yellow-500 border border-yellow-600"
+                      style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)' }}
+                    ></div>
+                    <span className="text-yellow-600">100-200ms</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 bg-orange-500 border border-orange-600"
+                      style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)' }}
+                    ></div>
+                    <span className="text-orange-600">200-500ms</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 bg-red-500 border border-red-600"
+                      style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)' }}
+                    ></div>
+                    <span className="text-red-600">&gt; 500ms or Failed</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Hexagon Grid */}
+              <Card className="p-8">
+                <div className="flex flex-wrap justify-center items-center gap-2">
+                  {filteredMonitors.map((monitor) => (
+                    <HexagonTile
+                      key={monitor.id}
+                      monitor={monitor}
+                      onClick={() => handleNavigateToMonitor(monitor.monitorId)}
+                    />
+                  ))}
+                </div>
+              </Card>
+            </div>
+          )}
+      </div>
     </div>
   );
 };
