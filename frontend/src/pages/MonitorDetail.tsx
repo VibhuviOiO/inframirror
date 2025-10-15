@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   ArrowLeft, 
   Activity, 
@@ -44,7 +46,9 @@ import {
   Share,
   Star,
   ChevronDown,
-  AlertTriangle
+  AlertTriangle,
+  Copy,
+  ExternalLink
 } from 'lucide-react';
 import {
   LineChart as RechartsLineChart,
@@ -76,6 +80,7 @@ interface MonitorHistory {
   errorType?: string;
   errorMessage?: string;
   agentRegion?: string;
+  agentId?: string;
 }
 
 interface MonitorDetails {
@@ -83,6 +88,8 @@ interface MonitorDetails {
   monitorName: string;
   url: string;
   monitorType: string;
+  targetHost?: string;
+  targetPath?: string;
   frequency: number;
   enabled: boolean;
   warningThresholdMs?: number;
@@ -113,7 +120,7 @@ const MonitorDetailContent: React.FC = () => {
   const [customStartDateTime, setCustomStartDateTime] = useState<Date | null>(null);
   const [customEndDateTime, setCustomEndDateTime] = useState<Date | null>(null);
   const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
-  const [selectedDatacenter, setSelectedDatacenter] = useState<string>('all');
+  const [selectedDatacenters, setSelectedDatacenters] = useState<string[]>(['all']);
   const [hoveredPerfPoint, setHoveredPerfPoint] = useState<number | null>(null);
   const [perfChartMousePos, setPerfChartMousePos] = useState<{ x: number; y: number } | null>(null);
   
@@ -134,17 +141,26 @@ const MonitorDetailContent: React.FC = () => {
     } else {
       // Handle predefined time ranges
       switch (availabilityTimeRange) {
+        case '5m':
+          startTime = new Date(now.getTime() - 5 * 60 * 1000);
+          break;
+        case '15m':
+          startTime = new Date(now.getTime() - 15 * 60 * 1000);
+          break;
+        case '30m':
+          startTime = new Date(now.getTime() - 30 * 60 * 1000);
+          break;
         case '1h':
           startTime = new Date(now.getTime() - 1 * 60 * 60 * 1000);
           break;
-        case '3h':
-          startTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
-          break;
-        case '6h':
-          startTime = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+        case '4h':
+          startTime = new Date(now.getTime() - 4 * 60 * 60 * 1000);
           break;
         case '24h':
           startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          break;
+        case '2d':
+          startTime = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
           break;
         case '7d':
           startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -160,19 +176,20 @@ const MonitorDetailContent: React.FC = () => {
     return { startTime, endTime };
   }, [availabilityTimeRange, customStartDateTime, customEndDateTime]);
 
-  // Filter history based on time range and datacenter
+  // Filter history based on time range and region
   const filteredHistory = React.useMemo(() => {
     const { startTime, endTime } = getTimeRange();
 
     return history.filter(item => {
       const itemDate = new Date(item.executedAt);
       const timeInRange = itemDate >= startTime && itemDate <= endTime;
-      const datacenterMatch = selectedDatacenter === 'all' || item.agentRegion === selectedDatacenter;
-      return timeInRange && datacenterMatch;
+      const regionMatch = selectedDatacenters.includes('all') || 
+                              (item.agentRegion && selectedDatacenters.includes(item.agentRegion));
+      return timeInRange && regionMatch;
     });
-  }, [history, getTimeRange, selectedDatacenter]);
+  }, [history, getTimeRange, selectedDatacenters]);
 
-  // Get unique datacenters for dropdown
+  // Get unique regions for dropdown
   const uniqueDatacenters = React.useMemo(() => {
     const datacenters = [...new Set(history.map(h => h.agentRegion).filter(Boolean))];
     return datacenters.sort();
@@ -562,6 +579,8 @@ const MonitorDetailContent: React.FC = () => {
             monitorName: latestRecord.monitorId || `Monitor ${id}`,
             url: latestRecord.targetHost || 'Unknown URL',
             monitorType: latestRecord.monitorType || 'HTTPS',
+            targetHost: latestRecord.targetHost || '',
+            targetPath: latestRecord.targetPath || '/',
             frequency: 60, // Default frequency
             enabled: true, // Default enabled
             warningThresholdMs: latestRecord.warningThresholdMs || 500,
@@ -569,6 +588,7 @@ const MonitorDetailContent: React.FC = () => {
             createdAt: latestRecord.executedAt || new Date().toISOString(),
             updatedAt: latestRecord.executedAt || new Date().toISOString()
           };
+          console.log('Transformed monitor:', transformedMonitor);
           setMonitor(transformedMonitor);
         }
       }
@@ -613,28 +633,42 @@ const MonitorDetailContent: React.FC = () => {
   return (
     <DashboardLayout>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-6 py-4">
-          {/* Row 1: Title and Controls */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          {/* Row 1: Back Button, Title and Uptime/Controls */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
               <Button 
                 variant="ghost" 
-                size="sm" 
+                size="icon"
                 onClick={() => navigate('/monitors')}
-                className="flex items-center gap-2"
+                className="hover:bg-gray-100"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-5 h-5" />
               </Button>
               
               <div>
-                <h1 className="font-bold text-2xl text-gray-900">{monitor.monitorName || `Monitor ${id}`}</h1>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {(() => {
+                    // Construct title from monitorType, targetHost, and targetPath
+                    if (monitor.monitorType && monitor.targetHost) {
+                      const path = monitor.targetPath || '/';
+                      return `${monitor.monitorType.toUpperCase()} Monitor`;
+                    }
+                    return monitor.monitorName || `Monitor ${id}`;
+                  })()}
+                </h1>
+                <p className="text-sm text-gray-500 mt-1">
+                  {monitor.targetHost && monitor.targetPath 
+                    ? `${monitor.targetHost}${monitor.targetPath}`
+                    : 'Endpoint monitoring'}
+                </p>
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="text-2xl font-bold text-green-600">
+            <div className="flex items-center gap-6">
+              <div className="text-center px-6 py-2 bg-green-50 rounded-lg border border-green-200">
+                <div className="text-3xl font-bold text-green-600">
                   {(() => {
                     const successCount = filteredHistory.filter(h => h.success).length;
                     const totalCount = filteredHistory.length;
@@ -642,88 +676,116 @@ const MonitorDetailContent: React.FC = () => {
                     return `${uptime}%`;
                   })()}
                 </div>
-                <div className="text-xs text-gray-500">Uptime</div>
+                <div className="text-xs font-medium text-green-700 mt-1">Uptime</div>
               </div>
               
-              <div className="flex flex-col items-end gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setAutoRefresh(!autoRefresh)}
-                  className={`${autoRefresh ? 'bg-green-50 text-green-700 border-green-200' : ''}`}
-                >
-                  <RefreshCw className={`w-4 h-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
-                  {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
-                </Button>
-                
-                {/* Status Badge */}
-                <div className="flex items-center gap-2">
-                  {(() => {
-                    const successCount = filteredHistory.filter(h => h.success).length;
-                    const totalCount = filteredHistory.length;
-                    const uptime = totalCount > 0 ? (successCount / totalCount) * 100 : 100;
-                    
-                    if (uptime >= 99) {
-                      return (
-                        <>
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                          <span className="text-sm text-green-600 font-medium">Check is passing</span>
-                        </>
-                      );
-                    } else if (uptime >= 95) {
-                      return (
-                        <>
-                          <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                          <span className="text-sm text-yellow-600 font-medium">Check has issues</span>
-                        </>
-                      );
-                    } else {
-                      return (
-                        <>
-                          <XCircle className="w-4 h-4 text-red-500" />
-                          <span className="text-sm text-red-600 font-medium">Check is failing</span>
-                        </>
-                      );
-                    }
-                  })()}
-                </div>
-              </div>
+              <Button
+                variant="outline"
+                size="default"
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`${autoRefresh ? 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100' : 'hover:bg-gray-50'}`}
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
+                {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
+              </Button>
             </div>
           </div>
           
-          {/* Row 2: Monitor Details */}
-          <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-center gap-8 text-sm">
-              <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-gray-500" />
-                <span className="font-medium">URL:</span>
-                <span className="font-mono text-blue-600">{monitor.url}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Network className="w-4 h-4 text-gray-500" />
-                <span className="font-medium">Method:</span>
-                <Badge variant="secondary">GET</Badge>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-gray-500" />
-                <span className="font-medium">Protocol:</span>
-                <Badge variant="outline">HTTPS</Badge>
-              </div>
+          {/* Row 2: Monitor Metadata */}
+          <div className="flex items-center gap-6 text-sm mb-4">
+            <div className="flex items-center gap-2 text-gray-600">
+              <Network className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-500">Method:</span>
+              <Badge variant="secondary" className="font-medium">GET</Badge>
             </div>
-            
-            <div className="flex items-center gap-8 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                <span>
+            <div className="w-px h-4 bg-gray-300"></div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <Shield className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-500">Protocol:</span>
+              <Badge variant="outline" className="font-medium">
+                {monitor.monitorType?.toUpperCase() || 'HTTPS'}
+              </Badge>
+            </div>
+            <div className="w-px h-4 bg-gray-300"></div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <MapPin className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-500">Regions:</span>
+              <span className="font-medium text-gray-900">
+                {(() => {
+                  const uniqueDatacenters = [...new Set(history.map(h => h.agentRegion).filter(Boolean))];
+                  return uniqueDatacenters.length;
+                })()}
+              </span>
+            </div>
+            <div className="w-px h-4 bg-gray-300"></div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <Clock className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-500">Interval:</span>
+              <span className="font-medium text-gray-900">30s</span>
+            </div>
+          </div>
+          
+          {/* Row 3: Monitoring URL - Terminal Style */}
+          <div className="bg-gray-900 rounded-md p-3 border border-gray-700">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Endpoint</span>
+                </div>
+                <code className="text-green-400 text-sm font-mono flex-1 truncate">
                   {(() => {
-                    const uniqueDatacenters = [...new Set(history.map(h => h.agentRegion).filter(Boolean))];
-                    return `${uniqueDatacenters.length} datacenter${uniqueDatacenters.length !== 1 ? 's' : ''} • ${uniqueDatacenters.join(', ')}`;
+                    // Always construct complete URL from monitorType, targetHost, and targetPath
+                    const protocol = (monitor.monitorType || 'http').toLowerCase();
+                    const host = monitor.targetHost || monitor.url;
+                    const path = monitor.targetPath || '/';
+                    
+                    // If we have targetHost, construct full URL
+                    if (monitor.targetHost) {
+                      const constructedUrl = `${protocol}://${host}${path}`;
+                      return constructedUrl;
+                    }
+                    
+                    // Otherwise use the url field
+                    return monitor.url;
                   })()}
-                </span>
+                </code>
               </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>Every 30 seconds</span>
+              <div className="flex items-center gap-1 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-800"
+                  onClick={() => {
+                    const protocol = (monitor.monitorType || 'http').toLowerCase();
+                    const host = monitor.targetHost || monitor.url;
+                    const path = monitor.targetPath || '/';
+                    const urlToCopy = monitor.targetHost 
+                      ? `${protocol}://${host}${path}`
+                      : monitor.url;
+                    navigator.clipboard.writeText(urlToCopy);
+                  }}
+                  title="Copy URL"
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-800"
+                  onClick={() => {
+                    const protocol = (monitor.monitorType || 'http').toLowerCase();
+                    const host = monitor.targetHost || monitor.url;
+                    const path = monitor.targetPath || '/';
+                    const urlToOpen = monitor.targetHost 
+                      ? `${protocol}://${host}${path}`
+                      : monitor.url;
+                    window.open(urlToOpen, '_blank');
+                  }}
+                  title="Open URL in new tab"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </Button>
               </div>
             </div>
           </div>
@@ -733,69 +795,326 @@ const MonitorDetailContent: React.FC = () => {
       {/* Main Content Area - Checkly Style */}
       <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Time Range Filter */}
-        <div className="flex items-center justify-end gap-2 mb-6">
-          <Button
-            variant={availabilityTimeRange === '24h' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => {
-              setAvailabilityTimeRange('24h');
-              setShowCustomDatePicker(false);
-            }}
-            className="font-medium"
-          >
-            24 HOURS
-          </Button>
-          <Button
-            variant={availabilityTimeRange === '7d' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => {
-              setAvailabilityTimeRange('7d');
-              setShowCustomDatePicker(false);
-            }}
-            className="font-medium"
-          >
-            7 DAYS
-          </Button>
-          <Button
-            variant={availabilityTimeRange === '30d' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => {
-              setAvailabilityTimeRange('30d');
-              setShowCustomDatePicker(false);
-            }}
-            className="font-medium"
-          >
-            30 DAYS
-          </Button>
-          <div className="flex items-center gap-2 ml-4">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-1 flex-wrap">
             <Button
-              variant="ghost"
+              variant={availabilityTimeRange === '5m' ? 'default' : 'ghost'}
               size="sm"
-              onClick={() => {
-                const now = new Date();
-                const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-                navigate(`/monitors`);
-              }}
+              onClick={() => setAvailabilityTimeRange('5m')}
+              className="text-xs h-8"
             >
-              ← Back
+              5 MIN
             </Button>
-            <span className="text-gray-400">|</span>
-            <span className="text-sm text-gray-600">
-              {(() => {
-                const pages = Math.ceil(filteredHistory.length / 100);
-                return `1 of ${Math.max(pages, 2)}`;
-              })()}
-            </span>
-            <Button variant="ghost" size="sm" disabled>
-              →
+            <Button
+              variant={availabilityTimeRange === '15m' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setAvailabilityTimeRange('15m')}
+              className="text-xs h-8"
+            >
+              15 MIN
             </Button>
+            <Button
+              variant={availabilityTimeRange === '30m' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setAvailabilityTimeRange('30m')}
+              className="text-xs h-8"
+            >
+              30 MIN
+            </Button>
+            <Button
+              variant={availabilityTimeRange === '1h' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setAvailabilityTimeRange('1h')}
+              className="text-xs h-8"
+            >
+              1 HOUR
+            </Button>
+            <Button
+              variant={availabilityTimeRange === '4h' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setAvailabilityTimeRange('4h')}
+              className="text-xs h-8"
+            >
+              4 HOURS
+            </Button>
+            <Button
+              variant={availabilityTimeRange === '24h' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setAvailabilityTimeRange('24h')}
+              className="text-xs h-8"
+            >
+              24 HOURS
+            </Button>
+            <Button
+              variant={availabilityTimeRange === '2d' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setAvailabilityTimeRange('2d')}
+              className="text-xs h-8"
+            >
+              2 DAYS
+            </Button>
+            <Button
+              variant={availabilityTimeRange === '7d' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setAvailabilityTimeRange('7d')}
+              className="text-xs h-8"
+            >
+              1 WEEK
+            </Button>
+            <Button
+              variant={availabilityTimeRange === '30d' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setAvailabilityTimeRange('30d')}
+              className="text-xs h-8"
+            >
+              1 MONTH
+            </Button>
+          </div>
+          
+          {/* Region Multi-Select Filter */}
+          <div className="flex items-center gap-2">
+            <Label className="text-xs text-gray-400">
+              Regions:
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs min-w-[200px] justify-between"
+                >
+                  <span className="truncate">
+                    {selectedDatacenters.includes('all')
+                      ? 'All Regions'
+                      : selectedDatacenters.length === 0
+                      ? 'Select regions'
+                      : selectedDatacenters.length === 1
+                      ? selectedDatacenters[0]
+                      : `${selectedDatacenters.length} selected`}
+                  </span>
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0" align="start">
+                <div className="max-h-[300px] overflow-auto p-2">
+                  <div className="space-y-2">
+                    {/* All Regions Option */}
+                    <div className="flex items-center space-x-2 p-2 hover:bg-accent rounded-sm cursor-pointer">
+                      <Checkbox
+                        id="dc-all"
+                        checked={selectedDatacenters.includes('all')}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedDatacenters(['all']);
+                          } else {
+                            setSelectedDatacenters([]);
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor="dc-all"
+                        className="text-sm font-medium cursor-pointer flex-1"
+                      >
+                        All Regions
+                      </label>
+                    </div>
+                    
+                    <div className="border-t" />
+                    
+                    {/* Individual Regions */}
+                    {(() => {
+                      const uniqueDatacenters = Array.from(
+                        new Set(history.map(item => item.agentRegion).filter(Boolean))
+                      ).sort();
+                      
+                      return uniqueDatacenters.map((dc) => (
+                        <div
+                          key={dc}
+                          className="flex items-center space-x-2 p-2 hover:bg-accent rounded-sm cursor-pointer"
+                        >
+                          <Checkbox
+                            id={`dc-${dc}`}
+                            checked={!selectedDatacenters.includes('all') && selectedDatacenters.includes(dc!)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                // Remove 'all' and add this region
+                                const newSelection = selectedDatacenters.filter(d => d !== 'all');
+                                if (!newSelection.includes(dc!)) {
+                                  newSelection.push(dc!);
+                                }
+                                setSelectedDatacenters(newSelection.length > 0 ? newSelection : [dc!]);
+                              } else {
+                                // Remove this region
+                                const newSelection = selectedDatacenters.filter(d => d !== dc);
+                                setSelectedDatacenters(newSelection.length > 0 ? newSelection : ['all']);
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor={`dc-${dc}`}
+                            className="text-sm cursor-pointer flex-1"
+                          >
+                            {dc}
+                          </label>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
-        {/* Monitor Cards Grouped by Datacenter */}
+        {/* Performance Comparison Line Chart */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base font-medium">
+              Region Performance Comparison
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Response time trends across regions with threshold indicators
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              const warningThreshold = monitor?.warningThresholdMs || 500;
+              const criticalThreshold = monitor?.criticalThresholdMs || 1000;
+              
+              // Get unique regions
+              const uniqueDatacenters = Array.from(
+                new Set(filteredHistory.map(item => item.agentRegion).filter(Boolean))
+              ).sort();
+              
+              // Generate colors for each region
+              const datacenterColors = [
+                '#3b82f6', // blue
+                '#10b981', // green
+                '#f59e0b', // amber
+                '#8b5cf6', // purple
+                '#ec4899', // pink
+                '#06b6d4', // cyan
+                '#f97316', // orange
+              ];
+              
+              // Create time buckets
+              const { startTime, endTime } = getTimeRange();
+              const timeRange = endTime.getTime() - startTime.getTime();
+              const numBuckets = 50;
+              const bucketSize = timeRange / numBuckets;
+              
+              // Prepare data points for each region
+              const lineChartData = Array.from({ length: numBuckets }, (_, i) => {
+                const bucketStart = startTime.getTime() + (i * bucketSize);
+                const bucketEnd = bucketStart + bucketSize;
+                
+                const dataPoint: any = {
+                  time: new Date(bucketStart).toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: false 
+                  }),
+                  warningThreshold,
+                  criticalThreshold,
+                };
+                
+                // Calculate average response time for each region in this bucket
+                uniqueDatacenters.forEach((dc) => {
+                  const dcRecords = filteredHistory.filter(record => {
+                    const recordTime = new Date(record.executedAt).getTime();
+                    return record.agentRegion === dc && 
+                           recordTime >= bucketStart && 
+                           recordTime < bucketEnd &&
+                           record.success &&
+                           record.responseTime;
+                  });
+                  
+                  if (dcRecords.length > 0) {
+                    const avgResponseTime = dcRecords.reduce((sum, r) => sum + (r.responseTime || 0), 0) / dcRecords.length;
+                    dataPoint[dc!] = Math.round(avgResponseTime);
+                  } else {
+                    dataPoint[dc!] = null;
+                  }
+                });
+                
+                return dataPoint;
+              });
+              
+              return (
+                <ResponsiveContainer width="100%" height={300}>
+                  <RechartsLineChart data={lineChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis 
+                      dataKey="time" 
+                      stroke="#6b7280"
+                      tick={{ fontSize: 11 }}
+                      interval="preserveStartEnd"
+                    />
+                    <YAxis 
+                      stroke="#6b7280"
+                      tick={{ fontSize: 11 }}
+                      label={{ value: 'Response Time (ms)', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#6b7280' } }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                      }}
+                      labelStyle={{ color: '#374151', fontWeight: 'bold' }}
+                    />
+                    <Legend 
+                      wrapperStyle={{ fontSize: '12px' }}
+                      iconType="line"
+                    />
+                    
+                    {/* Threshold Lines (Dotted) */}
+                    <Line
+                      type="monotone"
+                      dataKey="warningThreshold"
+                      stroke="#f59e0b"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      dot={false}
+                      name="Warning Threshold"
+                      isAnimationActive={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="criticalThreshold"
+                      stroke="#ef4444"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      dot={false}
+                      name="Critical Threshold"
+                      isAnimationActive={false}
+                    />
+                    
+                    {/* Region Performance Lines (Solid) */}
+                    {uniqueDatacenters.map((dc, index) => (
+                      <Line
+                        key={dc}
+                        type="monotone"
+                        dataKey={dc!}
+                        stroke={datacenterColors[index % datacenterColors.length]}
+                        strokeWidth={2}
+                        dot={{ r: 2 }}
+                        connectNulls
+                        name={dc!}
+                      />
+                    ))}
+                  </RechartsLineChart>
+                </ResponsiveContainer>
+              );
+            })()}
+          </CardContent>
+        </Card>
+
+        {/* Monitor Cards Grouped by Region */}
         <div className="space-y-4">
           {(() => {
-            // Group history by datacenter
+            // Group history by region
             const datacenterGroups = filteredHistory.reduce((acc, record) => {
               const dc = record.agentRegion || 'unknown';
               if (!acc[dc]) {
@@ -806,7 +1125,7 @@ const MonitorDetailContent: React.FC = () => {
             }, {} as Record<string, MonitorHistory[]>);
 
             return Object.entries(datacenterGroups).map(([datacenter, records]) => {
-              // Calculate metrics for this datacenter
+              // Calculate metrics for this region
               const successCount = records.filter(r => r.success).length;
               const totalCount = records.length;
               const availability = totalCount > 0 ? ((successCount / totalCount) * 100).toFixed(0) : '100';
@@ -825,7 +1144,29 @@ const MonitorDetailContent: React.FC = () => {
               // Determine if there are any issues
               const hasFailures = successCount < totalCount;
               const warningThreshold = monitor?.warningThresholdMs || 500;
+              const criticalThreshold = monitor?.criticalThresholdMs || 1000;
               const hasSlowResponses = p99 > warningThreshold;
+              
+              // Calculate status counts
+              let healthyCount = 0;
+              let warningCount = 0;
+              let criticalCount = 0;
+              let failedCount = 0;
+              
+              records.forEach(r => {
+                if (!r.success) {
+                  failedCount++;
+                } else {
+                  const rt = r.responseTime || 0;
+                  if (rt >= criticalThreshold) {
+                    criticalCount++;
+                  } else if (rt >= warningThreshold) {
+                    warningCount++;
+                  } else {
+                    healthyCount++;
+                  }
+                }
+              });
               
               // Calculate change percentage (mock for now)
               const changePercent = '+0.1';
@@ -846,11 +1187,17 @@ const MonitorDetailContent: React.FC = () => {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {monitor?.monitorName || 'API Check'}
+                          {datacenter}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge variant="secondary" className="text-xs font-normal">
-                            API
+                            {(() => {
+                              // Get agentId from the first record
+                              const agentId = records.length > 0 && records[0].agentId 
+                                ? records[0].agentId 
+                                : `${datacenter}-agent`;
+                              return agentId;
+                            })()}
                           </Badge>
                           <div className="flex items-center gap-1 text-xs text-gray-500">
                             <Clock className="w-3 h-3" />
@@ -879,6 +1226,33 @@ const MonitorDetailContent: React.FC = () => {
                       <div>
                         <div className="text-xs text-gray-500 uppercase mb-1">Availability</div>
                         <div className="text-3xl font-bold text-gray-900">{availability}<span className="text-base font-normal">%</span></div>
+                        {/* Status Dots */}
+                        <div className="flex items-center gap-3 mt-2">
+                          {healthyCount > 0 && (
+                            <div className="flex items-center gap-1">
+                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                              <span className="text-xs text-gray-600">{healthyCount}</span>
+                            </div>
+                          )}
+                          {warningCount > 0 && (
+                            <div className="flex items-center gap-1">
+                              <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                              <span className="text-xs text-gray-600">{warningCount}</span>
+                            </div>
+                          )}
+                          {criticalCount > 0 && (
+                            <div className="flex items-center gap-1">
+                              <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                              <span className="text-xs text-gray-600">{criticalCount}</span>
+                            </div>
+                          )}
+                          {failedCount > 0 && (
+                            <div className="flex items-center gap-1">
+                              <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                              <span className="text-xs text-gray-600">{failedCount}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div>
                         <div className="text-xs text-gray-500 uppercase mb-1">P95</div>
@@ -898,71 +1272,177 @@ const MonitorDetailContent: React.FC = () => {
                   
                   {/* Bar Chart Visualization */}
                   <div className="relative">
-                    <div className="flex items-end gap-0.5 h-32 mb-2">
-                      {(() => {
-                        // Create time buckets for visualization
-                        const now = new Date();
-                        const timeRangeMs = availabilityTimeRange === '24h' ? 24 * 60 * 60 * 1000 :
-                                          availabilityTimeRange === '7d' ? 7 * 24 * 60 * 60 * 1000 :
-                                          30 * 24 * 60 * 60 * 1000;
-                        const startTime = new Date(now.getTime() - timeRangeMs);
-                        
-                        // Determine bucket size based on range
-                        const numBuckets = 50;
-                        const bucketSize = timeRangeMs / numBuckets;
-                        
-                        const buckets = Array.from({ length: numBuckets }, (_, i) => {
-                          const bucketStart = startTime.getTime() + i * bucketSize;
-                          const bucketEnd = bucketStart + bucketSize;
+                    <ResponsiveContainer width="100%" height={160}>
+                      <BarChart
+                        data={(() => {
+                          // Create time buckets for visualization
+                          const now = new Date();
                           
-                          const bucketRecords = records.filter(r => {
-                            const recordTime = new Date(r.executedAt).getTime();
-                            return recordTime >= bucketStart && recordTime < bucketEnd;
+                          // Calculate time range in milliseconds
+                          let timeRangeMs: number;
+                          switch(availabilityTimeRange) {
+                            case '5m':
+                              timeRangeMs = 5 * 60 * 1000;
+                              break;
+                            case '15m':
+                              timeRangeMs = 15 * 60 * 1000;
+                              break;
+                            case '30m':
+                              timeRangeMs = 30 * 60 * 1000;
+                              break;
+                            case '1h':
+                              timeRangeMs = 60 * 60 * 1000;
+                              break;
+                            case '4h':
+                              timeRangeMs = 4 * 60 * 60 * 1000;
+                              break;
+                            case '24h':
+                              timeRangeMs = 24 * 60 * 60 * 1000;
+                              break;
+                            case '2d':
+                              timeRangeMs = 2 * 24 * 60 * 60 * 1000;
+                              break;
+                            case '7d':
+                              timeRangeMs = 7 * 24 * 60 * 60 * 1000;
+                              break;
+                            case '30d':
+                              timeRangeMs = 30 * 24 * 60 * 60 * 1000;
+                              break;
+                            default:
+                              timeRangeMs = 24 * 60 * 60 * 1000;
+                          }
+                          
+                          const startTime = new Date(now.getTime() - timeRangeMs);
+                          
+                          const numBuckets = 50;
+                          const bucketSize = timeRangeMs / numBuckets;
+                          
+                          return Array.from({ length: numBuckets }, (_, i) => {
+                            const bucketStart = startTime.getTime() + i * bucketSize;
+                            const bucketEnd = bucketStart + bucketSize;
+                            const bucketStartDate = new Date(bucketStart);
+                            
+                            const bucketRecords = records.filter(r => {
+                              const recordTime = new Date(r.executedAt).getTime();
+                              return recordTime >= bucketStart && recordTime < bucketEnd;
+                            });
+                            
+                            // Count by status
+                            let healthy = 0;
+                            let warning = 0;
+                            let critical = 0;
+                            let failed = 0;
+                            
+                            bucketRecords.forEach(r => {
+                              if (!r.success) {
+                                failed++;
+                              } else {
+                                const warningThreshold = monitor?.warningThresholdMs || 500;
+                                const criticalThreshold = monitor?.criticalThresholdMs || 1000;
+                                const rt = r.responseTime || 0;
+                                
+                                if (rt >= criticalThreshold) {
+                                  critical++;
+                                } else if (rt >= warningThreshold) {
+                                  warning++;
+                                } else {
+                                  healthy++;
+                                }
+                              }
+                            });
+                            
+                            return {
+                              index: i,
+                              time: bucketStartDate.toLocaleTimeString([], { 
+                                hour: '2-digit', 
+                                minute: '2-digit',
+                                hour12: false 
+                              }),
+                              timestamp: bucketStartDate.toLocaleString(),
+                              healthy,
+                              warning,
+                              critical,
+                              failed,
+                              total: bucketRecords.length
+                            };
                           });
-                          
-                          const bucketSuccess = bucketRecords.filter(r => r.success).length;
-                          const bucketTotal = bucketRecords.length;
-                          
-                          return {
-                            success: bucketSuccess,
-                            total: bucketTotal,
-                            hasData: bucketTotal > 0
-                          };
-                        });
-                        
-                        const maxCount = Math.max(...buckets.map(b => b.total), 1);
-                        
-                        return buckets.map((bucket, idx) => {
-                          const height = bucket.hasData ? Math.max((bucket.total / maxCount) * 100, 10) : 0;
-                          const allSuccess = bucket.total > 0 && bucket.success === bucket.total;
-                          
-                          return (
-                            <div
-                              key={idx}
-                              className="flex-1 rounded-sm transition-all hover:opacity-80 cursor-pointer relative group"
-                              style={{
-                                height: `${height}%`,
-                                backgroundColor: allSuccess ? '#10b981' : bucket.hasData ? '#ef4444' : '#e5e7eb',
-                                minHeight: bucket.hasData ? '8px' : '4px'
-                              }}
-                              title={bucket.hasData ? `${bucket.success}/${bucket.total} successful` : 'No data'}
-                            />
-                          );
-                        });
-                      })()}
-                    </div>
+                        })()}
+                        margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                        <XAxis 
+                          dataKey="time" 
+                          stroke="#6b7280"
+                          tick={{ fill: '#6b7280', fontSize: 10 }}
+                          interval="preserveStartEnd"
+                          angle={0}
+                        />
+                        <YAxis 
+                          stroke="#9ca3af"
+                          tick={{ fill: '#9ca3af', fontSize: 11 }}
+                          width={35}
+                        />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-gray-900 text-white text-xs rounded-lg shadow-lg p-3">
+                                  <div className="font-semibold mb-1">{data.timestamp}</div>
+                                  <div className="font-semibold mb-2">Checks: {data.total}</div>
+                                  {data.healthy > 0 && (
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#10b981' }} />
+                                      <span>Healthy: {data.healthy}</span>
+                                    </div>
+                                  )}
+                                  {data.warning > 0 && (
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#fbbf24' }} />
+                                      <span>Warning: {data.warning}</span>
+                                    </div>
+                                  )}
+                                  {data.critical > 0 && (
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#f97316' }} />
+                                      <span>Critical: {data.critical}</span>
+                                    </div>
+                                  )}
+                                  {data.failed > 0 && (
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#ef4444' }} />
+                                      <span>Failed: {data.failed}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Bar dataKey="healthy" stackId="a" fill="#10b981" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="warning" stackId="a" fill="#fbbf24" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="critical" stackId="a" fill="#f97316" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="failed" stackId="a" fill="#ef4444" radius={[2, 2, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
                     
                     {/* Time Labels */}
-                    <div className="flex justify-between text-xs text-gray-500">
+                    <div className="flex justify-between text-xs text-gray-500 mt-1 ml-9">
                       <span>
                         {(() => {
-                          const timeRangeMs = availabilityTimeRange === '24h' ? 24 * 60 * 60 * 1000 :
-                                            availabilityTimeRange === '7d' ? 7 * 24 * 60 * 60 * 1000 :
-                                            30 * 24 * 60 * 60 * 1000;
-                          const start = new Date(new Date().getTime() - timeRangeMs);
-                          return availabilityTimeRange === '24h' ? 'about 4 hours ago' :
-                                 availabilityTimeRange === '7d' ? 'about 7 days ago' :
-                                 'about 30 days ago';
+                          switch(availabilityTimeRange) {
+                            case '5m': return '5 minutes ago';
+                            case '15m': return '15 minutes ago';
+                            case '30m': return '30 minutes ago';
+                            case '1h': return '1 hour ago';
+                            case '4h': return '4 hours ago';
+                            case '24h': return 'about 4 hours ago';
+                            case '2d': return '2 days ago';
+                            case '7d': return 'about 7 days ago';
+                            case '30d': return 'about 30 days ago';
+                            default: return 'Last period';
+                          }
                         })()}
                       </span>
                       <span>Last checks</span>
