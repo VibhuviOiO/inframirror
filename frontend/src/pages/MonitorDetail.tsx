@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox";
 import { 
   ArrowLeft, 
+  ChevronDown,
   Activity, 
   Clock, 
   Globe, 
@@ -45,7 +46,6 @@ import {
   Download,
   Share,
   Star,
-  ChevronDown,
   AlertTriangle,
   Copy,
   ExternalLink
@@ -68,8 +68,9 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend
+  Legend,
 } from 'recharts';
+import { MonitorContentDetails } from '@/components/monitoring/components/MonitorContentDetails';
 
 interface MonitorHistory {
   id: number;
@@ -77,6 +78,15 @@ interface MonitorHistory {
   success: boolean;
   responseTime: number;
   responseStatusCode?: number;
+  responseSizeBytes?: number;
+  responseServer?: string;
+  responseCacheStatus?: string;
+  dnsLookupMs?: number;
+  tcpConnectMs?: number;
+  tlsHandshakeMs?: number;
+  timeToFirstByteMs?: number;
+  rawResponseHeaders?: any;
+  rawResponseBody?: any;
   errorType?: string;
   errorMessage?: string;
   agentRegion?: string;
@@ -123,6 +133,8 @@ const MonitorDetailContent: React.FC = () => {
   const [selectedDatacenters, setSelectedDatacenters] = useState<string[]>(['all']);
   const [hoveredPerfPoint, setHoveredPerfPoint] = useState<number | null>(null);
   const [perfChartMousePos, setPerfChartMousePos] = useState<{ x: number; y: number } | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<MonitorHistory | null>(null);
+  const [selectedDatacenterRecords, setSelectedDatacenterRecords] = useState<MonitorHistory[] | null>(null);
   
   // Helper to get current time range
   const getTimeRange = React.useCallback(() => {
@@ -569,6 +581,7 @@ const MonitorDetailContent: React.FC = () => {
       if (historyResponse.ok) {
         const historyData = await historyResponse.json();
         const historyArray = Array.isArray(historyData) ? historyData : [];
+        console.log('API Response - First few records:', historyArray.slice(0, 3));
         setHistory(historyArray);
         
         // Extract monitor details from the latest history record
@@ -779,7 +792,8 @@ const MonitorDetailContent: React.FC = () => {
         </div>
 
         {/* Main Content Area - Checkly Style */}
-        <div className="max-w-8xl mx-auto">
+        <div className="flex gap-6">
+          <div className="flex-1 max-w-8xl mx-auto">
         {/* Time Range Filter */}
         <div className="flex items-center justify-between mb-6">
           {/* Region Multi-Select Filter */}
@@ -1063,12 +1077,13 @@ const MonitorDetailContent: React.FC = () => {
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#ffffff',
-                        border: '1px solid #e5e7eb',
+                        backgroundColor: '#1f2937',
+                        border: '1px solid #374151',
                         borderRadius: '6px',
                         fontSize: '12px',
+                        color: '#ffffff',
                       }}
-                      labelStyle={{ color: '#374151', fontWeight: 'bold' }}
+                      labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
                     />
                     
                     {/* Threshold Lines (Dotted) */}
@@ -1188,10 +1203,21 @@ const MonitorDetailContent: React.FC = () => {
                         )}
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
                           {datacenter}
                         </h3>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedDatacenterRecords(records);
+                              setSelectedRecord(null); // Clear any previous selection
+                            }}
+                            className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            View History
+                          </Button>
                           <Badge variant="secondary" className="text-xs font-normal">
                             {(() => {
                               // Get agentId from the first record
@@ -1434,6 +1460,16 @@ const MonitorDetailContent: React.FC = () => {
             });
           })()}
         </div>
+
+        {/* Modal for Selected Record Details */}
+        <MonitorContentDetails
+          records={selectedDatacenterRecords || []}
+          monitor={monitor}
+          isOpen={!!selectedDatacenterRecords}
+          onClose={() => setSelectedDatacenterRecords(null)}
+          initialSelectedRecord={selectedRecord}
+        />
+      </div>
       </div>
     </DashboardLayout>
   );
