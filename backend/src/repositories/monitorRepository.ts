@@ -98,18 +98,18 @@ export async function getLatestForEachMonitor(filters?: MonitorFilters) {
     };
   }
 
-  // Get all unique monitor IDs
-  const uniqueMonitors = await prisma.monitors.groupBy({
-    by: ['monitorId'],
+  // Get all unique combinations of monitorId and agentRegion
+  const uniqueMonitorRegions = await prisma.monitors.groupBy({
+    by: ['monitorId', 'agentRegion'],
     where: whereClause
   });
 
-  // Get the latest record for each monitor
+  // Get the latest record for each monitorId + agentRegion combination
   const latestMonitors = await Promise.all(
-    uniqueMonitors.map(async ({ monitorId }) => {
+    uniqueMonitorRegions.map(async ({ monitorId, agentRegion: region }) => {
       const monitorWhere: any = { monitorId };
+      if (region !== null) monitorWhere.agentRegion = region;
       if (monitorType) monitorWhere.monitorType = monitorType as any;
-      if (agentRegion) monitorWhere.agentRegion = agentRegion;
       if (success !== undefined) monitorWhere.success = success;
       if (targetHost) {
         monitorWhere.targetHost = {
