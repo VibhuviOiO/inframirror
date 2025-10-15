@@ -82,6 +82,20 @@ serviceGroups:
             thresholds:
               warning: 500    # Simple lookup should be fast
               critical: 1000
+      - name: "SpaceX API"
+        baseUrl: "https://api.spacexdata.com"
+        monitors:
+          - name: "us-east-1-spacex-launches"
+            url: "/v5/launches/latest"
+            method: "GET"
+            type: "HTTPS"
+            interval: 120
+            timeout: 20
+            retryCount: 2
+            include_response_body: true
+            thresholds:
+              warning: 600    # Custom warning threshold (ms)
+              critical: 1200  # Custom critical threshold (ms)
 monitors:
   - name: "us-west-2-raspberry-pi-tcp-80000"
     host: "192.168.0.104"

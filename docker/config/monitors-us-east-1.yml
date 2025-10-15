@@ -28,6 +28,43 @@ serviceGroups:
             thresholds:
               warning: 300    # Custom warning threshold (ms)
               critical: 800   # Custom critical threshold (ms)
+      - name: "Open Library"
+        description: "Open Library API"
+        baseUrl: "https://openlibrary.org"
+        monitors:
+          - name: "open-library-recent-changes"
+            url: "/recentchanges.json?limit=5"
+            method: "GET"
+            type: "HTTPS"
+            interval: 150
+            timeout: 15
+            retryCount: 2
+            include_response_body: false
+            thresholds:
+              warning: 700    # Library API - moderate expectation
+              critical: 1200
+          - name: "open-library-search"
+            url: "/search.json?q=the+lord+of+the+rings"
+            method: "GET"
+            type: "HTTPS"
+            interval: 200
+            timeout: 20
+            retryCount: 2
+            include_response_body: false
+            thresholds:
+              warning: 1000   # Search operations can be slower
+              critical: 2000
+          - name: "open-library-book-details"
+            url: "/works/OL82563W.json"
+            method: "GET"
+            type: "HTTPS"
+            interval: 250
+            timeout: 15
+            retryCount: 2
+            include_response_body: true
+            thresholds:
+              warning: 500    # Simple lookup should be fast
+              critical: 1000
       - name: "SpaceX API"
         baseUrl: "https://api.spacexdata.com"
         monitors:

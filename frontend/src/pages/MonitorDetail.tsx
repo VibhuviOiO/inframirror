@@ -28,6 +28,8 @@ import {
   Search,
   Network,
   Server,
+  X,
+  XCircle,
   Eye,
   EyeOff,
   Settings,
@@ -42,7 +44,6 @@ import {
   Share,
   Star,
   ChevronDown,
-  XCircle,
   AlertTriangle
 } from 'lucide-react';
 import {
@@ -109,35 +110,35 @@ const MonitorDetailContent: React.FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [availabilityTimeRange, setAvailabilityTimeRange] = useState('24h');
-  const [customStartDate, setCustomStartDate] = useState('');
-  const [customEndDate, setCustomEndDate] = useState('');
-  const [customStartTime, setCustomStartTime] = useState('');
-  const [customEndTime, setCustomEndTime] = useState('');
+  const [customStartDateTime, setCustomStartDateTime] = useState<Date | null>(null);
+  const [customEndDateTime, setCustomEndDateTime] = useState<Date | null>(null);
   const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
   const [selectedDatacenter, setSelectedDatacenter] = useState<string>('all');
-
-  // Filter history based on availability time range and datacenter
-  const filteredHistory = React.useMemo(() => {
+  const [hoveredPerfPoint, setHoveredPerfPoint] = useState<number | null>(null);
+  const [perfChartMousePos, setPerfChartMousePos] = useState<{ x: number; y: number } | null>(null);
+  
+  // Helper to get current time range
+  const getTimeRange = React.useCallback(() => {
     const now = new Date();
-    let startTime = new Date();
-    let endTime = now;
+    let startTime: Date;
+    let endTime: Date = now;
 
-    if (availabilityTimeRange === 'custom' && customStartDate && customEndDate) {
-      // Handle custom date range
-      const startDateTime = customStartTime 
-        ? `${customStartDate}T${customStartTime}` 
-        : `${customStartDate}T00:00:00`;
-      const endDateTime = customEndTime 
-        ? `${customEndDate}T${customEndTime}` 
-        : `${customEndDate}T23:59:59`;
-      
-      startTime = new Date(startDateTime);
-      endTime = new Date(endDateTime);
+    if (availabilityTimeRange === 'custom') {
+      if (customStartDateTime && customEndDateTime) {
+        startTime = customStartDateTime;
+        endTime = customEndDateTime;
+      } else {
+        // Default to last 24 hours if custom not set
+        startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      }
     } else {
       // Handle predefined time ranges
       switch (availabilityTimeRange) {
         case '1h':
           startTime = new Date(now.getTime() - 1 * 60 * 60 * 1000);
+          break;
+        case '3h':
+          startTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
           break;
         case '6h':
           startTime = new Date(now.getTime() - 6 * 60 * 60 * 1000);
@@ -156,13 +157,20 @@ const MonitorDetailContent: React.FC = () => {
       }
     }
 
+    return { startTime, endTime };
+  }, [availabilityTimeRange, customStartDateTime, customEndDateTime]);
+
+  // Filter history based on time range and datacenter
+  const filteredHistory = React.useMemo(() => {
+    const { startTime, endTime } = getTimeRange();
+
     return history.filter(item => {
       const itemDate = new Date(item.executedAt);
       const timeInRange = itemDate >= startTime && itemDate <= endTime;
       const datacenterMatch = selectedDatacenter === 'all' || item.agentRegion === selectedDatacenter;
       return timeInRange && datacenterMatch;
     });
-  }, [history, availabilityTimeRange, customStartDate, customEndDate, customStartTime, customEndTime, selectedDatacenter]);
+  }, [history, getTimeRange, selectedDatacenter]);
 
   // Get unique datacenters for dropdown
   const uniqueDatacenters = React.useMemo(() => {
@@ -170,102 +178,356 @@ const MonitorDetailContent: React.FC = () => {
     return datacenters.sort();
   }, [history]);
 
-  // Prepare chart data for histogram with more granular time buckets
+  // Prepare chart data - organized by time buckets with individual calls
   const chartData = React.useMemo(() => {
-    if (filteredHistory.length === 0) return [];
+    console.log('Computing chartData for filteredHistory:', filteredHistory.length);
     
-    // Create more time buckets for better visualization
-    const now = new Date();
-    const buckets: Record<string, { total: number, successful: number, errors: number }> = {};
+    if (filteredHistory.length === 0) {
+      console.log('Returning empty chartData');
+      return { buckets: [], calls: [] };
+    }
+    
+    // Sort history by execution time
+    const sortedHistory = [...filteredHistory].sort((a, b) => 
+      new Date(a.executedAt).getTime() - new Date(b.executedAt).getTime()
+    );
+    
+    // Determine bucket size based on time range
     let bucketSize: number;
-    let bucketCount: number;
+    let bucketLabel: (date: Date) => string;
     
-    // Determine bucket size based on time range to get ~50-100 bars
     switch (availabilityTimeRange) {
       case '1h':
-        bucketSize = 2 * 60 * 1000; // 2 minutes
-        bucketCount = 30;
+        bucketSize = 5 * 60 * 1000; // 5 minutes
+        bucketLabel = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         break;
       case '6h':
-        bucketSize = 5 * 60 * 1000; // 5 minutes  
-        bucketCount = 72;
+        bucketSize = 15 * 60 * 1000; // 15 minutes
+        bucketLabel = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         break;
       case '24h':
-        bucketSize = 30 * 60 * 1000; // 30 minutes
-        bucketCount = 48;
+        bucketSize = 60 * 60 * 1000; // 1 hour
+        bucketLabel = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         break;
       case '7d':
-        bucketSize = 3 * 60 * 60 * 1000; // 3 hours
-        bucketCount = 56;
+        bucketSize = 6 * 60 * 60 * 1000; // 6 hours
+        bucketLabel = (date) => date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit' });
         break;
       case '30d':
-        bucketSize = 12 * 60 * 60 * 1000; // 12 hours
-        bucketCount = 60;
+        bucketSize = 24 * 60 * 60 * 1000; // 1 day
+        bucketLabel = (date) => date.toLocaleDateString([], { month: 'short', day: 'numeric' });
         break;
       default:
-        bucketSize = 30 * 60 * 1000; // 30 minutes
-        bucketCount = 48;
+        bucketSize = 60 * 60 * 1000; // 1 hour
+        bucketLabel = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
     
-    // Generate time buckets
-    const startTime = new Date(now.getTime() - (bucketCount * bucketSize));
-    for (let i = 0; i < bucketCount; i++) {
-      const bucketStart = new Date(startTime.getTime() + (i * bucketSize));
-      const bucketKey = bucketStart.toISOString();
-      buckets[bucketKey] = { total: 0, successful: 0, errors: 0 };
+    // Create buckets
+    const buckets: Array<{
+      startTime: Date;
+      endTime: Date;
+      label: string;
+      calls: Array<any>;
+      successCount: number;
+      failureCount: number;
+      warningCount: number;
+      criticalCount: number;
+    }> = [];
+    
+    if (sortedHistory.length > 0) {
+      const firstTime = new Date(sortedHistory[0].executedAt);
+      const lastTime = new Date(sortedHistory[sortedHistory.length - 1].executedAt);
+      
+      // Round down to bucket boundary
+      const startTime = new Date(Math.floor(firstTime.getTime() / bucketSize) * bucketSize);
+      const endTime = new Date(Math.ceil(lastTime.getTime() / bucketSize) * bucketSize);
+      
+      // Create bucket structure
+      let currentBucketStart = new Date(startTime);
+      while (currentBucketStart < endTime) {
+        const bucketEnd = new Date(currentBucketStart.getTime() + bucketSize);
+        buckets.push({
+          startTime: new Date(currentBucketStart),
+          endTime: bucketEnd,
+          label: bucketLabel(currentBucketStart),
+          calls: [],
+          successCount: 0,
+          failureCount: 0,
+          warningCount: 0,
+          criticalCount: 0
+        });
+        currentBucketStart = bucketEnd;
+      }
     }
     
-    // Fill buckets with data
-    filteredHistory.forEach(item => {
-      const itemTime = new Date(item.executedAt);
-      const bucketIndex = Math.floor((itemTime.getTime() - startTime.getTime()) / bucketSize);
-      if (bucketIndex >= 0 && bucketIndex < bucketCount) {
-        const bucketStart = new Date(startTime.getTime() + (bucketIndex * bucketSize));
-        const bucketKey = bucketStart.toISOString();
-        if (buckets[bucketKey]) {
-          buckets[bucketKey].total++;
-          if (item.success) {
-            buckets[bucketKey].successful++;
-          } else {
-            buckets[bucketKey].errors++;
-          }
+    // Transform each call and assign to buckets
+    const allCalls = sortedHistory.map((item, index) => {
+      const date = new Date(item.executedAt);
+      const warningThreshold = monitor?.warningThresholdMs || 500;
+      const criticalThreshold = monitor?.criticalThresholdMs || 1000;
+      const responseTime = item.responseTime || 0;
+      
+      // Determine color and status
+      let boxColor: string;
+      let status: string;
+      
+      if (!item.success) {
+        boxColor = '#ef4444'; // Red for failed
+        status = 'Failed';
+      } else if (responseTime >= criticalThreshold) {
+        boxColor = '#f97316'; // Orange for critical
+        status = 'Critical';
+      } else if (responseTime >= warningThreshold) {
+        boxColor = '#f59e0b'; // Yellow for warning
+        status = 'Warning';
+      } else {
+        boxColor = '#10b981'; // Green for healthy
+        status = 'Healthy';
+      }
+      
+      const call = {
+        id: item.id,
+        index: index,
+        time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        fullTime: date.toLocaleString(),
+        timestamp: item.executedAt,
+        responseTime: responseTime,
+        success: item.success,
+        statusCode: item.responseStatusCode,
+        region: item.agentRegion,
+        errorType: item.errorType,
+        errorMessage: item.errorMessage,
+        fill: boxColor,
+        status: status,
+        warningThreshold: warningThreshold,
+        criticalThreshold: criticalThreshold,
+      };
+      
+      // Find appropriate bucket
+      const bucketIndex = buckets.findIndex(b => 
+        date >= b.startTime && date < b.endTime
+      );
+      
+      if (bucketIndex >= 0) {
+        buckets[bucketIndex].calls.push(call);
+        if (!item.success) {
+          buckets[bucketIndex].failureCount++;
+        } else if (responseTime >= criticalThreshold) {
+          buckets[bucketIndex].criticalCount++;
+        } else if (responseTime >= warningThreshold) {
+          buckets[bucketIndex].warningCount++;
+        } else {
+          buckets[bucketIndex].successCount++;
         }
+      }
+      
+      return call;
+    });
+    
+    return { buckets, calls: allCalls };
+  }, [filteredHistory, availabilityTimeRange, monitor]);
+
+  // Compute heatmap data: adaptive grid based on call frequency and time range
+  const heatmapData = React.useMemo(() => {
+    if (!filteredHistory || filteredHistory.length === 0) {
+      console.log('No filtered history for heatmap');
+      return { 
+        timePeriods: [], 
+        rows: [], 
+        viewMode: 'minutes',
+        lineChartData: [],
+        avgResponseTime: []
+      };
+    }
+
+    console.log('Computing adaptive heatmap data');
+    
+    // Get time range
+    const range = getTimeRange();
+    const { startTime: rangeStart, endTime: rangeEnd } = range;
+    
+    const totalDurationMs = rangeEnd.getTime() - rangeStart.getTime();
+    const totalHours = totalDurationMs / (1000 * 60 * 60);
+    const totalDays = totalHours / 24;
+    
+    // Calculate average call frequency
+    const avgCallIntervalMs = filteredHistory.length > 1 
+      ? totalDurationMs / filteredHistory.length 
+      : 60000; // default to 60s
+    
+    const avgCallIntervalSeconds = avgCallIntervalMs / 1000;
+    
+    // Determine view mode and granularity based on call frequency and time range
+    let viewMode: 'seconds' | 'minutes' | 'hours' | 'days';
+    let bucketSizeMs: number;
+    let rowCount: number;
+    let rowUnit: string;
+    let bucketLabel: (date: Date) => string;
+    
+    // Adaptive logic based on call frequency
+    if (avgCallIntervalSeconds <= 30 && totalHours <= 1) {
+      // High frequency (≤30s interval) + short range → seconds view
+      viewMode = 'seconds';
+      bucketSizeMs = 60 * 1000; // 1-minute buckets on X-axis
+      rowCount = 60; // 60 seconds on Y-axis
+      rowUnit = 's';
+      bucketLabel = (date: Date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else if (avgCallIntervalSeconds <= 120 && totalHours <= 6) {
+      // Medium frequency (≤2min interval) + medium range → minutes view
+      viewMode = 'minutes';
+      bucketSizeMs = totalHours <= 1 ? 5 * 60 * 1000 : 15 * 60 * 1000;
+      rowCount = 60; // 60 minutes on Y-axis
+      rowUnit = 'm';
+      bucketLabel = (date: Date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else if (totalHours <= 48) {
+      // Hours view for 1-2 days
+      viewMode = 'hours';
+      bucketSizeMs = 60 * 60 * 1000; // 1-hour buckets
+      rowCount = 24; // 24 hours on Y-axis
+      rowUnit = 'h';
+      bucketLabel = (date: Date) => date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit' });
+    } else {
+      // Days view for longer periods
+      viewMode = 'days';
+      bucketSizeMs = 24 * 60 * 60 * 1000; // Daily buckets
+      rowCount = 7; // 7 days of week on Y-axis
+      rowUnit = 'd';
+      bucketLabel = (date: Date) => date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+    
+    // Create time period buckets (X-axis)
+    const timePeriods: Array<{
+      label: string;
+      startTime: Date;
+      endTime: Date;
+      rowData: Map<number, Array<any>>; // row index -> calls
+    }> = [];
+    
+    let currentTime = new Date(rangeStart);
+    while (currentTime < rangeEnd) {
+      const bucketEnd = new Date(Math.min(currentTime.getTime() + bucketSizeMs, rangeEnd.getTime()));
+      timePeriods.push({
+        label: bucketLabel(currentTime),
+        startTime: new Date(currentTime),
+        endTime: bucketEnd,
+        rowData: new Map()
+      });
+      currentTime = bucketEnd;
+    }
+    
+    // Function to get row index based on view mode
+    const getRowIndex = (callTime: Date): number => {
+      if (viewMode === 'seconds') {
+        return callTime.getSeconds(); // 0-59
+      } else if (viewMode === 'minutes') {
+        return callTime.getMinutes(); // 0-59
+      } else if (viewMode === 'hours') {
+        return callTime.getHours(); // 0-23
+      } else { // days
+        return callTime.getDay(); // 0-6 (Sunday-Saturday)
+      }
+    };
+    
+    // Organize calls into time periods and rows
+    filteredHistory.forEach(item => {
+      const callTime = new Date(item.executedAt);
+      const rowIndex = getRowIndex(callTime);
+      
+      // Find the time period bucket
+      const periodIndex = timePeriods.findIndex(p => 
+        callTime >= p.startTime && callTime < p.endTime
+      );
+      
+      if (periodIndex >= 0) {
+        const period = timePeriods[periodIndex];
+        if (!period.rowData.has(rowIndex)) {
+          period.rowData.set(rowIndex, []);
+        }
+        
+        const warningThreshold = monitor?.warningThresholdMs || 500;
+        const criticalThreshold = monitor?.criticalThresholdMs || 1000;
+        const responseTime = item.responseTime || 0;
+        
+        period.rowData.get(rowIndex)!.push({
+          id: item.id,
+          time: callTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+          fullTime: callTime.toLocaleString(),
+          timestamp: item.executedAt,
+          responseTime: responseTime,
+          success: item.success,
+          statusCode: item.responseStatusCode,
+          region: item.agentRegion,
+          errorType: item.errorType,
+          errorMessage: item.errorMessage,
+          warningThreshold,
+          criticalThreshold
+        });
       }
     });
     
-    // Convert to chart data
-    return Object.entries(buckets)
-      .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
-      .map(([timestamp, stats]) => {
-        const date = new Date(timestamp);
-        const successRate = stats.total > 0 ? (stats.successful / stats.total) * 100 : 100;
-        let barColor = '#e5e7eb'; // Gray for no data
-        
-        if (stats.total > 0) {
-          if (successRate >= 100) {
-            barColor = '#10b981'; // Green for 100% success
-          } else if (successRate >= 95) {
-            barColor = '#f59e0b'; // Yellow for 95-99% success
-          } else {
-            barColor = '#ef4444'; // Red for <95% success
-          }
-        }
-        
-        return {
-          time: bucketSize < 3600000 
-            ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            : bucketSize < 86400000
-            ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            : date.toLocaleDateString([], { month: 'short', day: 'numeric' }),
-          fullTime: date.toLocaleString(),
-          count: stats.total,
-          successful: stats.successful,
-          errors: stats.errors,
-          fill: barColor,
-          successRate: Math.round(successRate)
-        };
-      });
-  }, [filteredHistory, availabilityTimeRange]);
+    // Get row label based on view mode
+    const getRowLabel = (index: number): string => {
+      if (viewMode === 'seconds') {
+        return index % 10 === 0 ? `${index}s` : '';
+      } else if (viewMode === 'minutes') {
+        return index % 5 === 0 ? `${index}m` : '';
+      } else if (viewMode === 'hours') {
+        return `${index.toString().padStart(2, '0')}h`;
+      } else { // days
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        return days[index];
+      }
+    };
+    
+    // Create rows based on view mode
+    const rows = Array.from({ length: rowCount }, (_, rowIndex) => ({
+      rowIndex,
+      label: getRowLabel(rowIndex),
+      unit: rowUnit,
+      periods: timePeriods.map(period => ({
+        calls: period.rowData.get(rowIndex) || [],
+        count: (period.rowData.get(rowIndex) || []).length
+      }))
+    }));
+    
+    // Calculate line chart data (average response time per period)
+    const lineChartData = timePeriods.map((period, idx) => {
+      const allCallsInPeriod: any[] = [];
+      period.rowData.forEach(calls => allCallsInPeriod.push(...calls));
+      
+      const avgResponseTime = allCallsInPeriod.length > 0
+        ? allCallsInPeriod.reduce((sum, call) => sum + call.responseTime, 0) / allCallsInPeriod.length
+        : 0;
+      
+      const successRate = allCallsInPeriod.length > 0
+        ? (allCallsInPeriod.filter(c => c.success).length / allCallsInPeriod.length) * 100
+        : 100;
+      
+      return {
+        periodIndex: idx,
+        label: period.label,
+        avgResponseTime: Math.round(avgResponseTime),
+        successRate: Math.round(successRate * 10) / 10,
+        totalCalls: allCallsInPeriod.length,
+        timestamp: period.startTime.getTime()
+      };
+    });
+    
+    console.log('Heatmap computed:', { 
+      viewMode, 
+      timePeriods: timePeriods.length, 
+      rows: rows.length,
+      avgCallInterval: avgCallIntervalSeconds.toFixed(1) + 's'
+    });
+    
+    return { 
+      timePeriods, 
+      rows, 
+      viewMode, 
+      lineChartData,
+      rowUnit 
+    };
+  }, [filteredHistory, availabilityTimeRange, monitor]);
 
   // Auto-refresh effect
   useEffect(() => {
@@ -285,31 +547,30 @@ const MonitorDetailContent: React.FC = () => {
     try {
       setLoading(true);
       
-      // Fetch latest monitor data using the correct endpoint
-      const monitorResponse = await fetch(`/api/monitors/latest/${id}`);
-      if (monitorResponse.ok) {
-        const monitorData = await monitorResponse.json();
-        // Transform the data to match our interface
-        const transformedMonitor = {
-          id: monitorData.id || parseInt(id),
-          monitorName: monitorData.monitorId || `Monitor ${id}`,
-          url: monitorData.targetHost || 'Unknown URL',
-          monitorType: monitorData.monitorType || 'HTTPS',
-          frequency: 60, // Default frequency
-          enabled: true, // Default enabled
-          warningThresholdMs: monitorData.warningThresholdMs,
-          criticalThresholdMs: monitorData.criticalThresholdMs,
-          createdAt: monitorData.executedAt || new Date().toISOString(),
-          updatedAt: monitorData.executedAt || new Date().toISOString()
-        };
-        setMonitor(transformedMonitor);
-      }
-
-      // Fetch monitor history using the correct endpoint
+      // Fetch monitor history - this contains all the data we need
       const historyResponse = await fetch(`/api/monitors/history/${id}?limit=1000`);
       if (historyResponse.ok) {
         const historyData = await historyResponse.json();
-        setHistory(Array.isArray(historyData) ? historyData : []);
+        const historyArray = Array.isArray(historyData) ? historyData : [];
+        setHistory(historyArray);
+        
+        // Extract monitor details from the latest history record
+        if (historyArray.length > 0) {
+          const latestRecord = historyArray[0];
+          const transformedMonitor = {
+            id: latestRecord.monitorId || parseInt(id),
+            monitorName: latestRecord.monitorId || `Monitor ${id}`,
+            url: latestRecord.targetHost || 'Unknown URL',
+            monitorType: latestRecord.monitorType || 'HTTPS',
+            frequency: 60, // Default frequency
+            enabled: true, // Default enabled
+            warningThresholdMs: latestRecord.warningThresholdMs || 500,
+            criticalThresholdMs: latestRecord.criticalThresholdMs || 1000,
+            createdAt: latestRecord.executedAt || new Date().toISOString(),
+            updatedAt: latestRecord.executedAt || new Date().toISOString()
+          };
+          setMonitor(transformedMonitor);
+        }
       }
 
     } catch (error) {
@@ -350,7 +611,7 @@ const MonitorDetailContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <DashboardLayout>
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-6 py-4">
@@ -469,395 +730,255 @@ const MonitorDetailContent: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex h-screen">
-        {/* Left Panel - Main Content */}
-        <div className="flex-1 p-4">
-          {/* Filter Bar */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <Filter className="w-4 h-4 text-gray-500" />
-                  <Button 
-                    variant={availabilityTimeRange === 'custom' ? 'default' : 'outline'} 
-                    size="sm"
-                    onClick={() => {
-                      setShowCustomDatePicker(!showCustomDatePicker);
-                      if (!showCustomDatePicker) {
-                        setAvailabilityTimeRange('custom');
-                      }
-                    }}
-                  >
-                    Custom
-                  </Button>
-                </div>
-                
-                <div className="flex items-center gap-1">
-                  <Button 
-                    variant={availabilityTimeRange === '1h' ? 'default' : 'outline'} 
-                    size="sm"
-                    onClick={() => {
-                      setAvailabilityTimeRange('1h');
-                      setShowCustomDatePicker(false);
-                    }}
-                  >
-                    Today
-                  </Button>
-                  <Button 
-                    variant={availabilityTimeRange === '1h' ? 'default' : 'outline'} 
-                    size="sm"
-                    onClick={() => {
-                      setAvailabilityTimeRange('1h');
-                      setShowCustomDatePicker(false);
-                    }}
-                  >
-                    1hr
-                  </Button>
-                  <Button 
-                    variant={availabilityTimeRange === '6h' ? 'default' : 'outline'} 
-                    size="sm"
-                    onClick={() => {
-                      setAvailabilityTimeRange('6h');
-                      setShowCustomDatePicker(false);
-                    }}
-                  >
-                    3hr
-                  </Button>
-                  <Button 
-                    variant={availabilityTimeRange === '24h' ? 'default' : 'outline'} 
-                    size="sm"
-                    onClick={() => {
-                      setAvailabilityTimeRange('24h');
-                      setShowCustomDatePicker(false);
-                    }}
-                  >
-                    24hr
-                  </Button>
-                  <Button 
-                    variant={availabilityTimeRange === '7d' ? 'default' : 'outline'} 
-                    size="sm"
-                    onClick={() => {
-                      setAvailabilityTimeRange('7d');
-                      setShowCustomDatePicker(false);
-                    }}
-                  >
-                    7d
-                  </Button>
-                  <Button 
-                    variant={availabilityTimeRange === '30d' ? 'default' : 'outline'} 
-                    size="sm"
-                    onClick={() => {
-                      setAvailabilityTimeRange('30d');
-                      setShowCustomDatePicker(false);
-                    }}
-                  >
-                    30d
-                  </Button>
-                </div>
-                
-                <Select value={selectedDatacenter} onValueChange={setSelectedDatacenter}>
-                  <SelectTrigger className="w-48">
-                    <div className="flex items-center gap-2">
-                      <Server className="w-4 h-4 text-gray-500" />
-                      <SelectValue placeholder="All Datacenters" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Datacenters ({uniqueDatacenters.length})</SelectItem>
-                    {uniqueDatacenters.map((datacenter) => (
-                      <SelectItem key={datacenter} value={datacenter}>
-                        {datacenter}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+      {/* Main Content Area - Checkly Style */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* Time Range Filter */}
+        <div className="flex items-center justify-end gap-2 mb-6">
+          <Button
+            variant={availabilityTimeRange === '24h' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => {
+              setAvailabilityTimeRange('24h');
+              setShowCustomDatePicker(false);
+            }}
+            className="font-medium"
+          >
+            24 HOURS
+          </Button>
+          <Button
+            variant={availabilityTimeRange === '7d' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => {
+              setAvailabilityTimeRange('7d');
+              setShowCustomDatePicker(false);
+            }}
+            className="font-medium"
+          >
+            7 DAYS
+          </Button>
+          <Button
+            variant={availabilityTimeRange === '30d' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => {
+              setAvailabilityTimeRange('30d');
+              setShowCustomDatePicker(false);
+            }}
+            className="font-medium"
+          >
+            30 DAYS
+          </Button>
+          <div className="flex items-center gap-2 ml-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const now = new Date();
+                const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+                navigate(`/monitors`);
+              }}
+            >
+              ← Back
+            </Button>
+            <span className="text-gray-400">|</span>
+            <span className="text-sm text-gray-600">
+              {(() => {
+                const pages = Math.ceil(filteredHistory.length / 100);
+                return `1 of ${Math.max(pages, 2)}`;
+              })()}
+            </span>
+            <Button variant="ghost" size="sm" disabled>
+              →
+            </Button>
+          </div>
+        </div>
+
+        {/* Monitor Cards Grouped by Datacenter */}
+        <div className="space-y-4">
+          {(() => {
+            // Group history by datacenter
+            const datacenterGroups = filteredHistory.reduce((acc, record) => {
+              const dc = record.agentRegion || 'unknown';
+              if (!acc[dc]) {
+                acc[dc] = [];
+              }
+              acc[dc].push(record);
+              return acc;
+            }, {} as Record<string, MonitorHistory[]>);
+
+            return Object.entries(datacenterGroups).map(([datacenter, records]) => {
+              // Calculate metrics for this datacenter
+              const successCount = records.filter(r => r.success).length;
+              const totalCount = records.length;
+              const availability = totalCount > 0 ? ((successCount / totalCount) * 100).toFixed(0) : '100';
               
-              <div className="flex items-center gap-3">
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
-                  <CheckCircle className="w-3 h-3 mr-1" />
-                  Passed
-                </Badge>
-                <Badge variant="secondary" className="bg-red-100 text-red-800">
-                  <XCircle className="w-3 h-3 mr-1" />
-                  Failed
-                </Badge>
-                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                  <AlertTriangle className="w-3 h-3 mr-1" />
-                  Degraded
-                </Badge>
-                <Button variant="ghost" size="sm">
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Has retries
-                </Button>
-              </div>
-            </div>
-            
-            {/* Custom Date/Time Picker */}
-            {showCustomDatePicker && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="startDate" className="text-sm font-medium">From</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="startDate"
-                        type="date"
-                        value={customStartDate}
-                        onChange={(e) => setCustomStartDate(e.target.value)}
-                        className="flex-1"
-                      />
-                      <Input
-                        type="time"
-                        value={customStartTime}
-                        onChange={(e) => setCustomStartTime(e.target.value)}
-                        className="w-32"
-                        placeholder="HH:MM"
-                      />
+              // Calculate percentiles
+              const responseTimes = records
+                .filter(r => r.responseTime)
+                .map(r => r.responseTime || 0)
+                .sort((a, b) => a - b);
+              
+              const p95Index = Math.floor(responseTimes.length * 0.95);
+              const p99Index = Math.floor(responseTimes.length * 0.99);
+              const p95 = responseTimes[p95Index] || 0;
+              const p99 = responseTimes[p99Index] || 0;
+              
+              // Determine if there are any issues
+              const hasFailures = successCount < totalCount;
+              const warningThreshold = monitor?.warningThresholdMs || 500;
+              const hasSlowResponses = p99 > warningThreshold;
+              
+              // Calculate change percentage (mock for now)
+              const changePercent = '+0.1';
+              
+              return (
+                <div key={datacenter} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                  {/* Header Row */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        hasFailures ? 'bg-red-100' : 'bg-green-100'
+                      }`}>
+                        {hasFailures ? (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        ) : (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {monitor?.monitorName || 'API Check'}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="secondary" className="text-xs font-normal">
+                            API
+                          </Badge>
+                          <div className="flex items-center gap-1 text-xs text-gray-500">
+                            <Clock className="w-3 h-3" />
+                            <span>
+                              {(() => {
+                                if (records.length === 0) return 'No recent checks';
+                                const latest = records[0];
+                                const now = new Date();
+                                const executedAt = new Date(latest.executedAt);
+                                const diffMs = now.getTime() - executedAt.getTime();
+                                const diffMins = Math.floor(diffMs / (1000 * 60));
+                                
+                                if (diffMins < 1) return 'Just now';
+                                if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+                                const diffHours = Math.floor(diffMins / 60);
+                                return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+                              })()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Right Side Metrics */}
+                    <div className="flex items-start gap-8">
+                      <div>
+                        <div className="text-xs text-gray-500 uppercase mb-1">Availability</div>
+                        <div className="text-3xl font-bold text-gray-900">{availability}<span className="text-base font-normal">%</span></div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500 uppercase mb-1">P95</div>
+                        <div className="text-3xl font-bold text-gray-900">{p95}<span className="text-base font-normal text-gray-500">ms</span></div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500 uppercase mb-1">P99</div>
+                        <div className="text-3xl font-bold text-gray-900">{p99}<span className="text-base font-normal text-gray-500">ms</span></div>
+                        {hasSlowResponses && (
+                          <div className="mt-1 px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded inline-block">
+                            {changePercent}%
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="endDate" className="text-sm font-medium">To</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="endDate"
-                        type="date"
-                        value={customEndDate}
-                        onChange={(e) => setCustomEndDate(e.target.value)}
-                        className="flex-1"
-                      />
-                      <Input
-                        type="time"
-                        value={customEndTime}
-                        onChange={(e) => setCustomEndTime(e.target.value)}
-                        className="w-32"
-                        placeholder="HH:MM"
-                      />
+                  {/* Bar Chart Visualization */}
+                  <div className="relative">
+                    <div className="flex items-end gap-0.5 h-32 mb-2">
+                      {(() => {
+                        // Create time buckets for visualization
+                        const now = new Date();
+                        const timeRangeMs = availabilityTimeRange === '24h' ? 24 * 60 * 60 * 1000 :
+                                          availabilityTimeRange === '7d' ? 7 * 24 * 60 * 60 * 1000 :
+                                          30 * 24 * 60 * 60 * 1000;
+                        const startTime = new Date(now.getTime() - timeRangeMs);
+                        
+                        // Determine bucket size based on range
+                        const numBuckets = 50;
+                        const bucketSize = timeRangeMs / numBuckets;
+                        
+                        const buckets = Array.from({ length: numBuckets }, (_, i) => {
+                          const bucketStart = startTime.getTime() + i * bucketSize;
+                          const bucketEnd = bucketStart + bucketSize;
+                          
+                          const bucketRecords = records.filter(r => {
+                            const recordTime = new Date(r.executedAt).getTime();
+                            return recordTime >= bucketStart && recordTime < bucketEnd;
+                          });
+                          
+                          const bucketSuccess = bucketRecords.filter(r => r.success).length;
+                          const bucketTotal = bucketRecords.length;
+                          
+                          return {
+                            success: bucketSuccess,
+                            total: bucketTotal,
+                            hasData: bucketTotal > 0
+                          };
+                        });
+                        
+                        const maxCount = Math.max(...buckets.map(b => b.total), 1);
+                        
+                        return buckets.map((bucket, idx) => {
+                          const height = bucket.hasData ? Math.max((bucket.total / maxCount) * 100, 10) : 0;
+                          const allSuccess = bucket.total > 0 && bucket.success === bucket.total;
+                          
+                          return (
+                            <div
+                              key={idx}
+                              className="flex-1 rounded-sm transition-all hover:opacity-80 cursor-pointer relative group"
+                              style={{
+                                height: `${height}%`,
+                                backgroundColor: allSuccess ? '#10b981' : bucket.hasData ? '#ef4444' : '#e5e7eb',
+                                minHeight: bucket.hasData ? '8px' : '4px'
+                              }}
+                              title={bucket.hasData ? `${bucket.success}/${bucket.total} successful` : 'No data'}
+                            />
+                          );
+                        });
+                      })()}
+                    </div>
+                    
+                    {/* Time Labels */}
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>
+                        {(() => {
+                          const timeRangeMs = availabilityTimeRange === '24h' ? 24 * 60 * 60 * 1000 :
+                                            availabilityTimeRange === '7d' ? 7 * 24 * 60 * 60 * 1000 :
+                                            30 * 24 * 60 * 60 * 1000;
+                          const start = new Date(new Date().getTime() - timeRangeMs);
+                          return availabilityTimeRange === '24h' ? 'about 4 hours ago' :
+                                 availabilityTimeRange === '7d' ? 'about 7 days ago' :
+                                 'about 30 days ago';
+                        })()}
+                      </span>
+                      <span>Last checks</span>
+                      <span>now</span>
                     </div>
                   </div>
                 </div>
-                
-                <div className="flex justify-end gap-2 mt-3">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => {
-                      setShowCustomDatePicker(false);
-                      setAvailabilityTimeRange('24h');
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    size="sm"
-                    onClick={() => {
-                      if (customStartDate && customEndDate) {
-                        setAvailabilityTimeRange('custom');
-                        setShowCustomDatePicker(false);
-                      }
-                    }}
-                    disabled={!customStartDate || !customEndDate}
-                  >
-                    Apply Custom Range
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Summary Stats */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
-            <div className="text-sm text-gray-600 mb-3">
-              Oct 12 11:00 - Oct 12 11:29 · {filteredHistory.length} results
-            </div>
-            
-            <div className="grid grid-cols-3 gap-6 mb-4">
-              <div>
-                <div className="text-2xl font-light text-gray-900 mb-1">
-                  {filteredHistory.filter(h => h.success).length}
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-gray-600">Passed results: {filteredHistory.filter(h => h.success).length}</span>
-                </div>
-              </div>
-              
-              <div>
-                <div className="text-2xl font-light text-gray-900 mb-1">0</div>
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span className="text-gray-600">Degraded results: 0</span>
-                </div>
-              </div>
-              
-              <div>
-                <div className="text-2xl font-light text-gray-900 mb-1">
-                  {filteredHistory.filter(h => !h.success).length}
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span className="text-gray-600">Failed results: {filteredHistory.filter(h => !h.success).length}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Histogram Chart */}
-            <div className="h-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={chartData} 
-                  margin={{ top: 20, right: 5, left: 5, bottom: 20 }}
-                  barCategoryGap="2%"
-                >
-                  <XAxis 
-                    dataKey="time" 
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
-                    tick={{ fill: '#6b7280' }}
-                    interval="preserveStartEnd"
-                  />
-                  <YAxis 
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
-                    tick={{ fill: '#6b7280' }}
-                    domain={[0, 'dataMax + 1']}
-                  />
-                  <Tooltip 
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      fontSize: '12px',
-                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                    }}
-                    formatter={(value: number, name: string, props: any) => {
-                      const data = props.payload;
-                      if (data.count === 0) {
-                        return ['No data', 'Checks'];
-                      }
-                      return [
-                        `${data.count} checks (${data.successful} ✓, ${data.errors} ✗)`,
-                        `${data.successRate}% uptime`
-                      ];
-                    }}
-                    labelFormatter={(label, payload) => {
-                      if (payload?.[0]) {
-                        const data = payload[0].payload;
-                        return data.fullTime;
-                      }
-                      return label;
-                    }}
-                  />
-                  <Bar
-                    dataKey="count"
-                    stroke="none"
-                    radius={[1, 1, 0, 0]}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Error Groups */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center gap-2 mb-4">
-              <h3 className="text-lg font-medium">Error Groups</h3>
-              <Badge variant="secondary" className="bg-pink-100 text-pink-800">
-                beta
-              </Badge>
-            </div>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 text-sm font-medium text-gray-600">MESSAGE</th>
-                    <th className="text-left py-3 text-sm font-medium text-gray-600">FIRST SEEN</th>
-                    <th className="text-left py-3 text-sm font-medium text-gray-600">LAST SEEN</th>
-                    <th className="text-left py-3 text-sm font-medium text-gray-600">EVENTS</th>
-                    <th className="text-left py-3 text-sm font-medium text-gray-600">LOCATIONS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td colSpan={5} className="text-center py-8 text-gray-500">
-                      No errors found for selected filters.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Panel - Run Results */}
-        <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
-            <h3 className="font-medium text-gray-900">Run results</h3>
-            <div className="text-sm text-gray-500 mt-1">Last 24 hours</div>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto">
-            {filteredHistory.slice(0, 50).map((result, index) => (
-              <div key={result.id} className="flex items-center gap-3 p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                <div className="flex items-center gap-2 flex-1">
-                  {result.success ? (
-                    <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                  ) : (
-                    <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900">
-                      {result.agentRegion || 'Unknown Region'}
-                    </div>
-                    <div className="text-xs text-gray-500 flex items-center gap-2">
-                      <span>{result.responseTime}ms</span>
-                      {result.responseStatusCode && (
-                        <Badge variant="outline" className="text-xs px-1 py-0">
-                          {result.responseStatusCode}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="text-xs text-gray-500 flex-shrink-0">
-                  {(() => {
-                    const now = new Date();
-                    const resultDate = new Date(result.executedAt);
-                    const diffInMinutes = Math.floor((now.getTime() - resultDate.getTime()) / (1000 * 60));
-                    
-                    if (diffInMinutes < 1) return 'just now';
-                    if (diffInMinutes < 60) return `${diffInMinutes}m`;
-                    
-                    const diffInHours = Math.floor(diffInMinutes / 60);
-                    if (diffInHours < 24) return `${diffInHours}h`;
-                    
-                    const diffInDays = Math.floor(diffInHours / 24);
-                    return `${diffInDays}d`;
-                  })()}
-                </div>
-              </div>
-            ))}
-          </div>
+              );
+            });
+          })()}
         </div>
       </div>
-    </div>
-  );
-};
-
-const MonitorDetail: React.FC = () => {
-  return (
-    <DashboardLayout>
-      <MonitorDetailContent />
     </DashboardLayout>
   );
 };
 
-export default MonitorDetail;
+export default function MonitorDetail() {
+  return <MonitorDetailContent />;
+}
