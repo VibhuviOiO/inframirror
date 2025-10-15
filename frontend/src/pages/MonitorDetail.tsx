@@ -50,27 +50,10 @@ import {
   Copy,
   ExternalLink
 } from 'lucide-react';
-import {
-  LineChart as RechartsLineChart,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Line,
-  BarChart,
-  Bar,
-  ComposedChart,
-  Scatter,
-  ScatterChart,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-} from 'recharts';
+
 import { MonitorContentDetails } from '@/components/monitoring/components/MonitorContentDetails';
+import GenericChart from '@/components/charts/GenericChart';
+import RegionMonitoringBarGraph from '@/components/charts/RegionMonitoringBarGraph';
 
 interface MonitorHistory {
   id: number;
@@ -1099,79 +1082,18 @@ const MonitorDetailContent: React.FC = () => {
               });
 
               return (
-                <ResponsiveContainer width="100%" height={220}>
-                  <RechartsLineChart data={lineChartData}>
-                    <CartesianGrid strokeDasharray="2 2" stroke="#e2e8f0" strokeOpacity={0.6} vertical={false} />
-                    <XAxis
-                      dataKey="time"
-                      stroke="#64748b"
-                      tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
-                      interval="preserveStartEnd"
-                      axisLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}
-                      tickLine={{ stroke: '#cbd5e1' }}
-                    />
-                    <YAxis
-                      stroke="#64748b"
-                      tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
-                      label={{
-                        value: 'Response Time (ms)',
-                        angle: -90,
-                        position: 'insideLeft',
-                        style: { fontSize: 11, fill: '#64748b', fontWeight: 500 }
-                      }}
-                      axisLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}
-                      tickLine={{ stroke: '#cbd5e1' }}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                        backdropFilter: 'blur(8px)',
-                        border: '1px solid rgba(148, 163, 184, 0.3)',
-                        borderRadius: '12px',
-                        fontSize: '12px',
-                        color: '#ffffff',
-                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                      }}
-                      labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
-                    />
-
-                    {/* Threshold Lines (Dotted) */}
-                    <Line
-                      type="monotone"
-                      dataKey="warningThreshold"
-                      stroke="#f59e0b"
-                      strokeWidth={2}
-                      strokeDasharray="6 4"
-                      dot={false}
-                      name="Warning Threshold"
-                      isAnimationActive={false}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="criticalThreshold"
-                      stroke="#ef4444"
-                      strokeWidth={2}
-                      strokeDasharray="6 4"
-                      dot={false}
-                      name="Critical Threshold"
-                      isAnimationActive={false}
-                    />
-
-                    {/* Region Performance Lines (Solid) */}
-                    {uniqueDatacenters.map((dc, index) => (
-                      <Line
-                        key={dc}
-                        type="monotone"
-                        dataKey={dc!}
-                        stroke={datacenterColors[index % datacenterColors.length]}
-                        strokeWidth={3}
-                        dot={{ r: 3, fill: datacenterColors[index % datacenterColors.length], strokeWidth: 2, stroke: '#ffffff' }}
-                        connectNulls
-                        name={dc!}
-                      />
-                    ))}
-                  </RechartsLineChart>
-                </ResponsiveContainer>
+                <GenericChart
+                  type="line"
+                  data={lineChartData}
+                  xKey="time"
+                  yKeys={uniqueDatacenters}
+                  colors={datacenterColors}
+                  height={220}
+                  showThresholds={true}
+                  warningThreshold={warningThreshold}
+                  criticalThreshold={criticalThreshold}
+                  yAxisLabel="Response Time (ms)"
+                />
               );
             })()}
           </CardContent>
@@ -1469,219 +1391,12 @@ const MonitorDetailContent: React.FC = () => {
 
                   {/* Bar Chart Visualization */}
                   <div className="relative px-6 pb-6">
-                    <ResponsiveContainer width="100%" height={140}>
-                      <BarChart
-                        data={(() => {
-                          // Create time buckets for visualization
-                          const now = new Date();
-
-                          // Calculate time range in milliseconds
-                          let timeRangeMs: number;
-                          switch (availabilityTimeRange) {
-                            case "5m":
-                              timeRangeMs = 5 * 60 * 1000;
-                              break;
-                            case "15m":
-                              timeRangeMs = 15 * 60 * 1000;
-                              break;
-                            case "30m":
-                              timeRangeMs = 30 * 60 * 1000;
-                              break;
-                            case "1h":
-                              timeRangeMs = 60 * 60 * 1000;
-                              break;
-                            case "4h":
-                              timeRangeMs = 4 * 60 * 60 * 1000;
-                              break;
-                            case "24h":
-                              timeRangeMs = 24 * 60 * 60 * 1000;
-                              break;
-                            case "2d":
-                              timeRangeMs = 2 * 24 * 60 * 60 * 1000;
-                              break;
-                            case "7d":
-                              timeRangeMs = 7 * 24 * 60 * 60 * 1000;
-                              break;
-                            case "30d":
-                              timeRangeMs = 30 * 24 * 60 * 60 * 1000;
-                              break;
-                            default:
-                              timeRangeMs = 24 * 60 * 60 * 1000;
-                          }
-
-                          const startTime = new Date(
-                            now.getTime() - timeRangeMs
-                          );
-
-                          const numBuckets = 50;
-                          const bucketSize = timeRangeMs / numBuckets;
-
-                          return Array.from({ length: numBuckets }, (_, i) => {
-                            const bucketStart =
-                              startTime.getTime() + i * bucketSize;
-                            const bucketEnd = bucketStart + bucketSize;
-                            const bucketStartDate = new Date(bucketStart);
-
-                            const bucketRecords = records.filter((r) => {
-                              const recordTime = new Date(
-                                r.executedAt
-                              ).getTime();
-                              return (
-                                recordTime >= bucketStart &&
-                                recordTime < bucketEnd
-                              );
-                            });
-
-                            // Count by status
-                            let healthy = 0;
-                            let warning = 0;
-                            let critical = 0;
-                            let failed = 0;
-
-                            bucketRecords.forEach((r) => {
-                              if (!r.success) {
-                                failed++;
-                              } else {
-                                const warningThreshold =
-                                  monitor?.warningThresholdMs || 500;
-                                const criticalThreshold =
-                                  monitor?.criticalThresholdMs || 1000;
-                                const rt = r.responseTime || 0;
-
-                                if (rt >= criticalThreshold) {
-                                  critical++;
-                                } else if (rt >= warningThreshold) {
-                                  warning++;
-                                } else {
-                                  healthy++;
-                                }
-                              }
-                            });
-
-                            return {
-                              index: i,
-                              time: bucketStartDate.toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: false,
-                              }),
-                              timestamp: bucketStartDate.toLocaleString(),
-                              healthy,
-                              warning,
-                              critical,
-                              failed,
-                              total: bucketRecords.length,
-                            };
-                          });
-                        })()}
-                        margin={{ top: 15, right: 15, left: 5, bottom: 25 }}
-                      >
-                        <CartesianGrid
-                          strokeDasharray="2 2"
-                          stroke="#e2e8f0"
-                          strokeOpacity={0.6}
-                          vertical={false}
-                        />
-                        <XAxis
-                          dataKey="time"
-                          stroke="#64748b"
-                          tick={{
-                            fill: "#64748b",
-                            fontSize: 10,
-                            fontWeight: 500,
-                          }}
-                          interval="preserveStartEnd"
-                          angle={0}
-                          axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }}
-                          tickLine={{ stroke: "#cbd5e1" }}
-                        />
-                        <YAxis
-                          stroke="#64748b"
-                          tick={{
-                            fill: "#64748b",
-                            fontSize: 11,
-                            fontWeight: 500,
-                          }}
-                          width={40}
-                          axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }}
-                          tickLine={{ stroke: "#cbd5e1" }}
-                        />
-                        <Tooltip
-                          content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                              const data = payload[0].payload;
-                              return (
-                                <div className="bg-slate-900/95 backdrop-blur-sm text-white text-sm rounded-xl shadow-xl p-4 border border-slate-700/50">
-                                  <div className="font-bold mb-2 text-slate-100">
-                                    {data.timestamp}
-                                  </div>
-                                  <div className="font-semibold mb-3 text-slate-200">
-                                    Checks: {data.total}
-                                  </div>
-                                  {data.healthy > 0 && (
-                                    <div className="flex items-center gap-2 mb-1.5">
-                                      <div className="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
-                                      <span className="font-medium">
-                                        Healthy: {data.healthy}
-                                      </span>
-                                    </div>
-                                  )}
-                                  {data.warning > 0 && (
-                                    <div className="flex items-center gap-2 mb-1.5">
-                                      <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-sm"></div>
-                                      <span className="font-medium">
-                                        Warning: {data.warning}
-                                      </span>
-                                    </div>
-                                  )}
-                                  {data.critical > 0 && (
-                                    <div className="flex items-center gap-2 mb-1.5">
-                                      <div className="w-3 h-3 rounded-full bg-orange-500 shadow-sm"></div>
-                                      <span className="font-medium">
-                                        Critical: {data.critical}
-                                      </span>
-                                    </div>
-                                  )}
-                                  {data.failed > 0 && (
-                                    <div className="flex items-center gap-2 mb-1.5">
-                                      <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
-                                      <span className="font-medium">
-                                        Failed: {data.failed}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
-                        <Bar
-                          dataKey="healthy"
-                          stackId="a"
-                          fill="#10b981"
-                          radius={[2, 2, 0, 0]}
-                        />
-                        <Bar
-                          dataKey="warning"
-                          stackId="a"
-                          fill="#fbbf24"
-                          radius={[2, 2, 0, 0]}
-                        />
-                        <Bar
-                          dataKey="critical"
-                          stackId="a"
-                          fill="#f97316"
-                          radius={[2, 2, 0, 0]}
-                        />
-                        <Bar
-                          dataKey="failed"
-                          stackId="a"
-                          fill="#ef4444"
-                          radius={[4, 4, 0, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
+                    <RegionMonitoringBarGraph
+                      records={records}
+                      availabilityTimeRange={availabilityTimeRange}
+                      monitor={monitor}
+                      height={140}
+                    />
                   </div>
                 </div>
               );
