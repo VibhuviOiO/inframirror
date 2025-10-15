@@ -645,9 +645,11 @@ const MonitorDetailContent: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-8xl py-5 mx-auto">
+      <div className="max-w-8xl py-5 mx-auto space-y-8">
+        {/* Header Section - Title, Metadata, and URL */}
+        <div className="bg-white backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-lg shadow-slate-200/50 p-8">
           {/* Row 1: Back Button, Title and Controls */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
               <Button 
                 variant="ghost" 
@@ -659,9 +661,21 @@ const MonitorDetailContent: React.FC = () => {
               </Button>
               
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {monitor.monitorName || `Monitor ${id}`}
-                </h1>
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/25 flex-shrink-0">
+                      <Server className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 bg-clip-text text-transparent tracking-tight mb-1">
+                        {monitor.monitorName || `Monitor ${id}`}
+                      </h1>
+                      <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                        Real-time monitoring dashboard with performance metrics
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             
@@ -679,7 +693,7 @@ const MonitorDetailContent: React.FC = () => {
           </div>
           
           {/* Row 2: Monitor Metadata */}
-          <div className="flex items-center gap-6 text-sm mb-4">
+          <div className="flex items-center gap-6 text-sm mb-8">
             <div className="flex items-center gap-2 text-gray-600">
               <Network className="w-4 h-4 text-gray-400" />
               <span className="text-gray-500">Method:</span>
@@ -791,159 +805,161 @@ const MonitorDetailContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Content Area - Checkly Style */}
-        <div className="flex gap-6">
-          <div className="flex-1 max-w-8xl mx-auto">
-        {/* Time Range Filter */}
-        <div className="flex items-center justify-between mb-6">
-          {/* Region Multi-Select Filter */}
-          <div className="flex items-center gap-2">
-            <Label className="text-xs text-gray-400">
-              Regions:
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 text-xs min-w-[200px] justify-between"
-                >
-                  <span className="truncate">
-                    {selectedDatacenters.includes('all')
-                      ? 'All Regions'
-                      : selectedDatacenters.length === 0
-                      ? 'Select regions'
-                      : selectedDatacenters.length === 1
-                      ? selectedDatacenters[0]
-                      : `${selectedDatacenters.length} selected`}
-                  </span>
-                  <ChevronDown className="h-3 w-3 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-64 p-0" align="start">
-                <div className="p-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="all-regions"
-                      checked={selectedDatacenters.includes('all')}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedDatacenters(['all']);
-                        } else {
-                          setSelectedDatacenters([]);
-                        }
-                      }}
-                    />
-                    <Label
-                      htmlFor="all-regions"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        {/* Main Content Area - Filters and Charts */}
+        <div className="space-y-8">
+          {/* Time Range Filter */}
+          <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-6">
+              {/* Region Multi-Select Filter */}
+              <div className="flex items-center gap-2">
+                <Label className="text-xs text-gray-400">
+                  Regions:
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 text-xs min-w-[200px] justify-between"
                     >
-                      All Regions
-                    </Label>
-                  </div>
-                  {uniqueDatacenters.map((datacenter) => (
-                    <div key={datacenter} className="flex items-center space-x-2 mt-2">
-                      <Checkbox
-                        id={datacenter}
-                        checked={selectedDatacenters.includes(datacenter)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            if (selectedDatacenters.includes('all')) {
-                              setSelectedDatacenters([datacenter]);
+                      <span className="truncate">
+                        {selectedDatacenters.includes('all')
+                          ? 'All Regions'
+                          : selectedDatacenters.length === 0
+                          ? 'Select regions'
+                          : selectedDatacenters.length === 1
+                          ? selectedDatacenters[0]
+                          : `${selectedDatacenters.length} selected`}
+                      </span>
+                      <ChevronDown className="h-3 w-3 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-64 p-0" align="start">
+                    <div className="p-2">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="all-regions"
+                          checked={selectedDatacenters.includes('all')}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedDatacenters(['all']);
                             } else {
-                              setSelectedDatacenters([...selectedDatacenters, datacenter]);
+                              setSelectedDatacenters([]);
                             }
-                          } else {
-                            setSelectedDatacenters(selectedDatacenters.filter(d => d !== datacenter));
-                          }
-                        }}
-                      />
-                      <Label
-                        htmlFor={datacenter}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {datacenter}
-                      </Label>
+                          }}
+                        />
+                        <Label
+                          htmlFor="all-regions"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          All Regions
+                        </Label>
+                      </div>
+                      {uniqueDatacenters.map((datacenter) => (
+                        <div key={datacenter} className="flex items-center space-x-2 mt-2">
+                          <Checkbox
+                            id={datacenter}
+                            checked={selectedDatacenters.includes(datacenter)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                if (selectedDatacenters.includes('all')) {
+                                  setSelectedDatacenters([datacenter]);
+                                } else {
+                                  setSelectedDatacenters([...selectedDatacenters, datacenter]);
+                                }
+                              } else {
+                                setSelectedDatacenters(selectedDatacenters.filter(d => d !== datacenter));
+                              }
+                            }}
+                          />
+                          <Label
+                            htmlFor={datacenter}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {datacenter}
+                          </Label>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-          
-          <div className="flex items-center gap-1 flex-wrap">
-            <Button
-              variant={availabilityTimeRange === '5m' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setAvailabilityTimeRange('5m')}
-              className="text-xs h-8"
-            >
-              5 MIN
-            </Button>
-            <Button
-              variant={availabilityTimeRange === '15m' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setAvailabilityTimeRange('15m')}
-              className="text-xs h-8"
-            >
-              15 MIN
-            </Button>
-            <Button
-              variant={availabilityTimeRange === '30m' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setAvailabilityTimeRange('30m')}
-              className="text-xs h-8"
-            >
-              30 MIN
-            </Button>
-            <Button
-              variant={availabilityTimeRange === '1h' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setAvailabilityTimeRange('1h')}
-              className="text-xs h-8"
-            >
-              1 HOUR
-            </Button>
-            <Button
-              variant={availabilityTimeRange === '4h' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setAvailabilityTimeRange('4h')}
-              className="text-xs h-8"
-            >
-              4 HOURS
-            </Button>
-            <Button
-              variant={availabilityTimeRange === '24h' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setAvailabilityTimeRange('24h')}
-              className="text-xs h-8"
-            >
-              24 HOURS
-            </Button>
-            <Button
-              variant={availabilityTimeRange === '2d' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setAvailabilityTimeRange('2d')}
-              className="text-xs h-8"
-            >
-              2 DAYS
-            </Button>
-            <Button
-              variant={availabilityTimeRange === '7d' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setAvailabilityTimeRange('7d')}
-              className="text-xs h-8"
-            >
-              1 WEEK
-            </Button>
-            <Button
-              variant={availabilityTimeRange === '30d' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setAvailabilityTimeRange('30d')}
-              className="text-xs h-8"
-            >
-              1 MONTH
-            </Button>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              
+              <div className="flex items-center gap-1 flex-wrap">
+                <Button
+                  variant={availabilityTimeRange === '5m' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('5m')}
+                  className="text-xs h-8"
+                >
+                  5 MIN
+                </Button>
+                <Button
+                  variant={availabilityTimeRange === '15m' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('15m')}
+                  className="text-xs h-8"
+                >
+                  15 MIN
+                </Button>
+                <Button
+                  variant={availabilityTimeRange === '30m' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('30m')}
+                  className="text-xs h-8"
+                >
+                  30 MIN
+                </Button>
+                <Button
+                  variant={availabilityTimeRange === '1h' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('1h')}
+                  className="text-xs h-8"
+                >
+                  1 HOUR
+                </Button>
+                <Button
+                  variant={availabilityTimeRange === '4h' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('4h')}
+                  className="text-xs h-8"
+                >
+                  4 HOURS
+                </Button>
+                <Button
+                  variant={availabilityTimeRange === '24h' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('24h')}
+                  className="text-xs h-8"
+                >
+                  24 HOURS
+                </Button>
+                <Button
+                  variant={availabilityTimeRange === '2d' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('2d')}
+                  className="text-xs h-8"
+                >
+                  2 DAYS
+                </Button>
+                <Button
+                  variant={availabilityTimeRange === '7d' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('7d')}
+                  className="text-xs h-8"
+                >
+                  1 WEEK
+                </Button>
+                <Button
+                  variant={availabilityTimeRange === '30d' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setAvailabilityTimeRange('30d')}
+                  className="text-xs h-8"
+                >
+                  1 MONTH
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1679,7 +1695,6 @@ const MonitorDetailContent: React.FC = () => {
           onClose={() => setSelectedDatacenterRecords(null)}
           initialSelectedRecord={selectedRecord}
         />
-      </div>
       </div>
     </DashboardLayout>
   );
