@@ -83,7 +83,7 @@ export const MonitorFilters: React.FC<MonitorFiltersProps> = ({
       status: 'all',
       region: 'all',
       responseTime: 'all',
-      showActiveOnly: true,
+      showActiveOnly: false,
       activeWindow: 5
     });
   }, [onFiltersChange]);
@@ -198,32 +198,20 @@ export const MonitorFilters: React.FC<MonitorFiltersProps> = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => {
-              handleFilterChange('showActiveOnly', true);
-              handleFilterChange('activeWindow', 5);
-            }}>
-              Last 5 minutes
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleFilterChange('showActiveOnly', false)}>
+            <DropdownMenuItem onClick={() => onFiltersChange({ showActiveOnly: false })}>
               All time
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => {
-              handleFilterChange('showActiveOnly', true);
-              handleFilterChange('activeWindow', 15);
-            }}>
+            <DropdownMenuItem onClick={() => onFiltersChange({ showActiveOnly: true, activeWindow: 5 })}>
+              Last 5 minutes
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onFiltersChange({ showActiveOnly: true, activeWindow: 15 })}>
               Last 15 minutes
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              handleFilterChange('showActiveOnly', true);
-              handleFilterChange('activeWindow', 30);
-            }}>
+            <DropdownMenuItem onClick={() => onFiltersChange({ showActiveOnly: true, activeWindow: 30 })}>
               Last 30 minutes
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {
-              handleFilterChange('showActiveOnly', true);
-              handleFilterChange('activeWindow', 60);
-            }}>
+            <DropdownMenuItem onClick={() => onFiltersChange({ showActiveOnly: true, activeWindow: 60 })}>
               Last 1 hour
             </DropdownMenuItem>
           </DropdownMenuContent>

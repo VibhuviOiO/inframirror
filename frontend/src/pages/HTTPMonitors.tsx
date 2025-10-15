@@ -61,20 +61,8 @@ const transformMonitorData = (monitors: Monitor[]): HTTPMonitor[] => {
 
 const HTTPMonitorsContent: React.FC = () => {
   const navigate = useNavigate();
-  const { data: monitors = [], isLoading, error, refetch } = useHTTPMonitors();
   
-  // Debug logging
-  console.log('HTTPMonitors - Raw data:', monitors);
-  console.log('HTTPMonitors - isLoading:', isLoading);
-  console.log('HTTPMonitors - error:', error);
-  
-  // Convert Monitor[] to HTTPMonitor[] for our components
-  const httpMonitors = transformMonitorData(monitors);
-  
-  console.log('HTTPMonitors - Transformed data:', httpMonitors);
-  
-  // State management
-
+  // State management - moved before useHTTPMonitors to fix initialization error
   const [selectedResponseBody, setSelectedResponseBody] = useState<ResponseBodyData | null>(null);
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -82,11 +70,21 @@ const HTTPMonitorsContent: React.FC = () => {
     method: 'all',
     region: 'all',
     responseTime: 'all',
-    showActiveOnly: true,   // Show only recent monitors by default
-    activeWindow: 5         // Show monitors from last 5 minutes
+    showActiveOnly: true,   // Default to last 5 minutes
+    activeWindow: 5
   });
   const [sortConfig, setSortConfig] = useState<SortConfig>({ field: 'executedAt', direction: 'desc' });
   const [preferences, setPreferences] = useState({ viewMode: 'table' as ViewMode, exportFormat: 'csv' as const });
+  
+  const { data: monitors = [], isLoading, error, refetch } = useHTTPMonitors(
+    filters.showActiveOnly ? {
+      activeOnly: true,
+      maxAge: filters.activeWindow
+    } : undefined
+  );
+  
+  // Convert Monitor[] to HTTPMonitor[] for our components
+  const httpMonitors = transformMonitorData(monitors);
   
   // Filtering logic
   const filteredMonitors = useMemo(() => {
@@ -136,15 +134,6 @@ const HTTPMonitorsContent: React.FC = () => {
           case 'failed': return !monitor.success;
           default: return true;
         }
-      });
-    }
-
-    // Time window filter (show only recent monitors)
-    if (filters.showActiveOnly) {
-      const cutoffTime = Date.now() - (filters.activeWindow * 60 * 1000);
-      filtered = filtered.filter(monitor => {
-        const executedTime = new Date(monitor.executedAt).getTime();
-        return executedTime >= cutoffTime;
       });
     }
 

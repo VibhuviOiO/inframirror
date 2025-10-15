@@ -155,7 +155,7 @@ export function useHTTPMonitors(filters?: Omit<MonitorFilters, 'monitorType'>) {
   const queryParams = new URLSearchParams();
   if (filters) {
     Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value !== undefined && value !== null && value !== '') {
         queryParams.append(key, String(value));
       }
     });
@@ -164,12 +164,17 @@ export function useHTTPMonitors(filters?: Omit<MonitorFilters, 'monitorType'>) {
   return useQuery<Monitor[]>({
     queryKey: ['monitors', 'HTTP', filters],
     queryFn: async () => {
-      const res = await axios.get(apiUrl(`/monitors/http?${queryParams.toString()}`));
+      const url = queryParams.toString() 
+        ? apiUrl(`/monitors/http?${queryParams.toString()}`)
+        : apiUrl('/monitors/http');
+      const res = await axios.get(url);
       if (Array.isArray(res.data)) return res.data;
       if (!res.data) return [];
       return [res.data];
     },
     select: (data) => Array.isArray(data) ? data : [],
+    keepPreviousData: true,
+    staleTime: 30000, // Consider data fresh for 30 seconds
   });
 }
 
