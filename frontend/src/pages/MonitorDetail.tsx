@@ -950,55 +950,64 @@ const MonitorDetailContent: React.FC = () => {
         {/* Performance Comparison Line Chart */}
         <Card className="bg-white border-0 shadow-xl shadow-slate-200/50 backdrop-blur-sm hover:shadow-2xl hover:shadow-slate-300/60 transition-all duration-500 overflow-hidden">
           <CardHeader className="pb-6 relative z-10">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
-                    <TrendingUp className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl font-bold text-slate-900 tracking-tight">
-                      Region Performance Comparison
-                    </CardTitle>
-                    <CardDescription className="text-sm text-slate-600 font-medium">
-                      Response time trends across regions with threshold indicators
-                    </CardDescription>
-                  </div>
+            <div className="flex items-start justify-between gap-6">
+              <div className="flex items-center gap-4 flex-1 min-w-0">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25 flex-shrink-0">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="text-2xl font-bold text-slate-900 tracking-tight mb-1">
+                    Region Performance Comparison
+                  </CardTitle>
+                  <CardDescription className="text-sm text-slate-600 font-medium leading-relaxed">
+                    Response time trends across regions with threshold indicators
+                  </CardDescription>
                 </div>
               </div>
-              <div className="flex items-center gap-4 text-sm">
-                {(() => {
-                  const uniqueDatacenters = Array.from(
-                    new Set(filteredHistory.map(item => item.agentRegion).filter(Boolean))
-                  ).sort();
 
-                  const datacenterColors = [
-                    '#3b82f6', // blue
-                    '#10b981', // green
-                    '#f59e0b', // amber
-                    '#8b5cf6', // purple
-                    '#ec4899', // pink
-                    '#06b6d4', // cyan
-                    '#f97316', // orange
-                  ];
+              {/* Legend Section */}
+              <div className="flex flex-col gap-3 flex-shrink-0">
+                {/* Region Legend */}
+                <div className="flex items-center gap-2 flex-wrap justify-end">
+                  <span className="text-xs text-slate-500 uppercase font-bold tracking-widest mr-2">Regions:</span>
+                  {(() => {
+                    const uniqueDatacenters = Array.from(
+                      new Set(filteredHistory.map(item => item.agentRegion).filter(Boolean))
+                    ).sort();
 
-                  return uniqueDatacenters.map((dc, index) => (
-                    <div key={dc} className="flex items-center gap-2 px-3 py-1.5 bg-white/60 backdrop-blur-sm rounded-full border border-slate-200/50 shadow-sm hover:shadow-md transition-all duration-200">
-                      <div
-                        className="w-3 h-3 rounded-full shadow-sm"
-                        style={{ backgroundColor: datacenterColors[index % datacenterColors.length] }}
-                      ></div>
-                      <span className="text-slate-700 font-medium text-xs">{dc}</span>
-                    </div>
-                  ));
-                })()}
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/60 backdrop-blur-sm rounded-full border border-slate-200/50 shadow-sm">
-                  <div className="w-3 h-0.5 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"></div>
-                  <span className="text-slate-700 font-medium text-xs">Warning</span>
+                    const datacenterColors = [
+                      '#3b82f6', // blue
+                      '#10b981', // green
+                      '#f59e0b', // amber
+                      '#8b5cf6', // purple
+                      '#ec4899', // pink
+                      '#06b6d4', // cyan
+                      '#f97316', // orange
+                    ];
+
+                    return uniqueDatacenters.map((dc, index) => (
+                      <div key={dc} className="flex items-center gap-1.5 px-2 py-1 bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-200">
+                        <div
+                          className="w-2.5 h-2.5 rounded-full shadow-sm ring-1 ring-white"
+                          style={{ backgroundColor: datacenterColors[index % datacenterColors.length] }}
+                        ></div>
+                        <span className="text-slate-700 font-semibold text-xs whitespace-nowrap">{dc}</span>
+                      </div>
+                    ));
+                  })()}
                 </div>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/60 backdrop-blur-sm rounded-full border border-slate-200/50 shadow-sm">
-                  <div className="w-3 h-0.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full"></div>
-                  <span className="text-slate-700 font-medium text-xs">Critical</span>
+
+                {/* Threshold Legend */}
+                <div className="flex items-center gap-2 flex-wrap justify-end">
+                  <span className="text-xs text-slate-500 uppercase font-bold tracking-widest mr-2">Thresholds:</span>
+                  <div className="flex items-center gap-1.5 px-2 py-1 bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200/60 shadow-sm">
+                    <div className="w-3 h-0.5 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"></div>
+                    <span className="text-slate-700 font-semibold text-xs">Warning</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2 py-1 bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200/60 shadow-sm">
+                    <div className="w-3 h-0.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full"></div>
+                    <span className="text-slate-700 font-semibold text-xs">Critical</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1213,64 +1222,84 @@ const MonitorDetailContent: React.FC = () => {
               const changePercent = '+0.1';
 
               return (
-                <div key={datacenter} className="bg-white rounded-2xl border border-slate-200/60 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/60 transition-all duration-500 overflow-hidden group backdrop-blur-sm">
+                <div
+                  key={datacenter}
+                  className="bg-white rounded-2xl border border-slate-200/60 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/60 transition-all duration-500 overflow-hidden group backdrop-blur-sm"
+                >
                   {/* Header Row */}
                   <div className="relative z-10 p-6 pb-4">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-4 flex-1">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 ${
-                          hasFailures
-                            ? 'bg-gradient-to-br from-red-400 to-red-600 shadow-red-200'
-                            : 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-emerald-200'
-                        }`}>
-                          {hasFailures ? (
-                            <XCircle className="w-6 h-6 text-white drop-shadow-sm" />
-                          ) : (
-                            <CheckCircle className="w-6 h-6 text-white drop-shadow-sm" />
-                          )}
-                        </div>
                         <div className="flex-1">
-                          <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                          <div className="flex items-center gap-3 mb-3">
+                            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
                               {datacenter}
-                            </h3>
+                            </h2>
+                            <div
+                              className={`w-5 h-5 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 ${
+                                hasFailures
+                                  ? "bg-gradient-to-br from-red-400 to-red-600 shadow-red-200"
+                                  : "bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-emerald-200"
+                              }`}
+                            >
+                              {hasFailures ? (
+                                <XCircle className="w-4 h-4 text-white drop-shadow-sm" />
+                              ) : (
+                                <CheckCircle className="w-4 h-4 text-white drop-shadow-sm" />
+                              )}
+                            </div>
                           </div>
-                          
+
                           {/* Status Counts Row - Combined with total */}
                           <div className="flex items-center gap-3 mb-4">
-                            <span className="text-xs text-slate-500 uppercase font-bold tracking-widest">Status: {totalCount} total</span>
                             <div className="flex items-center gap-2">
                               {healthyCount > 0 && (
                                 <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200/60 shadow-sm hover:shadow-md transition-all duration-200">
                                   <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-sm ring-2 ring-emerald-100"></div>
-                                  <span className="text-sm text-emerald-800 font-bold">{healthyCount}</span>
-                                  <span className="text-xs text-emerald-700 font-semibold uppercase tracking-wide">Healthy</span>
+                                  <span className="text-sm text-emerald-800 font-bold">
+                                    {healthyCount}
+                                  </span>
+                                  <span className="text-xs text-emerald-700 font-semibold uppercase tracking-wide">
+                                    Healthy
+                                  </span>
                                 </div>
                               )}
                               {warningCount > 0 && (
                                 <div className="flex items-center gap-2 bg-amber-50 px-4 py-2 rounded-xl border border-amber-200/60 shadow-sm hover:shadow-md transition-all duration-200">
                                   <div className="w-3 h-3 rounded-full bg-amber-500 shadow-sm ring-2 ring-amber-100"></div>
-                                  <span className="text-sm text-amber-800 font-bold">{warningCount}</span>
-                                  <span className="text-xs text-amber-700 font-semibold uppercase tracking-wide">Warning</span>
+                                  <span className="text-sm text-amber-800 font-bold">
+                                    {warningCount}
+                                  </span>
+                                  <span className="text-xs text-amber-700 font-semibold uppercase tracking-wide">
+                                    Warning
+                                  </span>
                                 </div>
                               )}
                               {criticalCount > 0 && (
                                 <div className="flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-xl border border-orange-200/60 shadow-sm hover:shadow-md transition-all duration-200">
                                   <div className="w-3 h-3 rounded-full bg-orange-500 shadow-sm ring-2 ring-orange-100"></div>
-                                  <span className="text-sm text-orange-800 font-bold">{criticalCount}</span>
-                                  <span className="text-xs text-orange-700 font-semibold uppercase tracking-wide">Critical</span>
+                                  <span className="text-sm text-orange-800 font-bold">
+                                    {criticalCount}
+                                  </span>
+                                  <span className="text-xs text-orange-700 font-semibold uppercase tracking-wide">
+                                    Critical
+                                  </span>
                                 </div>
                               )}
                               {failedCount > 0 && (
                                 <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-xl border border-red-200/60 shadow-sm hover:shadow-md transition-all duration-200">
                                   <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm ring-2 ring-red-100"></div>
-                                  <span className="text-sm text-red-800 font-bold">{failedCount}</span>
-                                  <span className="text-xs text-red-700 font-semibold uppercase tracking-wide">Failed</span>
+                                  <span className="text-sm text-red-800 font-bold">
+                                    {failedCount}
+                                  </span>
+                                  <span className="text-xs text-red-700 font-semibold uppercase tracking-wide">
+                                    Failed
+                                  </span>
                                 </div>
                               )}
                             </div>
                           </div>
-                          
+
                           {/* Action Buttons Row */}
                           <div className="flex items-center gap-3">
                             <Button
@@ -1284,12 +1313,15 @@ const MonitorDetailContent: React.FC = () => {
                             >
                               View History
                             </Button>
-                            <Badge variant="secondary" className="text-xs font-semibold px-3 py-1.5 bg-slate-100 text-slate-700 border-0 rounded-lg shadow-sm">
+                            <Badge
+                              variant="secondary"
+                              className="text-xs font-semibold px-3 py-1.5 bg-slate-100 text-slate-700 border-0 rounded-lg shadow-sm"
+                            >
                               {(() => {
-                                // Get agentId from the first record
-                                const agentId = records.length > 0 && records[0].agentId
-                                  ? records[0].agentId
-                                  : `${datacenter}-agent`;
+                                const agentId =
+                                  records.length > 0 && records[0].agentId
+                                    ? records[0].agentId
+                                    : `${datacenter}-agent`;
                                 return agentId;
                               })()}
                             </Badge>
@@ -1297,17 +1329,28 @@ const MonitorDetailContent: React.FC = () => {
                               <Clock className="w-4 h-4 text-slate-500" />
                               <span className="font-medium">
                                 {(() => {
-                                  if (records.length === 0) return 'No recent checks';
+                                  if (records.length === 0)
+                                    return "No recent checks";
                                   const latest = records[0];
                                   const now = new Date();
-                                  const executedAt = new Date(latest.executedAt);
-                                  const diffMs = now.getTime() - executedAt.getTime();
-                                  const diffMins = Math.floor(diffMs / (1000 * 60));
+                                  const executedAt = new Date(
+                                    latest.executedAt
+                                  );
+                                  const diffMs =
+                                    now.getTime() - executedAt.getTime();
+                                  const diffMins = Math.floor(
+                                    diffMs / (1000 * 60)
+                                  );
 
-                                  if (diffMins < 1) return 'Just now';
-                                  if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+                                  if (diffMins < 1) return "Just now";
+                                  if (diffMins < 60)
+                                    return `${diffMins} minute${
+                                      diffMins !== 1 ? "s" : ""
+                                    } ago`;
                                   const diffHours = Math.floor(diffMins / 60);
-                                  return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+                                  return `${diffHours} hour${
+                                    diffHours !== 1 ? "s" : ""
+                                  } ago`;
                                 })()}
                               </span>
                             </div>
@@ -1316,40 +1359,87 @@ const MonitorDetailContent: React.FC = () => {
                       </div>
 
                       {/* Right Side Metrics */}
-                      <div className="flex items-start gap-8">
-                        <div className="text-center group/metric">
-                          <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-widest">Availability</div>
-                          <div className="text-4xl font-black text-slate-900 mb-2 group-hover/metric:scale-105 transition-transform duration-200">
-                            {availability}
-                            <span className="text-lg font-bold text-slate-400 ml-1">%</span>
-                          </div>
-                        </div>
-                        <div className="text-center group/metric">
-                          <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-widest">P95</div>
-                          <div className="text-4xl font-black text-slate-900 mb-2 group-hover/metric:scale-105 transition-transform duration-200">
-                            {p95}
-                            <span className="text-lg font-bold text-slate-400 ml-1">ms</span>
-                          </div>
-                          <div className="text-xs text-slate-600 font-medium mt-1">
-                            95th percentile
-                          </div>
-                        </div>
-                        <div className="text-center group/metric relative">
-                          <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-widest flex items-center justify-center gap-2">
-                            P99
-                            {hasSlowResponses && (
-                              <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white text-xs font-black rounded-full border border-red-400/50 shadow-lg shadow-red-500/25 animate-pulse">
-                                <TrendingUp className="w-3 h-3" />
-                                <span>{changePercent}%</span>
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* Total Checks Metric */}
+                        <div className="group/metric">
+                          <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-4 border border-slate-200/50 shadow-sm hover:shadow-lg hover:shadow-slate-200/25 transition-all duration-300 hover:scale-105">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center shadow-lg shadow-slate-500/25">
+                                <Activity className="w-4 h-4 text-white" />
                               </div>
-                            )}
+                              <span className="text-xs text-slate-700 uppercase font-bold tracking-widest">Checks</span>
+                            </div>
+                            <div className="text-2xl font-black text-slate-900 mb-1">
+                              {totalCount}
+                            </div>
+                            <div className="text-xs text-slate-600 font-semibold">
+                              Total requests
+                            </div>
                           </div>
-                          <div className="text-4xl font-black text-slate-900 mb-2 group-hover/metric:scale-105 transition-transform duration-200">
-                            {p99}
-                            <span className="text-lg font-bold text-slate-400 ml-1">ms</span>
+                        </div>
+
+                        {/* Availability Metric */}
+                        <div className="group/metric">
+                          <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-4 border border-slate-200/50 shadow-sm hover:shadow-lg hover:shadow-slate-200/25 transition-all duration-300 hover:scale-105">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center shadow-lg shadow-slate-500/25">
+                                <CheckCircle className="w-4 h-4 text-white" />
+                              </div>
+                              <span className="text-xs text-slate-700 uppercase font-bold tracking-widest">Availability</span>
+                            </div>
+                            <div className="text-2xl font-black text-slate-900 mb-1">
+                              {availability}
+                              <span className="text-lg font-bold text-slate-600 ml-1">%</span>
+                            </div>
+                            <div className="text-xs text-slate-600 font-semibold">
+                              Uptime
+                            </div>
                           </div>
-                          <div className="text-xs text-slate-600 font-medium mt-1">
-                            99th percentile
+                        </div>
+
+                        {/* P95 Metric */}
+                        <div className="group/metric">
+                          <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-4 border border-slate-200/50 shadow-sm hover:shadow-lg hover:shadow-slate-200/25 transition-all duration-300 hover:scale-105">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center shadow-lg shadow-slate-500/25">
+                                <TrendingUp className="w-4 h-4 text-white" />
+                              </div>
+                              <span className="text-xs text-slate-700 uppercase font-bold tracking-widest">P95</span>
+                            </div>
+                            <div className="text-2xl font-black text-slate-900 mb-1">
+                              {p95}
+                              <span className="text-lg font-bold text-slate-600 ml-1">ms</span>
+                            </div>
+                            <div className="text-xs text-slate-600 font-semibold">
+                              95th percentile
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* P99 Metric */}
+                        <div className="group/metric relative">
+                          <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-4 border border-slate-200/50 shadow-sm hover:shadow-lg hover:shadow-slate-200/25 transition-all duration-300 hover:scale-105">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center shadow-lg shadow-slate-500/25">
+                                <AlertTriangle className="w-4 h-4 text-white" />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-slate-700 uppercase font-bold tracking-widest">P99</span>
+                                {hasSlowResponses && (
+                                  <div className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white text-xs font-black rounded-md border border-red-400/50 shadow-sm animate-pulse">
+                                    <TrendingUp className="w-2.5 h-2.5" />
+                                    <span>{changePercent}%</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-2xl font-black text-slate-900 mb-1">
+                              {p99}
+                              <span className="text-lg font-bold text-slate-600 ml-1">ms</span>
+                            </div>
+                            <div className="text-xs text-slate-600 font-semibold">
+                              99th percentile
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1371,51 +1461,59 @@ const MonitorDetailContent: React.FC = () => {
 
                           // Calculate time range in milliseconds
                           let timeRangeMs: number;
-                          switch(availabilityTimeRange) {
-                            case '5m':
+                          switch (availabilityTimeRange) {
+                            case "5m":
                               timeRangeMs = 5 * 60 * 1000;
                               break;
-                            case '15m':
+                            case "15m":
                               timeRangeMs = 15 * 60 * 1000;
                               break;
-                            case '30m':
+                            case "30m":
                               timeRangeMs = 30 * 60 * 1000;
                               break;
-                            case '1h':
+                            case "1h":
                               timeRangeMs = 60 * 60 * 1000;
                               break;
-                            case '4h':
+                            case "4h":
                               timeRangeMs = 4 * 60 * 60 * 1000;
                               break;
-                            case '24h':
+                            case "24h":
                               timeRangeMs = 24 * 60 * 60 * 1000;
                               break;
-                            case '2d':
+                            case "2d":
                               timeRangeMs = 2 * 24 * 60 * 60 * 1000;
                               break;
-                            case '7d':
+                            case "7d":
                               timeRangeMs = 7 * 24 * 60 * 60 * 1000;
                               break;
-                            case '30d':
+                            case "30d":
                               timeRangeMs = 30 * 24 * 60 * 60 * 1000;
                               break;
                             default:
                               timeRangeMs = 24 * 60 * 60 * 1000;
                           }
 
-                          const startTime = new Date(now.getTime() - timeRangeMs);
+                          const startTime = new Date(
+                            now.getTime() - timeRangeMs
+                          );
 
                           const numBuckets = 50;
                           const bucketSize = timeRangeMs / numBuckets;
 
                           return Array.from({ length: numBuckets }, (_, i) => {
-                            const bucketStart = startTime.getTime() + i * bucketSize;
+                            const bucketStart =
+                              startTime.getTime() + i * bucketSize;
                             const bucketEnd = bucketStart + bucketSize;
                             const bucketStartDate = new Date(bucketStart);
 
-                            const bucketRecords = records.filter(r => {
-                              const recordTime = new Date(r.executedAt).getTime();
-                              return recordTime >= bucketStart && recordTime < bucketEnd;
+                            const bucketRecords = records.filter((r) => {
+                              const recordTime = new Date(
+                                r.executedAt
+                              ).getTime();
+                              return (
+                                recordTime >= bucketStart &&
+                                recordTime < bucketEnd
+                              );
                             });
 
                             // Count by status
@@ -1424,12 +1522,14 @@ const MonitorDetailContent: React.FC = () => {
                             let critical = 0;
                             let failed = 0;
 
-                            bucketRecords.forEach(r => {
+                            bucketRecords.forEach((r) => {
                               if (!r.success) {
                                 failed++;
                               } else {
-                                const warningThreshold = monitor?.warningThresholdMs || 500;
-                                const criticalThreshold = monitor?.criticalThresholdMs || 1000;
+                                const warningThreshold =
+                                  monitor?.warningThresholdMs || 500;
+                                const criticalThreshold =
+                                  monitor?.criticalThresholdMs || 1000;
                                 const rt = r.responseTime || 0;
 
                                 if (rt >= criticalThreshold) {
@@ -1445,37 +1545,50 @@ const MonitorDetailContent: React.FC = () => {
                             return {
                               index: i,
                               time: bucketStartDate.toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: false
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
                               }),
                               timestamp: bucketStartDate.toLocaleString(),
                               healthy,
                               warning,
                               critical,
                               failed,
-                              total: bucketRecords.length
+                              total: bucketRecords.length,
                             };
                           });
                         })()}
                         margin={{ top: 15, right: 15, left: 5, bottom: 25 }}
                       >
-                        <CartesianGrid strokeDasharray="2 2" stroke="#e2e8f0" strokeOpacity={0.6} vertical={false} />
+                        <CartesianGrid
+                          strokeDasharray="2 2"
+                          stroke="#e2e8f0"
+                          strokeOpacity={0.6}
+                          vertical={false}
+                        />
                         <XAxis
                           dataKey="time"
                           stroke="#64748b"
-                          tick={{ fill: '#64748b', fontSize: 10, fontWeight: 500 }}
+                          tick={{
+                            fill: "#64748b",
+                            fontSize: 10,
+                            fontWeight: 500,
+                          }}
                           interval="preserveStartEnd"
                           angle={0}
-                          axisLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}
-                          tickLine={{ stroke: '#cbd5e1' }}
+                          axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }}
+                          tickLine={{ stroke: "#cbd5e1" }}
                         />
                         <YAxis
                           stroke="#64748b"
-                          tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
+                          tick={{
+                            fill: "#64748b",
+                            fontSize: 11,
+                            fontWeight: 500,
+                          }}
                           width={40}
-                          axisLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}
-                          tickLine={{ stroke: '#cbd5e1' }}
+                          axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }}
+                          tickLine={{ stroke: "#cbd5e1" }}
                         />
                         <Tooltip
                           content={({ active, payload }) => {
@@ -1483,30 +1596,42 @@ const MonitorDetailContent: React.FC = () => {
                               const data = payload[0].payload;
                               return (
                                 <div className="bg-slate-900/95 backdrop-blur-sm text-white text-sm rounded-xl shadow-xl p-4 border border-slate-700/50">
-                                  <div className="font-bold mb-2 text-slate-100">{data.timestamp}</div>
-                                  <div className="font-semibold mb-3 text-slate-200">Checks: {data.total}</div>
+                                  <div className="font-bold mb-2 text-slate-100">
+                                    {data.timestamp}
+                                  </div>
+                                  <div className="font-semibold mb-3 text-slate-200">
+                                    Checks: {data.total}
+                                  </div>
                                   {data.healthy > 0 && (
                                     <div className="flex items-center gap-2 mb-1.5">
                                       <div className="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
-                                      <span className="font-medium">Healthy: {data.healthy}</span>
+                                      <span className="font-medium">
+                                        Healthy: {data.healthy}
+                                      </span>
                                     </div>
                                   )}
                                   {data.warning > 0 && (
                                     <div className="flex items-center gap-2 mb-1.5">
                                       <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-sm"></div>
-                                      <span className="font-medium">Warning: {data.warning}</span>
+                                      <span className="font-medium">
+                                        Warning: {data.warning}
+                                      </span>
                                     </div>
                                   )}
                                   {data.critical > 0 && (
                                     <div className="flex items-center gap-2 mb-1.5">
                                       <div className="w-3 h-3 rounded-full bg-orange-500 shadow-sm"></div>
-                                      <span className="font-medium">Critical: {data.critical}</span>
+                                      <span className="font-medium">
+                                        Critical: {data.critical}
+                                      </span>
                                     </div>
                                   )}
                                   {data.failed > 0 && (
                                     <div className="flex items-center gap-2 mb-1.5">
                                       <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
-                                      <span className="font-medium">Failed: {data.failed}</span>
+                                      <span className="font-medium">
+                                        Failed: {data.failed}
+                                      </span>
                                     </div>
                                   )}
                                 </div>
@@ -1515,10 +1640,30 @@ const MonitorDetailContent: React.FC = () => {
                             return null;
                           }}
                         />
-                        <Bar dataKey="healthy" stackId="a" fill="#10b981" radius={[2, 2, 0, 0]} />
-                        <Bar dataKey="warning" stackId="a" fill="#fbbf24" radius={[2, 2, 0, 0]} />
-                        <Bar dataKey="critical" stackId="a" fill="#f97316" radius={[2, 2, 0, 0]} />
-                        <Bar dataKey="failed" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                        <Bar
+                          dataKey="healthy"
+                          stackId="a"
+                          fill="#10b981"
+                          radius={[2, 2, 0, 0]}
+                        />
+                        <Bar
+                          dataKey="warning"
+                          stackId="a"
+                          fill="#fbbf24"
+                          radius={[2, 2, 0, 0]}
+                        />
+                        <Bar
+                          dataKey="critical"
+                          stackId="a"
+                          fill="#f97316"
+                          radius={[2, 2, 0, 0]}
+                        />
+                        <Bar
+                          dataKey="failed"
+                          stackId="a"
+                          fill="#ef4444"
+                          radius={[4, 4, 0, 0]}
+                        />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
