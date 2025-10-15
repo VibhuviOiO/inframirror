@@ -948,23 +948,30 @@ const MonitorDetailContent: React.FC = () => {
         </div>
 
         {/* Performance Comparison Line Chart */}
-        <Card>
-          <CardHeader className="pb-4">
+        <Card className="bg-white border-0 shadow-xl shadow-slate-200/50 backdrop-blur-sm hover:shadow-2xl hover:shadow-slate-300/60 transition-all duration-500 overflow-hidden">
+          <CardHeader className="pb-6 relative z-10">
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-base font-medium">
-                  Region Performance Comparison
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Response time trends across regions with threshold indicators
-                </CardDescription>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+                    <TrendingUp className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl font-bold text-slate-900 tracking-tight">
+                      Region Performance Comparison
+                    </CardTitle>
+                    <CardDescription className="text-sm text-slate-600 font-medium">
+                      Response time trends across regions with threshold indicators
+                    </CardDescription>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-4 text-xs">
+              <div className="flex items-center gap-4 text-sm">
                 {(() => {
                   const uniqueDatacenters = Array.from(
                     new Set(filteredHistory.map(item => item.agentRegion).filter(Boolean))
                   ).sort();
-                  
+
                   const datacenterColors = [
                     '#3b82f6', // blue
                     '#10b981', // green
@@ -974,38 +981,44 @@ const MonitorDetailContent: React.FC = () => {
                     '#06b6d4', // cyan
                     '#f97316', // orange
                   ];
-                  
+
                   return uniqueDatacenters.map((dc, index) => (
-                    <div key={dc} className="flex items-center gap-1">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
+                    <div key={dc} className="flex items-center gap-2 px-3 py-1.5 bg-white/60 backdrop-blur-sm rounded-full border border-slate-200/50 shadow-sm hover:shadow-md transition-all duration-200">
+                      <div
+                        className="w-3 h-3 rounded-full shadow-sm"
                         style={{ backgroundColor: datacenterColors[index % datacenterColors.length] }}
                       ></div>
-                      <span className="text-gray-600">{dc}</span>
+                      <span className="text-slate-700 font-medium text-xs">{dc}</span>
                     </div>
                   ));
                 })()}
-                <div className="flex items-center gap-1 ml-2">
-                  <div className="w-3 h-0.5 bg-orange-500 border-dashed border-orange-500"></div>
-                  <span className="text-gray-600">Warning</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/60 backdrop-blur-sm rounded-full border border-slate-200/50 shadow-sm">
+                  <div className="w-3 h-0.5 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"></div>
+                  <span className="text-slate-700 font-medium text-xs">Warning</span>
                 </div>
-                <div className="flex items-center gap-1 ml-2">
-                  <div className="w-3 h-0.5 bg-red-500 border-dashed border-red-500"></div>
-                  <span className="text-gray-600">Critical</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/60 backdrop-blur-sm rounded-full border border-slate-200/50 shadow-sm">
+                  <div className="w-3 h-0.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full"></div>
+                  <span className="text-slate-700 font-medium text-xs">Critical</span>
                 </div>
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          
+          {/* Separator Line */}
+          <div className="relative z-10 px-6 mb-6">
+            <div className="h-0.5 bg-gradient-to-r from-transparent via-slate-300/80 to-transparent"></div>
+          </div>
+          
+          <CardContent className="relative z-10">
             {(() => {
               const warningThreshold = monitor?.warningThresholdMs || 500;
               const criticalThreshold = monitor?.criticalThresholdMs || 1000;
-              
+
               // Get unique regions
               const uniqueDatacenters = Array.from(
                 new Set(filteredHistory.map(item => item.agentRegion).filter(Boolean))
               ).sort();
-              
+
               // Generate colors for each region
               const datacenterColors = [
                 '#3b82f6', // blue
@@ -1016,39 +1029,39 @@ const MonitorDetailContent: React.FC = () => {
                 '#06b6d4', // cyan
                 '#f97316', // orange
               ];
-              
+
               // Create time buckets
               const { startTime, endTime } = getTimeRange();
               const timeRange = endTime.getTime() - startTime.getTime();
               const numBuckets = 50;
               const bucketSize = timeRange / numBuckets;
-              
+
               // Prepare data points for each region
               const lineChartData = Array.from({ length: numBuckets }, (_, i) => {
                 const bucketStart = startTime.getTime() + (i * bucketSize);
                 const bucketEnd = bucketStart + bucketSize;
-                
+
                 const dataPoint: any = {
-                  time: new Date(bucketStart).toLocaleTimeString([], { 
-                    hour: '2-digit', 
+                  time: new Date(bucketStart).toLocaleTimeString([], {
+                    hour: '2-digit',
                     minute: '2-digit',
-                    hour12: false 
+                    hour12: false
                   }),
                   warningThreshold,
                   criticalThreshold,
                 };
-                
+
                 // Calculate average response time for each region in this bucket
                 uniqueDatacenters.forEach((dc) => {
                   const dcRecords = filteredHistory.filter(record => {
                     const recordTime = new Date(record.executedAt).getTime();
-                    return record.agentRegion === dc && 
-                           recordTime >= bucketStart && 
+                    return record.agentRegion === dc &&
+                           recordTime >= bucketStart &&
                            recordTime < bucketEnd &&
                            record.success &&
                            record.responseTime;
                   });
-                  
+
                   if (dcRecords.length > 0) {
                     const avgResponseTime = dcRecords.reduce((sum, r) => sum + (r.responseTime || 0), 0) / dcRecords.length;
                     dataPoint[dc!] = Math.round(avgResponseTime);
@@ -1056,43 +1069,54 @@ const MonitorDetailContent: React.FC = () => {
                     dataPoint[dc!] = null;
                   }
                 });
-                
+
                 return dataPoint;
               });
-              
+
               return (
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height={220}>
                   <RechartsLineChart data={lineChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis 
-                      dataKey="time" 
-                      stroke="#6b7280"
-                      tick={{ fontSize: 11 }}
+                    <CartesianGrid strokeDasharray="2 2" stroke="#e2e8f0" strokeOpacity={0.6} vertical={false} />
+                    <XAxis
+                      dataKey="time"
+                      stroke="#64748b"
+                      tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
                       interval="preserveStartEnd"
+                      axisLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}
+                      tickLine={{ stroke: '#cbd5e1' }}
                     />
-                    <YAxis 
-                      stroke="#6b7280"
-                      tick={{ fontSize: 11 }}
-                      label={{ value: 'Response Time (ms)', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#6b7280' } }}
+                    <YAxis
+                      stroke="#64748b"
+                      tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
+                      label={{
+                        value: 'Response Time (ms)',
+                        angle: -90,
+                        position: 'insideLeft',
+                        style: { fontSize: 11, fill: '#64748b', fontWeight: 500 }
+                      }}
+                      axisLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}
+                      tickLine={{ stroke: '#cbd5e1' }}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#1f2937',
-                        border: '1px solid #374151',
-                        borderRadius: '6px',
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        backdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(148, 163, 184, 0.3)',
+                        borderRadius: '12px',
                         fontSize: '12px',
                         color: '#ffffff',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                       }}
                       labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
                     />
-                    
+
                     {/* Threshold Lines (Dotted) */}
                     <Line
                       type="monotone"
                       dataKey="warningThreshold"
                       stroke="#f59e0b"
                       strokeWidth={2}
-                      strokeDasharray="5 5"
+                      strokeDasharray="6 4"
                       dot={false}
                       name="Warning Threshold"
                       isAnimationActive={false}
@@ -1102,12 +1126,12 @@ const MonitorDetailContent: React.FC = () => {
                       dataKey="criticalThreshold"
                       stroke="#ef4444"
                       strokeWidth={2}
-                      strokeDasharray="5 5"
+                      strokeDasharray="6 4"
                       dot={false}
                       name="Critical Threshold"
                       isAnimationActive={false}
                     />
-                    
+
                     {/* Region Performance Lines (Solid) */}
                     {uniqueDatacenters.map((dc, index) => (
                       <Line
@@ -1115,8 +1139,8 @@ const MonitorDetailContent: React.FC = () => {
                         type="monotone"
                         dataKey={dc!}
                         stroke={datacenterColors[index % datacenterColors.length]}
-                        strokeWidth={2}
-                        dot={{ r: 2 }}
+                        strokeWidth={3}
+                        dot={{ r: 3, fill: datacenterColors[index % datacenterColors.length], strokeWidth: 2, stroke: '#ffffff' }}
                         connectNulls
                         name={dc!}
                       />
@@ -1129,7 +1153,7 @@ const MonitorDetailContent: React.FC = () => {
         </Card>
 
         {/* Monitor Cards Grouped by Region */}
-        <div className="space-y-4 mt-6">
+        <div className="space-y-6 mt-8">
           {(() => {
             // Group history by region
             const datacenterGroups = filteredHistory.reduce((acc, record) => {
@@ -1146,30 +1170,30 @@ const MonitorDetailContent: React.FC = () => {
               const successCount = records.filter(r => r.success).length;
               const totalCount = records.length;
               const availability = totalCount > 0 ? ((successCount / totalCount) * 100).toFixed(0) : '100';
-              
+
               // Calculate percentiles
               const responseTimes = records
                 .filter(r => r.responseTime)
                 .map(r => r.responseTime || 0)
                 .sort((a, b) => a - b);
-              
+
               const p95Index = Math.floor(responseTimes.length * 0.95);
               const p99Index = Math.floor(responseTimes.length * 0.99);
               const p95 = responseTimes[p95Index] || 0;
               const p99 = responseTimes[p99Index] || 0;
-              
+
               // Determine if there are any issues
               const hasFailures = successCount < totalCount;
               const warningThreshold = monitor?.warningThresholdMs || 500;
               const criticalThreshold = monitor?.criticalThresholdMs || 1000;
               const hasSlowResponses = p99 > warningThreshold;
-              
+
               // Calculate status counts
               let healthyCount = 0;
               let warningCount = 0;
               let criticalCount = 0;
               let failedCount = 0;
-              
+
               records.forEach(r => {
                 if (!r.success) {
                   failedCount++;
@@ -1184,128 +1208,167 @@ const MonitorDetailContent: React.FC = () => {
                   }
                 }
               });
-              
+
               // Calculate change percentage (mock for now)
               const changePercent = '+0.1';
-              
+
               return (
-                <div key={datacenter} className="bg-white rounded-lg border border-gray-200 p-2 hover:shadow-md transition-shadow">
+                <div key={datacenter} className="bg-white rounded-2xl border border-slate-200/60 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/60 transition-all duration-500 overflow-hidden group backdrop-blur-sm">
                   {/* Header Row */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        hasFailures ? 'bg-red-100' : 'bg-green-100'
-                      }`}>
-                        {hasFailures ? (
-                          <XCircle className="w-5 h-5 text-red-600" />
-                        ) : (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                          {datacenter}
-                        </h3>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedDatacenterRecords(records);
-                              setSelectedRecord(null); // Clear any previous selection
-                            }}
-                            className="text-xs px-2 py-1 h-6 bg-blue-600 hover:bg-blue-700 text-white"
-                          >
-                            View History
-                          </Button>
-                          <Badge variant="secondary" className="text-xs font-normal">
-                            {(() => {
-                              // Get agentId from the first record
-                              const agentId = records.length > 0 && records[0].agentId 
-                                ? records[0].agentId 
-                                : `${datacenter}-agent`;
-                              return agentId;
-                            })()}
-                          </Badge>
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
-                            <Clock className="w-3 h-3" />
-                            <span>
+                  <div className="relative z-10 p-6 pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 ${
+                          hasFailures
+                            ? 'bg-gradient-to-br from-red-400 to-red-600 shadow-red-200'
+                            : 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-emerald-200'
+                        }`}>
+                          {hasFailures ? (
+                            <XCircle className="w-6 h-6 text-white drop-shadow-sm" />
+                          ) : (
+                            <CheckCircle className="w-6 h-6 text-white drop-shadow-sm" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                              {datacenter}
+                            </h3>
+                          </div>
+                          
+                          {/* Status Counts Row - Combined with total */}
+                          <div className="flex items-center gap-3 mb-4">
+                            <span className="text-xs text-slate-500 uppercase font-bold tracking-widest">Status: {totalCount} total</span>
+                            <div className="flex items-center gap-2">
+                              {healthyCount > 0 && (
+                                <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200/60 shadow-sm hover:shadow-md transition-all duration-200">
+                                  <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-sm ring-2 ring-emerald-100"></div>
+                                  <span className="text-sm text-emerald-800 font-bold">{healthyCount}</span>
+                                  <span className="text-xs text-emerald-700 font-semibold uppercase tracking-wide">Healthy</span>
+                                </div>
+                              )}
+                              {warningCount > 0 && (
+                                <div className="flex items-center gap-2 bg-amber-50 px-4 py-2 rounded-xl border border-amber-200/60 shadow-sm hover:shadow-md transition-all duration-200">
+                                  <div className="w-3 h-3 rounded-full bg-amber-500 shadow-sm ring-2 ring-amber-100"></div>
+                                  <span className="text-sm text-amber-800 font-bold">{warningCount}</span>
+                                  <span className="text-xs text-amber-700 font-semibold uppercase tracking-wide">Warning</span>
+                                </div>
+                              )}
+                              {criticalCount > 0 && (
+                                <div className="flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-xl border border-orange-200/60 shadow-sm hover:shadow-md transition-all duration-200">
+                                  <div className="w-3 h-3 rounded-full bg-orange-500 shadow-sm ring-2 ring-orange-100"></div>
+                                  <span className="text-sm text-orange-800 font-bold">{criticalCount}</span>
+                                  <span className="text-xs text-orange-700 font-semibold uppercase tracking-wide">Critical</span>
+                                </div>
+                              )}
+                              {failedCount > 0 && (
+                                <div className="flex items-center gap-2 bg-red-50 px-4 py-2 rounded-xl border border-red-200/60 shadow-sm hover:shadow-md transition-all duration-200">
+                                  <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm ring-2 ring-red-100"></div>
+                                  <span className="text-sm text-red-800 font-bold">{failedCount}</span>
+                                  <span className="text-xs text-red-700 font-semibold uppercase tracking-wide">Failed</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Action Buttons Row */}
+                          <div className="flex items-center gap-3">
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedDatacenterRecords(records);
+                                setSelectedRecord(null); // Clear any previous selection
+                              }}
+                              className="text-sm px-4 py-2 h-8 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md font-semibold rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105"
+                            >
+                              View History
+                            </Button>
+                            <Badge variant="secondary" className="text-xs font-semibold px-3 py-1.5 bg-slate-100 text-slate-700 border-0 rounded-lg shadow-sm">
                               {(() => {
-                                if (records.length === 0) return 'No recent checks';
-                                const latest = records[0];
-                                const now = new Date();
-                                const executedAt = new Date(latest.executedAt);
-                                const diffMs = now.getTime() - executedAt.getTime();
-                                const diffMins = Math.floor(diffMs / (1000 * 60));
-                                
-                                if (diffMins < 1) return 'Just now';
-                                if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
-                                const diffHours = Math.floor(diffMins / 60);
-                                return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+                                // Get agentId from the first record
+                                const agentId = records.length > 0 && records[0].agentId
+                                  ? records[0].agentId
+                                  : `${datacenter}-agent`;
+                                return agentId;
                               })()}
-                            </span>
+                            </Badge>
+                            <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/50">
+                              <Clock className="w-4 h-4 text-slate-500" />
+                              <span className="font-medium">
+                                {(() => {
+                                  if (records.length === 0) return 'No recent checks';
+                                  const latest = records[0];
+                                  const now = new Date();
+                                  const executedAt = new Date(latest.executedAt);
+                                  const diffMs = now.getTime() - executedAt.getTime();
+                                  const diffMins = Math.floor(diffMs / (1000 * 60));
+
+                                  if (diffMins < 1) return 'Just now';
+                                  if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+                                  const diffHours = Math.floor(diffMins / 60);
+                                  return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+                                })()}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    {/* Right Side Metrics */}
-                    <div className="flex items-start gap-8">
-                      <div>
-                        <div className="text-xs text-gray-500 uppercase mb-1">Availability</div>
-                        <div className="text-3xl font-bold text-gray-900">{availability}<span className="text-base font-normal">%</span></div>
-                        {/* Status Dots */}
-                        <div className="flex items-center gap-3 mt-2">
-                          {healthyCount > 0 && (
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                              <span className="text-xs text-gray-600">{healthyCount}</span>
-                            </div>
-                          )}
-                          {warningCount > 0 && (
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                              <span className="text-xs text-gray-600">{warningCount}</span>
-                            </div>
-                          )}
-                          {criticalCount > 0 && (
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                              <span className="text-xs text-gray-600">{criticalCount}</span>
-                            </div>
-                          )}
-                          {failedCount > 0 && (
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                              <span className="text-xs text-gray-600">{failedCount}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-500 uppercase mb-1">P95</div>
-                        <div className="text-3xl font-bold text-gray-900">{p95}<span className="text-base font-normal text-gray-500">ms</span></div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-500 uppercase mb-1">P99</div>
-                        <div className="text-3xl font-bold text-gray-900">{p99}<span className="text-base font-normal text-gray-500">ms</span></div>
-                        {hasSlowResponses && (
-                          <div className="mt-1 px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded inline-block">
-                            {changePercent}%
+
+                      {/* Right Side Metrics */}
+                      <div className="flex items-start gap-8">
+                        <div className="text-center group/metric">
+                          <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-widest">Availability</div>
+                          <div className="text-4xl font-black text-slate-900 mb-2 group-hover/metric:scale-105 transition-transform duration-200">
+                            {availability}
+                            <span className="text-lg font-bold text-slate-400 ml-1">%</span>
                           </div>
-                        )}
+                        </div>
+                        <div className="text-center group/metric">
+                          <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-widest">P95</div>
+                          <div className="text-4xl font-black text-slate-900 mb-2 group-hover/metric:scale-105 transition-transform duration-200">
+                            {p95}
+                            <span className="text-lg font-bold text-slate-400 ml-1">ms</span>
+                          </div>
+                          <div className="text-xs text-slate-600 font-medium mt-1">
+                            95th percentile
+                          </div>
+                        </div>
+                        <div className="text-center group/metric relative">
+                          <div className="text-xs text-slate-500 uppercase font-bold mb-2 tracking-widest flex items-center justify-center gap-2">
+                            P99
+                            {hasSlowResponses && (
+                              <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-gradient-to-r from-red-500 via-red-600 to-red-700 text-white text-xs font-black rounded-full border border-red-400/50 shadow-lg shadow-red-500/25 animate-pulse">
+                                <TrendingUp className="w-3 h-3" />
+                                <span>{changePercent}%</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-4xl font-black text-slate-900 mb-2 group-hover/metric:scale-105 transition-transform duration-200">
+                            {p99}
+                            <span className="text-lg font-bold text-slate-400 ml-1">ms</span>
+                          </div>
+                          <div className="text-xs text-slate-600 font-medium mt-1">
+                            99th percentile
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  
+
+                  {/* Separator Line */}
+                  <div className="relative z-10 px-6 mb-6">
+                    <div className="h-0.5 bg-gradient-to-r from-transparent via-slate-300/80 to-transparent"></div>
+                  </div>
+
                   {/* Bar Chart Visualization */}
-                  <div className="relative">
-                    <ResponsiveContainer width="100%" height={120}>
+                  <div className="relative px-6 pb-6">
+                    <ResponsiveContainer width="100%" height={140}>
                       <BarChart
                         data={(() => {
                           // Create time buckets for visualization
                           const now = new Date();
-                          
+
                           // Calculate time range in milliseconds
                           let timeRangeMs: number;
                           switch(availabilityTimeRange) {
@@ -1339,28 +1402,28 @@ const MonitorDetailContent: React.FC = () => {
                             default:
                               timeRangeMs = 24 * 60 * 60 * 1000;
                           }
-                          
+
                           const startTime = new Date(now.getTime() - timeRangeMs);
-                          
+
                           const numBuckets = 50;
                           const bucketSize = timeRangeMs / numBuckets;
-                          
+
                           return Array.from({ length: numBuckets }, (_, i) => {
                             const bucketStart = startTime.getTime() + i * bucketSize;
                             const bucketEnd = bucketStart + bucketSize;
                             const bucketStartDate = new Date(bucketStart);
-                            
+
                             const bucketRecords = records.filter(r => {
                               const recordTime = new Date(r.executedAt).getTime();
                               return recordTime >= bucketStart && recordTime < bucketEnd;
                             });
-                            
+
                             // Count by status
                             let healthy = 0;
                             let warning = 0;
                             let critical = 0;
                             let failed = 0;
-                            
+
                             bucketRecords.forEach(r => {
                               if (!r.success) {
                                 failed++;
@@ -1368,7 +1431,7 @@ const MonitorDetailContent: React.FC = () => {
                                 const warningThreshold = monitor?.warningThresholdMs || 500;
                                 const criticalThreshold = monitor?.criticalThresholdMs || 1000;
                                 const rt = r.responseTime || 0;
-                                
+
                                 if (rt >= criticalThreshold) {
                                   critical++;
                                 } else if (rt >= warningThreshold) {
@@ -1378,13 +1441,13 @@ const MonitorDetailContent: React.FC = () => {
                                 }
                               }
                             });
-                            
+
                             return {
                               index: i,
-                              time: bucketStartDate.toLocaleTimeString([], { 
-                                hour: '2-digit', 
+                              time: bucketStartDate.toLocaleTimeString([], {
+                                hour: '2-digit',
                                 minute: '2-digit',
-                                hour12: false 
+                                hour12: false
                               }),
                               timestamp: bucketStartDate.toLocaleString(),
                               healthy,
@@ -1395,51 +1458,55 @@ const MonitorDetailContent: React.FC = () => {
                             };
                           });
                         })()}
-                        margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
+                        margin={{ top: 15, right: 15, left: 5, bottom: 25 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-                        <XAxis 
-                          dataKey="time" 
-                          stroke="#6b7280"
-                          tick={{ fill: '#6b7280', fontSize: 10 }}
+                        <CartesianGrid strokeDasharray="2 2" stroke="#e2e8f0" strokeOpacity={0.6} vertical={false} />
+                        <XAxis
+                          dataKey="time"
+                          stroke="#64748b"
+                          tick={{ fill: '#64748b', fontSize: 10, fontWeight: 500 }}
                           interval="preserveStartEnd"
                           angle={0}
+                          axisLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}
+                          tickLine={{ stroke: '#cbd5e1' }}
                         />
-                        <YAxis 
-                          stroke="#9ca3af"
-                          tick={{ fill: '#9ca3af', fontSize: 11 }}
-                          width={35}
+                        <YAxis
+                          stroke="#64748b"
+                          tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
+                          width={40}
+                          axisLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}
+                          tickLine={{ stroke: '#cbd5e1' }}
                         />
                         <Tooltip
                           content={({ active, payload }) => {
                             if (active && payload && payload.length) {
                               const data = payload[0].payload;
                               return (
-                                <div className="bg-gray-900 text-white text-xs rounded-lg shadow-lg p-3">
-                                  <div className="font-semibold mb-1">{data.timestamp}</div>
-                                  <div className="font-semibold mb-2">Checks: {data.total}</div>
+                                <div className="bg-slate-900/95 backdrop-blur-sm text-white text-sm rounded-xl shadow-xl p-4 border border-slate-700/50">
+                                  <div className="font-bold mb-2 text-slate-100">{data.timestamp}</div>
+                                  <div className="font-semibold mb-3 text-slate-200">Checks: {data.total}</div>
                                   {data.healthy > 0 && (
-                                    <div className="flex items-center gap-2">
-                                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#10b981' }} />
-                                      <span>Healthy: {data.healthy}</span>
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                      <div className="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
+                                      <span className="font-medium">Healthy: {data.healthy}</span>
                                     </div>
                                   )}
                                   {data.warning > 0 && (
-                                    <div className="flex items-center gap-2">
-                                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#fbbf24' }} />
-                                      <span>Warning: {data.warning}</span>
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                      <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-sm"></div>
+                                      <span className="font-medium">Warning: {data.warning}</span>
                                     </div>
                                   )}
                                   {data.critical > 0 && (
-                                    <div className="flex items-center gap-2">
-                                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#f97316' }} />
-                                      <span>Critical: {data.critical}</span>
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                      <div className="w-3 h-3 rounded-full bg-orange-500 shadow-sm"></div>
+                                      <span className="font-medium">Critical: {data.critical}</span>
                                     </div>
                                   )}
                                   {data.failed > 0 && (
-                                    <div className="flex items-center gap-2">
-                                      <div className="w-3 h-3 rounded" style={{ backgroundColor: '#ef4444' }} />
-                                      <span>Failed: {data.failed}</span>
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                      <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
+                                      <span className="font-medium">Failed: {data.failed}</span>
                                     </div>
                                   )}
                                 </div>
@@ -1448,10 +1515,10 @@ const MonitorDetailContent: React.FC = () => {
                             return null;
                           }}
                         />
-                        <Bar dataKey="healthy" stackId="a" fill="#10b981" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="warning" stackId="a" fill="#fbbf24" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="critical" stackId="a" fill="#f97316" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="failed" stackId="a" fill="#ef4444" radius={[2, 2, 0, 0]} />
+                        <Bar dataKey="healthy" stackId="a" fill="#10b981" radius={[2, 2, 0, 0]} />
+                        <Bar dataKey="warning" stackId="a" fill="#fbbf24" radius={[2, 2, 0, 0]} />
+                        <Bar dataKey="critical" stackId="a" fill="#f97316" radius={[2, 2, 0, 0]} />
+                        <Bar dataKey="failed" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -1459,9 +1526,7 @@ const MonitorDetailContent: React.FC = () => {
               );
             });
           })()}
-        </div>
-
-        {/* Modal for Selected Record Details */}
+        </div>        {/* Modal for Selected Record Details */}
         <MonitorContentDetails
           records={selectedDatacenterRecords || []}
           monitor={monitor}
