@@ -632,8 +632,7 @@ const MonitorDetailContent: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <Card className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-8xl py-5 mx-auto">
           {/* Row 1: Back Button, Title and Controls */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -780,7 +779,7 @@ const MonitorDetailContent: React.FC = () => {
         </div>
 
         {/* Main Content Area - Checkly Style */}
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-8xl mx-auto">
         {/* Time Range Filter */}
         <div className="flex items-center justify-between mb-6">
           {/* Region Multi-Select Filter */}
@@ -937,12 +936,51 @@ const MonitorDetailContent: React.FC = () => {
         {/* Performance Comparison Line Chart */}
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-base font-medium">
-              Region Performance Comparison
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Response time trends across regions with threshold indicators
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-medium">
+                  Region Performance Comparison
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Response time trends across regions with threshold indicators
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-4 text-xs">
+                {(() => {
+                  const uniqueDatacenters = Array.from(
+                    new Set(filteredHistory.map(item => item.agentRegion).filter(Boolean))
+                  ).sort();
+                  
+                  const datacenterColors = [
+                    '#3b82f6', // blue
+                    '#10b981', // green
+                    '#f59e0b', // amber
+                    '#8b5cf6', // purple
+                    '#ec4899', // pink
+                    '#06b6d4', // cyan
+                    '#f97316', // orange
+                  ];
+                  
+                  return uniqueDatacenters.map((dc, index) => (
+                    <div key={dc} className="flex items-center gap-1">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: datacenterColors[index % datacenterColors.length] }}
+                      ></div>
+                      <span className="text-gray-600">{dc}</span>
+                    </div>
+                  ));
+                })()}
+                <div className="flex items-center gap-1 ml-2">
+                  <div className="w-3 h-0.5 bg-orange-500 border-dashed border-orange-500"></div>
+                  <span className="text-gray-600">Warning</span>
+                </div>
+                <div className="flex items-center gap-1 ml-2">
+                  <div className="w-3 h-0.5 bg-red-500 border-dashed border-red-500"></div>
+                  <span className="text-gray-600">Critical</span>
+                </div>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {(() => {
@@ -1032,10 +1070,6 @@ const MonitorDetailContent: React.FC = () => {
                       }}
                       labelStyle={{ color: '#374151', fontWeight: 'bold' }}
                     />
-                    <Legend 
-                      wrapperStyle={{ fontSize: '12px' }}
-                      iconType="line"
-                    />
                     
                     {/* Threshold Lines (Dotted) */}
                     <Line
@@ -1080,7 +1114,7 @@ const MonitorDetailContent: React.FC = () => {
         </Card>
 
         {/* Monitor Cards Grouped by Region */}
-        <div className="space-y-4">
+        <div className="space-y-4 mt-6">
           {(() => {
             // Group history by region
             const datacenterGroups = filteredHistory.reduce((acc, record) => {
@@ -1140,7 +1174,7 @@ const MonitorDetailContent: React.FC = () => {
               const changePercent = '+0.1';
               
               return (
-                <div key={datacenter} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                <div key={datacenter} className="bg-white rounded-lg border border-gray-200 p-2 hover:shadow-md transition-shadow">
                   {/* Header Row */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -1394,28 +1428,6 @@ const MonitorDetailContent: React.FC = () => {
                         <Bar dataKey="failed" stackId="a" fill="#ef4444" radius={[2, 2, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
-                    
-                    {/* Time Labels */}
-                    <div className="flex justify-between text-xs text-gray-500 mt-1 ml-9">
-                      <span>
-                        {(() => {
-                          switch(availabilityTimeRange) {
-                            case '5m': return '5 minutes ago';
-                            case '15m': return '15 minutes ago';
-                            case '30m': return '30 minutes ago';
-                            case '1h': return '1 hour ago';
-                            case '4h': return '4 hours ago';
-                            case '24h': return 'about 4 hours ago';
-                            case '2d': return '2 days ago';
-                            case '7d': return 'about 7 days ago';
-                            case '30d': return 'about 30 days ago';
-                            default: return 'Last period';
-                          }
-                        })()}
-                      </span>
-                      <span>Last checks</span>
-                      <span>now</span>
-                    </div>
                   </div>
                 </div>
               );
@@ -1423,7 +1435,6 @@ const MonitorDetailContent: React.FC = () => {
           })()}
         </div>
       </div>
-      </Card>
     </DashboardLayout>
   );
 };
