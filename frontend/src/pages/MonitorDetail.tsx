@@ -116,7 +116,7 @@ const MonitorDetailContent: React.FC = () => {
   const [timeRange, setTimeRange] = useState('24h');
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
-  const [availabilityTimeRange, setAvailabilityTimeRange] = useState('24h');
+  const [availabilityTimeRange, setAvailabilityTimeRange] = useState('30m');
   const [customStartDateTime, setCustomStartDateTime] = useState<Date | null>(null);
   const [customEndDateTime, setCustomEndDateTime] = useState<Date | null>(null);
   const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
@@ -632,10 +632,9 @@ const MonitorDetailContent: React.FC = () => {
 
   return (
     <DashboardLayout>
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
+      <Card className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          {/* Row 1: Back Button, Title and Uptime/Controls */}
+          {/* Row 1: Back Button, Title and Controls */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Button 
@@ -649,36 +648,12 @@ const MonitorDetailContent: React.FC = () => {
               
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {(() => {
-                    // Construct title from monitorType, targetHost, and targetPath
-                    if (monitor.monitorType && monitor.targetHost) {
-                      const path = monitor.targetPath || '/';
-                      return `${monitor.monitorType.toUpperCase()} Monitor`;
-                    }
-                    return monitor.monitorName || `Monitor ${id}`;
-                  })()}
+                  {monitor.monitorName || `Monitor ${id}`}
                 </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  {monitor.targetHost && monitor.targetPath 
-                    ? `${monitor.targetHost}${monitor.targetPath}`
-                    : 'Endpoint monitoring'}
-                </p>
               </div>
             </div>
             
             <div className="flex items-center gap-6">
-              <div className="text-center px-6 py-2 bg-green-50 rounded-lg border border-green-200">
-                <div className="text-3xl font-bold text-green-600">
-                  {(() => {
-                    const successCount = filteredHistory.filter(h => h.success).length;
-                    const totalCount = filteredHistory.length;
-                    const uptime = totalCount > 0 ? ((successCount / totalCount) * 100).toFixed(2) : '100.00';
-                    return `${uptime}%`;
-                  })()}
-                </div>
-                <div className="text-xs font-medium text-green-700 mt-1">Uptime</div>
-              </div>
-              
               <Button
                 variant="outline"
                 size="default"
@@ -723,17 +698,30 @@ const MonitorDetailContent: React.FC = () => {
               <span className="text-gray-500">Interval:</span>
               <span className="font-medium text-gray-900">30s</span>
             </div>
+            <div className="w-px h-4 bg-gray-300"></div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <TrendingUp className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-500">Uptime:</span>
+              <span className="font-medium text-green-700">
+                {(() => {
+                  const successCount = filteredHistory.filter(h => h.success).length;
+                  const totalCount = filteredHistory.length;
+                  const uptime = totalCount > 0 ? ((successCount / totalCount) * 100).toFixed(2) : '100.00';
+                  return `${uptime}%`;
+                })()}
+              </span>
+            </div>
           </div>
           
           {/* Row 3: Monitoring URL - Terminal Style */}
-          <div className="bg-gray-900 rounded-md p-3 border border-gray-700">
+          <div className="bg-gray-50 rounded-md p-2 border border-gray-200">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="flex items-center gap-2 shrink-0">
                   <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Endpoint</span>
+                  <span className="text-gray-600 text-xs font-semibold uppercase tracking-wider">Endpoint</span>
                 </div>
-                <code className="text-green-400 text-sm font-mono flex-1 truncate">
+                <code className="text-gray-800 text-sm font-mono flex-1 truncate">
                   {(() => {
                     // Always construct complete URL from monitorType, targetHost, and targetPath
                     const protocol = (monitor.monitorType || 'http').toLowerCase();
@@ -755,7 +743,7 @@ const MonitorDetailContent: React.FC = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-800"
+                  className="h-7 w-7 text-gray-500 hover:text-gray-700 hover:bg-gray-200"
                   onClick={() => {
                     const protocol = (monitor.monitorType || 'http').toLowerCase();
                     const host = monitor.targetHost || monitor.url;
@@ -772,7 +760,7 @@ const MonitorDetailContent: React.FC = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-800"
+                  className="h-7 w-7 text-gray-500 hover:text-gray-700 hover:bg-gray-200"
                   onClick={() => {
                     const protocol = (monitor.monitorType || 'http').toLowerCase();
                     const host = monitor.targetHost || monitor.url;
@@ -790,12 +778,86 @@ const MonitorDetailContent: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content Area - Checkly Style */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* Main Content Area - Checkly Style */}
+        <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Time Range Filter */}
         <div className="flex items-center justify-between mb-6">
+          {/* Region Multi-Select Filter */}
+          <div className="flex items-center gap-2">
+            <Label className="text-xs text-gray-400">
+              Regions:
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs min-w-[200px] justify-between"
+                >
+                  <span className="truncate">
+                    {selectedDatacenters.includes('all')
+                      ? 'All Regions'
+                      : selectedDatacenters.length === 0
+                      ? 'Select regions'
+                      : selectedDatacenters.length === 1
+                      ? selectedDatacenters[0]
+                      : `${selectedDatacenters.length} selected`}
+                  </span>
+                  <ChevronDown className="h-3 w-3 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64 p-0" align="start">
+                <div className="p-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="all-regions"
+                      checked={selectedDatacenters.includes('all')}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedDatacenters(['all']);
+                        } else {
+                          setSelectedDatacenters([]);
+                        }
+                      }}
+                    />
+                    <Label
+                      htmlFor="all-regions"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      All Regions
+                    </Label>
+                  </div>
+                  {uniqueDatacenters.map((datacenter) => (
+                    <div key={datacenter} className="flex items-center space-x-2 mt-2">
+                      <Checkbox
+                        id={datacenter}
+                        checked={selectedDatacenters.includes(datacenter)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            if (selectedDatacenters.includes('all')) {
+                              setSelectedDatacenters([datacenter]);
+                            } else {
+                              setSelectedDatacenters([...selectedDatacenters, datacenter]);
+                            }
+                          } else {
+                            setSelectedDatacenters(selectedDatacenters.filter(d => d !== datacenter));
+                          }
+                        }}
+                      />
+                      <Label
+                        htmlFor={datacenter}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {datacenter}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+          
           <div className="flex items-center gap-1 flex-wrap">
             <Button
               variant={availabilityTimeRange === '5m' ? 'default' : 'ghost'}
@@ -869,100 +931,6 @@ const MonitorDetailContent: React.FC = () => {
             >
               1 MONTH
             </Button>
-          </div>
-          
-          {/* Region Multi-Select Filter */}
-          <div className="flex items-center gap-2">
-            <Label className="text-xs text-gray-400">
-              Regions:
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 text-xs min-w-[200px] justify-between"
-                >
-                  <span className="truncate">
-                    {selectedDatacenters.includes('all')
-                      ? 'All Regions'
-                      : selectedDatacenters.length === 0
-                      ? 'Select regions'
-                      : selectedDatacenters.length === 1
-                      ? selectedDatacenters[0]
-                      : `${selectedDatacenters.length} selected`}
-                  </span>
-                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0" align="start">
-                <div className="max-h-[300px] overflow-auto p-2">
-                  <div className="space-y-2">
-                    {/* All Regions Option */}
-                    <div className="flex items-center space-x-2 p-2 hover:bg-accent rounded-sm cursor-pointer">
-                      <Checkbox
-                        id="dc-all"
-                        checked={selectedDatacenters.includes('all')}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedDatacenters(['all']);
-                          } else {
-                            setSelectedDatacenters([]);
-                          }
-                        }}
-                      />
-                      <label
-                        htmlFor="dc-all"
-                        className="text-sm font-medium cursor-pointer flex-1"
-                      >
-                        All Regions
-                      </label>
-                    </div>
-                    
-                    <div className="border-t" />
-                    
-                    {/* Individual Regions */}
-                    {(() => {
-                      const uniqueDatacenters = Array.from(
-                        new Set(history.map(item => item.agentRegion).filter(Boolean))
-                      ).sort();
-                      
-                      return uniqueDatacenters.map((dc) => (
-                        <div
-                          key={dc}
-                          className="flex items-center space-x-2 p-2 hover:bg-accent rounded-sm cursor-pointer"
-                        >
-                          <Checkbox
-                            id={`dc-${dc}`}
-                            checked={!selectedDatacenters.includes('all') && selectedDatacenters.includes(dc!)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                // Remove 'all' and add this region
-                                const newSelection = selectedDatacenters.filter(d => d !== 'all');
-                                if (!newSelection.includes(dc!)) {
-                                  newSelection.push(dc!);
-                                }
-                                setSelectedDatacenters(newSelection.length > 0 ? newSelection : [dc!]);
-                              } else {
-                                // Remove this region
-                                const newSelection = selectedDatacenters.filter(d => d !== dc);
-                                setSelectedDatacenters(newSelection.length > 0 ? newSelection : ['all']);
-                              }
-                            }}
-                          />
-                          <label
-                            htmlFor={`dc-${dc}`}
-                            className="text-sm cursor-pointer flex-1"
-                          >
-                            {dc}
-                          </label>
-                        </div>
-                      ));
-                    })()}
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
           </div>
         </div>
 
@@ -1041,7 +1009,7 @@ const MonitorDetailContent: React.FC = () => {
               });
               
               return (
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={200}>
                   <RechartsLineChart data={lineChartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis 
@@ -1272,7 +1240,7 @@ const MonitorDetailContent: React.FC = () => {
                   
                   {/* Bar Chart Visualization */}
                   <div className="relative">
-                    <ResponsiveContainer width="100%" height={160}>
+                    <ResponsiveContainer width="100%" height={120}>
                       <BarChart
                         data={(() => {
                           // Create time buckets for visualization
@@ -1455,6 +1423,7 @@ const MonitorDetailContent: React.FC = () => {
           })()}
         </div>
       </div>
+      </Card>
     </DashboardLayout>
   );
 };
