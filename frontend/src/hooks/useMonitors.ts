@@ -83,6 +83,8 @@ export interface MonitorFilters {
   sortOrder?: 'asc' | 'desc';
   activeOnly?: boolean; // Show only monitors with recent activity
   maxAge?: number; // Max age in minutes for considering monitors active (default: 15)
+  startTime?: Date; // Start time for filtering history
+  endTime?: Date; // End time for filtering history
 }
 
 export interface MonitorStats {
@@ -244,15 +246,47 @@ export function useDNSMonitors(filters?: Omit<MonitorFilters, 'monitorType'>) {
   });
 }
 
-// Get monitor history
-export function useMonitorHistory(monitorId: string) {
+// Get monitor history with filters
+export function useMonitorHistory(monitorId: string, filters?: MonitorFilters) {
+  const queryParams = new URLSearchParams();
+  if (filters) {
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        if (value instanceof Date) {
+          queryParams.append(key, value.toISOString());
+        } else {
+          queryParams.append(key, String(value));
+        }
+      }
+    });
+  }
+
+  const url = queryParams.toString()
+    ? apiUrl(`/monitors/history/${monitorId}?${queryParams.toString()}`)
+    : apiUrl(`/monitors/history/${monitorId}`);
+
+  console.log('🚀 useMonitorHistory: Making API call:', {
+    url,
+    monitorId,
+    filters,
+    timestamp: new Date().toISOString()
+  });
+
   return useQuery<Monitor[]>({
-    queryKey: ['monitor-history', monitorId],
+    queryKey: ['monitor-history', monitorId, filters],
     queryFn: async () => {
-      const res = await axios.get(apiUrl(`/monitors/history/${monitorId}`));
+      console.log('📡 useMonitorHistory: Executing queryFn for:', { monitorId, filters });
+      const res = await axios.get(url);
+      console.log('📥 useMonitorHistory: Received response:', {
+        status: res.status,
+        dataLength: Array.isArray(res.data) ? res.data.length : 'not array',
+        url
+      });
       return res.data;
     },
     enabled: !!monitorId,
+    keepPreviousData: true,
+    staleTime: 30000, // Consider data fresh for 30 seconds
   });
 }
 

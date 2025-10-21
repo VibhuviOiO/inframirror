@@ -54,6 +54,7 @@ import {
 import { MonitorContentDetails } from '@/components/monitoring/components/MonitorContentDetails';
 import GenericChart from '@/components/charts/GenericChart';
 import RegionMonitoringBarGraph from '@/components/charts/RegionMonitoringBarGraph';
+import { useMonitorHistory } from '@/hooks/useMonitors';
 
 interface MonitorHistory {
   id: number;
@@ -103,7 +104,6 @@ const MonitorDetailContent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [monitor, setMonitor] = useState<MonitorDetails | null>(null);
-  const [history, setHistory] = useState<MonitorHistory[]>([]);
   const [stats, setStats] = useState<MonitorStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('24h');
@@ -119,7 +119,7 @@ const MonitorDetailContent: React.FC = () => {
   const [selectedRecord, setSelectedRecord] = useState<MonitorHistory | null>(null);
   const [selectedDatacenterRecords, setSelectedDatacenterRecords] = useState<MonitorHistory[] | null>(null);
   
-  // Helper to get current time range
+  // Get time range for filtering
   const getTimeRange = React.useCallback(() => {
     const now = new Date();
     let startTime: Date;
@@ -171,18 +171,53 @@ const MonitorDetailContent: React.FC = () => {
     return { startTime, endTime };
   }, [availabilityTimeRange, customStartDateTime, customEndDateTime]);
 
+  // Create filters for API calls based on current state
+  const historyFilters = React.useMemo(() => {
+    const { startTime, endTime } = getTimeRange();
+    const filters: any = {
+      startTime,
+      endTime,
+      limit: 5000, // Increased limit for detailed view
+    };
+
+    // Add region filter if not 'all'
+    if (!selectedDatacenters.includes('all')) {
+      filters.agentRegion = selectedDatacenters.join(',');
+    }
+
+    return filters;
+  }, [availabilityTimeRange, customStartDateTime, customEndDateTime, selectedDatacenters, getTimeRange]);
+
+  // Use dynamic API calls for monitor history
+  const { data: history = [], isLoading: historyLoading, error: historyError } = useMonitorHistory(id || '', historyFilters);
+
+  // Debug: Log when filters change and API is called
+  React.useEffect(() => {
+    console.log('🔄 MonitorDetail: Filters changed, fetching data:', {
+      monitorId: id,
+      filters: historyFilters,
+      timestamp: new Date().toISOString()
+    });
+  }, [historyFilters, id]);
+
+  // Debug: Log when data is received
+  React.useEffect(() => {
+    if (history.length > 0) {
+      console.log('✅ MonitorDetail: Data received:', {
+        recordCount: history.length,
+        regions: [...new Set(history.map(h => h.agentRegion).filter(Boolean))],
+        timeRange: historyFilters.startTime && historyFilters.endTime ? 
+          `${historyFilters.startTime.toISOString()} - ${historyFilters.endTime.toISOString()}` : 'No time range',
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [history, historyFilters]);
+
   // Filter history based on time range and region
   const filteredHistory = React.useMemo(() => {
-    const { startTime, endTime } = getTimeRange();
-
-    return history.filter(item => {
-      const itemDate = new Date(item.executedAt);
-      const timeInRange = itemDate >= startTime && itemDate <= endTime;
-      const regionMatch = selectedDatacenters.includes('all') || 
-                              (item.agentRegion && selectedDatacenters.includes(item.agentRegion));
-      return timeInRange && regionMatch;
-    });
-  }, [history, getTimeRange, selectedDatacenters]);
+    // Since we're now getting filtered data from API, just return the history
+    return history;
+  }, [history]);
 
   // Get unique regions for dropdown
   const uniqueDatacenters = React.useMemo(() => {
@@ -546,12 +581,12 @@ const MonitorDetailContent: React.FC = () => {
     if (!autoRefresh) return;
     
     const interval = setInterval(() => {
-      fetchMonitorData();
+      // The useMonitorHistory hook will automatically refetch when filters change
       setLastRefresh(new Date());
     }, 30000);
     
     return () => clearInterval(interval);
-  }, [autoRefresh, id]);
+  }, [autoRefresh]);
 
   const fetchMonitorData = async () => {
     if (!id) return;
@@ -559,13 +594,11 @@ const MonitorDetailContent: React.FC = () => {
     try {
       setLoading(true);
       
-      // Fetch monitor history - this contains all the data we need
-      const historyResponse = await fetch(`/api/monitors/history/${id}?limit=1000`);
+      // Fetch monitor details from the latest history record
+      const historyResponse = await fetch(`/api/monitors/history/${id}?limit=1`);
       if (historyResponse.ok) {
         const historyData = await historyResponse.json();
         const historyArray = Array.isArray(historyData) ? historyData : [];
-        console.log('API Response - First few records:', historyArray.slice(0, 3));
-        setHistory(historyArray);
         
         // Extract monitor details from the latest history record
         if (historyArray.length > 0) {
@@ -584,7 +617,6 @@ const MonitorDetailContent: React.FC = () => {
             createdAt: latestRecord.executedAt || new Date().toISOString(),
             updatedAt: latestRecord.executedAt || new Date().toISOString()
           };
-          console.log('Transformed monitor:', transformedMonitor);
           setMonitor(transformedMonitor);
         }
       }
@@ -600,7 +632,10 @@ const MonitorDetailContent: React.FC = () => {
     fetchMonitorData();
   }, [id]);
 
-  if (loading) {
+  // Combined loading state
+  const isLoading = loading || historyLoading;
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">

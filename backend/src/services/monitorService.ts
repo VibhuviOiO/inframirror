@@ -32,10 +32,10 @@ export async function getMonitorsByType(monitorType: string, filters?: MonitorFi
   }
 }
 
-export async function getMonitorHistory(monitorId: string) {
+export async function getMonitorHistory(monitorId: string, filters?: MonitorFilters) {
   try {
-    logInfo(`Fetching monitor history for: ${monitorId}`);
-    return await repository.getByMonitorId(monitorId);
+    logInfo(`Fetching monitor history for: ${monitorId}`, filters);
+    return await repository.getByMonitorId(monitorId, filters);
   } catch (err) {
     logError('Service error: getMonitorHistory', err);
     throw err;

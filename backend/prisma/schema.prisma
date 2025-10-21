@@ -129,6 +129,7 @@ model Monitors {
   @@index([responseTime(sort: Desc)])
   @@index([agentRegion])
   @@index([errorType])
+  @@index([monitorId, agentRegion, executedAt(sort: Desc)])
   @@map("monitors")
 }
 

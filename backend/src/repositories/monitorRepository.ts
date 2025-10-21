@@ -50,10 +50,45 @@ export async function getById(id: number) {
   });
 }
 
-export async function getByMonitorId(monitorId: string) {
-  return prisma.monitors.findMany({ 
-    where: { monitorId },
-    orderBy: { executedAt: 'desc' }
+export async function getByMonitorId(monitorId: string, filters?: MonitorFilters) {
+  const {
+    agentRegion,
+    success,
+    limit = 1000,
+    offset = 0,
+    sortBy = 'executedAt',
+    sortOrder = 'desc',
+    startTime,
+    endTime
+  } = filters || {};
+
+  const where: any = { monitorId };
+  
+  if (agentRegion) {
+    where.agentRegion = agentRegion;
+  }
+  
+  if (success !== undefined) {
+    where.success = success;
+  }
+  
+  if (startTime || endTime) {
+    where.executedAt = {};
+    if (startTime) {
+      where.executedAt.gte = startTime;
+    }
+    if (endTime) {
+      where.executedAt.lte = endTime;
+    }
+  }
+
+  return prisma.monitors.findMany({
+    where,
+    orderBy: {
+      [sortBy]: sortOrder
+    },
+    take: limit,
+    skip: offset
   });
 }
 
@@ -78,63 +113,61 @@ export async function getLatestForEachMonitor(filters?: MonitorFilters) {
     maxAge = 15 // Default to 15 minutes
   } = filters || {};
 
-  // Build the where clause
-  const whereClause: any = {};
-  if (monitorType) whereClause.monitorType = monitorType as any;
-  if (agentRegion) whereClause.agentRegion = agentRegion;
-  if (success !== undefined) whereClause.success = success;
+  // Build the where clause for raw SQL
+  const conditions: string[] = [];
+  const params: any[] = [];
+  let paramIndex = 1;
+
+  if (monitorType) {
+    conditions.push(`"monitorType"::text = $${paramIndex}`);
+    params.push(monitorType);
+    paramIndex++;
+  }
+
+  if (agentRegion) {
+    conditions.push(`"agentRegion" = $${paramIndex}`);
+    params.push(agentRegion);
+    paramIndex++;
+  }
+
+  if (success !== undefined) {
+    conditions.push(`"success" = $${paramIndex}`);
+    params.push(success);
+    paramIndex++;
+  }
+
   if (targetHost) {
-    whereClause.targetHost = {
-      contains: targetHost,
-      mode: 'insensitive'
-    };
+    conditions.push(`"targetHost" ILIKE $${paramIndex}`);
+    params.push(`%${targetHost}%`);
+    paramIndex++;
   }
 
-  // Add activeOnly filter - only show monitors with recent activity
   if (activeOnly) {
-    const cutoffTime = new Date(Date.now() - (maxAge * 60 * 1000)); // Convert minutes to milliseconds
-    whereClause.executedAt = {
-      gte: cutoffTime
-    };
+    const cutoffTime = new Date(Date.now() - (maxAge * 60 * 1000));
+    conditions.push(`"executedAt" >= $${paramIndex}`);
+    params.push(cutoffTime);
+    paramIndex++;
   }
 
-  // Get all unique combinations of monitorId and agentRegion
-  const uniqueMonitorRegions = await prisma.monitors.groupBy({
-    by: ['monitorId', 'agentRegion'],
-    where: whereClause
-  });
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-  // Get the latest record for each monitorId + agentRegion combination
-  const latestMonitors = await Promise.all(
-    uniqueMonitorRegions.map(async ({ monitorId, agentRegion: region }) => {
-      const monitorWhere: any = { monitorId };
-      if (region !== null) monitorWhere.agentRegion = region;
-      if (monitorType) monitorWhere.monitorType = monitorType as any;
-      if (success !== undefined) monitorWhere.success = success;
-      if (targetHost) {
-        monitorWhere.targetHost = {
-          contains: targetHost,
-          mode: 'insensitive'
-        };
-      }
+  // Use raw SQL with DISTINCT ON for optimal performance
+  // This gets the latest record for each (monitorId, agentRegion) combination in a single query
+  const query = `
+    SELECT DISTINCT ON ("monitorId", "agentRegion")
+      id, "monitorId", "agentRegion", "monitorType", "targetHost", "success",
+      "responseTime", "responseStatusCode", "executedAt", "errorMessage", "rawResponseHeaders",
+      "rawRequestHeaders", "rawNetworkData"
+    FROM monitors
+    ${whereClause}
+    ORDER BY "monitorId", "agentRegion", "executedAt" DESC
+  `;
 
-      // Add activeOnly filter for individual monitor lookup
-      if (activeOnly) {
-        const cutoffTime = new Date(Date.now() - (maxAge * 60 * 1000));
-        monitorWhere.executedAt = {
-          gte: cutoffTime
-        };
-      }
+  const latestMonitors = await prisma.$queryRawUnsafe(query, ...params);
 
-      return prisma.monitors.findFirst({
-        where: monitorWhere,
-        orderBy: { executedAt: 'desc' }
-      });
-    })
-  );
-
-  return latestMonitors.filter(Boolean).sort((a, b) => 
-    new Date(b!.executedAt).getTime() - new Date(a!.executedAt).getTime()
+  // Sort by executedAt desc for final ordering
+  return (latestMonitors as any[]).sort((a, b) =>
+    new Date(b.executedAt).getTime() - new Date(a.executedAt).getTime()
   );
 }
 

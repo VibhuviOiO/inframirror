@@ -72,6 +72,8 @@ export interface MonitorFilters {
   offset?: number;
   sortBy?: 'executedAt' | 'responseTime' | 'monitorId';
   sortOrder?: 'asc' | 'desc';
-  activeOnly?: boolean; // Show only monitors with recent activity
-  maxAge?: number; // Max age in minutes for considering monitors active (default: 15)
+  activeOnly?: boolean; 
+  maxAge?: number;
+  startTime?: Date;
+  endTime?: Date; 
 }

@@ -162,7 +162,32 @@ router.get('/dns', async (req, res, next) => {
 // Get monitor history by monitorId
 router.get('/history/:monitorId', async (req, res, next) => {
   try {
-    const history = await service.getMonitorHistory(req.params.monitorId);
+    const filters: MonitorFilters = {
+      agentRegion: req.query.region as string,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
+      offset: req.query.offset ? parseInt(req.query.offset as string) : undefined,
+      sortBy: req.query.sortBy as 'executedAt' | 'responseTime' | 'monitorId',
+      sortOrder: req.query.sortOrder as 'asc' | 'desc',
+      activeOnly: req.query.activeOnly ? req.query.activeOnly === 'true' : undefined,
+      maxAge: req.query.maxAge ? parseInt(req.query.maxAge as string) : undefined
+    };
+
+    // Add time range filtering
+    if (req.query.startTime) {
+      filters.startTime = new Date(req.query.startTime as string);
+    }
+    if (req.query.endTime) {
+      filters.endTime = new Date(req.query.endTime as string);
+    }
+
+    // Remove undefined values
+    Object.keys(filters).forEach(key => {
+      if (filters[key as keyof MonitorFilters] === undefined) {
+        delete filters[key as keyof MonitorFilters];
+      }
+    });
+
+    const history = await service.getMonitorHistory(req.params.monitorId, filters);
     res.json(history);
   } catch (err) {
     next(err);
