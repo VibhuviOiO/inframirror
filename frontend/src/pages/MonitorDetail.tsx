@@ -215,8 +215,8 @@ const MonitorDetailContent: React.FC = () => {
 
   // Filter history based on time range and region
   const filteredHistory = React.useMemo(() => {
-    // Since we're now getting filtered data from API, just return the history
-    return history;
+    // Cast the data to MonitorHistory[] since we know the API returns this structure
+    return (history as MonitorHistory[]);
   }, [history]);
 
   // Get unique regions for dropdown
@@ -699,9 +699,13 @@ const MonitorDetailContent: React.FC = () => {
             
             <div className="flex items-center gap-6">
               <Button
+                type="button"
                 variant="outline"
                 size="default"
-                onClick={() => setAutoRefresh(!autoRefresh)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setAutoRefresh(!autoRefresh);
+                }}
                 className={`${autoRefresh ? 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100' : 'hover:bg-gray-50'}`}
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
@@ -785,6 +789,7 @@ const MonitorDetailContent: React.FC = () => {
               </div>
               <div className="flex items-center gap-1 shrink-0">
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7 text-gray-500 hover:text-gray-700 hover:bg-gray-200"
@@ -802,6 +807,7 @@ const MonitorDetailContent: React.FC = () => {
                   <Copy className="w-4 h-4" />
                 </Button>
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7 text-gray-500 hover:text-gray-700 hover:bg-gray-200"
@@ -828,6 +834,126 @@ const MonitorDetailContent: React.FC = () => {
           {/* Time Range Filter */}
           <div className="bg-white rounded-xl border border-slate-200/60 shadow-sm p-6">
             <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-1 flex-wrap">
+                <Button
+                  type="button"
+                  variant={availabilityTimeRange === '5m' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAvailabilityTimeRange('5m');
+                  }}
+                  className="text-xs h-8"
+                >
+                  5 MIN
+                </Button>
+                <Button
+                  type="button"
+                  variant={availabilityTimeRange === '15m' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAvailabilityTimeRange('15m');
+                  }}
+                  className="text-xs h-8"
+                >
+                  15 MIN
+                </Button>
+                <Button
+                  type="button"
+                  variant={availabilityTimeRange === '30m' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAvailabilityTimeRange('30m');
+                  }}
+                  className="text-xs h-8"
+                >
+                  30 MIN
+                </Button>
+                <Button
+                  type="button"
+                  variant={availabilityTimeRange === '1h' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAvailabilityTimeRange('1h');
+                  }}
+                  className="text-xs h-8"
+                >
+                  1 HOUR
+                </Button>
+                <Button
+                  type="button"
+                  variant={availabilityTimeRange === '4h' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAvailabilityTimeRange('4h');
+                  }}
+                  className="text-xs h-8"
+                >
+                  4 HOURS
+                </Button>
+                <Button
+                  type="button"
+                  variant={availabilityTimeRange === '24h' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAvailabilityTimeRange('24h');
+                  }}
+                  className="text-xs h-8"
+                >
+                  24 HOURS
+                </Button>
+                <Button
+                  type="button"
+                  variant={availabilityTimeRange === '2d' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAvailabilityTimeRange('2d');
+                  }}
+                  className="text-xs h-8"
+                >
+                  2 DAYS
+                </Button>
+                <Button
+                  type="button"
+                  variant={availabilityTimeRange === '7d' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAvailabilityTimeRange('7d');
+                  }}
+                  className="text-xs h-8"
+                >
+                  1 WEEK
+                </Button>
+                <Button
+                  type="button"
+                  variant={availabilityTimeRange === '30d' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAvailabilityTimeRange('30d');
+                  }}
+                  className="text-xs h-8"
+                >
+                  1 MONTH
+                </Button>
+              </div>
+              
               {/* Region Multi-Select Filter */}
               <div className="flex items-center gap-2">
                 <Label className="text-xs text-gray-400">
@@ -836,9 +962,14 @@ const MonitorDetailContent: React.FC = () => {
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
+                      type="button"
                       variant="outline"
                       size="sm"
                       className="h-8 text-xs min-w-[200px] justify-between"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
                     >
                       <span className="truncate">
                         {selectedDatacenters.includes('all')
@@ -901,81 +1032,6 @@ const MonitorDetailContent: React.FC = () => {
                     </div>
                   </PopoverContent>
                 </Popover>
-              </div>
-              
-              <div className="flex items-center gap-1 flex-wrap">
-                <Button
-                  variant={availabilityTimeRange === '5m' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('5m')}
-                  className="text-xs h-8"
-                >
-                  5 MIN
-                </Button>
-                <Button
-                  variant={availabilityTimeRange === '15m' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('15m')}
-                  className="text-xs h-8"
-                >
-                  15 MIN
-                </Button>
-                <Button
-                  variant={availabilityTimeRange === '30m' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('30m')}
-                  className="text-xs h-8"
-                >
-                  30 MIN
-                </Button>
-                <Button
-                  variant={availabilityTimeRange === '1h' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('1h')}
-                  className="text-xs h-8"
-                >
-                  1 HOUR
-                </Button>
-                <Button
-                  variant={availabilityTimeRange === '4h' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('4h')}
-                  className="text-xs h-8"
-                >
-                  4 HOURS
-                </Button>
-                <Button
-                  variant={availabilityTimeRange === '24h' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('24h')}
-                  className="text-xs h-8"
-                >
-                  24 HOURS
-                </Button>
-                <Button
-                  variant={availabilityTimeRange === '2d' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('2d')}
-                  className="text-xs h-8"
-                >
-                  2 DAYS
-                </Button>
-                <Button
-                  variant={availabilityTimeRange === '7d' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('7d')}
-                  className="text-xs h-8"
-                >
-                  1 WEEK
-                </Button>
-                <Button
-                  variant={availabilityTimeRange === '30d' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setAvailabilityTimeRange('30d')}
-                  className="text-xs h-8"
-                >
-                  1 MONTH
-                </Button>
               </div>
             </div>
           </div>
@@ -1276,9 +1332,11 @@ const MonitorDetailContent: React.FC = () => {
                           {/* Action Buttons Row */}
                           <div className="flex items-center gap-3">
                             <Button
+                              type="button"
                               variant="default"
                               size="sm"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.preventDefault();
                                 setSelectedDatacenterRecords(records);
                                 setSelectedRecord(null); // Clear any previous selection
                               }}
