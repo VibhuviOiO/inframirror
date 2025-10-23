@@ -11,7 +11,16 @@ services:
       - "5432:5432"
     volumes:
       - ./tmp/pgdata:/var/lib/postgresql/data
-
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: adminpassword
+    ports:
+      - "8090:80"
+    depends_on:
+      - postgres
   inframirror:
     image: inframirror
     container_name: inframirror
@@ -21,3 +30,52 @@ services:
       DATABASE_URL: postgres://inframirror:inframirror@postgres:5432/inframirror
     ports:
       - "8080:8080"
+  agent-us-east-1:
+    image: infragent:latest
+    container_name: infragent-us-east-1
+    hostname: us-east-1-agent-01
+    environment:
+      - AGENT_NAME=api-monitor-us-east-1
+      - DATACENTER=us-east-1
+      - AGENT_HOST=us-east-1-agent-01
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=inframirror
+      - DATABASE_USER=inframirror
+      - DATABASE_PASSWORD=inframirror
+      - MONITORS_CONFIG=/app/configs/monitors-us-east-1.yml
+      - LOG_LEVEL=info
+    volumes:
+      - ./config/monitors-us-east-1.yml:/app/configs/monitors-us-east-1.yml:ro
+      - ./config/agent-us-east-1.yml:/app/configs/agent.yml:ro
+    ports:
+      - "9001:9001"
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - inframirror
+  agent-us-west-2:
+    image: infragent:latest
+    container_name: infragent-us-west-2
+    hostname: us-west-2-agent-01
+    environment:
+      - AGENT_NAME=api-monitor-us-west-2
+      - DATACENTER=us-west-2
+      - AGENT_HOST=us-west-2-agent-01
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=inframirror
+      - DATABASE_USER=inframirror
+      - DATABASE_PASSWORD=inframirror
+      - MONITORS_CONFIG=/app/configs/monitors-us-west-2.yml
+      - LOG_LEVEL=info   
+    volumes:
+      - ./config/monitors-us-west-2.yml:/app/configs/monitors-us-west-2.yml:ro
+      - ./config/agent-us-west-2.yml:/app/configs/agent.yml:ro
+    ports:
+      - "9002:9002"
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - inframirror
+  
