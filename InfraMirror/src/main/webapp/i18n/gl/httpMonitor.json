@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "HttpMonitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Crear novo Http Monitor",
+        "createOrEditLabel": "Crear ou editar Http Monitor",
+        "search": "Search for Http Monitor",
+        "notFound": "No Http Monitors found"
+      },
+      "created": "Un novo Http Monitor foi creado co identificador {{ param }}",
+      "updated": "Un Http Monitor foi actualizado co identificador {{ param }}",
+      "deleted": "Un Http Monitor foi eliminado co identificador {{ param }}",
+      "delete": {
+        "question": "Seguro que desexa eliminar Http Monitor {{ id }}?"
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}

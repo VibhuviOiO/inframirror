@@ -74,6 +74,28 @@ public class CacheConfiguration {
             createCache(cm, vibhuvi.oio.inframirror.repository.UserRepository.USERS_BY_LOGIN_CACHE, jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.repository.UserRepository.USERS_BY_EMAIL_CACHE, jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.Authority.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Region.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Region.class.getName() + ".datacenters", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Datacenter.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Datacenter.class.getName() + ".agents", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Datacenter.class.getName() + ".instances", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Agent.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Agent.class.getName() + ".instances", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Agent.class.getName() + ".httpHeartbeats", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Agent.class.getName() + ".pingHeartbeats", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Instance.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Instance.class.getName() + ".pingHeartbeats", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Schedule.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Schedule.class.getName() + ".monitors", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.HttpMonitor.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.HttpMonitor.class.getName() + ".heartbeats", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.HttpHeartbeat.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.PingHeartbeat.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.AgentMonitor.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.ApiKey.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.AuditTrail.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Tag.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.SessionLog.class.getName(), jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }

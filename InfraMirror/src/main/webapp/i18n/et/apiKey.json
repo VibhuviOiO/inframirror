@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "Api Keys",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Api Key",
+        "createOrEditLabel": "Lisa või muuda Api Key",
+        "search": "Otsi Api Key",
+        "notFound": "Ei leitud ühtegi Api Keys"
+      },
+      "created": "Uus Api Key on loodud identifikaatoriga {{ param }}",
+      "updated": "Api Key identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Api Key identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Api Key {{ id }}?"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

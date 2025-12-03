@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "Api Keys",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Api Key erstellen",
+        "createOrEditLabel": "Api Key erstellen oder bearbeiten",
+        "search": "Suche nach Api Key",
+        "notFound": "Keine Api Keys gefunden"
+      },
+      "created": "Api Key erstellt mit ID {{ param }}",
+      "updated": "Api Key aktualisiert mit ID {{ param }}",
+      "deleted": "Api Key gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Api Key {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

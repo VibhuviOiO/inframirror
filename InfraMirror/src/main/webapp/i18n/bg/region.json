@@ -1,0 +1,28 @@
+{
+  "infraMirrorApp": {
+    "region": {
+      "home": {
+        "title": "Regions",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Създайте нов Region",
+        "createOrEditLabel": "Създайте или редактирайте Region",
+        "search": "Търси Region",
+        "notFound": "Regions не са намерени"
+      },
+      "created": "Създаден е нов Region с идентификатор {{ param }}",
+      "updated": "Region с идентификатор {{ param }} e oбновен",
+      "deleted": "Region с идентификатор {{ param }} е изтрит",
+      "delete": {
+        "question": "Наистина ли искате да изтриете Region {{ id }}?"
+      },
+      "detail": {
+        "title": "Region"
+      },
+      "id": "ID",
+      "name": "Name",
+      "regionCode": "Region Code",
+      "groupName": "Group Name",
+      "datacenters": "Datacenters"
+    }
+  }
+}

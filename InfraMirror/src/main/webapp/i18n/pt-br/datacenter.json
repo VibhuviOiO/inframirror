@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Datacenter",
+        "createOrEditLabel": "Criar ou editar Datacenter",
+        "search": "Pesquisar por Datacenter",
+        "notFound": "Nenhum Datacenter encontrado"
+      },
+      "created": "Um novo Datacenter foi criado com o identificador {{ param }}",
+      "updated": "Um Datacenter foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Datacenter foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

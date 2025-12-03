@@ -1,0 +1,28 @@
+{
+  "infraMirrorApp": {
+    "region": {
+      "home": {
+        "title": "Regions",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Crear novo Region",
+        "createOrEditLabel": "Crear ou editar Region",
+        "search": "Search for Region",
+        "notFound": "No Regions found"
+      },
+      "created": "Un novo Region foi creado co identificador {{ param }}",
+      "updated": "Un Region foi actualizado co identificador {{ param }}",
+      "deleted": "Un Region foi eliminado co identificador {{ param }}",
+      "delete": {
+        "question": "Seguro que desexa eliminar Region {{ id }}?"
+      },
+      "detail": {
+        "title": "Region"
+      },
+      "id": "ID",
+      "name": "Name",
+      "regionCode": "Region Code",
+      "groupName": "Group Name",
+      "datacenters": "Datacenters"
+    }
+  }
+}

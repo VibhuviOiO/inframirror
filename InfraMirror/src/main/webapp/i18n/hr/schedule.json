@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Kreirati Schedule",
+        "createOrEditLabel": "Kreirati ili urediti Schedule",
+        "search": "Tražiti Schedule",
+        "notFound": "Nije nađeno Schedules"
+      },
+      "created": "Kreiran je Schedule sa identifikatorom {{ param }}",
+      "updated": "Ažuriran je Schedule sa identifikatorom {{ param }}",
+      "deleted": "Obrisan je Schedule sa identifikatorom {{ param }}",
+      "delete": {
+        "question": "Da li ste sigurni da želite obrisati Schedule {{ id }}?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

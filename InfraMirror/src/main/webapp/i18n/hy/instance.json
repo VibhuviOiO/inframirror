@@ -1,0 +1,53 @@
+{
+  "infraMirrorApp": {
+    "instance": {
+      "home": {
+        "title": "Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Ստեղծել նոր Instance",
+        "createOrEditLabel": "Ստեղծել կամ փոփոխել Instance",
+        "search": "Գտնել Instance",
+        "notFound": "No Instances found"
+      },
+      "created": "Նոր Instance ստեղծված է {{ param }} նունացուցիչով",
+      "updated": "Instance թարմացվաց է {{ param }} նունացուցիչով",
+      "deleted": "Instance հեռացված է {{ param }}  նունացուցիչով",
+      "delete": {
+        "question": "Դուք վստահ ե՞ք, որ ցանկանում եք հեռացնել Instance {{ id }}?"
+      },
+      "detail": {
+        "title": "Instance"
+      },
+      "id": "ID",
+      "name": "Name",
+      "hostname": "Hostname",
+      "description": "Description",
+      "instanceType": "Instance Type",
+      "monitoringType": "Monitoring Type",
+      "operatingSystem": "Operating System",
+      "platform": "Platform",
+      "privateIpAddress": "Private Ip Address",
+      "publicIpAddress": "Public Ip Address",
+      "tags": "Tags",
+      "pingEnabled": "Ping Enabled",
+      "pingInterval": "Ping Interval",
+      "pingTimeoutMs": "Ping Timeout Ms",
+      "pingRetryCount": "Ping Retry Count",
+      "hardwareMonitoringEnabled": "Hardware Monitoring Enabled",
+      "hardwareMonitoringInterval": "Hardware Monitoring Interval",
+      "cpuWarningThreshold": "Cpu Warning Threshold",
+      "cpuDangerThreshold": "Cpu Danger Threshold",
+      "memoryWarningThreshold": "Memory Warning Threshold",
+      "memoryDangerThreshold": "Memory Danger Threshold",
+      "diskWarningThreshold": "Disk Warning Threshold",
+      "diskDangerThreshold": "Disk Danger Threshold",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "lastPingAt": "Last Ping At",
+      "lastHardwareCheckAt": "Last Hardware Check At",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter",
+      "agent": "Agent"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "Http Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Http Monitor baru",
+        "createOrEditLabel": "Buat atau edit Http Monitor",
+        "search": "Cari Http Monitor",
+        "notFound": "No Http Monitors found"
+      },
+      "created": "Http Monitor dengan id {{ param }} telah dibuat",
+      "updated": "Http Monitor dengan id {{ param }} telah diperbaharui",
+      "deleted": "Http Monitor dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Http Monitor {{ id }}?"
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}

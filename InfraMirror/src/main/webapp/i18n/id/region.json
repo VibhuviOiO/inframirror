@@ -1,0 +1,28 @@
+{
+  "infraMirrorApp": {
+    "region": {
+      "home": {
+        "title": "Regions",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Region baru",
+        "createOrEditLabel": "Buat atau edit Region",
+        "search": "Cari Region",
+        "notFound": "No Regions found"
+      },
+      "created": "Region dengan id {{ param }} telah dibuat",
+      "updated": "Region dengan id {{ param }} telah diperbaharui",
+      "deleted": "Region dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Region {{ id }}?"
+      },
+      "detail": {
+        "title": "Region"
+      },
+      "id": "ID",
+      "name": "Name",
+      "regionCode": "Region Code",
+      "groupName": "Group Name",
+      "datacenters": "Datacenters"
+    }
+  }
+}

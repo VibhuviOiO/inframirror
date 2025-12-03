@@ -1,0 +1,53 @@
+{
+  "infraMirrorApp": {
+    "instance": {
+      "home": {
+        "title": "Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "కొత్త Instance  సృష్టించండి",
+        "createOrEditLabel": "Instance సృష్టించండి లేదా సవరించండి",
+        "search": "Instance కొరకు శోధించండి",
+        "notFound": "No Instances found"
+      },
+      "created": "{{ param }} ఐడీ తో ఒక కొత్త Instance సృష్టించబడినది",
+      "updated": "{{ param }} ఐడీ తో ఒక కొత్త Instance సవరించబడినది",
+      "deleted": "{{ param }} ఐడీ తో ఒక కొత్త Instance తొలగించబడినది",
+      "delete": {
+        "question": "మీరు Instance {{ id }} ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?"
+      },
+      "detail": {
+        "title": "Instance"
+      },
+      "id": "ID",
+      "name": "Name",
+      "hostname": "Hostname",
+      "description": "Description",
+      "instanceType": "Instance Type",
+      "monitoringType": "Monitoring Type",
+      "operatingSystem": "Operating System",
+      "platform": "Platform",
+      "privateIpAddress": "Private Ip Address",
+      "publicIpAddress": "Public Ip Address",
+      "tags": "Tags",
+      "pingEnabled": "Ping Enabled",
+      "pingInterval": "Ping Interval",
+      "pingTimeoutMs": "Ping Timeout Ms",
+      "pingRetryCount": "Ping Retry Count",
+      "hardwareMonitoringEnabled": "Hardware Monitoring Enabled",
+      "hardwareMonitoringInterval": "Hardware Monitoring Interval",
+      "cpuWarningThreshold": "Cpu Warning Threshold",
+      "cpuDangerThreshold": "Cpu Danger Threshold",
+      "memoryWarningThreshold": "Memory Warning Threshold",
+      "memoryDangerThreshold": "Memory Danger Threshold",
+      "diskWarningThreshold": "Disk Warning Threshold",
+      "diskDangerThreshold": "Disk Danger Threshold",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "lastPingAt": "Last Ping At",
+      "lastHardwareCheckAt": "Last Hardware Check At",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter",
+      "agent": "Agent"
+    }
+  }
+}

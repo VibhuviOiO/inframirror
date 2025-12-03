@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Kreirati Tag",
+        "createOrEditLabel": "Kreirati ili urediti Tag",
+        "search": "Tražiti Tag",
+        "notFound": "Nije nađeno Tags"
+      },
+      "created": "Kreiran je Tag sa identifikatorom {{ param }}",
+      "updated": "Ažuriran je Tag sa identifikatorom {{ param }}",
+      "deleted": "Obrisan je Tag sa identifikatorom {{ param }}",
+      "delete": {
+        "question": "Da li ste sigurni da želite obrisati Tag {{ id }}?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

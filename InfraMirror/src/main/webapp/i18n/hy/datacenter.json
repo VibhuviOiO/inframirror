@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Ստեղծել նոր Datacenter",
+        "createOrEditLabel": "Ստեղծել կամ փոփոխել Datacenter",
+        "search": "Գտնել Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Նոր Datacenter ստեղծված է {{ param }} նունացուցիչով",
+      "updated": "Datacenter թարմացվաց է {{ param }} նունացուցիչով",
+      "deleted": "Datacenter հեռացված է {{ param }}  նունացուցիչով",
+      "delete": {
+        "question": "Դուք վստահ ե՞ք, որ ցանկանում եք հեռացնել Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

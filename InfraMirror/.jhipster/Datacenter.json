@@ -1,0 +1,49 @@
+{
+  "annotations": {
+    "changelogDate": "20251203083825"
+  },
+  "applications": "*",
+  "documentation": "Datacenter - Physical datacenter locations within regions\\nTable: datacenters",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "code",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "10"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "50"
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "Datacenter",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "agent",
+      "otherEntityRelationshipName": "datacenter",
+      "relationshipName": "agents",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "instance",
+      "otherEntityRelationshipName": "datacenter",
+      "relationshipName": "instances",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "region",
+      "otherEntityRelationshipName": "datacenters",
+      "relationshipName": "region",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceImpl"
+}

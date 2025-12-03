@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Янги Tag қўшиш",
+        "createOrEditLabel": "Tagни таҳрирлаш",
+        "search": "Tagни излаш",
+        "notFound": "No Tags found"
+      },
+      "created": "Tag {{ param }} билан қўшилди.",
+      "updated": "{{ param }}- Tag сақланди.",
+      "deleted": "{{ param }}- Tag ўчирилди.",
+      "delete": {
+        "question": "{{ id }}- Tagни ўчирмоқчимисиз? "
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

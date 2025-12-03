@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni Schedule ekle",
+        "createOrEditLabel": "Yeni Schedule ekle veya guncelle",
+        "search": "Schedule ara",
+        "notFound": "Schedules kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir Schedule eklendi",
+      "updated": "{{ param }} nolu Schedule guncellendi",
+      "deleted": "{{ param }} nolu Schedule silindi",
+      "delete": {
+        "question": "{{ id }} nolu Schedule silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

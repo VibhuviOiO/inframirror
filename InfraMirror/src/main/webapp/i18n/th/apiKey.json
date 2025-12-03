@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "Api Keys",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "สร้าง Api Key",
+        "createOrEditLabel": "สร้างหรือแก้ไข Api Key",
+        "search": "ค้นหา Api Key",
+        "notFound": "No Api Keys found"
+      },
+      "created": "Api Key ถูกสร้างด้วย {{ param }}",
+      "updated": "Api Key ถูกแก้ไขด้วย {{ param }}",
+      "deleted": "Api Key ถูกลบด้วย {{ param }}",
+      "delete": {
+        "question": "คุณต้องการที่จะลบ Api Key {{ id }}?"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

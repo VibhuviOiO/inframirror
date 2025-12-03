@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "Http Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Http Monitor-ஐ உருவாக்கு",
+        "createOrEditLabel": "Http Monitor -ஐ மாற்று (அ) உருவாக்கு",
+        "search": "Search for Http Monitor",
+        "notFound": "No Http Monitors found"
+      },
+      "created": "Http Monitor புதிதாக உருவாக்கப்பட்டது, அடையாளம் {{ param }}",
+      "updated": "Http Monitor மாற்றப்பட்டது, அடையாளம்  {{ param }}",
+      "deleted": "A Http Monitor நீக்கப்பட்டது, அடையாளம {{ param }}",
+      "delete": {
+        "question": "நீக்குவதற்கு உறுதி செய் Http Monitor {{ id }}?"
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}

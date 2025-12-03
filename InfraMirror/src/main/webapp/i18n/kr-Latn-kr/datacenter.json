@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Jańa Datacenter qosıw",
+        "createOrEditLabel": "Datacenterdi redaktorlaw",
+        "search": "Datacenter izlew",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Datacenter {{ param }} menen qosıldı",
+      "updated": "{{ param }}- Datacenter saqlandı",
+      "deleted": "{{ param }}- Datacenter óshirildi",
+      "delete": {
+        "question": "{{ id }}- Datacenter tı óshirejaqsizba?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

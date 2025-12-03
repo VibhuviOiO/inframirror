@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Tag အသစ်ထည့်မည်",
+        "createOrEditLabel": "Tag အသစ်ထည့်ခြင်း (သို့) ပြုပြင်ခြင်း",
+        "search": "ရှာဖွေရန် Tag",
+        "notFound": "No Tags found"
+      },
+      "created": "{{ param }} အိုင်ဒီဖြင့် Tag အသစ်တစ်ခုအား ထည့်ပြီးပါပြီ။",
+      "updated": "{{ param }} အိုင်ဒီဖြင့် Tag တစ်ခုအား ပြုပြင်ပြီးပါပြီ။",
+      "deleted": "{{ param }} အိုင်ဒီဖြင့် Tag တစ်ခုအား ဖျက်ပြီးပါပြီ။",
+      "delete": {
+        "question": "Tag {{ id }} အား ဖျက်ပါမည်။ သေချာပါသလား?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

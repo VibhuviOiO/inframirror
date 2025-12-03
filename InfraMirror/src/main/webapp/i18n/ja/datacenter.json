@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Datacenter の作成",
+        "createOrEditLabel": "Datacenterの作成または編集",
+        "search": "Datacenter の検索",
+        "notFound": "Datacenters が見つかりません。"
+      },
+      "created": "新しい Datacenter がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Datacenter が更新されました。",
+      "deleted": "ID {{ param }} の Datacenter が削除されました。",
+      "delete": {
+        "question": "Datacenter {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Luo Agent",
+        "createOrEditLabel": "Luo tai muokkaa Agent",
+        "search": "Etsi Agent",
+        "notFound": "Agent ei löytynyt"
+      },
+      "created": "Uusi Agent on luotu, id: {{ param }}",
+      "updated": "Agent on päivitetty, id: {{ param }}",
+      "deleted": "Agent on päivitetty, id: {{ param }}",
+      "delete": {
+        "question": "Haluatko varmasti poistaa Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

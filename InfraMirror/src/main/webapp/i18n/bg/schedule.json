@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Създайте нов Schedule",
+        "createOrEditLabel": "Създайте или редактирайте Schedule",
+        "search": "Търси Schedule",
+        "notFound": "Schedules не са намерени"
+      },
+      "created": "Създаден е нов Schedule с идентификатор {{ param }}",
+      "updated": "Schedule с идентификатор {{ param }} e oбновен",
+      "deleted": "Schedule с идентификатор {{ param }} е изтрит",
+      "delete": {
+        "question": "Наистина ли искате да изтриете Schedule {{ id }}?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

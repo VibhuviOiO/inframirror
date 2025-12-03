@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "ਸੂਚੀ ਤਾਜ਼ਾ ਕਰੋ",
+        "createLabel": "ਇੱਕ ਨਵਾਂ Schedule ਬਣਾਓ",
+        "createOrEditLabel": "ਇੱਕ Schedule ਬਣਾਓ ਜਾਂ ਸੰਪਾਦਿਤ ਕਰੋ",
+        "search": "Schedule ਲਈ ਖੋਜ",
+        "notFound": "ਕੋਈ Schedules ਨਹੀਂ ਮਿਲਿਆ"
+      },
+      "created": "ਇੱਕ ਨਵਾਂ Schedule ਪਛਾਣਕਰਤਾ {{ param }} ਨਾਲ ਬਣਾਇਆ ਗਿਆ ਹੈ",
+      "updated": "ਇੱਕ Schedule ਪਛਾਣਕਰਤਾ {{ param }} ਨਾਲ ਅਪਡੇਟ ਕੀਤਾ ਗਿਆ ਹੈ",
+      "deleted": "ਇੱਕ Schedule ਪਛਾਣਕਰਤਾ {{ param }} ਨਾਲ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ",
+      "delete": {
+        "question": "ਕੀ ਤੁਸੀਂ ਨਿਸ਼ਚਤ ਰੂਪ ਤੋਂ Schedule {{ id }} ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Kreiraj novi Agent",
+        "createOrEditLabel": "Kreirajte ili izmenite Agent",
+        "search": "Potražite Agent",
+        "notFound": "No Agents found"
+      },
+      "created": "Kreiran je novi Agent pod nazivom {{ param }}",
+      "updated": "Agent pod nazivom {{ param }} je ažuriran",
+      "deleted": "Agent pod nazivom {{ param }} je obrisan",
+      "delete": {
+        "question": "Da li ste sigurni da želite da obrišete Agent pod nazivom {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

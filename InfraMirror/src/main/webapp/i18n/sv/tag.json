@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Skapa en ny Tag",
+        "createOrEditLabel": "Skapa eller ändra en Tag",
+        "search": "Sök efter Tag",
+        "notFound": "No Tags found"
+      },
+      "created": "En ny Tag är skapad med id {{ param }}",
+      "updated": "En Tag är uppdaterad med id  {{ param }}",
+      "deleted": "En Tag är borttagen med id  {{ param }}",
+      "delete": {
+        "question": "Är du säker på att du vill ta bort Tag {{ id }}?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

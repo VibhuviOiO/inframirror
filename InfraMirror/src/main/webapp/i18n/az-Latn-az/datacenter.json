@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Siyahını yenilə",
+        "createLabel": "Yeni Datacenter əlavə et",
+        "createOrEditLabel": "Yeni Datacenter əlavə et və ya yenilə",
+        "search": "Datacenter axtar",
+        "notFound": "Datacenters məlumatı tapılmadı"
+      },
+      "created": "{{ param }} ID ilə bir Datacenter əlavə edildi",
+      "updated": "{{ param }} nolu Datacenter dəyişildi",
+      "deleted": "{{ param }} nolu Datacenter silindi",
+      "delete": {
+        "question": "{{ id }} nolu Datacenter silinəcək. Davam etmək istəyirsiniz?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

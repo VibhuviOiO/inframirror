@@ -1,0 +1,37 @@
+{
+  "infraMirrorApp": {
+    "httpHeartbeat": {
+      "home": {
+        "title": "Http Heartbeats",
+        "refreshListLabel": "Обновить список",
+        "search": "Найти Http Heartbeat",
+        "notFound": "Http Heartbeats не найдено"
+      },
+      "detail": {
+        "title": "Http Heartbeat"
+      },
+      "id": "ID",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "responseTimeMs": "Response Time Ms",
+      "responseSizeBytes": "Response Size Bytes",
+      "responseStatusCode": "Response Status Code",
+      "responseContentType": "Response Content Type",
+      "responseServer": "Response Server",
+      "responseCacheStatus": "Response Cache Status",
+      "dnsLookupMs": "Dns Lookup Ms",
+      "tcpConnectMs": "Tcp Connect Ms",
+      "tlsHandshakeMs": "Tls Handshake Ms",
+      "timeToFirstByteMs": "Time To First Byte Ms",
+      "warningThresholdMs": "Warning Threshold Ms",
+      "criticalThresholdMs": "Critical Threshold Ms",
+      "errorType": "Error Type",
+      "errorMessage": "Error Message",
+      "rawRequestHeaders": "Raw Request Headers",
+      "rawResponseHeaders": "Raw Response Headers",
+      "rawResponseBody": "Raw Response Body",
+      "monitor": "Monitor",
+      "agent": "Agent"
+    }
+  }
+}

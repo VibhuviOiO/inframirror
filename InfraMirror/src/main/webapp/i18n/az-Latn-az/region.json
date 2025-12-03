@@ -1,0 +1,28 @@
+{
+  "infraMirrorApp": {
+    "region": {
+      "home": {
+        "title": "Regions",
+        "refreshListLabel": "Siyahını yenilə",
+        "createLabel": "Yeni Region əlavə et",
+        "createOrEditLabel": "Yeni Region əlavə et və ya yenilə",
+        "search": "Region axtar",
+        "notFound": "Regions məlumatı tapılmadı"
+      },
+      "created": "{{ param }} ID ilə bir Region əlavə edildi",
+      "updated": "{{ param }} nolu Region dəyişildi",
+      "deleted": "{{ param }} nolu Region silindi",
+      "delete": {
+        "question": "{{ id }} nolu Region silinəcək. Davam etmək istəyirsiniz?"
+      },
+      "detail": {
+        "title": "Region"
+      },
+      "id": "ID",
+      "name": "Name",
+      "regionCode": "Region Code",
+      "groupName": "Group Name",
+      "datacenters": "Datacenters"
+    }
+  }
+}

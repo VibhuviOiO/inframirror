@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Siyahını yenilə",
+        "createLabel": "Yeni Agent əlavə et",
+        "createOrEditLabel": "Yeni Agent əlavə et və ya yenilə",
+        "search": "Agent axtar",
+        "notFound": "Agents məlumatı tapılmadı"
+      },
+      "created": "{{ param }} ID ilə bir Agent əlavə edildi",
+      "updated": "{{ param }} nolu Agent dəyişildi",
+      "deleted": "{{ param }} nolu Agent silindi",
+      "delete": {
+        "question": "{{ id }} nolu Agent silinəcək. Davam etmək istəyirsiniz?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

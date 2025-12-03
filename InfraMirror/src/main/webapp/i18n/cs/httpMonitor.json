@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "Http Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Vytvořit Http Monitor",
+        "createOrEditLabel": "Vytvořit nebo upravit Http Monitor",
+        "search": "Vyhledat Http Monitor",
+        "notFound": "No Http Monitors found"
+      },
+      "created": "Byl vytvořen potomek entity Http Monitor s identifikátorem {{ param }}",
+      "updated": "Potomek entity Http Monitor s identifikátorem {{ param }} byl upravený.",
+      "deleted": "Potomek entity Http Monitor s identifikátorem {{ param }} bol smazaný.",
+      "delete": {
+        "question": "Jste si jisti, že chcete smazat Http Monitor {{ id }}?"
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}

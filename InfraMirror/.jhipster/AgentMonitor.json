@@ -1,0 +1,54 @@
+{
+  "annotations": {
+    "changelogDate": "20251203083832"
+  },
+  "applications": "*",
+  "documentation": "AgentMonitor - Many-to-many mapping between agents and HTTP monitors\\nTable: agent_monitors",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "active",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "createdBy",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "50"
+    },
+    {
+      "fieldName": "createdDate",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "lastModifiedBy",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "50"
+    },
+    {
+      "fieldName": "lastModifiedDate",
+      "fieldType": "Instant"
+    }
+  ],
+  "name": "AgentMonitor",
+  "relationships": [
+    {
+      "otherEntityName": "agent",
+      "relationshipName": "agent",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    },
+    {
+      "otherEntityName": "httpMonitor",
+      "relationshipName": "monitor",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "service": "serviceImpl",
+  "skipClient": true
+}

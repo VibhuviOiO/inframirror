@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Schedule の作成",
+        "createOrEditLabel": "Scheduleの作成または編集",
+        "search": "Schedule の検索",
+        "notFound": "Schedules が見つかりません。"
+      },
+      "created": "新しい Schedule がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Schedule が更新されました。",
+      "deleted": "ID {{ param }} の Schedule が削除されました。",
+      "delete": {
+        "question": "Schedule {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

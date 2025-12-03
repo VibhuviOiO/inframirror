@@ -1,0 +1,28 @@
+{
+  "infraMirrorApp": {
+    "region": {
+      "home": {
+        "title": "Regions",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Kreirati Region",
+        "createOrEditLabel": "Kreirati ili urediti Region",
+        "search": "Tražiti Region",
+        "notFound": "Nije nađeno Regions"
+      },
+      "created": "Kreiran je Region sa identifikatorom {{ param }}",
+      "updated": "Ažuriran je Region sa identifikatorom {{ param }}",
+      "deleted": "Obrisan je Region sa identifikatorom {{ param }}",
+      "delete": {
+        "question": "Da li ste sigurni da želite obrisati Region {{ id }}?"
+      },
+      "detail": {
+        "title": "Region"
+      },
+      "id": "ID",
+      "name": "Name",
+      "regionCode": "Region Code",
+      "groupName": "Group Name",
+      "datacenters": "Datacenters"
+    }
+  }
+}

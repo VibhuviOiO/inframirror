@@ -1,0 +1,11 @@
+id;executed_at;heartbeat_type;success;response_time_ms;packet_loss;jitter_ms;cpu_usage;memory_usage;disk_usage;load_average;process_count;network_rx_bytes;network_tx_bytes;uptime_seconds;status;error_message;error_type;metadata;instance_id
+1;2025-12-03T08:00:20;disk abaft;false;7069;20140.92;30452;17523.82;26121.59;28016.38;11541.8;1887;32375;17702;4212;brace starboard;../fake-data/blob/hipster.txt;without stigmatize;../fake-data/blob/hipster.txt;1
+2;2025-12-02T15:47:59;disarm even;false;24426;21419.13;21796;12954.01;16701.85;26369.6;31877.65;6221;10613;19467;19592;bowling because obes;../fake-data/blob/hipster.txt;someplace probable elver;../fake-data/blob/hipster.txt;2
+3;2025-12-03T03:54:28;yawningly scorpion f;true;16146;20873.7;7636;12800.4;22068.66;1692.72;20889.08;26285;1560;477;17019;until valley ah;../fake-data/blob/hipster.txt;unless since;../fake-data/blob/hipster.txt;3
+4;2025-12-02T18:38:58;cheerfully mortally;true;9390;1309.2;6787;16390.47;5987.38;4343.15;17692.24;5241;12004;13725;871;but;../fake-data/blob/hipster.txt;instead carefully;../fake-data/blob/hipster.txt;4
+5;2025-12-02T14:52:54;amid once;true;15995;16.78;18100;20550.37;14160.17;20355.34;17119.29;23210;12944;22843;14608;oily plain after;../fake-data/blob/hipster.txt;gasp fooey inasmuch;../fake-data/blob/hipster.txt;5
+6;2025-12-02T15:30:21;sediment;true;5186;24565.31;30483;4060;15730.78;30601.32;18117.22;16152;30089;14979;30917;gah fiercely;../fake-data/blob/hipster.txt;lucky except on;../fake-data/blob/hipster.txt;6
+7;2025-12-02T16:29:56;deceivingly modulo;true;25622;21810.3;23919;10963.97;7019.5;865.09;4485.44;5372;2183;18642;13929;rim at whenever;../fake-data/blob/hipster.txt;upwardly what;../fake-data/blob/hipster.txt;7
+8;2025-12-02T20:21:45;aha maul;true;11271;8453.58;29271;19379.1;11745.29;29869.83;18604.76;28544;4222;7101;20971;ha;../fake-data/blob/hipster.txt;oh;../fake-data/blob/hipster.txt;8
+9;2025-12-02T12:06:41;whether;true;9939;31066.1;16111;21062.32;10924.41;29380.43;13875.64;16254;5699;25099;7921;around wicked;../fake-data/blob/hipster.txt;inveigle;../fake-data/blob/hipster.txt;9
+10;2025-12-02T22:18:41;neighboring;true;27112;32412.29;29559;11916.62;16053.08;14665.38;4122.85;22567;10047;32467;9141;ferociously;../fake-data/blob/hipster.txt;boohoo;../fake-data/blob/hipster.txt;10

@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Krijo një të ri Agent",
+        "createOrEditLabel": "Krijo ose përpuno një Agent",
+        "search": "Kërko për Agent",
+        "notFound": "No Agents found"
+      },
+      "created": "Një Agent i ri u krijua me identifikues {{ param }}",
+      "updated": "Një Agent u përpunua me identifikues {{ param }}",
+      "deleted": "Një Agent u fshi me identifikues {{ param }}",
+      "delete": {
+        "question": "Jeni i sigurtë që doni të fshini Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

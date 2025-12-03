@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "建立一筆新的 Schedule",
+        "createOrEditLabel": "建立或編輯 Schedule",
+        "search": "搜尋 Schedule",
+        "notFound": "No Schedules found"
+      },
+      "created": "新的 Schedule 建立成功，識別碼為 {{ param }}",
+      "updated": "識別碼為 {{ param }} 的 Schedule 更新成功",
+      "deleted": "識別碼為 {{ param }} 的 Schedule 刪除成功",
+      "delete": {
+        "question": "您確定要刪除 Schedule {{ id }} 嗎?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

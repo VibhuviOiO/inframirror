@@ -1,0 +1,25 @@
+{
+  "infraMirrorApp": {
+    "auditTrail": {
+      "home": {
+        "title": "Audit Trails",
+        "refreshListLabel": "Refresh list",
+        "search": "Procurar por Audit Trail",
+        "notFound": "Nenhum Audit Trails encontrado"
+      },
+      "detail": {
+        "title": "Audit Trail"
+      },
+      "id": "ID",
+      "action": "Action",
+      "entityName": "Entity Name",
+      "entityId": "Entity Id",
+      "oldValue": "Old Value",
+      "newValue": "New Value",
+      "timestamp": "Timestamp",
+      "ipAddress": "Ip Address",
+      "userAgent": "User Agent",
+      "user": "User"
+    }
+  }
+}

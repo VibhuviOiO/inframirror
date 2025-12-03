@@ -358,6 +358,3 @@ search HttpHeartbeat, PingHeartbeat, AuditTrail, SessionLog with elasticsearch
 
 // Microservice options (if using microservices architecture)
 // microservice * with inframonitor
-
-// Database configuration
-databaseType sql

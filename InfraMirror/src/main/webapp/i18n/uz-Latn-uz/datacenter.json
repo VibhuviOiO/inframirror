@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Yangi Datacenter qo`shish",
+        "createOrEditLabel": "Datacenterni tahrirlash",
+        "search": "Datacenterni izlash",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Datacenter {{ param }} bilan qo`shildi",
+      "updated": "{{ param }}- Datacenter saqlandi",
+      "deleted": "{{ param }}- Datacenter o`chirildi",
+      "delete": {
+        "question": "{{ id }}- Datacenterni o`chirmoqchimisiz? "
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

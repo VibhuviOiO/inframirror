@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "建立一筆新的 Agent",
+        "createOrEditLabel": "建立或編輯 Agent",
+        "search": "搜尋 Agent",
+        "notFound": "No Agents found"
+      },
+      "created": "新的 Agent 建立成功，識別碼為 {{ param }}",
+      "updated": "識別碼為 {{ param }} 的 Agent 更新成功",
+      "deleted": "識別碼為 {{ param }} 的 Agent 刪除成功",
+      "delete": {
+        "question": "您確定要刪除 Agent {{ id }} 嗎?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

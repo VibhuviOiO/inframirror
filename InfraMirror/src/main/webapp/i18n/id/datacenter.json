@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Datacenter baru",
+        "createOrEditLabel": "Buat atau edit Datacenter",
+        "search": "Cari Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Datacenter dengan id {{ param }} telah dibuat",
+      "updated": "Datacenter dengan id {{ param }} telah diperbaharui",
+      "deleted": "Datacenter dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

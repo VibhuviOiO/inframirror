@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "Http Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "创建新 Http Monitor",
+        "createOrEditLabel": "创建或编辑 Http Monitor",
+        "search": "查找 Http Monitor",
+        "notFound": "No Http Monitors found"
+      },
+      "created": "Http Monitor {{ param }} 创建成功",
+      "updated": "Http Monitor {{ param }} 更新成功",
+      "deleted": "Http Monitor {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Http Monitor {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "annotations": {
+    "changelogDate": "20251203083828"
+  },
+  "applications": "*",
+  "documentation": "Schedule - Defines monitoring schedules and intervals\\nTable: schedules",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "50"
+    },
+    {
+      "fieldName": "interval",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "includeResponseBody",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "thresholdsWarning",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "thresholdsCritical",
+      "fieldType": "Integer"
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "Schedule",
+  "relationships": [
+    {
+      "otherEntityName": "httpMonitor",
+      "otherEntityRelationshipName": "schedule",
+      "relationshipName": "monitors",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "serviceImpl"
+}

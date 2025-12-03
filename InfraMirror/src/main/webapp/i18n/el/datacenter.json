@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Δημιουργήστε ένα νέο Datacenter",
+        "createOrEditLabel": "Δημιουργήστε η επεξεργαστείτε ένα Datacenter",
+        "search": "Αναζήτηση για Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Ένα νέο Datacenter έχει δημιουργηθεί με αναγνωριστικό {{ param }}",
+      "updated": "Ένα Datacenter έχει ενημερωθεί με αναγνωριστικό {{ param }}",
+      "deleted": "Ένα Datacenter έχει διαγραφτεί με αναγνωριστικό {{ param }}",
+      "delete": {
+        "question": "Είστε βέβαιοι όταν θέλετε να διαγράψετε το ακόλουθο Datacenter {{ id }};"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

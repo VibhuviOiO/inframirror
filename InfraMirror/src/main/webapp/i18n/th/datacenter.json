@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "สร้าง Datacenter",
+        "createOrEditLabel": "สร้างหรือแก้ไข Datacenter",
+        "search": "ค้นหา Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Datacenter ถูกสร้างด้วย {{ param }}",
+      "updated": "Datacenter ถูกแก้ไขด้วย {{ param }}",
+      "deleted": "Datacenter ถูกลบด้วย {{ param }}",
+      "delete": {
+        "question": "คุณต้องการที่จะลบ Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

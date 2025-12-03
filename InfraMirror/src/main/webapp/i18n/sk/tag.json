@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Pridať Tag",
+        "createOrEditLabel": "Pridať alebo upraviť Tag",
+        "search": "Vyhľadať Tag",
+        "notFound": "No Tags found"
+      },
+      "created": "Bol vytvorený potomok entity Tag s identifikátorom {{ param }}",
+      "updated": "Potomok entity Tag s identifikátorom {{ param }} bol upravený.",
+      "deleted": "Potomok entity Tag s identifikátorom {{ param }} bol vymazaný.",
+      "delete": {
+        "question": "Ste si istý, že chcete vymazať Tag {{ id }}?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

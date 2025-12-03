@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Agent",
+        "createOrEditLabel": "Lisa või muuda Agent",
+        "search": "Otsi Agent",
+        "notFound": "Ei leitud ühtegi Agents"
+      },
+      "created": "Uus Agent on loodud identifikaatoriga {{ param }}",
+      "updated": "Agent identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Agent identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

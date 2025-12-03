@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "Api Keys",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Api Key جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Api Key",
+        "search": "البحث عن Api Key",
+        "notFound": "لم يتم العثور على Api Keys"
+      },
+      "created": "Api Key جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Api Key تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Api Key تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Api Key {{ id }}؟"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

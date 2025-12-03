@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Krijo një të ri Schedule",
+        "createOrEditLabel": "Krijo ose përpuno një Schedule",
+        "search": "Kërko për Schedule",
+        "notFound": "No Schedules found"
+      },
+      "created": "Një Schedule i ri u krijua me identifikues {{ param }}",
+      "updated": "Një Schedule u përpunua me identifikues {{ param }}",
+      "deleted": "Një Schedule u fshi me identifikues {{ param }}",
+      "delete": {
+        "question": "Jeni i sigurtë që doni të fshini Schedule {{ id }}?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

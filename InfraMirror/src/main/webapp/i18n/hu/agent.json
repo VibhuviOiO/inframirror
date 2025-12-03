@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Agent létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Agentt",
+        "search": "Agent keresése",
+        "notFound": "No Agents found"
+      },
+      "created": "Egy új Agent lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Agent módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Agent törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Agentt {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

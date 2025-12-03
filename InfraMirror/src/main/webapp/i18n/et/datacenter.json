@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Datacenter",
+        "createOrEditLabel": "Lisa või muuda Datacenter",
+        "search": "Otsi Datacenter",
+        "notFound": "Ei leitud ühtegi Datacenters"
+      },
+      "created": "Uus Datacenter on loodud identifikaatoriga {{ param }}",
+      "updated": "Datacenter identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Datacenter identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

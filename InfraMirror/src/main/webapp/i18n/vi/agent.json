@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Thêm mới một Agent",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Agent",
+        "search": "Tìm Agent",
+        "notFound": "No Agents found"
+      },
+      "created": "Một Agent mới được tạo với định danh {{ param }}",
+      "updated": "Một Agent cập nhật với định danh {{ param }}",
+      "deleted": "Một Agent đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "Http Monitors",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Http Monitor",
+        "createOrEditLabel": "Lisa või muuda Http Monitor",
+        "search": "Otsi Http Monitor",
+        "notFound": "Ei leitud ühtegi Http Monitors"
+      },
+      "created": "Uus Http Monitor on loodud identifikaatoriga {{ param }}",
+      "updated": "Http Monitor identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Http Monitor identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Http Monitor {{ id }}?"
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}

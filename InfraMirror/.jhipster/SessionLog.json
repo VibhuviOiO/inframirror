@@ -1,0 +1,94 @@
+{
+  "annotations": {
+    "changelogDate": "20251203083836"
+  },
+  "applications": "*",
+  "documentation": "SessionLog - Tracks user connections to instances (SSH, RDP, Console)\\nCritical for security auditing and compliance\\n\\nLinks to JHipster User entity for audit trail",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "sessionType",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "20"
+    },
+    {
+      "fieldName": "startTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "endTime",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "duration",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "sourceIpAddress",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "45"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "20"
+    },
+    {
+      "fieldName": "terminationReason",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "200"
+    },
+    {
+      "fieldName": "commandsExecuted",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "bytesTransferred",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "sessionId",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength", "unique"],
+      "fieldValidateRulesMaxlength": "100"
+    },
+    {
+      "fieldName": "metadata",
+      "fieldType": "TextBlob"
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "SessionLog",
+  "pagination": "infinite-scroll",
+  "readOnly": true,
+  "relationships": [
+    {
+      "otherEntityName": "instance",
+      "relationshipName": "instance",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    },
+    {
+      "otherEntityName": "agent",
+      "relationshipName": "agent",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "elasticsearch",
+  "service": "serviceImpl"
+}

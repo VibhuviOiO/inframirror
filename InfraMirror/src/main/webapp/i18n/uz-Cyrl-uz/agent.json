@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Янги Agent қўшиш",
+        "createOrEditLabel": "Agentни таҳрирлаш",
+        "search": "Agentни излаш",
+        "notFound": "No Agents found"
+      },
+      "created": "Agent {{ param }} билан қўшилди.",
+      "updated": "{{ param }}- Agent сақланди.",
+      "deleted": "{{ param }}- Agent ўчирилди.",
+      "delete": {
+        "question": "{{ id }}- Agentни ўчирмоқчимисиз? "
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "annotations": {
+    "changelogDate": "20251203083824"
+  },
+  "applications": "*",
+  "documentation": "Region - Represents geographical regions containing multiple datacenters\\nTable: regions",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "50"
+    },
+    {
+      "fieldName": "regionCode",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "20"
+    },
+    {
+      "fieldName": "groupName",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "20"
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "Region",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "datacenter",
+      "otherEntityRelationshipName": "region",
+      "relationshipName": "datacenters",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "serviceImpl"
+}

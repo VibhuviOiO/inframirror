@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Δημιουργήστε ένα νέο Schedule",
+        "createOrEditLabel": "Δημιουργήστε η επεξεργαστείτε ένα Schedule",
+        "search": "Αναζήτηση για Schedule",
+        "notFound": "No Schedules found"
+      },
+      "created": "Ένα νέο Schedule έχει δημιουργηθεί με αναγνωριστικό {{ param }}",
+      "updated": "Ένα Schedule έχει ενημερωθεί με αναγνωριστικό {{ param }}",
+      "deleted": "Ένα Schedule έχει διαγραφτεί με αναγνωριστικό {{ param }}",
+      "delete": {
+        "question": "Είστε βέβαιοι όταν θέλετε να διαγράψετε το ακόλουθο Schedule {{ id }};"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

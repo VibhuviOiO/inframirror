@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "pingHeartbeat": {
+      "home": {
+        "title": "Ping Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "search": "Ping Heartbeat izlew",
+        "notFound": "No Ping Heartbeats found"
+      },
+      "detail": {
+        "title": "Ping Heartbeat"
+      },
+      "id": "ID",
+      "executedAt": "Executed At",
+      "heartbeatType": "Heartbeat Type",
+      "success": "Success",
+      "responseTimeMs": "Response Time Ms",
+      "packetLoss": "Packet Loss",
+      "jitterMs": "Jitter Ms",
+      "cpuUsage": "Cpu Usage",
+      "memoryUsage": "Memory Usage",
+      "diskUsage": "Disk Usage",
+      "loadAverage": "Load Average",
+      "processCount": "Process Count",
+      "networkRxBytes": "Network Rx Bytes",
+      "networkTxBytes": "Network Tx Bytes",
+      "uptimeSeconds": "Uptime Seconds",
+      "status": "Status",
+      "errorMessage": "Error Message",
+      "errorType": "Error Type",
+      "metadata": "Metadata",
+      "instance": "Instance",
+      "agent": "Agent"
+    }
+  }
+}

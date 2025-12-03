@@ -1,0 +1,28 @@
+{
+  "infraMirrorApp": {
+    "region": {
+      "home": {
+        "title": "Regions",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Vytvořit Region",
+        "createOrEditLabel": "Vytvořit nebo upravit Region",
+        "search": "Vyhledat Region",
+        "notFound": "No Regions found"
+      },
+      "created": "Byl vytvořen potomek entity Region s identifikátorem {{ param }}",
+      "updated": "Potomek entity Region s identifikátorem {{ param }} byl upravený.",
+      "deleted": "Potomek entity Region s identifikátorem {{ param }} bol smazaný.",
+      "delete": {
+        "question": "Jste si jisti, že chcete smazat Region {{ id }}?"
+      },
+      "detail": {
+        "title": "Region"
+      },
+      "id": "ID",
+      "name": "Name",
+      "regionCode": "Region Code",
+      "groupName": "Group Name",
+      "datacenters": "Datacenters"
+    }
+  }
+}

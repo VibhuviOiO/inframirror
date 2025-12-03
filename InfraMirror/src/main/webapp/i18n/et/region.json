@@ -1,0 +1,28 @@
+{
+  "infraMirrorApp": {
+    "region": {
+      "home": {
+        "title": "Regions",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Region",
+        "createOrEditLabel": "Lisa või muuda Region",
+        "search": "Otsi Region",
+        "notFound": "Ei leitud ühtegi Regions"
+      },
+      "created": "Uus Region on loodud identifikaatoriga {{ param }}",
+      "updated": "Region identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Region identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Region {{ id }}?"
+      },
+      "detail": {
+        "title": "Region"
+      },
+      "id": "ID",
+      "name": "Name",
+      "regionCode": "Region Code",
+      "groupName": "Group Name",
+      "datacenters": "Datacenters"
+    }
+  }
+}

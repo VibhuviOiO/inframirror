@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "Api Keys",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Api Key",
+        "createOrEditLabel": "Создать или отредактировать Api Key",
+        "search": "Найти Api Key",
+        "notFound": "Api Keys не найдено"
+      },
+      "created": "Новый Api Key создан с идентификатором {{ param }}",
+      "updated": "Api Key обновлен с идентификатором {{ param }}",
+      "deleted": "Api Key удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Api Key {{ id }}?"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

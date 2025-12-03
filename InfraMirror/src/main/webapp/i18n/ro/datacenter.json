@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Datacenter",
+        "createOrEditLabel": "Creeare sau editare Datacenter",
+        "search": "Căutare după Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "A fost creată o nouă entitate Datacenter cu identificatorul {{ param }}",
+      "updated": "Datacenter cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Datacenter cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

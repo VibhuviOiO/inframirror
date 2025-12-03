@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Maak een nieuwe Schedule",
+        "createOrEditLabel": "Maak of wijzig een Schedule",
+        "search": "Search for Schedule",
+        "notFound": "No Schedules found"
+      },
+      "created": "A new Schedule is created with identifier {{ param }}",
+      "updated": "A Schedule is updated with identifier {{ param }}",
+      "deleted": "A Schedule is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Bent u zeker dat u Schedule {{ id }} wilt verwijderen?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Agent-ஐ உருவாக்கு",
+        "createOrEditLabel": "Agent -ஐ மாற்று (அ) உருவாக்கு",
+        "search": "Search for Agent",
+        "notFound": "No Agents found"
+      },
+      "created": "Agent புதிதாக உருவாக்கப்பட்டது, அடையாளம் {{ param }}",
+      "updated": "Agent மாற்றப்பட்டது, அடையாளம்  {{ param }}",
+      "deleted": "A Agent நீக்கப்பட்டது, அடையாளம {{ param }}",
+      "delete": {
+        "question": "நீக்குவதற்கு உறுதி செய் Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

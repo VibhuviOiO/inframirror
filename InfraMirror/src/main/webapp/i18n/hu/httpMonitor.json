@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "HttpMonitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Http Monitor létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Http Monitort",
+        "search": "Http Monitor keresése",
+        "notFound": "No Http Monitors found"
+      },
+      "created": "Egy új Http Monitor lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Http Monitor módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Http Monitor törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Http Monitort {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}

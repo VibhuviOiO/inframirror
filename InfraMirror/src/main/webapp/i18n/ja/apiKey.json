@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "ApiKeys",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Api Key の作成",
+        "createOrEditLabel": "Api Keyの作成または編集",
+        "search": "Api Key の検索",
+        "notFound": "Api Keys が見つかりません。"
+      },
+      "created": "新しい Api Key がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Api Key が更新されました。",
+      "deleted": "ID {{ param }} の Api Key が削除されました。",
+      "delete": {
+        "question": "Api Key {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

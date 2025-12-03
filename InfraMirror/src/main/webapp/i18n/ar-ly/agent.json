@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Agent جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Agent",
+        "search": "البحث عن Agent",
+        "notFound": "لم يتم العثور على Agents"
+      },
+      "created": "Agent جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Agent تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Agent تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Agent {{ id }}؟"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

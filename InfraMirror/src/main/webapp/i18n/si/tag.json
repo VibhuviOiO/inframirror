@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "නව Tag එකක් සාදන්න",
+        "createOrEditLabel": "Tag සාදන්න හෝ සංස්කරණය කරන්න",
+        "search": "Tag සඳහා සොයන්න",
+        "notFound": "Tags හමු නොවීය"
+      },
+      "created": "{{ param }} හඳුනාගැනීමෙන් නව Tag සාදනු ලැබේ",
+      "updated": "{{ param }} හඳුනාගැනීමෙන් Tag යාවත්කාලීන වේ",
+      "deleted": "{{ param }} හඳුනාගැනීමෙන් Tag මකා දමනු ලැබේ",
+      "delete": {
+        "question": "Tag {{ id }} මකා දැමීමට ඔබට විශ්වාසද?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

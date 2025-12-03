@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Vytvořit Agent",
+        "createOrEditLabel": "Vytvořit nebo upravit Agent",
+        "search": "Vyhledat Agent",
+        "notFound": "No Agents found"
+      },
+      "created": "Byl vytvořen potomek entity Agent s identifikátorem {{ param }}",
+      "updated": "Potomek entity Agent s identifikátorem {{ param }} byl upravený.",
+      "deleted": "Potomek entity Agent s identifikátorem {{ param }} bol smazaný.",
+      "delete": {
+        "question": "Jste si jisti, že chcete smazat Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Yangi Schedule qo`shish",
+        "createOrEditLabel": "Scheduleni tahrirlash",
+        "search": "Scheduleni izlash",
+        "notFound": "No Schedules found"
+      },
+      "created": "Schedule {{ param }} bilan qo`shildi",
+      "updated": "{{ param }}- Schedule saqlandi",
+      "deleted": "{{ param }}- Schedule o`chirildi",
+      "delete": {
+        "question": "{{ id }}- Scheduleni o`chirmoqchimisiz? "
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

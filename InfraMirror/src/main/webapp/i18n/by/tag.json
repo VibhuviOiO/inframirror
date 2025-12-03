@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Стварыць новы Tag",
+        "createOrEditLabel": "Стварыць або адрэдагаваць Tag",
+        "search": "Знайсці Tag",
+        "notFound": "No Tags found"
+      },
+      "created": "Новы Tag створан з ідэнтыфікатарам {{ param }}",
+      "updated": "Tag абноўлен з ідэнтыфікатарам {{ param }}",
+      "deleted": "Tag выдален з ідэнтыфікатарам {{ param }}",
+      "delete": {
+        "question": "Вы ўпэўнены, што жадаеце выдаліць Tag {{ id }}?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

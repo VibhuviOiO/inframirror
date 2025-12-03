@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Schedule létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Schedulet",
+        "search": "Schedule keresése",
+        "notFound": "No Schedules found"
+      },
+      "created": "Egy új Schedule lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Schedule módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Schedule törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Schedulet {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

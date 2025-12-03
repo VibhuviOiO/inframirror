@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Създайте нов Agent",
+        "createOrEditLabel": "Създайте или редактирайте Agent",
+        "search": "Търси Agent",
+        "notFound": "Agents не са намерени"
+      },
+      "created": "Създаден е нов Agent с идентификатор {{ param }}",
+      "updated": "Agent с идентификатор {{ param }} e oбновен",
+      "deleted": "Agent с идентификатор {{ param }} е изтрит",
+      "delete": {
+        "question": "Наистина ли искате да изтриете Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

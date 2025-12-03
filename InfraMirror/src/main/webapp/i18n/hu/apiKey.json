@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "ApiKeys",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Api Key létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Api Keyt",
+        "search": "Api Key keresése",
+        "notFound": "No Api Keys found"
+      },
+      "created": "Egy új Api Key lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Api Key módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Api Key törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Api Keyt {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Δημιουργήστε ένα νέο Tag",
+        "createOrEditLabel": "Δημιουργήστε η επεξεργαστείτε ένα Tag",
+        "search": "Αναζήτηση για Tag",
+        "notFound": "No Tags found"
+      },
+      "created": "Ένα νέο Tag έχει δημιουργηθεί με αναγνωριστικό {{ param }}",
+      "updated": "Ένα Tag έχει ενημερωθεί με αναγνωριστικό {{ param }}",
+      "deleted": "Ένα Tag έχει διαγραφτεί με αναγνωριστικό {{ param }}",
+      "delete": {
+        "question": "Είστε βέβαιοι όταν θέλετε να διαγράψετε το ακόλουθο Tag {{ id }};"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

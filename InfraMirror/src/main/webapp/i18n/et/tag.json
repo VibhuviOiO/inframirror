@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Tag",
+        "createOrEditLabel": "Lisa või muuda Tag",
+        "search": "Otsi Tag",
+        "notFound": "Ei leitud ühtegi Tags"
+      },
+      "created": "Uus Tag on loodud identifikaatoriga {{ param }}",
+      "updated": "Tag identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Tag identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Tag {{ id }}?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

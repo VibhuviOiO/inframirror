@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Kreiraj novi Datacenter",
+        "createOrEditLabel": "Kreirajte ili izmenite Datacenter",
+        "search": "Potražite Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Kreiran je novi Datacenter pod nazivom {{ param }}",
+      "updated": "Datacenter pod nazivom {{ param }} je ažuriran",
+      "deleted": "Datacenter pod nazivom {{ param }} je obrisan",
+      "delete": {
+        "question": "Da li ste sigurni da želite da obrišete Datacenter pod nazivom {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

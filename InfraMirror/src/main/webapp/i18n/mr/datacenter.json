@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नवीन Datacenter तयार करा",
+        "createOrEditLabel": "Datacenter तयार किंवा संपादित करा",
+        "search": "Datacenter शोधा",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Datacenter [identifier: {{ param }}] तयार आहे",
+      "updated": "Datacenter [identifier: {{ param }}] सुधारित केले आहे",
+      "deleted": "Datacenter [identifier: {{ param }}] हटविले आहे",
+      "delete": {
+        "question": "Datacenter [id: {{ id }}] काढून टाकण्याबाबत पुष्टी?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

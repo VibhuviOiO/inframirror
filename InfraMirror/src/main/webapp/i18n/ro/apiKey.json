@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "Api Keys",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Api Key",
+        "createOrEditLabel": "Creeare sau editare Api Key",
+        "search": "Căutare după Api Key",
+        "notFound": "No Api Keys found"
+      },
+      "created": "A fost creată o nouă entitate Api Key cu identificatorul {{ param }}",
+      "updated": "Api Key cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Api Key cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Api Key {{ id }}?"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

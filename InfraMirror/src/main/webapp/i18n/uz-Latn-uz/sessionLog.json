@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "sessionLog": {
+      "home": {
+        "title": "Session Logs",
+        "refreshListLabel": "Refresh list",
+        "search": "Session Logni izlash",
+        "notFound": "No Session Logs found"
+      },
+      "detail": {
+        "title": "Session Log"
+      },
+      "id": "ID",
+      "sessionType": "Session Type",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "duration": "Duration",
+      "sourceIpAddress": "Source Ip Address",
+      "status": "Status",
+      "terminationReason": "Termination Reason",
+      "commandsExecuted": "Commands Executed",
+      "bytesTransferred": "Bytes Transferred",
+      "sessionId": "Session Id",
+      "metadata": "Metadata",
+      "instance": "Instance",
+      "agent": "Agent",
+      "user": "User"
+    }
+  }
+}

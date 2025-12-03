@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Datacenter-ஐ உருவாக்கு",
+        "createOrEditLabel": "Datacenter -ஐ மாற்று (அ) உருவாக்கு",
+        "search": "Search for Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Datacenter புதிதாக உருவாக்கப்பட்டது, அடையாளம் {{ param }}",
+      "updated": "Datacenter மாற்றப்பட்டது, அடையாளம்  {{ param }}",
+      "deleted": "A Datacenter நீக்கப்பட்டது, அடையாளம {{ param }}",
+      "delete": {
+        "question": "நீக்குவதற்கு உறுதி செய் Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

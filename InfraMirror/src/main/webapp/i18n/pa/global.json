@@ -7,7 +7,19 @@
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "ਇਕਾਈਆਂ",
-        "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
+        "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
+        "region": "Region",
+        "datacenter": "Datacenter",
+        "agent": "Agent",
+        "instance": "Instance",
+        "schedule": "Schedule",
+        "httpMonitor": "Http Monitor",
+        "httpHeartbeat": "Http Heartbeat",
+        "pingHeartbeat": "Ping Heartbeat",
+        "apiKey": "Api Key",
+        "auditTrail": "Audit Trail",
+        "tag": "Tag",
+        "sessionLog": "Session Log"
       },
       "account": {
         "main": "ਖਾਤਾ",

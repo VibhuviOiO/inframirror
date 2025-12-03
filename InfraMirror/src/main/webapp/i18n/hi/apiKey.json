@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "ApiKeys",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नया Api Key बनाएँ",
+        "createOrEditLabel": "Api Key बनाएँ या संपादित करें",
+        "search": "Api Key खोजें",
+        "notFound": "No Api Keys found"
+      },
+      "created": "एक नया Api Key [identifier: {{ param }}] तैयार है",
+      "updated": "एक Api Key [identifier: {{ param }}] का अद्यतन हुआ है",
+      "deleted": "Api Key [identifier: {{ param }}] हटा दिया है",
+      "delete": {
+        "question": "Api Key [id: {{ id }}] हटाने की पुष्टि करें"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

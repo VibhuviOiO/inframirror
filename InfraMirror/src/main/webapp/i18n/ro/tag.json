@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Tag",
+        "createOrEditLabel": "Creeare sau editare Tag",
+        "search": "Căutare după Tag",
+        "notFound": "No Tags found"
+      },
+      "created": "A fost creată o nouă entitate Tag cu identificatorul {{ param }}",
+      "updated": "Tag cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Tag cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Tag {{ id }}?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Agent baru",
+        "createOrEditLabel": "Buat atau edit Agent",
+        "search": "Cari Agent",
+        "notFound": "No Agents found"
+      },
+      "created": "Agent dengan id {{ param }} telah dibuat",
+      "updated": "Agent dengan id {{ param }} telah diperbaharui",
+      "deleted": "Agent dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

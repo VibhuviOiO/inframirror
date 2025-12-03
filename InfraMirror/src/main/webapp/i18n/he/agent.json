@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "רענן רשימה",
+        "createLabel": "צור חדש Agent",
+        "createOrEditLabel": "צור או ערוך Agent",
+        "search": "חפש Agent",
+        "notFound": "לא נמצאו Agents"
+      },
+      "created": "Agent חדש נוצר עם מזהה {{ param }}",
+      "updated": "Agent עודכן עם מזהה {{ param }}",
+      "deleted": "Agent נמחק עם מזהה {{ param }}",
+      "delete": {
+        "question": "האם אתה בטוח שברצונך למחוק את Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

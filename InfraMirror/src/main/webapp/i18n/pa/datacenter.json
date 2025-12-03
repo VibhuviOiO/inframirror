@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "ਸੂਚੀ ਤਾਜ਼ਾ ਕਰੋ",
+        "createLabel": "ਇੱਕ ਨਵਾਂ Datacenter ਬਣਾਓ",
+        "createOrEditLabel": "ਇੱਕ Datacenter ਬਣਾਓ ਜਾਂ ਸੰਪਾਦਿਤ ਕਰੋ",
+        "search": "Datacenter ਲਈ ਖੋਜ",
+        "notFound": "ਕੋਈ Datacenters ਨਹੀਂ ਮਿਲਿਆ"
+      },
+      "created": "ਇੱਕ ਨਵਾਂ Datacenter ਪਛਾਣਕਰਤਾ {{ param }} ਨਾਲ ਬਣਾਇਆ ਗਿਆ ਹੈ",
+      "updated": "ਇੱਕ Datacenter ਪਛਾਣਕਰਤਾ {{ param }} ਨਾਲ ਅਪਡੇਟ ਕੀਤਾ ਗਿਆ ਹੈ",
+      "deleted": "ਇੱਕ Datacenter ਪਛਾਣਕਰਤਾ {{ param }} ਨਾਲ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ",
+      "delete": {
+        "question": "ਕੀ ਤੁਸੀਂ ਨਿਸ਼ਚਤ ਰੂਪ ਤੋਂ Datacenter {{ id }} ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

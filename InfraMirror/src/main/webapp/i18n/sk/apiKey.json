@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "Api Keys",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Pridať Api Key",
+        "createOrEditLabel": "Pridať alebo upraviť Api Key",
+        "search": "Vyhľadať Api Key",
+        "notFound": "No Api Keys found"
+      },
+      "created": "Bol vytvorený potomok entity Api Key s identifikátorom {{ param }}",
+      "updated": "Potomok entity Api Key s identifikátorom {{ param }} bol upravený.",
+      "deleted": "Potomok entity Api Key s identifikátorom {{ param }} bol vymazaný.",
+      "delete": {
+        "question": "Ste si istý, že chcete vymazať Api Key {{ id }}?"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

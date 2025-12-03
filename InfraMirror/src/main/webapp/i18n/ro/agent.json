@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Agent",
+        "createOrEditLabel": "Creeare sau editare Agent",
+        "search": "Căutare după Agent",
+        "notFound": "No Agents found"
+      },
+      "created": "A fost creată o nouă entitate Agent cu identificatorul {{ param }}",
+      "updated": "Agent cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Agent cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

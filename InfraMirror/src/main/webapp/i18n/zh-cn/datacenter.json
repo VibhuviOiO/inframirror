@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "创建新 Datacenter",
+        "createOrEditLabel": "创建或编辑 Datacenter",
+        "search": "查找 Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Datacenter {{ param }} 创建成功",
+      "updated": "Datacenter {{ param }} 更新成功",
+      "deleted": "Datacenter {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Datacenter {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

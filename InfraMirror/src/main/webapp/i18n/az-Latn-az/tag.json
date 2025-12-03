@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Siyahını yenilə",
+        "createLabel": "Yeni Tag əlavə et",
+        "createOrEditLabel": "Yeni Tag əlavə et və ya yenilə",
+        "search": "Tag axtar",
+        "notFound": "Tags məlumatı tapılmadı"
+      },
+      "created": "{{ param }} ID ilə bir Tag əlavə edildi",
+      "updated": "{{ param }} nolu Tag dəyişildi",
+      "deleted": "{{ param }} nolu Tag silindi",
+      "delete": {
+        "question": "{{ id }} nolu Tag silinəcək. Davam etmək istəyirsiniz?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

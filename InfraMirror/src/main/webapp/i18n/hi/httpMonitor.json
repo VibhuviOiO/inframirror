@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "HttpMonitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नया Http Monitor बनाएँ",
+        "createOrEditLabel": "Http Monitor बनाएँ या संपादित करें",
+        "search": "Http Monitor खोजें",
+        "notFound": "No Http Monitors found"
+      },
+      "created": "एक नया Http Monitor [identifier: {{ param }}] तैयार है",
+      "updated": "एक Http Monitor [identifier: {{ param }}] का अद्यतन हुआ है",
+      "deleted": "Http Monitor [identifier: {{ param }}] हटा दिया है",
+      "delete": {
+        "question": "Http Monitor [id: {{ id }}] हटाने की पुष्टि करें"
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}

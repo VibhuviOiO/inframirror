@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Tag baru",
+        "createOrEditLabel": "Buat atau edit Tag",
+        "search": "Cari Tag",
+        "notFound": "No Tags found"
+      },
+      "created": "Tag dengan id {{ param }} telah dibuat",
+      "updated": "Tag dengan id {{ param }} telah diperbaharui",
+      "deleted": "Tag dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Tag {{ id }}?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

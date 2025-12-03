@@ -15,7 +15,21 @@
     "devDatabaseType": "postgresql",
     "enableHibernateCache": false,
     "enableTranslation": true,
-    "entities": [],
+    "entities": [
+      "Region",
+      "Datacenter",
+      "Agent",
+      "Instance",
+      "Schedule",
+      "HttpMonitor",
+      "HttpHeartbeat",
+      "PingHeartbeat",
+      "AgentMonitor",
+      "ApiKey",
+      "AuditTrail",
+      "Tag",
+      "SessionLog"
+    ],
     "feignClient": null,
     "jhipsterVersion": "8.11.0",
     "languages": [
@@ -71,6 +85,7 @@
       "vi",
       "kr-Latn-kr"
     ],
+    "lastLiquibaseTimestamp": 1764751116000,
     "microfrontend": null,
     "microfrontends": [],
     "monorepository": true,

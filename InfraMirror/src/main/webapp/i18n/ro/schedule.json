@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Schedule",
+        "createOrEditLabel": "Creeare sau editare Schedule",
+        "search": "Căutare după Schedule",
+        "notFound": "No Schedules found"
+      },
+      "created": "A fost creată o nouă entitate Schedule cu identificatorul {{ param }}",
+      "updated": "Schedule cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Schedule cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Schedule {{ id }}?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

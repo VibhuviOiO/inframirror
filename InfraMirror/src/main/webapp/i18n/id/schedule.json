@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Schedule baru",
+        "createOrEditLabel": "Buat atau edit Schedule",
+        "search": "Cari Schedule",
+        "notFound": "No Schedules found"
+      },
+      "created": "Schedule dengan id {{ param }} telah dibuat",
+      "updated": "Schedule dengan id {{ param }} telah diperbaharui",
+      "deleted": "Schedule dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Schedule {{ id }}?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "Http Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Янги Http Monitor қўшиш",
+        "createOrEditLabel": "Http Monitorни таҳрирлаш",
+        "search": "Http Monitorни излаш",
+        "notFound": "No Http Monitors found"
+      },
+      "created": "Http Monitor {{ param }} билан қўшилди.",
+      "updated": "{{ param }}- Http Monitor сақланди.",
+      "deleted": "{{ param }}- Http Monitor ўчирилди.",
+      "delete": {
+        "question": "{{ id }}- Http Monitorни ўчирмоқчимисиз? "
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}

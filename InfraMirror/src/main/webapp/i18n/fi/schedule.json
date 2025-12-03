@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Luo Schedule",
+        "createOrEditLabel": "Luo tai muokkaa Schedule",
+        "search": "Etsi Schedule",
+        "notFound": "Schedule ei löytynyt"
+      },
+      "created": "Uusi Schedule on luotu, id: {{ param }}",
+      "updated": "Schedule on päivitetty, id: {{ param }}",
+      "deleted": "Schedule on päivitetty, id: {{ param }}",
+      "delete": {
+        "question": "Haluatko varmasti poistaa Schedule {{ id }}?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

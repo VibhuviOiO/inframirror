@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "สร้าง Agent",
+        "createOrEditLabel": "สร้างหรือแก้ไข Agent",
+        "search": "ค้นหา Agent",
+        "notFound": "No Agents found"
+      },
+      "created": "Agent ถูกสร้างด้วย {{ param }}",
+      "updated": "Agent ถูกแก้ไขด้วย {{ param }}",
+      "deleted": "Agent ถูกลบด้วย {{ param }}",
+      "delete": {
+        "question": "คุณต้องการที่จะลบ Agent {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

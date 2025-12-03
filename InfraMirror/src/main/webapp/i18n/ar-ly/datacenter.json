@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Datacenter جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Datacenter",
+        "search": "البحث عن Datacenter",
+        "notFound": "لم يتم العثور على Datacenters"
+      },
+      "created": "Datacenter جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Datacenter تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Datacenter تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Datacenter {{ id }}؟"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

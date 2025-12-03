@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "רענן רשימה",
+        "createLabel": "צור חדש Datacenter",
+        "createOrEditLabel": "צור או ערוך Datacenter",
+        "search": "חפש Datacenter",
+        "notFound": "לא נמצאו Datacenters"
+      },
+      "created": "Datacenter חדש נוצר עם מזהה {{ param }}",
+      "updated": "Datacenter עודכן עם מזהה {{ param }}",
+      "deleted": "Datacenter נמחק עם מזהה {{ param }}",
+      "delete": {
+        "question": "האם אתה בטוח שברצונך למחוק את Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

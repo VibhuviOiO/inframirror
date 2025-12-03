@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Vytvořit Datacenter",
+        "createOrEditLabel": "Vytvořit nebo upravit Datacenter",
+        "search": "Vyhledat Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Byl vytvořen potomek entity Datacenter s identifikátorem {{ param }}",
+      "updated": "Potomek entity Datacenter s identifikátorem {{ param }} byl upravený.",
+      "deleted": "Potomek entity Datacenter s identifikátorem {{ param }} bol smazaný.",
+      "delete": {
+        "question": "Jste si jisti, že chcete smazat Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

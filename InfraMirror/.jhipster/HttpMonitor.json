@@ -1,0 +1,61 @@
+{
+  "annotations": {
+    "changelogDate": "20251203083829"
+  },
+  "applications": "*",
+  "documentation": "HttpMonitor - HTTP/HTTPS endpoint monitoring configuration\\nTable: api_monitors\\nNote: Table is named api_monitors in database, entity name is HttpMonitor",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "100"
+    },
+    {
+      "fieldName": "method",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "10"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "10"
+    },
+    {
+      "fieldName": "url",
+      "fieldType": "TextBlob",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "headers",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "body",
+      "fieldType": "TextBlob"
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "HttpMonitor",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "httpHeartbeat",
+      "otherEntityRelationshipName": "monitor",
+      "relationshipName": "heartbeats",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "schedule",
+      "otherEntityRelationshipName": "monitors",
+      "relationshipName": "schedule",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceImpl"
+}

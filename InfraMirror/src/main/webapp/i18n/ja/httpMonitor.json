@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "HttpMonitors",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Http Monitor の作成",
+        "createOrEditLabel": "Http Monitorの作成または編集",
+        "search": "Http Monitor の検索",
+        "notFound": "Http Monitors が見つかりません。"
+      },
+      "created": "新しい Http Monitor がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Http Monitor が更新されました。",
+      "deleted": "ID {{ param }} の Http Monitor が削除されました。",
+      "delete": {
+        "question": "Http Monitor {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}

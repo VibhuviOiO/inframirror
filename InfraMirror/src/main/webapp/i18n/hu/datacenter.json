@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Datacenter létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Datacentert",
+        "search": "Datacenter keresése",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Egy új Datacenter lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Datacenter módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Datacenter törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Datacentert {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

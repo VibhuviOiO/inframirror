@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Thêm mới một Datacenter",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Datacenter",
+        "search": "Tìm Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "Một Datacenter mới được tạo với định danh {{ param }}",
+      "updated": "Một Datacenter cập nhật với định danh {{ param }}",
+      "deleted": "Một Datacenter đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

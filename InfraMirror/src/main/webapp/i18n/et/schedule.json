@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "schedule": {
+      "home": {
+        "title": "Schedules",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Schedule",
+        "createOrEditLabel": "Lisa või muuda Schedule",
+        "search": "Otsi Schedule",
+        "notFound": "Ei leitud ühtegi Schedules"
+      },
+      "created": "Uus Schedule on loodud identifikaatoriga {{ param }}",
+      "updated": "Schedule identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Schedule identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Schedule {{ id }}?"
+      },
+      "detail": {
+        "title": "Schedule"
+      },
+      "id": "ID",
+      "name": "Name",
+      "interval": "Interval",
+      "includeResponseBody": "Include Response Body",
+      "thresholdsWarning": "Thresholds Warning",
+      "thresholdsCritical": "Thresholds Critical",
+      "monitors": "Monitors"
+    }
+  }
+}

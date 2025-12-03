@@ -1,0 +1,30 @@
+{
+  "infraMirrorApp": {
+    "tag": {
+      "home": {
+        "title": "Tags",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Jańa Tag qosıw",
+        "createOrEditLabel": "Tagdi redaktorlaw",
+        "search": "Tag izlew",
+        "notFound": "No Tags found"
+      },
+      "created": "Tag {{ param }} menen qosıldı",
+      "updated": "{{ param }}- Tag saqlandı",
+      "deleted": "{{ param }}- Tag óshirildi",
+      "delete": {
+        "question": "{{ id }}- Tag tı óshirejaqsizba?"
+      },
+      "detail": {
+        "title": "Tag"
+      },
+      "id": "ID",
+      "key": "Key",
+      "value": "Value",
+      "entityType": "Entity Type",
+      "entityId": "Entity Id",
+      "createdBy": "Created By",
+      "createdDate": "Created Date"
+    }
+  }
+}

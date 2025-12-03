@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नवीन Agent तयार करा",
+        "createOrEditLabel": "Agent तयार किंवा संपादित करा",
+        "search": "Agent शोधा",
+        "notFound": "No Agents found"
+      },
+      "created": "Agent [identifier: {{ param }}] तयार आहे",
+      "updated": "Agent [identifier: {{ param }}] सुधारित केले आहे",
+      "deleted": "Agent [identifier: {{ param }}] हटविले आहे",
+      "delete": {
+        "question": "Agent [id: {{ id }}] काढून टाकण्याबाबत पुष्टी?"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

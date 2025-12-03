@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "agent": {
+      "home": {
+        "title": "Agents",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Agent の作成",
+        "createOrEditLabel": "Agentの作成または編集",
+        "search": "Agent の検索",
+        "notFound": "Agents が見つかりません。"
+      },
+      "created": "新しい Agent がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Agent が更新されました。",
+      "deleted": "ID {{ param }} の Agent が削除されました。",
+      "delete": {
+        "question": "Agent {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Agent"
+      },
+      "id": "ID",
+      "name": "Name",
+      "instances": "Instances",
+      "httpHeartbeats": "Http Heartbeats",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter"
+    }
+  }
+}

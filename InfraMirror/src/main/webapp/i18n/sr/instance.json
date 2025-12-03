@@ -1,0 +1,53 @@
+{
+  "infraMirrorApp": {
+    "instance": {
+      "home": {
+        "title": "Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Kreiraj novi Instance",
+        "createOrEditLabel": "Kreirajte ili izmenite Instance",
+        "search": "Potražite Instance",
+        "notFound": "No Instances found"
+      },
+      "created": "Kreiran je novi Instance pod nazivom {{ param }}",
+      "updated": "Instance pod nazivom {{ param }} je ažuriran",
+      "deleted": "Instance pod nazivom {{ param }} je obrisan",
+      "delete": {
+        "question": "Da li ste sigurni da želite da obrišete Instance pod nazivom {{ id }}?"
+      },
+      "detail": {
+        "title": "Instance"
+      },
+      "id": "ID",
+      "name": "Name",
+      "hostname": "Hostname",
+      "description": "Description",
+      "instanceType": "Instance Type",
+      "monitoringType": "Monitoring Type",
+      "operatingSystem": "Operating System",
+      "platform": "Platform",
+      "privateIpAddress": "Private Ip Address",
+      "publicIpAddress": "Public Ip Address",
+      "tags": "Tags",
+      "pingEnabled": "Ping Enabled",
+      "pingInterval": "Ping Interval",
+      "pingTimeoutMs": "Ping Timeout Ms",
+      "pingRetryCount": "Ping Retry Count",
+      "hardwareMonitoringEnabled": "Hardware Monitoring Enabled",
+      "hardwareMonitoringInterval": "Hardware Monitoring Interval",
+      "cpuWarningThreshold": "Cpu Warning Threshold",
+      "cpuDangerThreshold": "Cpu Danger Threshold",
+      "memoryWarningThreshold": "Memory Warning Threshold",
+      "memoryDangerThreshold": "Memory Danger Threshold",
+      "diskWarningThreshold": "Disk Warning Threshold",
+      "diskDangerThreshold": "Disk Danger Threshold",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "lastPingAt": "Last Ping At",
+      "lastHardwareCheckAt": "Last Hardware Check At",
+      "pingHeartbeats": "Ping Heartbeats",
+      "datacenter": "Datacenter",
+      "agent": "Agent"
+    }
+  }
+}

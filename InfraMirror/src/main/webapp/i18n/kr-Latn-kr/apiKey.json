@@ -1,0 +1,34 @@
+{
+  "infraMirrorApp": {
+    "apiKey": {
+      "home": {
+        "title": "Api Keys",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Jańa Api Key qosıw",
+        "createOrEditLabel": "Api Keydi redaktorlaw",
+        "search": "Api Key izlew",
+        "notFound": "No Api Keys found"
+      },
+      "created": "Api Key {{ param }} menen qosıldı",
+      "updated": "{{ param }}- Api Key saqlandı",
+      "deleted": "{{ param }}- Api Key óshirildi",
+      "delete": {
+        "question": "{{ id }}- Api Key tı óshirejaqsizba?"
+      },
+      "detail": {
+        "title": "Api Key"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "keyHash": "Key Hash",
+      "active": "Active",
+      "lastUsedDate": "Last Used Date",
+      "expiresAt": "Expires At",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date"
+    }
+  }
+}

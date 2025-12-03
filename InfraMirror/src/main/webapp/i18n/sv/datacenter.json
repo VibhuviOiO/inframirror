@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "datacenter": {
+      "home": {
+        "title": "Datacenters",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Skapa en ny Datacenter",
+        "createOrEditLabel": "Skapa eller ändra en Datacenter",
+        "search": "Sök efter Datacenter",
+        "notFound": "No Datacenters found"
+      },
+      "created": "En ny Datacenter är skapad med id {{ param }}",
+      "updated": "En Datacenter är uppdaterad med id  {{ param }}",
+      "deleted": "En Datacenter är borttagen med id  {{ param }}",
+      "delete": {
+        "question": "Är du säker på att du vill ta bort Datacenter {{ id }}?"
+      },
+      "detail": {
+        "title": "Datacenter"
+      },
+      "id": "ID",
+      "code": "Code",
+      "name": "Name",
+      "agents": "Agents",
+      "instances": "Instances",
+      "region": "Region"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infraMirrorApp": {
+    "httpMonitor": {
+      "home": {
+        "title": "Http Monitors",
+        "refreshListLabel": "Siyahını yenilə",
+        "createLabel": "Yeni Http Monitor əlavə et",
+        "createOrEditLabel": "Yeni Http Monitor əlavə et və ya yenilə",
+        "search": "Http Monitor axtar",
+        "notFound": "Http Monitors məlumatı tapılmadı"
+      },
+      "created": "{{ param }} ID ilə bir Http Monitor əlavə edildi",
+      "updated": "{{ param }} nolu Http Monitor dəyişildi",
+      "deleted": "{{ param }} nolu Http Monitor silindi",
+      "delete": {
+        "question": "{{ id }} nolu Http Monitor silinəcək. Davam etmək istəyirsiniz?"
+      },
+      "detail": {
+        "title": "Http Monitor"
+      },
+      "id": "ID",
+      "name": "Name",
+      "method": "Method",
+      "type": "Type",
+      "url": "Url",
+      "headers": "Headers",
+      "body": "Body",
+      "heartbeats": "Heartbeats",
+      "schedule": "Schedule"
+    }
+  }
+}
