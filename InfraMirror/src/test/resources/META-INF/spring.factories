@@ -1,0 +1,5 @@
+org.springframework.test.context.ContextCustomizerFactory = \
+    vibhuvi.oio.inframirror.config.\
+    SqlTestContainersSpringContextCustomizerFactory,vibhuvi.oio.inframirror.\
+    config.TestContainersSpringContextCustomizerFactory,vibhuvi.oio.inframirror.\
+    config.RedisTestContainersSpringContextCustomizerFactory

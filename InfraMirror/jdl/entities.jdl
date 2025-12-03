@@ -1,0 +1,363 @@
+/**
+ * InfraMirror JDL Model
+ * 
+ * This JDL file defines all entities for the InfraMirror infrastructure management platform.
+ * It matches the exact properties from Liquibase schemas and supports PostgreSQL database.
+ * 
+ * Features:
+ * - Multi-datacenter infrastructure management
+ * - Monitoring and health checks (HTTP, Ping, Hardware)
+ * - Instance and agent management
+ * - Audit trails and API key management
+ * 
+ * Generated from Liquibase schemas on 2025
+ */
+
+// ========================================
+// CORE INFRASTRUCTURE ENTITIES
+// ========================================
+
+/**
+ * Region - Represents geographical regions containing multiple datacenters
+ * Table: regions
+ */
+entity Region {
+  name String required maxlength(50)
+  regionCode String maxlength(20)
+  groupName String maxlength(20)
+}
+
+/**
+ * Datacenter - Physical datacenter locations within regions
+ * Table: datacenters
+ */
+entity Datacenter {
+  code String required maxlength(10)
+  name String required maxlength(50)
+}
+
+/**
+ * Agent - Monitoring agents deployed in datacenters to collect metrics
+ * Table: agents
+ */
+entity Agent {
+  name String required maxlength(50)
+}
+
+/**
+ * Instance - Physical or virtual machines managed by the platform
+ * Table: instance
+ */
+entity Instance {
+  name String required maxlength(255)
+  hostname String required maxlength(255)
+  description String maxlength(500)
+  instanceType String required maxlength(50)
+  monitoringType String required maxlength(50)
+  operatingSystem String maxlength(100)
+  platform String maxlength(100)
+  privateIpAddress String maxlength(50)
+  publicIpAddress String maxlength(50)
+  tags TextBlob
+  pingEnabled Boolean required
+  pingInterval Integer required
+  pingTimeoutMs Integer required
+  pingRetryCount Integer required
+  hardwareMonitoringEnabled Boolean required
+  hardwareMonitoringInterval Integer required
+  cpuWarningThreshold Integer required
+  cpuDangerThreshold Integer required
+  memoryWarningThreshold Integer required
+  memoryDangerThreshold Integer required
+  diskWarningThreshold Integer required
+  diskDangerThreshold Integer required
+  createdAt Instant
+  updatedAt Instant
+  lastPingAt Instant
+  lastHardwareCheckAt Instant
+}
+
+// ========================================
+// MONITORING & HEALTH CHECK ENTITIES
+// ========================================
+
+/**
+ * Schedule - Defines monitoring schedules and intervals
+ * Table: schedules
+ */
+entity Schedule {
+  name String required maxlength(50)
+  interval Integer required
+  includeResponseBody Boolean
+  thresholdsWarning Integer
+  thresholdsCritical Integer
+}
+
+/**
+ * HttpMonitor - HTTP/HTTPS endpoint monitoring configuration
+ * Table: api_monitors
+ * Note: Table is named api_monitors in database, entity name is HttpMonitor
+ */
+entity HttpMonitor {
+  name String required maxlength(100)
+  method String required maxlength(10)
+  type String required maxlength(10)
+  url TextBlob required
+  headers TextBlob
+  body TextBlob
+}
+
+/**
+ * HttpHeartbeat - Results from HTTP endpoint health checks
+ * Table: api_heartbeats
+ * Note: Table is named api_heartbeats in database, entity name is HttpHeartbeat
+ */
+entity HttpHeartbeat {
+  executedAt Instant required
+  success Boolean
+  responseTimeMs Integer
+  responseSizeBytes Integer
+  responseStatusCode Integer
+  responseContentType String maxlength(50)
+  responseServer String maxlength(50)
+  responseCacheStatus String maxlength(50)
+  dnsLookupMs Integer
+  tcpConnectMs Integer
+  tlsHandshakeMs Integer
+  timeToFirstByteMs Integer
+  warningThresholdMs Integer
+  criticalThresholdMs Integer
+  errorType String maxlength(50)
+  errorMessage TextBlob
+  rawRequestHeaders TextBlob
+  rawResponseHeaders TextBlob
+  rawResponseBody TextBlob
+}
+
+/**
+ * PingHeartbeat - Results from ping and hardware monitoring checks
+ * Table: ping_heartbeat
+ */
+entity PingHeartbeat {
+  executedAt Instant required
+  heartbeatType String required maxlength(20)
+  success Boolean required
+  responseTimeMs Integer
+  packetLoss Float
+  jitterMs Integer
+  cpuUsage Float
+  memoryUsage Float
+  diskUsage Float
+  loadAverage Float
+  processCount Integer
+  networkRxBytes Long
+  networkTxBytes Long
+  uptimeSeconds Long
+  status String required maxlength(20)
+  errorMessage TextBlob
+  errorType String maxlength(100)
+  metadata TextBlob
+}
+
+/**
+ * AgentMonitor - Many-to-many mapping between agents and HTTP monitors
+ * Table: agent_monitors
+ */
+entity AgentMonitor {
+  active Boolean required
+  createdBy String required maxlength(50)
+  createdDate Instant
+  lastModifiedBy String maxlength(50)
+  lastModifiedDate Instant
+}
+
+// ========================================
+// SECURITY & AUDIT ENTITIES
+// ========================================
+
+/**
+ * ApiKey - API keys for external system authentication
+ * Table: api_key
+ */
+entity ApiKey {
+  name String required maxlength(100)
+  description String maxlength(500)
+  keyHash String required maxlength(500)
+  active Boolean required
+  lastUsedDate Instant
+  expiresAt Instant
+  createdBy String required maxlength(50)
+  createdDate Instant
+  lastModifiedBy String maxlength(50)
+  lastModifiedDate Instant
+}
+
+/**
+ * AuditTrail - Comprehensive audit logging for all system changes
+ * Table: audit_logs
+ * Note: Renamed from AuditLog to AuditTrail as requested
+ * 
+ * Links to JHipster User entity for tracking who made changes
+ */
+entity AuditTrail {
+  action String required maxlength(100)
+  entityName String required maxlength(100)
+  entityId Long required
+  oldValue TextBlob
+  newValue TextBlob
+  timestamp Instant required
+  ipAddress String maxlength(45)
+  userAgent TextBlob
+}
+
+// ========================================
+// TAGGING SYSTEM
+// ========================================
+
+/**
+ * Tag - Flexible tagging system for resource organization
+ * Supports key-value pairs for categorization, cost allocation, and filtering
+ * 
+ * Usage: Tag can be applied to any entity via entityType + entityId
+ * Common tags:
+ * - Environment: prod, staging, dev
+ * - Owner: team-devops, team-platform
+ * - CostCenter: cc-engineering, cc-operations
+ * - Compliance: pci-compliant, hipaa-compliant
+ * - Application: app-web, app-api
+ * 
+ * Note: Instance entity already has JSONB 'tags' field for backward compatibility
+ */
+entity Tag {
+  key String required maxlength(50)
+  value String required maxlength(200)
+  entityType String required maxlength(50) // instance, datacenter, agent, httpmonitor, region
+  entityId Long required
+  createdBy String maxlength(50)
+  createdDate Instant
+}
+
+// ========================================
+// SESSION MANAGEMENT
+// ========================================
+
+/**
+ * SessionLog - Tracks user connections to instances (SSH, RDP, Console)
+ * Critical for security auditing and compliance
+ * 
+ * Links to JHipster User entity for audit trail
+ */
+entity SessionLog {
+  sessionType String required maxlength(20) // SSH, RDP, CONSOLE, WEB
+  startTime Instant required
+  endTime Instant
+  duration Integer // Duration in seconds
+  sourceIpAddress String required maxlength(45)
+  status String required maxlength(20) // ACTIVE, COMPLETED, TERMINATED, FAILED
+  terminationReason String maxlength(200)
+  commandsExecuted Integer
+  bytesTransferred Long
+  sessionId String required maxlength(100) unique
+  metadata TextBlob // Additional session details (client version, protocol, etc.)
+}
+
+// ========================================
+// RELATIONSHIPS
+// ========================================
+
+// Region -> Datacenter (One-to-Many)
+relationship OneToMany {
+  Region{datacenters} to Datacenter{region}
+}
+
+// Datacenter -> Agent (One-to-Many)
+relationship OneToMany {
+  Datacenter{agents} to Agent{datacenter}
+}
+
+// Datacenter -> Instance (One-to-Many)
+relationship OneToMany {
+  Datacenter{instances} to Instance{datacenter required}
+}
+
+// Agent -> Instance (One-to-Many)
+relationship OneToMany {
+  Agent{instances} to Instance{agent}
+}
+
+// Schedule -> HttpMonitor (One-to-Many)
+relationship OneToMany {
+  Schedule{monitors} to HttpMonitor{schedule}
+}
+
+// HttpMonitor -> HttpHeartbeat (One-to-Many)
+relationship OneToMany {
+  HttpMonitor{heartbeats} to HttpHeartbeat{monitor}
+}
+
+// Agent -> HttpHeartbeat (One-to-Many)
+relationship OneToMany {
+  Agent{httpHeartbeats} to HttpHeartbeat{agent}
+}
+
+// Instance -> PingHeartbeat (One-to-Many)
+relationship OneToMany {
+  Instance{pingHeartbeats} to PingHeartbeat{instance required}
+}
+
+// Agent -> PingHeartbeat (One-to-Many)
+relationship OneToMany {
+  Agent{pingHeartbeats} to PingHeartbeat{agent}
+}
+
+// Agent <-> HttpMonitor (Many-to-Many through AgentMonitor)
+relationship ManyToOne {
+  AgentMonitor{agent required} to Agent
+  AgentMonitor{monitor required} to HttpMonitor
+}
+
+// SessionLog -> Instance (Many-to-One)
+relationship ManyToOne {
+  SessionLog{instance required} to Instance
+}
+
+// SessionLog -> Agent (Many-to-One) - Agent that facilitated the connection
+relationship ManyToOne {
+  SessionLog{agent} to Agent
+  SessionLog{user required} to User with builtInEntity
+  AuditTrail{user} to User with builtInEntity
+}
+
+// ========================================
+// JDL OPTIONS
+// ========================================
+
+// DTOs for all entities
+dto * with mapstruct
+
+// Service layer for all entities
+service * with serviceImpl
+
+// Pagination for large datasets
+paginate Region, Datacenter, Agent, Instance, HttpMonitor with pagination
+paginate HttpHeartbeat, PingHeartbeat, AuditTrail, SessionLog, Tag with infinite-scroll
+
+// Filtering support for search functionality
+filter Region, Datacenter, Agent, Instance, HttpMonitor, Schedule
+filter HttpHeartbeat, PingHeartbeat, AuditTrail, ApiKey
+filter SessionLog, Tag
+
+// Skip client generation for join tables and pure backend entities
+skipClient AgentMonitor
+
+// Read-only entities (no create/update/delete operations)
+readOnly HttpHeartbeat, PingHeartbeat, AuditTrail, SessionLog
+
+// Enable Elasticsearch indexing for search
+search HttpHeartbeat, PingHeartbeat, AuditTrail, SessionLog with elasticsearch
+
+// Microservice options (if using microservices architecture)
+// microservice * with inframonitor
+
+// Database configuration
+databaseType sql
