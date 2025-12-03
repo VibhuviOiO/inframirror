@@ -2,6 +2,10 @@
 
 ## Developer Setup
 
+cd docker/im/
+docker-compose -f docker/im/services.yml up -d - runs keyclock, elasticsearch, postgres, redis
+docker-compose -f docker/im/services.yml ps
+
 ### Frontend
 ```bash
 cd frontend
