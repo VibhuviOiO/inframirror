@@ -2,10 +2,10 @@ package vibhuvi.oio.inframirror.service.mapper;
 
 import org.mapstruct.*;
 import vibhuvi.oio.inframirror.domain.Instance;
-import vibhuvi.oio.inframirror.domain.Service;
+import vibhuvi.oio.inframirror.domain.MonitoredService;
 import vibhuvi.oio.inframirror.domain.ServiceInstance;
 import vibhuvi.oio.inframirror.service.dto.InstanceDTO;
-import vibhuvi.oio.inframirror.service.dto.ServiceDTO;
+import vibhuvi.oio.inframirror.service.dto.MonitoredServiceDTO;
 import vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO;
 
 /**
@@ -14,7 +14,7 @@ import vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO;
 @Mapper(componentModel = "spring")
 public interface ServiceInstanceMapper extends EntityMapper<ServiceInstanceDTO, ServiceInstance> {
     @Mapping(target = "instance", source = "instance", qualifiedByName = "instanceId")
-    @Mapping(target = "service", source = "service", qualifiedByName = "serviceId")
+    @Mapping(target = "monitoredService", source = "monitoredService", qualifiedByName = "monitoredServiceId")
     ServiceInstanceDTO toDto(ServiceInstance s);
 
     @Named("instanceId")
@@ -22,8 +22,8 @@ public interface ServiceInstanceMapper extends EntityMapper<ServiceInstanceDTO, 
     @Mapping(target = "id", source = "id")
     InstanceDTO toDtoInstanceId(Instance instance);
 
-    @Named("serviceId")
+    @Named("monitoredServiceId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
-    ServiceDTO toDtoServiceId(Service service);
+    MonitoredServiceDTO toDtoMonitoredServiceId(MonitoredService monitoredService);
 }

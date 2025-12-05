@@ -198,7 +198,8 @@ export const ServiceInstance = () => {
                   <Translate contentKey="infraMirrorApp.serviceInstance.instance">Instance</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th>
-                  <Translate contentKey="infraMirrorApp.serviceInstance.service">Service</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="infraMirrorApp.serviceInstance.monitoredService">Monitored Service</Translate>{' '}
+                  <FontAwesomeIcon icon="sort" />
                 </th>
                 <th />
               </tr>
@@ -231,7 +232,11 @@ export const ServiceInstance = () => {
                     )}
                   </td>
                   <td>
-                    {serviceInstance.service ? <Link to={`/service/${serviceInstance.service.id}`}>{serviceInstance.service.id}</Link> : ''}
+                    {serviceInstance.monitoredService ? (
+                      <Link to={`/monitored-service/${serviceInstance.monitoredService.id}`}>{serviceInstance.monitoredService.id}</Link>
+                    ) : (
+                      ''
+                    )}
                   </td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">

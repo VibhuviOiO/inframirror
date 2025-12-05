@@ -30,7 +30,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
-import vibhuvi.oio.inframirror.domain.Service;
+import vibhuvi.oio.inframirror.domain.MonitoredService;
 import vibhuvi.oio.inframirror.domain.ServiceHeartbeat;
 import vibhuvi.oio.inframirror.repository.ServiceHeartbeatRepository;
 import vibhuvi.oio.inframirror.repository.search.ServiceHeartbeatSearchRepository;
@@ -107,15 +107,15 @@ class ServiceHeartbeatResourceIT {
             .errorMessage(DEFAULT_ERROR_MESSAGE)
             .metadata(DEFAULT_METADATA);
         // Add required entity
-        Service service;
-        if (TestUtil.findAll(em, Service.class).isEmpty()) {
-            service = ServiceResourceIT.createEntity();
-            em.persist(service);
+        MonitoredService monitoredService;
+        if (TestUtil.findAll(em, MonitoredService.class).isEmpty()) {
+            monitoredService = MonitoredServiceResourceIT.createEntity();
+            em.persist(monitoredService);
             em.flush();
         } else {
-            service = TestUtil.findAll(em, Service.class).get(0);
+            monitoredService = TestUtil.findAll(em, MonitoredService.class).get(0);
         }
-        serviceHeartbeat.setService(service);
+        serviceHeartbeat.setMonitoredService(monitoredService);
         return serviceHeartbeat;
     }
 
@@ -134,15 +134,15 @@ class ServiceHeartbeatResourceIT {
             .errorMessage(UPDATED_ERROR_MESSAGE)
             .metadata(UPDATED_METADATA);
         // Add required entity
-        Service service;
-        if (TestUtil.findAll(em, Service.class).isEmpty()) {
-            service = ServiceResourceIT.createUpdatedEntity();
-            em.persist(service);
+        MonitoredService monitoredService;
+        if (TestUtil.findAll(em, MonitoredService.class).isEmpty()) {
+            monitoredService = MonitoredServiceResourceIT.createUpdatedEntity();
+            em.persist(monitoredService);
             em.flush();
         } else {
-            service = TestUtil.findAll(em, Service.class).get(0);
+            monitoredService = TestUtil.findAll(em, MonitoredService.class).get(0);
         }
-        updatedServiceHeartbeat.setService(service);
+        updatedServiceHeartbeat.setMonitoredService(monitoredService);
         return updatedServiceHeartbeat;
     }
 
@@ -471,7 +471,12 @@ class ServiceHeartbeatResourceIT {
         ServiceHeartbeat partialUpdatedServiceHeartbeat = new ServiceHeartbeat();
         partialUpdatedServiceHeartbeat.setId(serviceHeartbeat.getId());
 
-        partialUpdatedServiceHeartbeat.executedAt(UPDATED_EXECUTED_AT).status(UPDATED_STATUS).errorMessage(UPDATED_ERROR_MESSAGE);
+        partialUpdatedServiceHeartbeat
+            .executedAt(UPDATED_EXECUTED_AT)
+            .success(UPDATED_SUCCESS)
+            .status(UPDATED_STATUS)
+            .responseTimeMs(UPDATED_RESPONSE_TIME_MS)
+            .errorMessage(UPDATED_ERROR_MESSAGE);
 
         restServiceHeartbeatMockMvc
             .perform(

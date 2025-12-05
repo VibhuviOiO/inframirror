@@ -16,11 +16,11 @@ describe('StatusPage e2e test', () => {
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
   const statusPageSample = {
-    name: 'now whoa inferior',
-    slug: 'boo whereas woeful',
-    isPublic: false,
-    createdAt: '2025-12-04T15:08:23.945Z',
-    updatedAt: '2025-12-04T06:40:57.198Z',
+    name: 'pertinent gah until',
+    slug: 'male',
+    isPublic: true,
+    createdAt: '2025-12-04T10:14:10.733Z',
+    updatedAt: '2025-12-04T05:50:03.568Z',
   };
 
   let statusPage;
@@ -168,33 +168,33 @@ describe('StatusPage e2e test', () => {
     });
 
     it('should create an instance of StatusPage', () => {
-      cy.get(`[data-cy="name"]`).type('enlightened finally slide');
-      cy.get(`[data-cy="name"]`).should('have.value', 'enlightened finally slide');
+      cy.get(`[data-cy="name"]`).type('uh-huh till');
+      cy.get(`[data-cy="name"]`).should('have.value', 'uh-huh till');
 
-      cy.get(`[data-cy="slug"]`).type('sham yuck abnormally');
-      cy.get(`[data-cy="slug"]`).should('have.value', 'sham yuck abnormally');
+      cy.get(`[data-cy="slug"]`).type('confound offend geez');
+      cy.get(`[data-cy="slug"]`).should('have.value', 'confound offend geez');
 
-      cy.get(`[data-cy="description"]`).type('rationalise wonderfully wholly');
-      cy.get(`[data-cy="description"]`).should('have.value', 'rationalise wonderfully wholly');
+      cy.get(`[data-cy="description"]`).type('geez peaceful');
+      cy.get(`[data-cy="description"]`).should('have.value', 'geez peaceful');
 
       cy.get(`[data-cy="isPublic"]`).should('not.be.checked');
       cy.get(`[data-cy="isPublic"]`).click();
       cy.get(`[data-cy="isPublic"]`).should('be.checked');
 
-      cy.get(`[data-cy="customDomain"]`).type('squid');
-      cy.get(`[data-cy="customDomain"]`).should('have.value', 'squid');
+      cy.get(`[data-cy="customDomain"]`).type('marvelous');
+      cy.get(`[data-cy="customDomain"]`).should('have.value', 'marvelous');
 
-      cy.get(`[data-cy="logoUrl"]`).type('nervous');
-      cy.get(`[data-cy="logoUrl"]`).should('have.value', 'nervous');
+      cy.get(`[data-cy="logoUrl"]`).type('soupy badly boohoo');
+      cy.get(`[data-cy="logoUrl"]`).should('have.value', 'soupy badly boohoo');
 
-      cy.get(`[data-cy="themeColor"]`).type('verball');
-      cy.get(`[data-cy="themeColor"]`).should('have.value', 'verball');
+      cy.get(`[data-cy="themeColor"]`).type('live');
+      cy.get(`[data-cy="themeColor"]`).should('have.value', 'live');
 
-      cy.get(`[data-cy="headerText"]`).type('help coin');
-      cy.get(`[data-cy="headerText"]`).should('have.value', 'help coin');
+      cy.get(`[data-cy="headerText"]`).type('yet');
+      cy.get(`[data-cy="headerText"]`).should('have.value', 'yet');
 
-      cy.get(`[data-cy="footerText"]`).type('small');
-      cy.get(`[data-cy="footerText"]`).should('have.value', 'small');
+      cy.get(`[data-cy="footerText"]`).type('dime hence govern');
+      cy.get(`[data-cy="footerText"]`).should('have.value', 'dime hence govern');
 
       cy.get(`[data-cy="showResponseTimes"]`).should('not.be.checked');
       cy.get(`[data-cy="showResponseTimes"]`).click();
@@ -204,8 +204,8 @@ describe('StatusPage e2e test', () => {
       cy.get(`[data-cy="showUptimePercentage"]`).click();
       cy.get(`[data-cy="showUptimePercentage"]`).should('be.checked');
 
-      cy.get(`[data-cy="autoRefreshSeconds"]`).type('11823');
-      cy.get(`[data-cy="autoRefreshSeconds"]`).should('have.value', '11823');
+      cy.get(`[data-cy="autoRefreshSeconds"]`).type('19194');
+      cy.get(`[data-cy="autoRefreshSeconds"]`).should('have.value', '19194');
 
       cy.get(`[data-cy="monitorSelection"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="monitorSelection"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
@@ -221,13 +221,13 @@ describe('StatusPage e2e test', () => {
       cy.get(`[data-cy="allowedRoles"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="allowedRoles"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
 
-      cy.get(`[data-cy="createdAt"]`).type('2025-12-05T03:31');
+      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T05:37');
       cy.get(`[data-cy="createdAt"]`).blur();
-      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-05T03:31');
+      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T05:37');
 
-      cy.get(`[data-cy="updatedAt"]`).type('2025-12-05T02:47');
+      cy.get(`[data-cy="updatedAt"]`).type('2025-12-05T00:05');
       cy.get(`[data-cy="updatedAt"]`).blur();
-      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-05T02:47');
+      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-05T00:05');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

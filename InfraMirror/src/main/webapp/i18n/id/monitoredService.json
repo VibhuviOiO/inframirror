@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "monitoredService": {
+      "home": {
+        "title": "Monitored Services",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Monitored Service baru",
+        "createOrEditLabel": "Buat atau edit Monitored Service",
+        "search": "Cari Monitored Service",
+        "notFound": "No Monitored Services found"
+      },
+      "created": "Monitored Service dengan id {{ param }} telah dibuat",
+      "updated": "Monitored Service dengan id {{ param }} telah diperbaharui",
+      "deleted": "Monitored Service dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Monitored Service {{ id }}?"
+      },
+      "detail": {
+        "title": "Monitored Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

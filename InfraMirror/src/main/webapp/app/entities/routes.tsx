@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router'; // eslint-disable-line
+import { Route } from 'react-router';
 
 import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
 
@@ -15,12 +15,12 @@ import AgentMonitor from './agent-monitor';
 import AgentLock from './agent-lock';
 import Instance from './instance';
 import InstanceHeartbeat from './instance-heartbeat';
-import Service from './service';
 import ServiceInstance from './service-instance';
 import ServiceHeartbeat from './service-heartbeat';
 import StatusPage from './status-page';
 import StatusPageItem from './status-page-item';
 import StatusDependency from './status-dependency';
+import MonitoredService from './monitored-service';
 /* jhipster-needle-add-route-import - JHipster will add routes here */
 
 export default () => {
@@ -40,12 +40,12 @@ export default () => {
         <Route path="agent-lock/*" element={<AgentLock />} />
         <Route path="instance/*" element={<Instance />} />
         <Route path="instance-heartbeat/*" element={<InstanceHeartbeat />} />
-        <Route path="service/*" element={<Service />} />
         <Route path="service-instance/*" element={<ServiceInstance />} />
         <Route path="service-heartbeat/*" element={<ServiceHeartbeat />} />
         <Route path="status-page/*" element={<StatusPage />} />
         <Route path="status-page-item/*" element={<StatusPageItem />} />
         <Route path="status-dependency/*" element={<StatusDependency />} />
+        <Route path="monitored-service/*" element={<MonitoredService />} />
         {/* jhipster-needle-add-route-path - JHipster will add routes here */}
       </ErrorBoundaryRoutes>
     </div>

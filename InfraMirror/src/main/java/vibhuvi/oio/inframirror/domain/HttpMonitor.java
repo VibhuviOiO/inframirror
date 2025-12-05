@@ -11,7 +11,7 @@ import java.util.Set;
  * A HttpMonitor.
  */
 @Entity
-@Table(name = "http_monitors")
+@Table(name = "http_monitor")
 @org.springframework.data.elasticsearch.annotations.Document(indexName = "httpmonitor")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class HttpMonitor implements Serializable {

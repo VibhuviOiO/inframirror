@@ -26,7 +26,7 @@
       "errorMessage": "Error Message",
       "metadata": "Metadata",
       "agent": "Agent",
-      "service": "Service",
+      "monitoredService": "Monitored Service",
       "serviceInstance": "Service Instance"
     }
   }

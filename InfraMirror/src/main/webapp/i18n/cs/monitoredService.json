@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "monitoredService": {
+      "home": {
+        "title": "Monitored Services",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Vytvořit Monitored Service",
+        "createOrEditLabel": "Vytvořit nebo upravit Monitored Service",
+        "search": "Vyhledat Monitored Service",
+        "notFound": "No Monitored Services found"
+      },
+      "created": "Byl vytvořen potomek entity Monitored Service s identifikátorem {{ param }}",
+      "updated": "Potomek entity Monitored Service s identifikátorem {{ param }} byl upravený.",
+      "deleted": "Potomek entity Monitored Service s identifikátorem {{ param }} bol smazaný.",
+      "delete": {
+        "question": "Jste si jisti, že chcete smazat Monitored Service {{ id }}?"
+      },
+      "detail": {
+        "title": "Monitored Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

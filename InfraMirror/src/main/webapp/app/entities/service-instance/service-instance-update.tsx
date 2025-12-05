@@ -8,7 +8,7 @@ import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateT
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities as getInstances } from 'app/entities/instance/instance.reducer';
-import { getEntities as getServices } from 'app/entities/service/service.reducer';
+import { getEntities as getMonitoredServices } from 'app/entities/monitored-service/monitored-service.reducer';
 import { createEntity, getEntity, reset, updateEntity } from './service-instance.reducer';
 
 export const ServiceInstanceUpdate = () => {
@@ -20,7 +20,7 @@ export const ServiceInstanceUpdate = () => {
   const isNew = id === undefined;
 
   const instances = useAppSelector(state => state.instance.entities);
-  const services = useAppSelector(state => state.service.entities);
+  const monitoredServices = useAppSelector(state => state.monitoredService.entities);
   const serviceInstanceEntity = useAppSelector(state => state.serviceInstance.entity);
   const loading = useAppSelector(state => state.serviceInstance.loading);
   const updating = useAppSelector(state => state.serviceInstance.updating);
@@ -38,7 +38,7 @@ export const ServiceInstanceUpdate = () => {
     }
 
     dispatch(getInstances({}));
-    dispatch(getServices({}));
+    dispatch(getMonitoredServices({}));
   }, []);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export const ServiceInstanceUpdate = () => {
       ...serviceInstanceEntity,
       ...values,
       instance: instances.find(it => it.id.toString() === values.instance?.toString()),
-      service: services.find(it => it.id.toString() === values.service?.toString()),
+      monitoredService: monitoredServices.find(it => it.id.toString() === values.monitoredService?.toString()),
     };
 
     if (isNew) {
@@ -82,7 +82,7 @@ export const ServiceInstanceUpdate = () => {
           createdAt: convertDateTimeFromServer(serviceInstanceEntity.createdAt),
           updatedAt: convertDateTimeFromServer(serviceInstanceEntity.updatedAt),
           instance: serviceInstanceEntity?.instance?.id,
-          service: serviceInstanceEntity?.service?.id,
+          monitoredService: serviceInstanceEntity?.monitoredService?.id,
         };
 
   return (
@@ -166,16 +166,16 @@ export const ServiceInstanceUpdate = () => {
                 <Translate contentKey="entity.validation.required">This field is required.</Translate>
               </FormText>
               <ValidatedField
-                id="service-instance-service"
-                name="service"
-                data-cy="service"
-                label={translate('infraMirrorApp.serviceInstance.service')}
+                id="service-instance-monitoredService"
+                name="monitoredService"
+                data-cy="monitoredService"
+                label={translate('infraMirrorApp.serviceInstance.monitoredService')}
                 type="select"
                 required
               >
                 <option value="" key="0" />
-                {services
-                  ? services.map(otherEntity => (
+                {monitoredServices
+                  ? monitoredServices.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
                         {otherEntity.id}
                       </option>

@@ -69,9 +69,9 @@ export const ServiceInstanceDetail = () => {
           </dt>
           <dd>{serviceInstanceEntity.instance ? serviceInstanceEntity.instance.id : ''}</dd>
           <dt>
-            <Translate contentKey="infraMirrorApp.serviceInstance.service">Service</Translate>
+            <Translate contentKey="infraMirrorApp.serviceInstance.monitoredService">Monitored Service</Translate>
           </dt>
-          <dd>{serviceInstanceEntity.service ? serviceInstanceEntity.service.id : ''}</dd>
+          <dd>{serviceInstanceEntity.monitoredService ? serviceInstanceEntity.monitoredService.id : ''}</dd>
         </dl>
         <Button tag={Link} to="/service-instance" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}

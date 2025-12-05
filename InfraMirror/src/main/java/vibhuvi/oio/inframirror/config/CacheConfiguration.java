@@ -80,7 +80,7 @@ public class CacheConfiguration {
             createCache(cm, vibhuvi.oio.inframirror.domain.Region.class.getName() + ".agents", jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.Datacenter.class.getName(), jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.Datacenter.class.getName() + ".instances", jcacheConfiguration);
-            createCache(cm, vibhuvi.oio.inframirror.domain.Datacenter.class.getName() + ".services", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.Datacenter.class.getName() + ".monitoredServices", jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.Agent.class.getName(), jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.Agent.class.getName() + ".instances", jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.Agent.class.getName() + ".httpHeartbeats", jcacheConfiguration);
@@ -98,9 +98,6 @@ public class CacheConfiguration {
             createCache(cm, vibhuvi.oio.inframirror.domain.Instance.class.getName() + ".heartbeats", jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.Instance.class.getName() + ".serviceInstances", jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.InstanceHeartbeat.class.getName(), jcacheConfiguration);
-            createCache(cm, vibhuvi.oio.inframirror.domain.Service.class.getName(), jcacheConfiguration);
-            createCache(cm, vibhuvi.oio.inframirror.domain.Service.class.getName() + ".serviceInstances", jcacheConfiguration);
-            createCache(cm, vibhuvi.oio.inframirror.domain.Service.class.getName() + ".heartbeats", jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.ServiceInstance.class.getName(), jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.ServiceInstance.class.getName() + ".heartbeats", jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.ServiceHeartbeat.class.getName(), jcacheConfiguration);
@@ -109,6 +106,9 @@ public class CacheConfiguration {
             createCache(cm, vibhuvi.oio.inframirror.domain.StatusPage.class.getName() + ".statusDependencies", jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.StatusPageItem.class.getName(), jcacheConfiguration);
             createCache(cm, vibhuvi.oio.inframirror.domain.StatusDependency.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.MonitoredService.class.getName(), jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.MonitoredService.class.getName() + ".serviceInstances", jcacheConfiguration);
+            createCache(cm, vibhuvi.oio.inframirror.domain.MonitoredService.class.getName() + ".heartbeats", jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }

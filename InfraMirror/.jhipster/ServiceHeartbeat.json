@@ -50,9 +50,9 @@
       "relationshipType": "many-to-one"
     },
     {
-      "otherEntityName": "service",
+      "otherEntityName": "monitoredService",
       "otherEntityRelationshipName": "heartbeat",
-      "relationshipName": "service",
+      "relationshipName": "monitoredService",
       "relationshipSide": "right",
       "relationshipType": "many-to-one",
       "relationshipValidateRules": "required"

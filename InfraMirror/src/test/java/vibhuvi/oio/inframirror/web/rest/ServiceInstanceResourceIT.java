@@ -31,7 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.Instance;
-import vibhuvi.oio.inframirror.domain.Service;
+import vibhuvi.oio.inframirror.domain.MonitoredService;
 import vibhuvi.oio.inframirror.domain.ServiceInstance;
 import vibhuvi.oio.inframirror.repository.ServiceInstanceRepository;
 import vibhuvi.oio.inframirror.repository.search.ServiceInstanceSearchRepository;
@@ -110,15 +110,15 @@ class ServiceInstanceResourceIT {
         }
         serviceInstance.setInstance(instance);
         // Add required entity
-        Service service;
-        if (TestUtil.findAll(em, Service.class).isEmpty()) {
-            service = ServiceResourceIT.createEntity();
-            em.persist(service);
+        MonitoredService monitoredService;
+        if (TestUtil.findAll(em, MonitoredService.class).isEmpty()) {
+            monitoredService = MonitoredServiceResourceIT.createEntity();
+            em.persist(monitoredService);
             em.flush();
         } else {
-            service = TestUtil.findAll(em, Service.class).get(0);
+            monitoredService = TestUtil.findAll(em, MonitoredService.class).get(0);
         }
-        serviceInstance.setService(service);
+        serviceInstance.setMonitoredService(monitoredService);
         return serviceInstance;
     }
 
@@ -145,15 +145,15 @@ class ServiceInstanceResourceIT {
         }
         updatedServiceInstance.setInstance(instance);
         // Add required entity
-        Service service;
-        if (TestUtil.findAll(em, Service.class).isEmpty()) {
-            service = ServiceResourceIT.createUpdatedEntity();
-            em.persist(service);
+        MonitoredService monitoredService;
+        if (TestUtil.findAll(em, MonitoredService.class).isEmpty()) {
+            monitoredService = MonitoredServiceResourceIT.createUpdatedEntity();
+            em.persist(monitoredService);
             em.flush();
         } else {
-            service = TestUtil.findAll(em, Service.class).get(0);
+            monitoredService = TestUtil.findAll(em, MonitoredService.class).get(0);
         }
-        updatedServiceInstance.setService(service);
+        updatedServiceInstance.setMonitoredService(monitoredService);
         return updatedServiceInstance;
     }
 

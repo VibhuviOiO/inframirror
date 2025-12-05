@@ -35,9 +35,9 @@
       "relationshipType": "one-to-many"
     },
     {
-      "otherEntityName": "service",
+      "otherEntityName": "monitoredService",
       "otherEntityRelationshipName": "datacenter",
-      "relationshipName": "service",
+      "relationshipName": "monitoredService",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },

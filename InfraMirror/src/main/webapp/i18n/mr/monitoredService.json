@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "monitoredService": {
+      "home": {
+        "title": "Monitored Services",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नवीन Monitored Service तयार करा",
+        "createOrEditLabel": "Monitored Service तयार किंवा संपादित करा",
+        "search": "Monitored Service शोधा",
+        "notFound": "No Monitored Services found"
+      },
+      "created": "Monitored Service [identifier: {{ param }}] तयार आहे",
+      "updated": "Monitored Service [identifier: {{ param }}] सुधारित केले आहे",
+      "deleted": "Monitored Service [identifier: {{ param }}] हटविले आहे",
+      "delete": {
+        "question": "Monitored Service [id: {{ id }}] काढून टाकण्याबाबत पुष्टी?"
+      },
+      "detail": {
+        "title": "Monitored Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

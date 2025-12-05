@@ -10,12 +10,12 @@ import agentMonitor from 'app/entities/agent-monitor/agent-monitor.reducer';
 import agentLock from 'app/entities/agent-lock/agent-lock.reducer';
 import instance from 'app/entities/instance/instance.reducer';
 import instanceHeartbeat from 'app/entities/instance-heartbeat/instance-heartbeat.reducer';
-import service from 'app/entities/service/service.reducer';
 import serviceInstance from 'app/entities/service-instance/service-instance.reducer';
 import serviceHeartbeat from 'app/entities/service-heartbeat/service-heartbeat.reducer';
 import statusPage from 'app/entities/status-page/status-page.reducer';
 import statusPageItem from 'app/entities/status-page-item/status-page-item.reducer';
 import statusDependency from 'app/entities/status-dependency/status-dependency.reducer';
+import monitoredService from 'app/entities/monitored-service/monitored-service.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 const entitiesReducers = {
@@ -31,12 +31,12 @@ const entitiesReducers = {
   agentLock,
   instance,
   instanceHeartbeat,
-  service,
   serviceInstance,
   serviceHeartbeat,
   statusPage,
   statusPageItem,
   statusDependency,
+  monitoredService,
   /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */
 };
 

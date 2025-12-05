@@ -45,7 +45,7 @@ public class Datacenter implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "datacenter")
     @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "serviceInstances", "heartbeats", "datacenter" }, allowSetters = true)
-    private Set<Service> services = new HashSet<>();
+    private Set<MonitoredService> monitoredServices = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "datacenters", "agents" }, allowSetters = true)
@@ -123,34 +123,34 @@ public class Datacenter implements Serializable {
         return this;
     }
 
-    public Set<Service> getServices() {
-        return this.services;
+    public Set<MonitoredService> getMonitoredServices() {
+        return this.monitoredServices;
     }
 
-    public void setServices(Set<Service> services) {
-        if (this.services != null) {
-            this.services.forEach(i -> i.setDatacenter(null));
+    public void setMonitoredServices(Set<MonitoredService> monitoredServices) {
+        if (this.monitoredServices != null) {
+            this.monitoredServices.forEach(i -> i.setDatacenter(null));
         }
-        if (services != null) {
-            services.forEach(i -> i.setDatacenter(this));
+        if (monitoredServices != null) {
+            monitoredServices.forEach(i -> i.setDatacenter(this));
         }
-        this.services = services;
+        this.monitoredServices = monitoredServices;
     }
 
-    public Datacenter services(Set<Service> services) {
-        this.setServices(services);
+    public Datacenter monitoredServices(Set<MonitoredService> monitoredServices) {
+        this.setMonitoredServices(monitoredServices);
         return this;
     }
 
-    public Datacenter addService(Service service) {
-        this.services.add(service);
-        service.setDatacenter(this);
+    public Datacenter addMonitoredService(MonitoredService monitoredService) {
+        this.monitoredServices.add(monitoredService);
+        monitoredService.setDatacenter(this);
         return this;
     }
 
-    public Datacenter removeService(Service service) {
-        this.services.remove(service);
-        service.setDatacenter(null);
+    public Datacenter removeMonitoredService(MonitoredService monitoredService) {
+        this.monitoredServices.remove(monitoredService);
+        monitoredService.setDatacenter(null);
         return this;
     }
 

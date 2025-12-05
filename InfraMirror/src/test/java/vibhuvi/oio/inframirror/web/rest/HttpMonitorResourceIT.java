@@ -2423,18 +2423,21 @@ class HttpMonitorResourceIT {
         partialUpdatedHttpMonitor.setId(httpMonitor.getId());
 
         partialUpdatedHttpMonitor
-            .name(UPDATED_NAME)
+            .method(UPDATED_METHOD)
+            .type(UPDATED_TYPE)
             .url(UPDATED_URL)
             .headers(UPDATED_HEADERS)
-            .retryDelaySeconds(UPDATED_RETRY_DELAY_SECONDS)
-            .responseTimeWarningMs(UPDATED_RESPONSE_TIME_WARNING_MS)
+            .intervalSeconds(UPDATED_INTERVAL_SECONDS)
+            .timeoutSeconds(UPDATED_TIMEOUT_SECONDS)
+            .retryCount(UPDATED_RETRY_COUNT)
             .responseTimeCriticalMs(UPDATED_RESPONSE_TIME_CRITICAL_MS)
-            .includeResponseBody(UPDATED_INCLUDE_RESPONSE_BODY)
-            .certificateExpiryDays(UPDATED_CERTIFICATE_EXPIRY_DAYS)
+            .resendNotificationCount(UPDATED_RESEND_NOTIFICATION_COUNT)
             .checkSslCertificate(UPDATED_CHECK_SSL_CERTIFICATE)
             .checkDnsResolution(UPDATED_CHECK_DNS_RESOLUTION)
+            .upsideDownMode(UPDATED_UPSIDE_DOWN_MODE)
             .maxRedirects(UPDATED_MAX_REDIRECTS)
-            .expectedStatusCodes(UPDATED_EXPECTED_STATUS_CODES);
+            .performanceBudgetMs(UPDATED_PERFORMANCE_BUDGET_MS)
+            .sizeBudgetKb(UPDATED_SIZE_BUDGET_KB);
 
         restHttpMonitorMockMvc
             .perform(

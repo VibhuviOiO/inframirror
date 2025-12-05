@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "monitoredService": {
+      "home": {
+        "title": "Monitored Services",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "建立一筆新的 Monitored Service",
+        "createOrEditLabel": "建立或編輯 Monitored Service",
+        "search": "搜尋 Monitored Service",
+        "notFound": "No Monitored Services found"
+      },
+      "created": "新的 Monitored Service 建立成功，識別碼為 {{ param }}",
+      "updated": "識別碼為 {{ param }} 的 Monitored Service 更新成功",
+      "deleted": "識別碼為 {{ param }} 的 Monitored Service 刪除成功",
+      "delete": {
+        "question": "您確定要刪除 Monitored Service {{ id }} 嗎?"
+      },
+      "detail": {
+        "title": "Monitored Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

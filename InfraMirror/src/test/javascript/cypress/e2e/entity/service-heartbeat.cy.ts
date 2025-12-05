@@ -15,10 +15,10 @@ describe('ServiceHeartbeat e2e test', () => {
   const serviceHeartbeatPageUrlPattern = new RegExp('/service-heartbeat(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const serviceHeartbeatSample = { executedAt: '2025-12-04T13:20:57.088Z', success: false, status: 'like finally pressur' };
+  const serviceHeartbeatSample = { executedAt: '2025-12-05T02:57:42.288Z', success: true, status: 'white sew' };
 
   let serviceHeartbeat;
-  let service;
+  let monitoredService;
 
   beforeEach(() => {
     cy.login(username, password);
@@ -28,26 +28,26 @@ describe('ServiceHeartbeat e2e test', () => {
     // create an instance at the required relationship entity:
     cy.authenticatedRequest({
       method: 'POST',
-      url: '/api/services',
+      url: '/api/monitored-services',
       body: {
-        name: 'lamp safeguard',
-        description: 'indelible ew deceivingly',
-        serviceType: 'untimely',
-        environment: 'moment splash',
+        name: 'between knottily',
+        description: 'furiously throughout',
+        serviceType: 'boohoo gosh whenever',
+        environment: 'rim shakily',
         monitoringEnabled: true,
         clusterMonitoringEnabled: false,
-        intervalSeconds: 1858,
-        timeoutMs: 1621,
-        retryCount: 15056,
-        latencyWarningMs: 19586,
-        latencyCriticalMs: 21398,
+        intervalSeconds: 21039,
+        timeoutMs: 23971,
+        retryCount: 12180,
+        latencyWarningMs: 28915,
+        latencyCriticalMs: 867,
         advancedConfig: 'Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=',
-        isActive: false,
-        createdAt: '2025-12-04T18:23:17.662Z',
-        updatedAt: '2025-12-05T03:54:14.508Z',
+        isActive: true,
+        createdAt: '2025-12-05T01:32:02.404Z',
+        updatedAt: '2025-12-04T09:30:44.904Z',
       },
     }).then(({ body }) => {
-      service = body;
+      monitoredService = body;
     });
   });
 
@@ -64,9 +64,9 @@ describe('ServiceHeartbeat e2e test', () => {
       body: [],
     });
 
-    cy.intercept('GET', '/api/services', {
+    cy.intercept('GET', '/api/monitored-services', {
       statusCode: 200,
-      body: [service],
+      body: [monitoredService],
     });
 
     cy.intercept('GET', '/api/service-instances', {
@@ -87,12 +87,12 @@ describe('ServiceHeartbeat e2e test', () => {
   });
 
   afterEach(() => {
-    if (service) {
+    if (monitoredService) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/api/services/${service.id}`,
+        url: `/api/monitored-services/${monitoredService.id}`,
       }).then(() => {
-        service = undefined;
+        monitoredService = undefined;
       });
     }
   });
@@ -138,7 +138,7 @@ describe('ServiceHeartbeat e2e test', () => {
           url: '/api/service-heartbeats',
           body: {
             ...serviceHeartbeatSample,
-            service,
+            monitoredService,
           },
         }).then(({ body }) => {
           serviceHeartbeat = body;
@@ -222,19 +222,19 @@ describe('ServiceHeartbeat e2e test', () => {
     });
 
     it('should create an instance of ServiceHeartbeat', () => {
-      cy.get(`[data-cy="executedAt"]`).type('2025-12-05T00:37');
+      cy.get(`[data-cy="executedAt"]`).type('2025-12-04T16:15');
       cy.get(`[data-cy="executedAt"]`).blur();
-      cy.get(`[data-cy="executedAt"]`).should('have.value', '2025-12-05T00:37');
+      cy.get(`[data-cy="executedAt"]`).should('have.value', '2025-12-04T16:15');
 
       cy.get(`[data-cy="success"]`).should('not.be.checked');
       cy.get(`[data-cy="success"]`).click();
       cy.get(`[data-cy="success"]`).should('be.checked');
 
-      cy.get(`[data-cy="status"]`).type('mammoth creative');
-      cy.get(`[data-cy="status"]`).should('have.value', 'mammoth creative');
+      cy.get(`[data-cy="status"]`).type('palatable instead at');
+      cy.get(`[data-cy="status"]`).should('have.value', 'palatable instead at');
 
-      cy.get(`[data-cy="responseTimeMs"]`).type('5716');
-      cy.get(`[data-cy="responseTimeMs"]`).should('have.value', '5716');
+      cy.get(`[data-cy="responseTimeMs"]`).type('26575');
+      cy.get(`[data-cy="responseTimeMs"]`).should('have.value', '26575');
 
       cy.get(`[data-cy="errorMessage"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="errorMessage"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
@@ -242,7 +242,7 @@ describe('ServiceHeartbeat e2e test', () => {
       cy.get(`[data-cy="metadata"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="metadata"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
 
-      cy.get(`[data-cy="service"]`).select(1);
+      cy.get(`[data-cy="monitoredService"]`).select(1);
 
       cy.get(entityCreateSaveButtonSelector).click();
 

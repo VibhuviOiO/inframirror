@@ -36,7 +36,7 @@ public class ServiceHeartbeatDTO implements Serializable {
     private AgentDTO agent;
 
     @NotNull
-    private ServiceDTO service;
+    private MonitoredServiceDTO monitoredService;
 
     private ServiceInstanceDTO serviceInstance;
 
@@ -104,12 +104,12 @@ public class ServiceHeartbeatDTO implements Serializable {
         this.agent = agent;
     }
 
-    public ServiceDTO getService() {
-        return service;
+    public MonitoredServiceDTO getMonitoredService() {
+        return monitoredService;
     }
 
-    public void setService(ServiceDTO service) {
-        this.service = service;
+    public void setMonitoredService(MonitoredServiceDTO monitoredService) {
+        this.monitoredService = monitoredService;
     }
 
     public ServiceInstanceDTO getServiceInstance() {
@@ -153,7 +153,7 @@ public class ServiceHeartbeatDTO implements Serializable {
             ", errorMessage='" + getErrorMessage() + "'" +
             ", metadata='" + getMetadata() + "'" +
             ", agent=" + getAgent() +
-            ", service=" + getService() +
+            ", monitoredService=" + getMonitoredService() +
             ", serviceInstance=" + getServiceInstance() +
             "}";
     }

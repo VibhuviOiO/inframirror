@@ -1386,16 +1386,9 @@ class StatusPageResourceIT {
         partialUpdatedStatusPage
             .name(UPDATED_NAME)
             .slug(UPDATED_SLUG)
-            .description(UPDATED_DESCRIPTION)
             .customDomain(UPDATED_CUSTOM_DOMAIN)
-            .themeColor(UPDATED_THEME_COLOR)
-            .headerText(UPDATED_HEADER_TEXT)
-            .footerText(UPDATED_FOOTER_TEXT)
-            .showUptimePercentage(UPDATED_SHOW_UPTIME_PERCENTAGE)
             .autoRefreshSeconds(UPDATED_AUTO_REFRESH_SECONDS)
-            .monitorSelection(UPDATED_MONITOR_SELECTION)
-            .isActive(UPDATED_IS_ACTIVE)
-            .updatedAt(UPDATED_UPDATED_AT);
+            .isActive(UPDATED_IS_ACTIVE);
 
         restStatusPageMockMvc
             .perform(

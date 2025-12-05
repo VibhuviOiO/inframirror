@@ -20,12 +20,12 @@
         "agentLock": "Agent Lock",
         "instance": "Instance",
         "instanceHeartbeat": "Instance Heartbeat",
-        "service": "Service",
         "serviceInstance": "Service Instance",
         "serviceHeartbeat": "Service Heartbeat",
         "statusPage": "Status Page",
         "statusPageItem": "Status Page Item",
-        "statusDependency": "Status Dependency"
+        "statusDependency": "Status Dependency",
+        "monitoredService": "Monitored Service"
       },
       "account": {
         "main": "Conta",

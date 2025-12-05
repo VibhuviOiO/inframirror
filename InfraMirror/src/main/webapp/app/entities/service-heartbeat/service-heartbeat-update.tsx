@@ -8,7 +8,7 @@ import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateT
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities as getAgents } from 'app/entities/agent/agent.reducer';
-import { getEntities as getServices } from 'app/entities/service/service.reducer';
+import { getEntities as getMonitoredServices } from 'app/entities/monitored-service/monitored-service.reducer';
 import { getEntities as getServiceInstances } from 'app/entities/service-instance/service-instance.reducer';
 import { createEntity, getEntity, reset, updateEntity } from './service-heartbeat.reducer';
 
@@ -21,7 +21,7 @@ export const ServiceHeartbeatUpdate = () => {
   const isNew = id === undefined;
 
   const agents = useAppSelector(state => state.agent.entities);
-  const services = useAppSelector(state => state.service.entities);
+  const monitoredServices = useAppSelector(state => state.monitoredService.entities);
   const serviceInstances = useAppSelector(state => state.serviceInstance.entities);
   const serviceHeartbeatEntity = useAppSelector(state => state.serviceHeartbeat.entity);
   const loading = useAppSelector(state => state.serviceHeartbeat.loading);
@@ -40,7 +40,7 @@ export const ServiceHeartbeatUpdate = () => {
     }
 
     dispatch(getAgents({}));
-    dispatch(getServices({}));
+    dispatch(getMonitoredServices({}));
     dispatch(getServiceInstances({}));
   }, []);
 
@@ -63,7 +63,7 @@ export const ServiceHeartbeatUpdate = () => {
       ...serviceHeartbeatEntity,
       ...values,
       agent: agents.find(it => it.id.toString() === values.agent?.toString()),
-      service: services.find(it => it.id.toString() === values.service?.toString()),
+      monitoredService: monitoredServices.find(it => it.id.toString() === values.monitoredService?.toString()),
       serviceInstance: serviceInstances.find(it => it.id.toString() === values.serviceInstance?.toString()),
     };
 
@@ -83,7 +83,7 @@ export const ServiceHeartbeatUpdate = () => {
           ...serviceHeartbeatEntity,
           executedAt: convertDateTimeFromServer(serviceHeartbeatEntity.executedAt),
           agent: serviceHeartbeatEntity?.agent?.id,
-          service: serviceHeartbeatEntity?.service?.id,
+          monitoredService: serviceHeartbeatEntity?.monitoredService?.id,
           serviceInstance: serviceHeartbeatEntity?.serviceInstance?.id,
         };
 
@@ -180,16 +180,16 @@ export const ServiceHeartbeatUpdate = () => {
                   : null}
               </ValidatedField>
               <ValidatedField
-                id="service-heartbeat-service"
-                name="service"
-                data-cy="service"
-                label={translate('infraMirrorApp.serviceHeartbeat.service')}
+                id="service-heartbeat-monitoredService"
+                name="monitoredService"
+                data-cy="monitoredService"
+                label={translate('infraMirrorApp.serviceHeartbeat.monitoredService')}
                 type="select"
                 required
               >
                 <option value="" key="0" />
-                {services
-                  ? services.map(otherEntity => (
+                {monitoredServices
+                  ? monitoredServices.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
                         {otherEntity.id}
                       </option>

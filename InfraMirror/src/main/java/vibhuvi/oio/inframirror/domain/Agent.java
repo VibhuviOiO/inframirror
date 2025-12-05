@@ -48,7 +48,7 @@ public class Agent implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "agent")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "agent", "service", "serviceInstance" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "agent", "monitoredService", "serviceInstance" }, allowSetters = true)
     private Set<ServiceHeartbeat> serviceHeartbeats = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

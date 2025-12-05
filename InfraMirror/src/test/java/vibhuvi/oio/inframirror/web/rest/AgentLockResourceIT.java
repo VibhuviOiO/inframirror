@@ -402,6 +402,8 @@ class AgentLockResourceIT {
         AgentLock partialUpdatedAgentLock = new AgentLock();
         partialUpdatedAgentLock.setId(agentLock.getId());
 
+        partialUpdatedAgentLock.acquiredAt(UPDATED_ACQUIRED_AT);
+
         restAgentLockMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedAgentLock.getId())

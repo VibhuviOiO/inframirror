@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "monitoredService": {
+      "home": {
+        "title": "MonitoredServices",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Monitored Service の作成",
+        "createOrEditLabel": "Monitored Serviceの作成または編集",
+        "search": "Monitored Service の検索",
+        "notFound": "Monitored Services が見つかりません。"
+      },
+      "created": "新しい Monitored Service がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Monitored Service が更新されました。",
+      "deleted": "ID {{ param }} の Monitored Service が削除されました。",
+      "delete": {
+        "question": "Monitored Service {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Monitored Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

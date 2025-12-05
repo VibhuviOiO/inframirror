@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { IAgent } from 'app/shared/model/agent.model';
-import { IService } from 'app/shared/model/service.model';
+import { IMonitoredService } from 'app/shared/model/monitored-service.model';
 import { IServiceInstance } from 'app/shared/model/service-instance.model';
 
 export interface IServiceHeartbeat {
@@ -12,7 +12,7 @@ export interface IServiceHeartbeat {
   errorMessage?: string | null;
   metadata?: string | null;
   agent?: IAgent | null;
-  service?: IService;
+  monitoredService?: IMonitoredService;
   serviceInstance?: IServiceInstance | null;
 }
 

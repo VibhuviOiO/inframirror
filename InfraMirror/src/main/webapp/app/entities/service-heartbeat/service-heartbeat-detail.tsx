@@ -77,9 +77,9 @@ export const ServiceHeartbeatDetail = () => {
           </dt>
           <dd>{serviceHeartbeatEntity.agent ? serviceHeartbeatEntity.agent.id : ''}</dd>
           <dt>
-            <Translate contentKey="infraMirrorApp.serviceHeartbeat.service">Service</Translate>
+            <Translate contentKey="infraMirrorApp.serviceHeartbeat.monitoredService">Monitored Service</Translate>
           </dt>
-          <dd>{serviceHeartbeatEntity.service ? serviceHeartbeatEntity.service.id : ''}</dd>
+          <dd>{serviceHeartbeatEntity.monitoredService ? serviceHeartbeatEntity.monitoredService.id : ''}</dd>
           <dt>
             <Translate contentKey="infraMirrorApp.serviceHeartbeat.serviceInstance">Service Instance</Translate>
           </dt>

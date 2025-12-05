@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "monitoredService": {
+      "home": {
+        "title": "Monitored Services",
+        "refreshListLabel": "Siyahını yenilə",
+        "createLabel": "Yeni Monitored Service əlavə et",
+        "createOrEditLabel": "Yeni Monitored Service əlavə et və ya yenilə",
+        "search": "Monitored Service axtar",
+        "notFound": "Monitored Services məlumatı tapılmadı"
+      },
+      "created": "{{ param }} ID ilə bir Monitored Service əlavə edildi",
+      "updated": "{{ param }} nolu Monitored Service dəyişildi",
+      "deleted": "{{ param }} nolu Monitored Service silindi",
+      "delete": {
+        "question": "{{ id }} nolu Monitored Service silinəcək. Davam etmək istəyirsiniz?"
+      },
+      "detail": {
+        "title": "Monitored Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

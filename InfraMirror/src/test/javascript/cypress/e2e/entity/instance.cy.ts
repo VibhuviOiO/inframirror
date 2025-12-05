@@ -16,22 +16,22 @@ describe('Instance e2e test', () => {
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
   const instanceSample = {
-    name: 'pro greedily',
-    hostname: 'finally replicate',
-    instanceType: 'oh',
-    monitoringType: 'until',
-    pingEnabled: true,
-    pingInterval: 2499,
-    pingTimeoutMs: 11829,
-    pingRetryCount: 11779,
+    name: 'translation closed unaccountably',
+    hostname: 'after',
+    instanceType: 'meanwhile',
+    monitoringType: 'but',
+    pingEnabled: false,
+    pingInterval: 10515,
+    pingTimeoutMs: 649,
+    pingRetryCount: 11351,
     hardwareMonitoringEnabled: true,
-    hardwareMonitoringInterval: 23338,
-    cpuWarningThreshold: 20941,
-    cpuDangerThreshold: 24387,
-    memoryWarningThreshold: 16940,
-    memoryDangerThreshold: 10999,
-    diskWarningThreshold: 1472,
-    diskDangerThreshold: 6343,
+    hardwareMonitoringInterval: 16208,
+    cpuWarningThreshold: 32110,
+    cpuDangerThreshold: 14626,
+    memoryWarningThreshold: 32324,
+    memoryDangerThreshold: 13415,
+    diskWarningThreshold: 11516,
+    diskDangerThreshold: 20,
   };
 
   let instance;
@@ -46,7 +46,7 @@ describe('Instance e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/datacenters',
-      body: { code: 'bar despit', name: 'acquire' },
+      body: { code: 'a', name: 'where' },
     }).then(({ body }) => {
       datacenter = body;
     });
@@ -228,32 +228,32 @@ describe('Instance e2e test', () => {
     });
 
     it('should create an instance of Instance', () => {
-      cy.get(`[data-cy="name"]`).type('produce');
-      cy.get(`[data-cy="name"]`).should('have.value', 'produce');
+      cy.get(`[data-cy="name"]`).type('times');
+      cy.get(`[data-cy="name"]`).should('have.value', 'times');
 
-      cy.get(`[data-cy="hostname"]`).type('besides');
-      cy.get(`[data-cy="hostname"]`).should('have.value', 'besides');
+      cy.get(`[data-cy="hostname"]`).type('psst');
+      cy.get(`[data-cy="hostname"]`).should('have.value', 'psst');
 
-      cy.get(`[data-cy="description"]`).type('cannibalise');
-      cy.get(`[data-cy="description"]`).should('have.value', 'cannibalise');
+      cy.get(`[data-cy="description"]`).type('till');
+      cy.get(`[data-cy="description"]`).should('have.value', 'till');
 
-      cy.get(`[data-cy="instanceType"]`).type('revitalise unimpressively upright');
-      cy.get(`[data-cy="instanceType"]`).should('have.value', 'revitalise unimpressively upright');
+      cy.get(`[data-cy="instanceType"]`).type('separate through per');
+      cy.get(`[data-cy="instanceType"]`).should('have.value', 'separate through per');
 
-      cy.get(`[data-cy="monitoringType"]`).type('well petty');
-      cy.get(`[data-cy="monitoringType"]`).should('have.value', 'well petty');
+      cy.get(`[data-cy="monitoringType"]`).type('until');
+      cy.get(`[data-cy="monitoringType"]`).should('have.value', 'until');
 
-      cy.get(`[data-cy="operatingSystem"]`).type('furthermore concrete');
-      cy.get(`[data-cy="operatingSystem"]`).should('have.value', 'furthermore concrete');
+      cy.get(`[data-cy="operatingSystem"]`).type('rigidly eventually');
+      cy.get(`[data-cy="operatingSystem"]`).should('have.value', 'rigidly eventually');
 
-      cy.get(`[data-cy="platform"]`).type('unique analogy');
-      cy.get(`[data-cy="platform"]`).should('have.value', 'unique analogy');
+      cy.get(`[data-cy="platform"]`).type('incline');
+      cy.get(`[data-cy="platform"]`).should('have.value', 'incline');
 
-      cy.get(`[data-cy="privateIpAddress"]`).type('circular');
-      cy.get(`[data-cy="privateIpAddress"]`).should('have.value', 'circular');
+      cy.get(`[data-cy="privateIpAddress"]`).type('married substantiate');
+      cy.get(`[data-cy="privateIpAddress"]`).should('have.value', 'married substantiate');
 
-      cy.get(`[data-cy="publicIpAddress"]`).type('litter');
-      cy.get(`[data-cy="publicIpAddress"]`).should('have.value', 'litter');
+      cy.get(`[data-cy="publicIpAddress"]`).type('transplant stealthily');
+      cy.get(`[data-cy="publicIpAddress"]`).should('have.value', 'transplant stealthily');
 
       cy.get(`[data-cy="tags"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="tags"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
@@ -262,55 +262,55 @@ describe('Instance e2e test', () => {
       cy.get(`[data-cy="pingEnabled"]`).click();
       cy.get(`[data-cy="pingEnabled"]`).should('be.checked');
 
-      cy.get(`[data-cy="pingInterval"]`).type('2541');
-      cy.get(`[data-cy="pingInterval"]`).should('have.value', '2541');
+      cy.get(`[data-cy="pingInterval"]`).type('20688');
+      cy.get(`[data-cy="pingInterval"]`).should('have.value', '20688');
 
-      cy.get(`[data-cy="pingTimeoutMs"]`).type('1678');
-      cy.get(`[data-cy="pingTimeoutMs"]`).should('have.value', '1678');
+      cy.get(`[data-cy="pingTimeoutMs"]`).type('27974');
+      cy.get(`[data-cy="pingTimeoutMs"]`).should('have.value', '27974');
 
-      cy.get(`[data-cy="pingRetryCount"]`).type('27265');
-      cy.get(`[data-cy="pingRetryCount"]`).should('have.value', '27265');
+      cy.get(`[data-cy="pingRetryCount"]`).type('4806');
+      cy.get(`[data-cy="pingRetryCount"]`).should('have.value', '4806');
 
       cy.get(`[data-cy="hardwareMonitoringEnabled"]`).should('not.be.checked');
       cy.get(`[data-cy="hardwareMonitoringEnabled"]`).click();
       cy.get(`[data-cy="hardwareMonitoringEnabled"]`).should('be.checked');
 
-      cy.get(`[data-cy="hardwareMonitoringInterval"]`).type('8246');
-      cy.get(`[data-cy="hardwareMonitoringInterval"]`).should('have.value', '8246');
+      cy.get(`[data-cy="hardwareMonitoringInterval"]`).type('29681');
+      cy.get(`[data-cy="hardwareMonitoringInterval"]`).should('have.value', '29681');
 
-      cy.get(`[data-cy="cpuWarningThreshold"]`).type('21313');
-      cy.get(`[data-cy="cpuWarningThreshold"]`).should('have.value', '21313');
+      cy.get(`[data-cy="cpuWarningThreshold"]`).type('2430');
+      cy.get(`[data-cy="cpuWarningThreshold"]`).should('have.value', '2430');
 
-      cy.get(`[data-cy="cpuDangerThreshold"]`).type('23840');
-      cy.get(`[data-cy="cpuDangerThreshold"]`).should('have.value', '23840');
+      cy.get(`[data-cy="cpuDangerThreshold"]`).type('17417');
+      cy.get(`[data-cy="cpuDangerThreshold"]`).should('have.value', '17417');
 
-      cy.get(`[data-cy="memoryWarningThreshold"]`).type('5148');
-      cy.get(`[data-cy="memoryWarningThreshold"]`).should('have.value', '5148');
+      cy.get(`[data-cy="memoryWarningThreshold"]`).type('21240');
+      cy.get(`[data-cy="memoryWarningThreshold"]`).should('have.value', '21240');
 
-      cy.get(`[data-cy="memoryDangerThreshold"]`).type('14840');
-      cy.get(`[data-cy="memoryDangerThreshold"]`).should('have.value', '14840');
+      cy.get(`[data-cy="memoryDangerThreshold"]`).type('11037');
+      cy.get(`[data-cy="memoryDangerThreshold"]`).should('have.value', '11037');
 
-      cy.get(`[data-cy="diskWarningThreshold"]`).type('12174');
-      cy.get(`[data-cy="diskWarningThreshold"]`).should('have.value', '12174');
+      cy.get(`[data-cy="diskWarningThreshold"]`).type('30280');
+      cy.get(`[data-cy="diskWarningThreshold"]`).should('have.value', '30280');
 
-      cy.get(`[data-cy="diskDangerThreshold"]`).type('28488');
-      cy.get(`[data-cy="diskDangerThreshold"]`).should('have.value', '28488');
+      cy.get(`[data-cy="diskDangerThreshold"]`).type('17942');
+      cy.get(`[data-cy="diskDangerThreshold"]`).should('have.value', '17942');
 
-      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T10:41');
+      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T23:44');
       cy.get(`[data-cy="createdAt"]`).blur();
-      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T10:41');
+      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T23:44');
 
-      cy.get(`[data-cy="updatedAt"]`).type('2025-12-04T21:25');
+      cy.get(`[data-cy="updatedAt"]`).type('2025-12-04T18:40');
       cy.get(`[data-cy="updatedAt"]`).blur();
-      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-04T21:25');
+      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-04T18:40');
 
-      cy.get(`[data-cy="lastPingAt"]`).type('2025-12-04T23:01');
+      cy.get(`[data-cy="lastPingAt"]`).type('2025-12-04T08:27');
       cy.get(`[data-cy="lastPingAt"]`).blur();
-      cy.get(`[data-cy="lastPingAt"]`).should('have.value', '2025-12-04T23:01');
+      cy.get(`[data-cy="lastPingAt"]`).should('have.value', '2025-12-04T08:27');
 
-      cy.get(`[data-cy="lastHardwareCheckAt"]`).type('2025-12-05T00:16');
+      cy.get(`[data-cy="lastHardwareCheckAt"]`).type('2025-12-04T23:21');
       cy.get(`[data-cy="lastHardwareCheckAt"]`).blur();
-      cy.get(`[data-cy="lastHardwareCheckAt"]`).should('have.value', '2025-12-05T00:16');
+      cy.get(`[data-cy="lastHardwareCheckAt"]`).should('have.value', '2025-12-04T23:21');
 
       cy.get(`[data-cy="datacenter"]`).select(1);
 

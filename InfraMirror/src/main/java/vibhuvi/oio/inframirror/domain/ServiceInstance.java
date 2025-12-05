@@ -43,7 +43,7 @@ public class ServiceInstance implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "serviceInstance")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "agent", "service", "serviceInstance" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "agent", "monitoredService", "serviceInstance" }, allowSetters = true)
     private Set<ServiceHeartbeat> heartbeats = new HashSet<>();
 
     @ManyToOne(optional = false)
@@ -54,7 +54,7 @@ public class ServiceInstance implements Serializable {
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(value = { "serviceInstances", "heartbeats", "datacenter" }, allowSetters = true)
-    private Service service;
+    private MonitoredService monitoredService;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -167,16 +167,16 @@ public class ServiceInstance implements Serializable {
         return this;
     }
 
-    public Service getService() {
-        return this.service;
+    public MonitoredService getMonitoredService() {
+        return this.monitoredService;
     }
 
-    public void setService(Service service) {
-        this.service = service;
+    public void setMonitoredService(MonitoredService monitoredService) {
+        this.monitoredService = monitoredService;
     }
 
-    public ServiceInstance service(Service service) {
-        this.setService(service);
+    public ServiceInstance monitoredService(MonitoredService monitoredService) {
+        this.setMonitoredService(monitoredService);
         return this;
     }
 

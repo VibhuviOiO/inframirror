@@ -47,9 +47,9 @@
       "relationshipValidateRules": "required"
     },
     {
-      "otherEntityName": "service",
+      "otherEntityName": "monitoredService",
       "otherEntityRelationshipName": "serviceInstance",
-      "relationshipName": "service",
+      "relationshipName": "monitoredService",
       "relationshipSide": "right",
       "relationshipType": "many-to-one",
       "relationshipValidateRules": "required"

@@ -206,7 +206,8 @@ export const ServiceHeartbeat = () => {
                   <Translate contentKey="infraMirrorApp.serviceHeartbeat.agent">Agent</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th>
-                  <Translate contentKey="infraMirrorApp.serviceHeartbeat.service">Service</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="infraMirrorApp.serviceHeartbeat.monitoredService">Monitored Service</Translate>{' '}
+                  <FontAwesomeIcon icon="sort" />
                 </th>
                 <th>
                   <Translate contentKey="infraMirrorApp.serviceHeartbeat.serviceInstance">Service Instance</Translate>{' '}
@@ -237,8 +238,8 @@ export const ServiceHeartbeat = () => {
                     {serviceHeartbeat.agent ? <Link to={`/agent/${serviceHeartbeat.agent.id}`}>{serviceHeartbeat.agent.id}</Link> : ''}
                   </td>
                   <td>
-                    {serviceHeartbeat.service ? (
-                      <Link to={`/service/${serviceHeartbeat.service.id}`}>{serviceHeartbeat.service.id}</Link>
+                    {serviceHeartbeat.monitoredService ? (
+                      <Link to={`/monitored-service/${serviceHeartbeat.monitoredService.id}`}>{serviceHeartbeat.monitoredService.id}</Link>
                     ) : (
                       ''
                     )}

@@ -17,11 +17,11 @@
                                  referencedTableName="instance"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="service_id"
+        <addForeignKeyConstraint baseColumnNames="monitored_service_id"
                                  baseTableName="service_instance"
-                                 constraintName="fk_service_instance__service_id"
+                                 constraintName="fk_service_instance__monitored_service_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="service"
+                                 referencedTableName="monitored_service"
                                  />
     </changeSet>
 </databaseChangeLog>

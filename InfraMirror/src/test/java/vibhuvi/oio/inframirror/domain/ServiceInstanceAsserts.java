@@ -63,6 +63,6 @@ public class ServiceInstanceAsserts {
         assertThat(actual)
             .as("Verify ServiceInstance relationships")
             .satisfies(a -> assertThat(a.getInstance()).as("check instance").isEqualTo(expected.getInstance()))
-            .satisfies(a -> assertThat(a.getService()).as("check service").isEqualTo(expected.getService()));
+            .satisfies(a -> assertThat(a.getMonitoredService()).as("check monitoredService").isEqualTo(expected.getMonitoredService()));
     }
 }

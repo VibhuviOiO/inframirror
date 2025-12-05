@@ -15,11 +15,11 @@ describe('ServiceInstance e2e test', () => {
   const serviceInstancePageUrlPattern = new RegExp('/service-instance(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const serviceInstanceSample = {"port":31215};
+  // const serviceInstanceSample = {"port":31842};
 
   let serviceInstance;
   // let instance;
-  // let service;
+  // let monitoredService;
 
   beforeEach(() => {
     cy.login(username, password);
@@ -31,17 +31,17 @@ describe('ServiceInstance e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/instances',
-      body: {"name":"though scamper yowza","hostname":"yearly neatly a","description":"energetic","instanceType":"cleverly","monitoringType":"to fervently","operatingSystem":"safely vacantly","platform":"taxicab enhance","privateIpAddress":"the shyly","publicIpAddress":"where yippee","tags":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=","pingEnabled":false,"pingInterval":27237,"pingTimeoutMs":6490,"pingRetryCount":25105,"hardwareMonitoringEnabled":true,"hardwareMonitoringInterval":14987,"cpuWarningThreshold":20234,"cpuDangerThreshold":28625,"memoryWarningThreshold":32755,"memoryDangerThreshold":5646,"diskWarningThreshold":25506,"diskDangerThreshold":1811,"createdAt":"2025-12-04T13:26:20.737Z","updatedAt":"2025-12-04T19:49:47.494Z","lastPingAt":"2025-12-04T16:00:14.394Z","lastHardwareCheckAt":"2025-12-04T20:01:07.846Z"},
+      body: {"name":"steel","hostname":"straight mmm consequently","description":"diligently greatly","instanceType":"interchange","monitoringType":"finally obnoxiously inasmuch","operatingSystem":"convalesce what","platform":"considering scale","privateIpAddress":"reclassify fortunately","publicIpAddress":"ew","tags":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=","pingEnabled":false,"pingInterval":26600,"pingTimeoutMs":32224,"pingRetryCount":24950,"hardwareMonitoringEnabled":false,"hardwareMonitoringInterval":20918,"cpuWarningThreshold":16180,"cpuDangerThreshold":24527,"memoryWarningThreshold":20838,"memoryDangerThreshold":14803,"diskWarningThreshold":27792,"diskDangerThreshold":2777,"createdAt":"2025-12-05T04:47:21.730Z","updatedAt":"2025-12-04T17:49:59.667Z","lastPingAt":"2025-12-04T15:56:31.858Z","lastHardwareCheckAt":"2025-12-04T06:00:49.313Z"},
     }).then(({ body }) => {
       instance = body;
     });
     // create an instance at the required relationship entity:
     cy.authenticatedRequest({
       method: 'POST',
-      url: '/api/services',
-      body: {"name":"behold hmph","description":"nor hearten","serviceType":"foolishly","environment":"bliss misreport","monitoringEnabled":true,"clusterMonitoringEnabled":false,"intervalSeconds":20294,"timeoutMs":6879,"retryCount":17531,"latencyWarningMs":25513,"latencyCriticalMs":8559,"advancedConfig":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=","isActive":false,"createdAt":"2025-12-04T19:52:19.859Z","updatedAt":"2025-12-04T19:26:45.561Z"},
+      url: '/api/monitored-services',
+      body: {"name":"as","description":"who equally","serviceType":"ick","environment":"including","monitoringEnabled":true,"clusterMonitoringEnabled":false,"intervalSeconds":16178,"timeoutMs":884,"retryCount":15938,"latencyWarningMs":15567,"latencyCriticalMs":19936,"advancedConfig":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=","isActive":false,"createdAt":"2025-12-04T08:39:20.770Z","updatedAt":"2025-12-04T20:14:45.584Z"},
     }).then(({ body }) => {
-      service = body;
+      monitoredService = body;
     });
   });
    */
@@ -65,9 +65,9 @@ describe('ServiceInstance e2e test', () => {
       body: [instance],
     });
 
-    cy.intercept('GET', '/api/services', {
+    cy.intercept('GET', '/api/monitored-services', {
       statusCode: 200,
-      body: [service],
+      body: [monitoredService],
     });
 
   });
@@ -94,12 +94,12 @@ describe('ServiceInstance e2e test', () => {
         instance = undefined;
       });
     }
-    if (service) {
+    if (monitoredService) {
       cy.authenticatedRequest({
         method: 'DELETE',
-        url: `/api/services/${service.id}`,
+        url: `/api/monitored-services/${monitoredService.id}`,
       }).then(() => {
-        service = undefined;
+        monitoredService = undefined;
       });
     }
   });
@@ -148,7 +148,7 @@ describe('ServiceInstance e2e test', () => {
           body: {
             ...serviceInstanceSample,
             instance: instance,
-            service: service,
+            monitoredService: monitoredService,
           },
         }).then(({ body }) => {
           serviceInstance = body;
@@ -245,23 +245,23 @@ describe('ServiceInstance e2e test', () => {
 
     // Reason: cannot create a required entity with relationship with required relationships.
     it.skip('should create an instance of ServiceInstance', () => {
-      cy.get(`[data-cy="port"]`).type('6162');
-      cy.get(`[data-cy="port"]`).should('have.value', '6162');
+      cy.get(`[data-cy="port"]`).type('19704');
+      cy.get(`[data-cy="port"]`).should('have.value', '19704');
 
       cy.get(`[data-cy="isActive"]`).should('not.be.checked');
       cy.get(`[data-cy="isActive"]`).click();
       cy.get(`[data-cy="isActive"]`).should('be.checked');
 
-      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T18:44');
+      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T08:10');
       cy.get(`[data-cy="createdAt"]`).blur();
-      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T18:44');
+      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T08:10');
 
-      cy.get(`[data-cy="updatedAt"]`).type('2025-12-04T14:04');
+      cy.get(`[data-cy="updatedAt"]`).type('2025-12-04T09:33');
       cy.get(`[data-cy="updatedAt"]`).blur();
-      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-04T14:04');
+      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-04T09:33');
 
       cy.get(`[data-cy="instance"]`).select(1);
-      cy.get(`[data-cy="service"]`).select(1);
+      cy.get(`[data-cy="monitoredService"]`).select(1);
 
       cy.get(entityCreateSaveButtonSelector).click();
 

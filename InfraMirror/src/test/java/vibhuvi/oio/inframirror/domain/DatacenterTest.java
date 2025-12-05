@@ -3,8 +3,8 @@ package vibhuvi.oio.inframirror.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static vibhuvi.oio.inframirror.domain.DatacenterTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.InstanceTestSamples.*;
+import static vibhuvi.oio.inframirror.domain.MonitoredServiceTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.RegionTestSamples.*;
-import static vibhuvi.oio.inframirror.domain.ServiceTestSamples.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -50,25 +50,25 @@ class DatacenterTest {
     }
 
     @Test
-    void serviceTest() {
+    void monitoredServiceTest() {
         Datacenter datacenter = getDatacenterRandomSampleGenerator();
-        Service serviceBack = getServiceRandomSampleGenerator();
+        MonitoredService monitoredServiceBack = getMonitoredServiceRandomSampleGenerator();
 
-        datacenter.addService(serviceBack);
-        assertThat(datacenter.getServices()).containsOnly(serviceBack);
-        assertThat(serviceBack.getDatacenter()).isEqualTo(datacenter);
+        datacenter.addMonitoredService(monitoredServiceBack);
+        assertThat(datacenter.getMonitoredServices()).containsOnly(monitoredServiceBack);
+        assertThat(monitoredServiceBack.getDatacenter()).isEqualTo(datacenter);
 
-        datacenter.removeService(serviceBack);
-        assertThat(datacenter.getServices()).doesNotContain(serviceBack);
-        assertThat(serviceBack.getDatacenter()).isNull();
+        datacenter.removeMonitoredService(monitoredServiceBack);
+        assertThat(datacenter.getMonitoredServices()).doesNotContain(monitoredServiceBack);
+        assertThat(monitoredServiceBack.getDatacenter()).isNull();
 
-        datacenter.services(new HashSet<>(Set.of(serviceBack)));
-        assertThat(datacenter.getServices()).containsOnly(serviceBack);
-        assertThat(serviceBack.getDatacenter()).isEqualTo(datacenter);
+        datacenter.monitoredServices(new HashSet<>(Set.of(monitoredServiceBack)));
+        assertThat(datacenter.getMonitoredServices()).containsOnly(monitoredServiceBack);
+        assertThat(monitoredServiceBack.getDatacenter()).isEqualTo(datacenter);
 
-        datacenter.setServices(new HashSet<>());
-        assertThat(datacenter.getServices()).doesNotContain(serviceBack);
-        assertThat(serviceBack.getDatacenter()).isNull();
+        datacenter.setMonitoredServices(new HashSet<>());
+        assertThat(datacenter.getMonitoredServices()).doesNotContain(monitoredServiceBack);
+        assertThat(monitoredServiceBack.getDatacenter()).isNull();
     }
 
     @Test

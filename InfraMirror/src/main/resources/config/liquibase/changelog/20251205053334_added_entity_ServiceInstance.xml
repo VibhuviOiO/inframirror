@@ -29,7 +29,7 @@
             <column name="instance_id" type="bigint">
                 <constraints nullable="false" />
             </column>
-            <column name="service_id" type="bigint">
+            <column name="monitored_service_id" type="bigint">
                 <constraints nullable="false" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
@@ -60,7 +60,7 @@
             <column name="created_at" type="date"/>
             <column name="updated_at" type="date"/>
             <column name="instance_id" type="numeric"/>
-            <column name="service_id" type="numeric"/>
+            <column name="monitored_service_id" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

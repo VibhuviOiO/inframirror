@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "monitoredService": {
+      "home": {
+        "title": "MonitoredServices",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Monitored Service létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Monitored Servicet",
+        "search": "Monitored Service keresése",
+        "notFound": "No Monitored Services found"
+      },
+      "created": "Egy új Monitored Service lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Monitored Service módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Monitored Service törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Monitored Servicet {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Monitored Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

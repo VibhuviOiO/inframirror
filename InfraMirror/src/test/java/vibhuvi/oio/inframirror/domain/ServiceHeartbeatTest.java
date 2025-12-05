@@ -2,9 +2,9 @@ package vibhuvi.oio.inframirror.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static vibhuvi.oio.inframirror.domain.AgentTestSamples.*;
+import static vibhuvi.oio.inframirror.domain.MonitoredServiceTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.ServiceHeartbeatTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.ServiceInstanceTestSamples.*;
-import static vibhuvi.oio.inframirror.domain.ServiceTestSamples.*;
 
 import org.junit.jupiter.api.Test;
 import vibhuvi.oio.inframirror.web.rest.TestUtil;
@@ -38,15 +38,15 @@ class ServiceHeartbeatTest {
     }
 
     @Test
-    void serviceTest() {
+    void monitoredServiceTest() {
         ServiceHeartbeat serviceHeartbeat = getServiceHeartbeatRandomSampleGenerator();
-        Service serviceBack = getServiceRandomSampleGenerator();
+        MonitoredService monitoredServiceBack = getMonitoredServiceRandomSampleGenerator();
 
-        serviceHeartbeat.setService(serviceBack);
-        assertThat(serviceHeartbeat.getService()).isEqualTo(serviceBack);
+        serviceHeartbeat.setMonitoredService(monitoredServiceBack);
+        assertThat(serviceHeartbeat.getMonitoredService()).isEqualTo(monitoredServiceBack);
 
-        serviceHeartbeat.service(null);
-        assertThat(serviceHeartbeat.getService()).isNull();
+        serviceHeartbeat.monitoredService(null);
+        assertThat(serviceHeartbeat.getMonitoredService()).isNull();
     }
 
     @Test

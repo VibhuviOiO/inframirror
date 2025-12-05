@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "monitoredService": {
+      "home": {
+        "title": "Monitored Services",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "නව Monitored Service එකක් සාදන්න",
+        "createOrEditLabel": "Monitored Service සාදන්න හෝ සංස්කරණය කරන්න",
+        "search": "Monitored Service සඳහා සොයන්න",
+        "notFound": "Monitored Services හමු නොවීය"
+      },
+      "created": "{{ param }} හඳුනාගැනීමෙන් නව Monitored Service සාදනු ලැබේ",
+      "updated": "{{ param }} හඳුනාගැනීමෙන් Monitored Service යාවත්කාලීන වේ",
+      "deleted": "{{ param }} හඳුනාගැනීමෙන් Monitored Service මකා දමනු ලැබේ",
+      "delete": {
+        "question": "Monitored Service {{ id }} මකා දැමීමට ඔබට විශ්වාසද?"
+      },
+      "detail": {
+        "title": "Monitored Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

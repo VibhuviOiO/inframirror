@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "monitoredService": {
+      "home": {
+        "title": "Monitored Services",
+        "refreshListLabel": "רענן רשימה",
+        "createLabel": "צור חדש Monitored Service",
+        "createOrEditLabel": "צור או ערוך Monitored Service",
+        "search": "חפש Monitored Service",
+        "notFound": "לא נמצאו Monitored Services"
+      },
+      "created": "Monitored Service חדש נוצר עם מזהה {{ param }}",
+      "updated": "Monitored Service עודכן עם מזהה {{ param }}",
+      "deleted": "Monitored Service נמחק עם מזהה {{ param }}",
+      "delete": {
+        "question": "האם אתה בטוח שברצונך למחוק את Monitored Service {{ id }}?"
+      },
+      "detail": {
+        "title": "Monitored Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

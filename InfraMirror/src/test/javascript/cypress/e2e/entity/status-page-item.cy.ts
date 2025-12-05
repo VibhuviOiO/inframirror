@@ -15,7 +15,7 @@ describe('StatusPageItem e2e test', () => {
   const statusPageItemPageUrlPattern = new RegExp('/status-page-item(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const statusPageItemSample = { itemType: 'however', itemId: 15747 };
+  const statusPageItemSample = { itemType: 'oof bathrobe', itemId: 8178 };
 
   let statusPageItem;
   let statusPage;
@@ -30,24 +30,24 @@ describe('StatusPageItem e2e test', () => {
       method: 'POST',
       url: '/api/status-pages',
       body: {
-        name: 'fair retract pave',
-        slug: 'after',
-        description: 'solidly boo reiterate',
+        name: 'yowza hm',
+        slug: 'exactly',
+        description: 'stuff obediently joyously',
         isPublic: false,
-        customDomain: 'eek alert',
-        logoUrl: 'by corner ouch',
-        themeColor: 'joshing',
-        headerText: 'woot gosh yippee',
-        footerText: 'by',
-        showResponseTimes: false,
+        customDomain: 'abaft',
+        logoUrl: 'whether as',
+        themeColor: 'morning',
+        headerText: 'bashfully idle supposing',
+        footerText: 'blond vainly amongst',
+        showResponseTimes: true,
         showUptimePercentage: false,
-        autoRefreshSeconds: 30911,
+        autoRefreshSeconds: 21616,
         monitorSelection: 'Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=',
         isActive: true,
         isHomePage: false,
         allowedRoles: 'Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=',
-        createdAt: '2025-12-04T08:23:52.294Z',
-        updatedAt: '2025-12-04T15:11:43.276Z',
+        createdAt: '2025-12-05T04:41:04.453Z',
+        updatedAt: '2025-12-04T20:46:34.246Z',
       },
     }).then(({ body }) => {
       statusPage = body;
@@ -215,18 +215,18 @@ describe('StatusPageItem e2e test', () => {
     });
 
     it('should create an instance of StatusPageItem', () => {
-      cy.get(`[data-cy="itemType"]`).type('pish');
-      cy.get(`[data-cy="itemType"]`).should('have.value', 'pish');
+      cy.get(`[data-cy="itemType"]`).type('who heating sans');
+      cy.get(`[data-cy="itemType"]`).should('have.value', 'who heating sans');
 
-      cy.get(`[data-cy="itemId"]`).type('17827');
-      cy.get(`[data-cy="itemId"]`).should('have.value', '17827');
+      cy.get(`[data-cy="itemId"]`).type('16668');
+      cy.get(`[data-cy="itemId"]`).should('have.value', '16668');
 
-      cy.get(`[data-cy="displayOrder"]`).type('15671');
-      cy.get(`[data-cy="displayOrder"]`).should('have.value', '15671');
+      cy.get(`[data-cy="displayOrder"]`).type('3983');
+      cy.get(`[data-cy="displayOrder"]`).should('have.value', '3983');
 
-      cy.get(`[data-cy="createdAt"]`).type('2025-12-05T00:53');
+      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T11:47');
       cy.get(`[data-cy="createdAt"]`).blur();
-      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-05T00:53');
+      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T11:47');
 
       cy.get(`[data-cy="statusPage"]`).select(1);
 

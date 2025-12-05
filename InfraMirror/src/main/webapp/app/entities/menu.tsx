@@ -1,7 +1,7 @@
 import React from 'react';
-import { Translate } from 'react-jhipster'; // eslint-disable-line
+import { Translate } from 'react-jhipster';
 
-import MenuItem from 'app/shared/layout/menus/menu-item'; // eslint-disable-line
+import MenuItem from 'app/shared/layout/menus/menu-item';
 
 const EntitiesMenu = () => {
   return (
@@ -43,9 +43,6 @@ const EntitiesMenu = () => {
       <MenuItem icon="asterisk" to="/instance-heartbeat">
         <Translate contentKey="global.menu.entities.instanceHeartbeat" />
       </MenuItem>
-      <MenuItem icon="asterisk" to="/service">
-        <Translate contentKey="global.menu.entities.service" />
-      </MenuItem>
       <MenuItem icon="asterisk" to="/service-instance">
         <Translate contentKey="global.menu.entities.serviceInstance" />
       </MenuItem>
@@ -60,6 +57,9 @@ const EntitiesMenu = () => {
       </MenuItem>
       <MenuItem icon="asterisk" to="/status-dependency">
         <Translate contentKey="global.menu.entities.statusDependency" />
+      </MenuItem>
+      <MenuItem icon="asterisk" to="/monitored-service">
+        <Translate contentKey="global.menu.entities.monitoredService" />
       </MenuItem>
       {/* jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here */}
     </>

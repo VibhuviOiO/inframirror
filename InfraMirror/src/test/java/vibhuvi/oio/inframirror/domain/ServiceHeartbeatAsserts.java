@@ -65,7 +65,7 @@ public class ServiceHeartbeatAsserts {
         assertThat(actual)
             .as("Verify ServiceHeartbeat relationships")
             .satisfies(a -> assertThat(a.getAgent()).as("check agent").isEqualTo(expected.getAgent()))
-            .satisfies(a -> assertThat(a.getService()).as("check service").isEqualTo(expected.getService()))
+            .satisfies(a -> assertThat(a.getMonitoredService()).as("check monitoredService").isEqualTo(expected.getMonitoredService()))
             .satisfies(a -> assertThat(a.getServiceInstance()).as("check serviceInstance").isEqualTo(expected.getServiceInstance()));
     }
 }

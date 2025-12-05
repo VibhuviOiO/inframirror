@@ -486,7 +486,12 @@ class ApiKeyResourceIT {
         ApiKey partialUpdatedApiKey = new ApiKey();
         partialUpdatedApiKey.setId(apiKey.getId());
 
-        partialUpdatedApiKey.name(UPDATED_NAME).active(UPDATED_ACTIVE).expiresAt(UPDATED_EXPIRES_AT);
+        partialUpdatedApiKey
+            .keyHash(UPDATED_KEY_HASH)
+            .lastUsedDate(UPDATED_LAST_USED_DATE)
+            .expiresAt(UPDATED_EXPIRES_AT)
+            .createdBy(UPDATED_CREATED_BY)
+            .createdDate(UPDATED_CREATED_DATE);
 
         restApiKeyMockMvc
             .perform(

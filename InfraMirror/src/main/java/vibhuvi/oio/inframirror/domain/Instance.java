@@ -159,12 +159,12 @@ public class Instance implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instance")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "heartbeats", "instance", "service" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "heartbeats", "instance", "monitoredService" }, allowSetters = true)
     private Set<ServiceInstance> serviceInstances = new HashSet<>();
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "instances", "services", "region" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "instances", "monitoredServices", "region" }, allowSetters = true)
     private Datacenter datacenter;
 
     @ManyToOne(fetch = FetchType.LAZY)

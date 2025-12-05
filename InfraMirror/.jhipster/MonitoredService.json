@@ -1,0 +1,112 @@
+{
+  "annotations": {
+    "changelogDate": "20251205054618"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "200"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "500"
+    },
+    {
+      "fieldName": "serviceType",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "50"
+    },
+    {
+      "fieldName": "environment",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "20"
+    },
+    {
+      "fieldName": "monitoringEnabled",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "clusterMonitoringEnabled",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "intervalSeconds",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "timeoutMs",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "retryCount",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "latencyWarningMs",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "latencyCriticalMs",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "advancedConfig",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "isActive",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "updatedAt",
+      "fieldType": "Instant"
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "name": "MonitoredService",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "serviceInstance",
+      "otherEntityRelationshipName": "monitoredService",
+      "relationshipName": "serviceInstance",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "serviceHeartbeat",
+      "otherEntityRelationshipName": "monitoredService",
+      "relationshipName": "heartbeat",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "datacenter",
+      "otherEntityRelationshipName": "monitoredService",
+      "relationshipName": "datacenter",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceImpl"
+}

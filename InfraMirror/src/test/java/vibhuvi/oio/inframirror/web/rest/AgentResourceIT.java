@@ -477,8 +477,6 @@ class AgentResourceIT {
         Agent partialUpdatedAgent = new Agent();
         partialUpdatedAgent.setId(agent.getId());
 
-        partialUpdatedAgent.name(UPDATED_NAME);
-
         restAgentMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedAgent.getId())

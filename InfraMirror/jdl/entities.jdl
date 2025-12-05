@@ -215,7 +215,7 @@ entity InstanceHeartbeat {
 
 // ========== Service Entities ==========
 
-entity Service {
+entity MonitoredService {
   id Long required
   name String required maxlength(200)
   description String maxlength(500)
@@ -305,7 +305,7 @@ relationship OneToMany {
 // Datacenter relationships
 relationship OneToMany {
   Datacenter{instance} to Instance{datacenter required}
-  Datacenter{service} to Service{datacenter}
+  Datacenter{monitoredService} to MonitoredService{datacenter}
 }
 
 // Agent relationships
@@ -334,10 +334,10 @@ relationship OneToMany {
   Instance{serviceInstance} to ServiceInstance{instance required}
 }
 
-// Service relationships
+// MonitoredService relationships
 relationship OneToMany {
-  Service{serviceInstance} to ServiceInstance{service required}
-  Service{heartbeat} to ServiceHeartbeat{service required}
+  MonitoredService{serviceInstance} to ServiceInstance{monitoredService required}
+  MonitoredService{heartbeat} to ServiceHeartbeat{monitoredService required}
 }
 
 // ServiceInstance relationships
@@ -354,9 +354,11 @@ relationship OneToMany {
 // Pagination and service options
 paginate Branding, Region, Datacenter, Agent, AuditTrail, ApiKey, AgentLock with pagination
 paginate HttpMonitor, HttpHeartbeat, Instance, InstanceHeartbeat with pagination
-paginate Service, ServiceInstance, ServiceHeartbeat with pagination
+paginate MonitoredService, ServiceInstance, ServiceHeartbeat with pagination
 paginate StatusPage, StatusPageItem, StatusDependency with pagination
 
 service all with serviceImpl
 dto all with mapstruct
-filter Region, Datacenter, Agent, Instance, Service, HttpMonitor, StatusPage
+filter Region, Datacenter, Agent, Instance, MonitoredService, HttpMonitor, StatusPageuired}
+  StatusPage{statusDependency} to StatusDependency{statusPage}
+}

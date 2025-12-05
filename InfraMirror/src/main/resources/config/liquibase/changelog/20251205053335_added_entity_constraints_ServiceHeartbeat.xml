@@ -17,11 +17,11 @@
                                  referencedTableName="agent"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="service_id"
+        <addForeignKeyConstraint baseColumnNames="monitored_service_id"
                                  baseTableName="service_heartbeat"
-                                 constraintName="fk_service_heartbeat__service_id"
+                                 constraintName="fk_service_heartbeat__monitored_service_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="service"
+                                 referencedTableName="monitored_service"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="service_instance_id"

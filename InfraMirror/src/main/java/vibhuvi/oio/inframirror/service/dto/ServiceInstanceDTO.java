@@ -27,7 +27,7 @@ public class ServiceInstanceDTO implements Serializable {
     private InstanceDTO instance;
 
     @NotNull
-    private ServiceDTO service;
+    private MonitoredServiceDTO monitoredService;
 
     public Long getId() {
         return id;
@@ -77,12 +77,12 @@ public class ServiceInstanceDTO implements Serializable {
         this.instance = instance;
     }
 
-    public ServiceDTO getService() {
-        return service;
+    public MonitoredServiceDTO getMonitoredService() {
+        return monitoredService;
     }
 
-    public void setService(ServiceDTO service) {
-        this.service = service;
+    public void setMonitoredService(MonitoredServiceDTO monitoredService) {
+        this.monitoredService = monitoredService;
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ServiceInstanceDTO implements Serializable {
             ", createdAt='" + getCreatedAt() + "'" +
             ", updatedAt='" + getUpdatedAt() + "'" +
             ", instance=" + getInstance() +
-            ", service=" + getService() +
+            ", monitoredService=" + getMonitoredService() +
             "}";
     }
 }

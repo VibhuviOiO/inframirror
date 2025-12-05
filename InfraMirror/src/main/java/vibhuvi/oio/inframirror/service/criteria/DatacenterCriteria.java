@@ -30,7 +30,7 @@ public class DatacenterCriteria implements Serializable, Criteria {
 
     private LongFilter instanceId;
 
-    private LongFilter serviceId;
+    private LongFilter monitoredServiceId;
 
     private LongFilter regionId;
 
@@ -43,7 +43,7 @@ public class DatacenterCriteria implements Serializable, Criteria {
         this.code = other.optionalCode().map(StringFilter::copy).orElse(null);
         this.name = other.optionalName().map(StringFilter::copy).orElse(null);
         this.instanceId = other.optionalInstanceId().map(LongFilter::copy).orElse(null);
-        this.serviceId = other.optionalServiceId().map(LongFilter::copy).orElse(null);
+        this.monitoredServiceId = other.optionalMonitoredServiceId().map(LongFilter::copy).orElse(null);
         this.regionId = other.optionalRegionId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
@@ -129,23 +129,23 @@ public class DatacenterCriteria implements Serializable, Criteria {
         this.instanceId = instanceId;
     }
 
-    public LongFilter getServiceId() {
-        return serviceId;
+    public LongFilter getMonitoredServiceId() {
+        return monitoredServiceId;
     }
 
-    public Optional<LongFilter> optionalServiceId() {
-        return Optional.ofNullable(serviceId);
+    public Optional<LongFilter> optionalMonitoredServiceId() {
+        return Optional.ofNullable(monitoredServiceId);
     }
 
-    public LongFilter serviceId() {
-        if (serviceId == null) {
-            setServiceId(new LongFilter());
+    public LongFilter monitoredServiceId() {
+        if (monitoredServiceId == null) {
+            setMonitoredServiceId(new LongFilter());
         }
-        return serviceId;
+        return monitoredServiceId;
     }
 
-    public void setServiceId(LongFilter serviceId) {
-        this.serviceId = serviceId;
+    public void setMonitoredServiceId(LongFilter monitoredServiceId) {
+        this.monitoredServiceId = monitoredServiceId;
     }
 
     public LongFilter getRegionId() {
@@ -200,7 +200,7 @@ public class DatacenterCriteria implements Serializable, Criteria {
             Objects.equals(code, that.code) &&
             Objects.equals(name, that.name) &&
             Objects.equals(instanceId, that.instanceId) &&
-            Objects.equals(serviceId, that.serviceId) &&
+            Objects.equals(monitoredServiceId, that.monitoredServiceId) &&
             Objects.equals(regionId, that.regionId) &&
             Objects.equals(distinct, that.distinct)
         );
@@ -208,7 +208,7 @@ public class DatacenterCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, code, name, instanceId, serviceId, regionId, distinct);
+        return Objects.hash(id, code, name, instanceId, monitoredServiceId, regionId, distinct);
     }
 
     // prettier-ignore
@@ -219,7 +219,7 @@ public class DatacenterCriteria implements Serializable, Criteria {
             optionalCode().map(f -> "code=" + f + ", ").orElse("") +
             optionalName().map(f -> "name=" + f + ", ").orElse("") +
             optionalInstanceId().map(f -> "instanceId=" + f + ", ").orElse("") +
-            optionalServiceId().map(f -> "serviceId=" + f + ", ").orElse("") +
+            optionalMonitoredServiceId().map(f -> "monitoredServiceId=" + f + ", ").orElse("") +
             optionalRegionId().map(f -> "regionId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";

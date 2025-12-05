@@ -2595,15 +2595,21 @@ class InstanceResourceIT {
 
         partialUpdatedInstance
             .name(UPDATED_NAME)
+            .hostname(UPDATED_HOSTNAME)
+            .description(UPDATED_DESCRIPTION)
             .instanceType(UPDATED_INSTANCE_TYPE)
             .monitoringType(UPDATED_MONITORING_TYPE)
             .platform(UPDATED_PLATFORM)
             .privateIpAddress(UPDATED_PRIVATE_IP_ADDRESS)
             .publicIpAddress(UPDATED_PUBLIC_IP_ADDRESS)
-            .pingInterval(UPDATED_PING_INTERVAL)
+            .pingTimeoutMs(UPDATED_PING_TIMEOUT_MS)
             .hardwareMonitoringInterval(UPDATED_HARDWARE_MONITORING_INTERVAL)
-            .diskDangerThreshold(UPDATED_DISK_DANGER_THRESHOLD)
-            .updatedAt(UPDATED_UPDATED_AT);
+            .cpuDangerThreshold(UPDATED_CPU_DANGER_THRESHOLD)
+            .memoryDangerThreshold(UPDATED_MEMORY_DANGER_THRESHOLD)
+            .diskWarningThreshold(UPDATED_DISK_WARNING_THRESHOLD)
+            .createdAt(UPDATED_CREATED_AT)
+            .lastPingAt(UPDATED_LAST_PING_AT)
+            .lastHardwareCheckAt(UPDATED_LAST_HARDWARE_CHECK_AT);
 
         restInstanceMockMvc
             .perform(

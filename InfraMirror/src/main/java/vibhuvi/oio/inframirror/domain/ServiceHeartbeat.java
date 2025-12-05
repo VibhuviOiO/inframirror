@@ -63,10 +63,10 @@ public class ServiceHeartbeat implements Serializable {
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties(value = { "serviceInstances", "heartbeats", "datacenter" }, allowSetters = true)
-    private Service service;
+    private MonitoredService monitoredService;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "heartbeats", "instance", "service" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "heartbeats", "instance", "monitoredService" }, allowSetters = true)
     private ServiceInstance serviceInstance;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -175,16 +175,16 @@ public class ServiceHeartbeat implements Serializable {
         return this;
     }
 
-    public Service getService() {
-        return this.service;
+    public MonitoredService getMonitoredService() {
+        return this.monitoredService;
     }
 
-    public void setService(Service service) {
-        this.service = service;
+    public void setMonitoredService(MonitoredService monitoredService) {
+        this.monitoredService = monitoredService;
     }
 
-    public ServiceHeartbeat service(Service service) {
-        this.setService(service);
+    public ServiceHeartbeat monitoredService(MonitoredService monitoredService) {
+        this.setMonitoredService(monitoredService);
         return this;
     }
 

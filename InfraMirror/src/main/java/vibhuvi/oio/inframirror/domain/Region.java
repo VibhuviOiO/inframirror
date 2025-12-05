@@ -43,7 +43,7 @@ public class Region implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "instances", "services", "region" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "instances", "monitoredServices", "region" }, allowSetters = true)
     private Set<Datacenter> datacenters = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region")

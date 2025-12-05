@@ -22,7 +22,7 @@
       "code": "Code",
       "name": "Name",
       "instance": "Instance",
-      "service": "Service",
+      "monitoredService": "Monitored Service",
       "region": "Region"
     }
   }

@@ -432,7 +432,7 @@ class StatusPageItemResourceIT {
         StatusPageItem partialUpdatedStatusPageItem = new StatusPageItem();
         partialUpdatedStatusPageItem.setId(statusPageItem.getId());
 
-        partialUpdatedStatusPageItem.itemId(UPDATED_ITEM_ID);
+        partialUpdatedStatusPageItem.createdAt(UPDATED_CREATED_AT);
 
         restStatusPageItemMockMvc
             .perform(

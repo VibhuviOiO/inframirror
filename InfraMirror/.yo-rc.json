@@ -28,12 +28,12 @@
       "AgentLock",
       "Instance",
       "InstanceHeartbeat",
-      "Service",
       "ServiceInstance",
       "ServiceHeartbeat",
       "StatusPage",
       "StatusPageItem",
-      "StatusDependency"
+      "StatusDependency",
+      "MonitoredService"
     ],
     "feignClient": null,
     "jhipsterVersion": "8.11.0",
@@ -90,7 +90,7 @@
       "vi",
       "kr-Latn-kr"
     ],
-    "lastLiquibaseTimestamp": 1764912818000,
+    "lastLiquibaseTimestamp": 1764913578000,
     "microfrontend": null,
     "microfrontends": [],
     "monorepository": true,

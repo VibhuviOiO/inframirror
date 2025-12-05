@@ -25,7 +25,7 @@
       "updatedAt": "Updated At",
       "heartbeat": "Heartbeat",
       "instance": "Instance",
-      "service": "Service"
+      "monitoredService": "Monitored Service"
     }
   }
 }

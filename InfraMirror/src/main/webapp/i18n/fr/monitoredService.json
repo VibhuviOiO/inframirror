@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "monitoredService": {
+      "home": {
+        "title": "MonitoredServices",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Monitored Service",
+        "createOrEditLabel": "Créer ou éditer un Monitored Service",
+        "search": "Recherche pour Monitored Service",
+        "notFound": "Aucun Monitored Service trouvé"
+      },
+      "created": "Un nouveau Monitored Service a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Monitored Service avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Monitored Service avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Monitored Service {{ id }} ?"
+      },
+      "detail": {
+        "title": "Monitored Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

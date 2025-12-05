@@ -15,7 +15,7 @@ describe('Region e2e test', () => {
   const regionPageUrlPattern = new RegExp('/region(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const regionSample = { name: 'hospitable responsibility ameliorate' };
+  const regionSample = { name: 'forenenst' };
 
   let region;
 
@@ -162,14 +162,14 @@ describe('Region e2e test', () => {
     });
 
     it('should create an instance of Region', () => {
-      cy.get(`[data-cy="name"]`).type('spirit woefully cautiously');
-      cy.get(`[data-cy="name"]`).should('have.value', 'spirit woefully cautiously');
+      cy.get(`[data-cy="name"]`).type('haze');
+      cy.get(`[data-cy="name"]`).should('have.value', 'haze');
 
-      cy.get(`[data-cy="regionCode"]`).type('truly aboard');
-      cy.get(`[data-cy="regionCode"]`).should('have.value', 'truly aboard');
+      cy.get(`[data-cy="regionCode"]`).type('fervently upon');
+      cy.get(`[data-cy="regionCode"]`).should('have.value', 'fervently upon');
 
-      cy.get(`[data-cy="groupName"]`).type('mid yuck');
-      cy.get(`[data-cy="groupName"]`).should('have.value', 'mid yuck');
+      cy.get(`[data-cy="groupName"]`).type('zesty like tepid');
+      cy.get(`[data-cy="groupName"]`).should('have.value', 'zesty like tepid');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

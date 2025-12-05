@@ -708,23 +708,26 @@ class HttpHeartbeatResourceIT {
 
         partialUpdatedHttpHeartbeat
             .executedAt(UPDATED_EXECUTED_AT)
-            .success(UPDATED_SUCCESS)
-            .responseTimeMs(UPDATED_RESPONSE_TIME_MS)
-            .responseSizeBytes(UPDATED_RESPONSE_SIZE_BYTES)
+            .responseCacheStatus(UPDATED_RESPONSE_CACHE_STATUS)
             .dnsResolvedIp(UPDATED_DNS_RESOLVED_IP)
             .tcpConnectMs(UPDATED_TCP_CONNECT_MS)
             .sslCertificateValid(UPDATED_SSL_CERTIFICATE_VALID)
+            .sslCertificateExpiry(UPDATED_SSL_CERTIFICATE_EXPIRY)
             .sslCertificateIssuer(UPDATED_SSL_CERTIFICATE_ISSUER)
+            .sslDaysUntilExpiry(UPDATED_SSL_DAYS_UNTIL_EXPIRY)
+            .warningThresholdMs(UPDATED_WARNING_THRESHOLD_MS)
+            .criticalThresholdMs(UPDATED_CRITICAL_THRESHOLD_MS)
+            .rawRequestHeaders(UPDATED_RAW_REQUEST_HEADERS)
             .rawResponseHeaders(UPDATED_RAW_RESPONSE_HEADERS)
-            .rawResponseBody(UPDATED_RAW_RESPONSE_BODY)
-            .httpVersion(UPDATED_HTTP_VERSION)
+            .tlsDetails(UPDATED_TLS_DETAILS)
             .contentEncoding(UPDATED_CONTENT_ENCODING)
             .responseBodyHash(UPDATED_RESPONSE_BODY_HASH)
+            .responseBodyValid(UPDATED_RESPONSE_BODY_VALID)
             .responseBodyUncompressedBytes(UPDATED_RESPONSE_BODY_UNCOMPRESSED_BYTES)
+            .redirectDetails(UPDATED_REDIRECT_DETAILS)
             .cacheControl(UPDATED_CACHE_CONTROL)
-            .cdnProvider(UPDATED_CDN_PROVIDER)
-            .cdnPop(UPDATED_CDN_POP)
-            .phaseLatencies(UPDATED_PHASE_LATENCIES);
+            .cacheAge(UPDATED_CACHE_AGE)
+            .cdnPop(UPDATED_CDN_POP);
 
         restHttpHeartbeatMockMvc
             .perform(

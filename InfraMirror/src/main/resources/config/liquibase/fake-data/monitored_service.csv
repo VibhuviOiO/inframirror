@@ -1,0 +1,11 @@
+id;name;description;service_type;environment;monitoring_enabled;cluster_monitoring_enabled;interval_seconds;timeout_ms;retry_count;latency_warning_ms;latency_critical_ms;advanced_config;is_active;created_at;updated_at
+1;probable oof through;furthermore abaft friendly;vibraphone continually deficient;redesign given;true;true;29876;7411;28049;28305;2048;../fake-data/blob/hipster.txt;false;2025-12-04T11:30:38;2025-12-04T20:23:04
+2;madly put;oh swiftly flowery;earth squirm festival;where;true;false;5069;18296;19507;14812;8486;../fake-data/blob/hipster.txt;false;2025-12-04T18:59:06;2025-12-04T07:16:59
+3;yuck sedately;shampoo;lest times;busy;false;true;1726;21881;1624;18117;11594;../fake-data/blob/hipster.txt;false;2025-12-04T06:20:09;2025-12-05T05:21:42
+4;mysteriously weakly ha;including dental who;yowza;whose supposing;true;true;31071;30365;8935;7143;23654;../fake-data/blob/hipster.txt;true;2025-12-04T18:16:42;2025-12-04T09:29:53
+5;phony circa tenderly;honesty excluding;inasmuch fen terribly;carboxyl afore frate;true;true;9365;26067;3108;6615;1516;../fake-data/blob/hipster.txt;false;2025-12-04T08:52:48;2025-12-04T09:23:47
+6;colligate or;variable how;smog;kookily nor;true;false;22742;19693;3943;2290;25978;../fake-data/blob/hipster.txt;false;2025-12-04T16:19:12;2025-12-04T10:02:38
+7;palatable;darn gee;longingly;ouch gleaming;true;true;22500;10186;25138;9200;27031;../fake-data/blob/hipster.txt;false;2025-12-04T16:39:24;2025-12-05T00:31:28
+8;sans react;furthermore severe boo;bar needily longingly;retrospectivity trut;true;true;3591;27995;21677;2123;22590;../fake-data/blob/hipster.txt;false;2025-12-04T22:01:48;2025-12-04T06:38:40
+9;if dazzling meh;lest astride yahoo;kookily;bookcase;false;true;752;7372;1419;10675;12254;../fake-data/blob/hipster.txt;false;2025-12-05T00:43:25;2025-12-04T10:52:49
+10;gah ack finally;mmm doorpost;make of;daddy;true;true;27304;32597;25633;6440;23475;../fake-data/blob/hipster.txt;false;2025-12-04T14:25:37;2025-12-04T18:46:31

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="99999999999999-1" author="system" context="realdata">
+        <!-- HTTP Monitors -->
+        <insert tableName="http_monitor">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="ISRO Spacecrafts"/>
+            <column name="method" value="GET"/>
+            <column name="type" value="HTTPS"/>
+            <column name="url" value="https://isro.vercel.app/api/spacecrafts"/>
+            <column name="interval_seconds" valueNumeric="60"/>
+            <column name="timeout_seconds" valueNumeric="30"/>
+            <column name="retry_count" valueNumeric="2"/>
+            <column name="retry_delay_seconds" valueNumeric="5"/>
+            <column name="response_time_warning_ms" valueNumeric="500"/>
+            <column name="response_time_critical_ms" valueNumeric="1000"/>
+            <column name="enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="http_monitor">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="ISRO Launchers"/>
+            <column name="method" value="GET"/>
+            <column name="type" value="HTTPS"/>
+            <column name="url" value="https://isro.vercel.app/api/launchers"/>
+            <column name="interval_seconds" valueNumeric="60"/>
+            <column name="timeout_seconds" valueNumeric="30"/>
+            <column name="retry_count" valueNumeric="2"/>
+            <column name="retry_delay_seconds" valueNumeric="5"/>
+            <column name="response_time_warning_ms" valueNumeric="500"/>
+            <column name="response_time_critical_ms" valueNumeric="1000"/>
+            <column name="enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="http_monitor">
+            <column name="id" valueNumeric="3"/>
+            <column name="name" value="ISRO Customer Satellites"/>
+            <column name="method" value="GET"/>
+            <column name="type" value="HTTPS"/>
+            <column name="url" value="https://isro.vercel.app/api/customer_satellites"/>
+            <column name="interval_seconds" valueNumeric="60"/>
+            <column name="timeout_seconds" valueNumeric="30"/>
+            <column name="retry_count" valueNumeric="2"/>
+            <column name="retry_delay_seconds" valueNumeric="5"/>
+            <column name="response_time_warning_ms" valueNumeric="500"/>
+            <column name="response_time_critical_ms" valueNumeric="1000"/>
+            <column name="enabled" valueBoolean="true"/>
+        </insert>
+
+        <!-- Regions -->
+        <insert tableName="region">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="Home Network"/>
+            <column name="region_code" value="home-1"/>
+            <column name="group_name" value="HOME"/>
+        </insert>
+        <insert tableName="region">
+            <column name="id" valueNumeric="3"/>
+            <column name="name" value="US East"/>
+            <column name="region_code" value="us-east-1"/>
+            <column name="group_name" value="US"/>
+        </insert>
+
+        <!-- Datacenters -->
+        <insert tableName="datacenter">
+            <column name="id" valueNumeric="1"/>
+            <column name="code" value="home"/>
+            <column name="name" value="Home Lab"/>
+            <column name="region_id" valueNumeric="2"/>
+        </insert>
+
+        <!-- Instances -->
+        <insert tableName="instance">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="rp4"/>
+            <column name="hostname" value="rp4.local"/>
+            <column name="description" value="Raspberry Pi 4 - Docker host"/>
+            <column name="instance_type" value="BARE_METAL"/>
+            <column name="monitoring_type" value="SELF_HOSTED"/>
+            <column name="operating_system" value="Linux"/>
+            <column name="platform" value="Raspberry Pi OS"/>
+            <column name="private_ip_address" value="192.168.0.104"/>
+            <column name="ping_enabled" valueBoolean="true"/>
+            <column name="ping_interval" valueNumeric="30"/>
+            <column name="ping_timeout_ms" valueNumeric="3000"/>
+            <column name="ping_retry_count" valueNumeric="2"/>
+            <column name="hardware_monitoring_enabled" valueBoolean="false"/>
+            <column name="hardware_monitoring_interval" valueNumeric="300"/>
+            <column name="cpu_warning_threshold" valueNumeric="80"/>
+            <column name="cpu_danger_threshold" valueNumeric="95"/>
+            <column name="memory_warning_threshold" valueNumeric="80"/>
+            <column name="memory_danger_threshold" valueNumeric="95"/>
+            <column name="disk_warning_threshold" valueNumeric="80"/>
+            <column name="disk_danger_threshold" valueNumeric="95"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="instance">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="swagup-machine"/>
+            <column name="hostname" value="swagup-machine.local"/>
+            <column name="description" value="Mac machine - Redis cluster host"/>
+            <column name="instance_type" value="BARE_METAL"/>
+            <column name="monitoring_type" value="SELF_HOSTED"/>
+            <column name="operating_system" value="macOS"/>
+            <column name="platform" value="macOS"/>
+            <column name="private_ip_address" value="192.168.0.103"/>
+            <column name="ping_enabled" valueBoolean="true"/>
+            <column name="ping_interval" valueNumeric="30"/>
+            <column name="ping_timeout_ms" valueNumeric="3000"/>
+            <column name="ping_retry_count" valueNumeric="2"/>
+            <column name="hardware_monitoring_enabled" valueBoolean="false"/>
+            <column name="hardware_monitoring_interval" valueNumeric="300"/>
+            <column name="cpu_warning_threshold" valueNumeric="80"/>
+            <column name="cpu_danger_threshold" valueNumeric="95"/>
+            <column name="memory_warning_threshold" valueNumeric="80"/>
+            <column name="memory_danger_threshold" valueNumeric="95"/>
+            <column name="disk_warning_threshold" valueNumeric="80"/>
+            <column name="disk_danger_threshold" valueNumeric="95"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Services -->
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Redis Cluster"/>
+            <column name="description" value="6-node Redis cluster"/>
+            <column name="service_type" value="REDIS"/>
+            <column name="environment" value="DEV"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="cluster_monitoring_enabled" valueBoolean="true"/>
+            <column name="interval_seconds" valueNumeric="30"/>
+            <column name="timeout_ms" valueNumeric="2000"/>
+            <column name="retry_count" valueNumeric="2"/>
+            <column name="latency_warning_ms" valueNumeric="200"/>
+            <column name="latency_critical_ms" valueNumeric="600"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Service Instances -->
+        <insert tableName="service_instance">
+            <column name="id" valueNumeric="1"/>
+            <column name="monitored_service_id" valueNumeric="1"/>
+            <column name="instance_id" valueNumeric="2"/>
+            <column name="port" valueNumeric="7000"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Status Pages -->
+        <insert tableName="status_page">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Public Status"/>
+            <column name="slug" value="public-status"/>
+            <column name="description" value="Public service status"/>
+            <column name="is_public" valueBoolean="true"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="is_home_page" valueBoolean="true"/>
+            <column name="show_response_times" valueBoolean="true"/>
+            <column name="show_uptime_percentage" valueBoolean="true"/>
+            <column name="auto_refresh_seconds" valueNumeric="30"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Status Page Items -->
+        <insert tableName="status_page_item">
+            <column name="id" valueNumeric="1"/>
+            <column name="status_page_id" valueNumeric="1"/>
+            <column name="item_type" value="HTTP"/>
+            <column name="item_id" valueNumeric="1"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page_item">
+            <column name="id" valueNumeric="2"/>
+            <column name="status_page_id" valueNumeric="1"/>
+            <column name="item_type" value="HTTP"/>
+            <column name="item_id" valueNumeric="2"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Status Dependencies -->
+        <insert tableName="status_dependency">
+            <column name="id" valueNumeric="1"/>
+            <column name="parent_type" value="SERVICE"/>
+            <column name="parent_id" valueNumeric="1"/>
+            <column name="child_type" value="INSTANCE"/>
+            <column name="child_id" valueNumeric="2"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Branding -->
+        <insert tableName="branding">
+            <column name="id" valueNumeric="1"/>
+            <column name="title" value="InfraMirror"/>
+            <column name="description" value="Infrastructure Monitoring Platform"/>
+            <column name="logo_path" value="/content/images/logo.png"/>
+            <column name="favicon_path" value="/content/images/favicon.ico"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Agents -->
+        <insert tableName="agent">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Global Agent"/>
+            <column name="region_id" valueNumeric="2"/>
+        </insert>
+
+        <!-- Agent Monitors -->
+        <insert tableName="agent_monitor">
+            <column name="id" valueNumeric="1"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="created_by" value="system"/>
+            <column name="agent_id" valueNumeric="1"/>
+            <column name="monitor_id" valueNumeric="1"/>
+            <column name="created_date" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- API Keys -->
+        <insert tableName="api_key">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Admin API Key"/>
+            <column name="created_by" value="system"/>
+            <column name="key_hash" value="admin-api-key-hash"/>
+            <column name="description" value="Admin access"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="created_date" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="expires_at" valueComputed="CURRENT_TIMESTAMP + INTERVAL '1 year'"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
