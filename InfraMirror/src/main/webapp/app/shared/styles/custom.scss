@@ -1,0 +1,51 @@
+/* Common reusable UI helpers */
+
+.surface-panel {
+  background: #f6f8fc;
+  border: 1px solid #e6e9f2;
+  border-radius: 20px;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.16), 0 6px 18px rgba(15, 23, 42, 0.1);
+}
+
+.surface-panel--tight {
+  padding: 16px 18px;
+}
+
+.surface-panel--roomy {
+  padding: 24px 28px;
+}
+
+.surface-panel__header {
+  margin-bottom: 10px;
+  display: grid;
+  gap: 4px;
+}
+
+.surface-panel__title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.surface-panel__subtitle {
+  margin: 0;
+  color: #4b5563;
+}
+
+.dropdown-elevated {
+  border-radius: 20px;
+  border: 1px solid #e6e9f2;
+  background: #f6f8fc;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18), 0 4px 16px rgba(15, 23, 42, 0.12);
+}
+
+.pill-button {
+  border-radius: 999px;
+}
+
+.text-muted-500 {
+  color: #6b7280;
+}
+
+.shadow-soft {
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.08);
+}

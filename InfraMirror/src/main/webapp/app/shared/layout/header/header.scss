@@ -38,8 +38,10 @@ Development Ribbon
 Navbar styles
 ========================================================================== */
 .jh-navbar {
-  background-color: #353d47;
-  padding: 0.2em 1em;
+  background-color: #ffffff;
+  padding: 0.6em 1.5em;
+  border-bottom: 1px solid #e5e7ee;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
   .profile-image {
     margin: -10px 0;
     height: 40px;
@@ -49,7 +51,8 @@ Navbar styles
   .dropdown-item.active,
   .dropdown-item.active:focus,
   .dropdown-item.active:hover {
-    background-color: #353d47;
+    background-color: #f3f4f6;
+    color: #0f172a;
   }
   .dropdown-toggle::after {
     margin-left: 0.15em;
@@ -57,21 +60,28 @@ Navbar styles
   ul.navbar-nav {
     padding: 0.5em;
     .nav-item {
-      margin-left: 1.5rem;
+      margin-left: 1.25rem;
     }
   }
   a.nav-link {
-    font-weight: 400;
+    font-weight: 600;
+    color: #1f2937;
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
     > span {
       margin-left: 5px;
     }
+    &:hover {
+      background: #f3f4f6;
+      color: #111827;
+    }
   }
   .jh-navbar-toggler {
-    color: #ccc;
+    color: #4b5563;
     font-size: 1.5em;
     padding: 10px;
     &:hover {
-      color: #fff;
+      color: #111827;
     }
   }
 }
@@ -106,11 +116,135 @@ Navbar styles
 
 .brand-title {
   font-size: 1.25rem;
-  margin-left: 0.25rem;
-  color: $header-color;
+  margin-left: 0.35rem;
+  color: #0f172a;
+  font-weight: 700;
   &:hover {
-    color: $header-color-hover;
+    color: #111827;
     text-decoration: none;
+  }
+}
+
+.account-nav {
+  .account-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    padding: 0;
+    display: grid !important;
+    place-items: center;
+    background: linear-gradient(135deg, #6a5af9, #4dabf7);
+    color: #fff;
+    border: 1px solid #dfe3eb;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+    svg {
+      margin: 0;
+    }
+  }
+  .account-toggle::after {
+    display: none;
+  }
+
+  .avatar-initial {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    font-weight: 700;
+    letter-spacing: 0;
+    font-size: 0.95rem;
+    line-height: 1;
+    text-align: center;
+    transform: translateX(-2px); // optical center tweak
+  }
+
+  // Hide the label text, keep initials visible
+  .account-toggle > span:not(.avatar-initial) {
+    display: none;
+  }
+
+  .dropdown-menu {
+    min-width: 280px;
+    padding: 14px 14px 10px;
+    border: 1px solid #e6e9f2;
+    border-radius: 20px;
+    background: #f6f8fc;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18), 0 4px 16px rgba(15, 23, 42, 0.12);
+  }
+
+  .dropdown-item {
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-weight: 600;
+    color: #0f172a;
+
+    &:hover {
+      background: #e9eef8;
+      color: #0b1221;
+    }
+  }
+}
+
+.app-launcher {
+  .launcher-toggle {
+    padding: 0.25rem;
+    margin-left: 0.5rem;
+  }
+
+  .launcher-dots {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 2px;
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: linear-gradient(135deg, #6a5af9, #4dabf7);
+      border-radius: 50%;
+    }
+  }
+
+  .launcher-menu {
+    padding: 18px;
+    width: 360px;
+    border: 1px solid #e3e6ef;
+    border-radius: 26px;
+    background: #f9fbff;
+    box-shadow: 0 22px 50px rgba(15, 23, 42, 0.16), 0 6px 18px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  .launcher-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #0f172a;
+  }
+
+  .launcher-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .launcher-tile {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #edf0f5;
+    background: #fafbff;
+    font-weight: 600;
+    color: #1f2937;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  }
+
+  .tile-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6a5af9, #4dabf7);
   }
 }
 

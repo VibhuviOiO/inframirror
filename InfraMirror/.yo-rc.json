@@ -102,7 +102,7 @@
     "serverPort": null,
     "serviceDiscoveryType": null,
     "skipCommitHook": true,
-    "skipUserManagement": true,
+    "skipUserManagement": false,
     "syncUserWithIdp": true,
     "testFrameworks": ["gatling", "cypress"],
     "withAdminUi": true

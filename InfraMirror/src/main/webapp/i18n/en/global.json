@@ -77,6 +77,9 @@
       "error": {
         "dontmatch": "The password and its confirmation do not match!"
       },
+      "password": {
+        "notSupported": "Password changes are managed by your identity provider. Use your IdP account settings."
+      },
       "validate": {
         "newpassword": {
           "required": "Your password is required.",

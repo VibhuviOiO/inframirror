@@ -8,7 +8,7 @@ import LoadingBar from 'react-redux-loading-bar';
 import { useAppDispatch } from 'app/config/store';
 import { setLocale } from 'app/shared/reducers/locale';
 import { AccountMenu, AdminMenu, EntitiesMenu, LocaleMenu } from '../menus';
-import { Brand, Home } from './header-components';
+import { AppLauncher, Brand, Home } from './header-components';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;
@@ -17,12 +17,28 @@ export interface IHeaderProps {
   isInProduction: boolean;
   isOpenAPIEnabled: boolean;
   currentLocale: string;
+  accountName?: string;
 }
 
 const Header = (props: IHeaderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const dispatch = useAppDispatch();
+
+  const launcherApps = [
+    'LDAP',
+    'Postgres',
+    'Elasticsearch',
+    'Solr',
+    'Redis',
+    'Kafka',
+    'Prometheus',
+    'Grafana',
+    'MinIO',
+    'S3 Gateway',
+    'Vault',
+    'Keycloak',
+  ];
 
   const handleLocaleChange = event => {
     const langKey = event.target.value;
@@ -56,7 +72,8 @@ const Header = (props: IHeaderProps) => {
             {props.isAuthenticated && <EntitiesMenu />}
             {props.isAuthenticated && props.isAdmin && <AdminMenu showOpenAPI={props.isOpenAPIEnabled} />}
             <LocaleMenu currentLocale={props.currentLocale} onClick={handleLocaleChange} />
-            <AccountMenu isAuthenticated={props.isAuthenticated} />
+            <AppLauncher apps={launcherApps} />
+            <AccountMenu isAuthenticated={props.isAuthenticated} displayName={props.accountName} />
           </Nav>
         </Collapse>
       </Navbar>

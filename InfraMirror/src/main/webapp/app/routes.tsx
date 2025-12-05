@@ -11,6 +11,7 @@ import PrivateRoute from 'app/shared/auth/private-route';
 import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
 import PageNotFound from 'app/shared/error/page-not-found';
 import { AUTHORITIES } from 'app/config/constants';
+import Password from 'app/modules/account/password/password';
 
 const loading = <div>loading ...</div>;
 
@@ -29,6 +30,14 @@ const AppRoutes = () => {
           element={
             <PrivateRoute hasAnyAuthorities={[AUTHORITIES.ADMIN]}>
               <Admin />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="account/password"
+          element={
+            <PrivateRoute hasAnyAuthorities={[AUTHORITIES.USER]}>
+              <Password />
             </PrivateRoute>
           }
         />
