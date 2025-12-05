@@ -3,7 +3,7 @@ package vibhuvi.oio.inframirror.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static vibhuvi.oio.inframirror.domain.HttpHeartbeatTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.HttpMonitorTestSamples.*;
-import static vibhuvi.oio.inframirror.domain.ScheduleTestSamples.*;
+import static vibhuvi.oio.inframirror.domain.HttpMonitorTestSamples.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,15 +27,37 @@ class HttpMonitorTest {
     }
 
     @Test
-    void heartbeatsTest() {
+    void childrenTest() {
+        HttpMonitor httpMonitor = getHttpMonitorRandomSampleGenerator();
+        HttpMonitor httpMonitorBack = getHttpMonitorRandomSampleGenerator();
+
+        httpMonitor.addChildren(httpMonitorBack);
+        assertThat(httpMonitor.getChildren()).containsOnly(httpMonitorBack);
+        assertThat(httpMonitorBack.getParent()).isEqualTo(httpMonitor);
+
+        httpMonitor.removeChildren(httpMonitorBack);
+        assertThat(httpMonitor.getChildren()).doesNotContain(httpMonitorBack);
+        assertThat(httpMonitorBack.getParent()).isNull();
+
+        httpMonitor.children(new HashSet<>(Set.of(httpMonitorBack)));
+        assertThat(httpMonitor.getChildren()).containsOnly(httpMonitorBack);
+        assertThat(httpMonitorBack.getParent()).isEqualTo(httpMonitor);
+
+        httpMonitor.setChildren(new HashSet<>());
+        assertThat(httpMonitor.getChildren()).doesNotContain(httpMonitorBack);
+        assertThat(httpMonitorBack.getParent()).isNull();
+    }
+
+    @Test
+    void heartbeatTest() {
         HttpMonitor httpMonitor = getHttpMonitorRandomSampleGenerator();
         HttpHeartbeat httpHeartbeatBack = getHttpHeartbeatRandomSampleGenerator();
 
-        httpMonitor.addHeartbeats(httpHeartbeatBack);
+        httpMonitor.addHeartbeat(httpHeartbeatBack);
         assertThat(httpMonitor.getHeartbeats()).containsOnly(httpHeartbeatBack);
         assertThat(httpHeartbeatBack.getMonitor()).isEqualTo(httpMonitor);
 
-        httpMonitor.removeHeartbeats(httpHeartbeatBack);
+        httpMonitor.removeHeartbeat(httpHeartbeatBack);
         assertThat(httpMonitor.getHeartbeats()).doesNotContain(httpHeartbeatBack);
         assertThat(httpHeartbeatBack.getMonitor()).isNull();
 
@@ -49,14 +71,14 @@ class HttpMonitorTest {
     }
 
     @Test
-    void scheduleTest() {
+    void parentTest() {
         HttpMonitor httpMonitor = getHttpMonitorRandomSampleGenerator();
-        Schedule scheduleBack = getScheduleRandomSampleGenerator();
+        HttpMonitor httpMonitorBack = getHttpMonitorRandomSampleGenerator();
 
-        httpMonitor.setSchedule(scheduleBack);
-        assertThat(httpMonitor.getSchedule()).isEqualTo(scheduleBack);
+        httpMonitor.setParent(httpMonitorBack);
+        assertThat(httpMonitor.getParent()).isEqualTo(httpMonitorBack);
 
-        httpMonitor.schedule(null);
-        assertThat(httpMonitor.getSchedule()).isNull();
+        httpMonitor.parent(null);
+        assertThat(httpMonitor.getParent()).isNull();
     }
 }

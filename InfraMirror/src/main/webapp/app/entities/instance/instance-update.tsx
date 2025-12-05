@@ -139,7 +139,7 @@ export const InstanceUpdate = () => {
                   required
                   readOnly
                   id="instance-id"
-                  label={translate('global.field.id')}
+                  label={translate('infraMirrorApp.instance.id')}
                   validate={{ required: true }}
                 />
               ) : null}

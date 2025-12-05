@@ -23,7 +23,7 @@ export const ApiKeyUpdate = () => {
   const updateSuccess = useAppSelector(state => state.apiKey.updateSuccess);
 
   const handleClose = () => {
-    navigate('/api-key');
+    navigate(`/api-key${location.search}`);
   };
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export const ApiKeyUpdate = () => {
                   required
                   readOnly
                   id="api-key-id"
-                  label={translate('global.field.id')}
+                  label={translate('infraMirrorApp.apiKey.id')}
                   validate={{ required: true }}
                 />
               ) : null}

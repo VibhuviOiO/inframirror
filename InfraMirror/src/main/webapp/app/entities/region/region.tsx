@@ -174,7 +174,7 @@ export const Region = () => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="infraMirrorApp.region.id">ID</Translate> <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
+                  <Translate contentKey="infraMirrorApp.region.id">Id</Translate> <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
                 <th className="hand" onClick={sort('name')}>
                   <Translate contentKey="infraMirrorApp.region.name">Name</Translate>{' '}

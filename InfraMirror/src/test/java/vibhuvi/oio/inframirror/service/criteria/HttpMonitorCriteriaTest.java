@@ -79,8 +79,30 @@ class HttpMonitorCriteriaTest {
         httpMonitorCriteria.name();
         httpMonitorCriteria.method();
         httpMonitorCriteria.type();
-        httpMonitorCriteria.heartbeatsId();
-        httpMonitorCriteria.scheduleId();
+        httpMonitorCriteria.intervalSeconds();
+        httpMonitorCriteria.timeoutSeconds();
+        httpMonitorCriteria.retryCount();
+        httpMonitorCriteria.retryDelaySeconds();
+        httpMonitorCriteria.responseTimeWarningMs();
+        httpMonitorCriteria.responseTimeCriticalMs();
+        httpMonitorCriteria.uptimeWarningPercent();
+        httpMonitorCriteria.uptimeCriticalPercent();
+        httpMonitorCriteria.includeResponseBody();
+        httpMonitorCriteria.resendNotificationCount();
+        httpMonitorCriteria.certificateExpiryDays();
+        httpMonitorCriteria.ignoreTlsError();
+        httpMonitorCriteria.checkSslCertificate();
+        httpMonitorCriteria.checkDnsResolution();
+        httpMonitorCriteria.upsideDownMode();
+        httpMonitorCriteria.maxRedirects();
+        httpMonitorCriteria.tags();
+        httpMonitorCriteria.enabled();
+        httpMonitorCriteria.expectedStatusCodes();
+        httpMonitorCriteria.performanceBudgetMs();
+        httpMonitorCriteria.sizeBudgetKb();
+        httpMonitorCriteria.childrenId();
+        httpMonitorCriteria.heartbeatId();
+        httpMonitorCriteria.parentId();
         httpMonitorCriteria.distinct();
     }
 
@@ -91,8 +113,30 @@ class HttpMonitorCriteriaTest {
                 condition.apply(criteria.getName()) &&
                 condition.apply(criteria.getMethod()) &&
                 condition.apply(criteria.getType()) &&
-                condition.apply(criteria.getHeartbeatsId()) &&
-                condition.apply(criteria.getScheduleId()) &&
+                condition.apply(criteria.getIntervalSeconds()) &&
+                condition.apply(criteria.getTimeoutSeconds()) &&
+                condition.apply(criteria.getRetryCount()) &&
+                condition.apply(criteria.getRetryDelaySeconds()) &&
+                condition.apply(criteria.getResponseTimeWarningMs()) &&
+                condition.apply(criteria.getResponseTimeCriticalMs()) &&
+                condition.apply(criteria.getUptimeWarningPercent()) &&
+                condition.apply(criteria.getUptimeCriticalPercent()) &&
+                condition.apply(criteria.getIncludeResponseBody()) &&
+                condition.apply(criteria.getResendNotificationCount()) &&
+                condition.apply(criteria.getCertificateExpiryDays()) &&
+                condition.apply(criteria.getIgnoreTlsError()) &&
+                condition.apply(criteria.getCheckSslCertificate()) &&
+                condition.apply(criteria.getCheckDnsResolution()) &&
+                condition.apply(criteria.getUpsideDownMode()) &&
+                condition.apply(criteria.getMaxRedirects()) &&
+                condition.apply(criteria.getTags()) &&
+                condition.apply(criteria.getEnabled()) &&
+                condition.apply(criteria.getExpectedStatusCodes()) &&
+                condition.apply(criteria.getPerformanceBudgetMs()) &&
+                condition.apply(criteria.getSizeBudgetKb()) &&
+                condition.apply(criteria.getChildrenId()) &&
+                condition.apply(criteria.getHeartbeatId()) &&
+                condition.apply(criteria.getParentId()) &&
                 condition.apply(criteria.getDistinct()),
             "every filter matches"
         );
@@ -105,8 +149,30 @@ class HttpMonitorCriteriaTest {
                 condition.apply(criteria.getName(), copy.getName()) &&
                 condition.apply(criteria.getMethod(), copy.getMethod()) &&
                 condition.apply(criteria.getType(), copy.getType()) &&
-                condition.apply(criteria.getHeartbeatsId(), copy.getHeartbeatsId()) &&
-                condition.apply(criteria.getScheduleId(), copy.getScheduleId()) &&
+                condition.apply(criteria.getIntervalSeconds(), copy.getIntervalSeconds()) &&
+                condition.apply(criteria.getTimeoutSeconds(), copy.getTimeoutSeconds()) &&
+                condition.apply(criteria.getRetryCount(), copy.getRetryCount()) &&
+                condition.apply(criteria.getRetryDelaySeconds(), copy.getRetryDelaySeconds()) &&
+                condition.apply(criteria.getResponseTimeWarningMs(), copy.getResponseTimeWarningMs()) &&
+                condition.apply(criteria.getResponseTimeCriticalMs(), copy.getResponseTimeCriticalMs()) &&
+                condition.apply(criteria.getUptimeWarningPercent(), copy.getUptimeWarningPercent()) &&
+                condition.apply(criteria.getUptimeCriticalPercent(), copy.getUptimeCriticalPercent()) &&
+                condition.apply(criteria.getIncludeResponseBody(), copy.getIncludeResponseBody()) &&
+                condition.apply(criteria.getResendNotificationCount(), copy.getResendNotificationCount()) &&
+                condition.apply(criteria.getCertificateExpiryDays(), copy.getCertificateExpiryDays()) &&
+                condition.apply(criteria.getIgnoreTlsError(), copy.getIgnoreTlsError()) &&
+                condition.apply(criteria.getCheckSslCertificate(), copy.getCheckSslCertificate()) &&
+                condition.apply(criteria.getCheckDnsResolution(), copy.getCheckDnsResolution()) &&
+                condition.apply(criteria.getUpsideDownMode(), copy.getUpsideDownMode()) &&
+                condition.apply(criteria.getMaxRedirects(), copy.getMaxRedirects()) &&
+                condition.apply(criteria.getTags(), copy.getTags()) &&
+                condition.apply(criteria.getEnabled(), copy.getEnabled()) &&
+                condition.apply(criteria.getExpectedStatusCodes(), copy.getExpectedStatusCodes()) &&
+                condition.apply(criteria.getPerformanceBudgetMs(), copy.getPerformanceBudgetMs()) &&
+                condition.apply(criteria.getSizeBudgetKb(), copy.getSizeBudgetKb()) &&
+                condition.apply(criteria.getChildrenId(), copy.getChildrenId()) &&
+                condition.apply(criteria.getHeartbeatId(), copy.getHeartbeatId()) &&
+                condition.apply(criteria.getParentId(), copy.getParentId()) &&
                 condition.apply(criteria.getDistinct(), copy.getDistinct()),
             "every filter matches"
         );

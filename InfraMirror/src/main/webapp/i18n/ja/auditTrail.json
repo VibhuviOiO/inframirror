@@ -4,13 +4,21 @@
       "home": {
         "title": "AuditTrails",
         "refreshListLabel": "リストの更新",
+        "createLabel": "Audit Trail の作成",
+        "createOrEditLabel": "Audit Trailの作成または編集",
         "search": "Audit Trail の検索",
         "notFound": "Audit Trails が見つかりません。"
+      },
+      "created": "新しい Audit Trail がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Audit Trail が更新されました。",
+      "deleted": "ID {{ param }} の Audit Trail が削除されました。",
+      "delete": {
+        "question": "Audit Trail {{ id }}を削除してもよろしいですか？"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

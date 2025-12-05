@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Δημιουργήστε ένα νέο Branding",
+        "createOrEditLabel": "Δημιουργήστε η επεξεργαστείτε ένα Branding",
+        "search": "Αναζήτηση για Branding",
+        "notFound": "No Brandings found"
+      },
+      "created": "Ένα νέο Branding έχει δημιουργηθεί με αναγνωριστικό {{ param }}",
+      "updated": "Ένα Branding έχει ενημερωθεί με αναγνωριστικό {{ param }}",
+      "deleted": "Ένα Branding έχει διαγραφτεί με αναγνωριστικό {{ param }}",
+      "delete": {
+        "question": "Είστε βέβαιοι όταν θέλετε να διαγράψετε το ακόλουθο Branding {{ id }};"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

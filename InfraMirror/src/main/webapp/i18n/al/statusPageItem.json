@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Krijo një të ri Status Page Item",
+        "createOrEditLabel": "Krijo ose përpuno një Status Page Item",
+        "search": "Kërko për Status Page Item",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "Një Status Page Item i ri u krijua me identifikues {{ param }}",
+      "updated": "Një Status Page Item u përpunua me identifikues {{ param }}",
+      "deleted": "Një Status Page Item u fshi me identifikues {{ param }}",
+      "delete": {
+        "question": "Jeni i sigurtë që doni të fshini Status Page Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

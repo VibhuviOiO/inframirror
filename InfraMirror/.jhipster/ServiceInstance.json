@@ -1,0 +1,59 @@
+{
+  "annotations": {
+    "changelogDate": "20251205053334"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "port",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "isActive",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "updatedAt",
+      "fieldType": "Instant"
+    }
+  ],
+  "name": "ServiceInstance",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "serviceHeartbeat",
+      "otherEntityRelationshipName": "serviceInstance",
+      "relationshipName": "heartbeat",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "instance",
+      "otherEntityRelationshipName": "serviceInstance",
+      "relationshipName": "instance",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    },
+    {
+      "otherEntityName": "service",
+      "otherEntityRelationshipName": "serviceInstance",
+      "relationshipName": "service",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "service": "serviceImpl"
+}

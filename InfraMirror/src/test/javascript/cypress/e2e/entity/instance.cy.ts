@@ -16,22 +16,22 @@ describe('Instance e2e test', () => {
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
   const instanceSample = {
-    name: 'before wiggly lampoon',
-    hostname: 'whoever cleave',
-    instanceType: 'redevelop',
-    monitoringType: 'er where lest',
-    pingEnabled: false,
-    pingInterval: 12085,
-    pingTimeoutMs: 23000,
-    pingRetryCount: 1358,
+    name: 'pro greedily',
+    hostname: 'finally replicate',
+    instanceType: 'oh',
+    monitoringType: 'until',
+    pingEnabled: true,
+    pingInterval: 2499,
+    pingTimeoutMs: 11829,
+    pingRetryCount: 11779,
     hardwareMonitoringEnabled: true,
-    hardwareMonitoringInterval: 17223,
-    cpuWarningThreshold: 28892,
-    cpuDangerThreshold: 13684,
-    memoryWarningThreshold: 22538,
-    memoryDangerThreshold: 24990,
-    diskWarningThreshold: 20215,
-    diskDangerThreshold: 12330,
+    hardwareMonitoringInterval: 23338,
+    cpuWarningThreshold: 20941,
+    cpuDangerThreshold: 24387,
+    memoryWarningThreshold: 16940,
+    memoryDangerThreshold: 10999,
+    diskWarningThreshold: 1472,
+    diskDangerThreshold: 6343,
   };
 
   let instance;
@@ -46,7 +46,7 @@ describe('Instance e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/datacenters',
-      body: { code: 'mmm', name: 'lean up ouch' },
+      body: { code: 'bar despit', name: 'acquire' },
     }).then(({ body }) => {
       datacenter = body;
     });
@@ -60,7 +60,12 @@ describe('Instance e2e test', () => {
 
   beforeEach(() => {
     // Simulate relationships api for better performance and reproducibility.
-    cy.intercept('GET', '/api/ping-heartbeats', {
+    cy.intercept('GET', '/api/instance-heartbeats', {
+      statusCode: 200,
+      body: [],
+    });
+
+    cy.intercept('GET', '/api/service-instances', {
       statusCode: 200,
       body: [],
     });
@@ -223,32 +228,32 @@ describe('Instance e2e test', () => {
     });
 
     it('should create an instance of Instance', () => {
-      cy.get(`[data-cy="name"]`).type('confide sarcastic freely');
-      cy.get(`[data-cy="name"]`).should('have.value', 'confide sarcastic freely');
+      cy.get(`[data-cy="name"]`).type('produce');
+      cy.get(`[data-cy="name"]`).should('have.value', 'produce');
 
-      cy.get(`[data-cy="hostname"]`).type('outlandish supposing');
-      cy.get(`[data-cy="hostname"]`).should('have.value', 'outlandish supposing');
+      cy.get(`[data-cy="hostname"]`).type('besides');
+      cy.get(`[data-cy="hostname"]`).should('have.value', 'besides');
 
-      cy.get(`[data-cy="description"]`).type('why');
-      cy.get(`[data-cy="description"]`).should('have.value', 'why');
+      cy.get(`[data-cy="description"]`).type('cannibalise');
+      cy.get(`[data-cy="description"]`).should('have.value', 'cannibalise');
 
-      cy.get(`[data-cy="instanceType"]`).type('yuck');
-      cy.get(`[data-cy="instanceType"]`).should('have.value', 'yuck');
+      cy.get(`[data-cy="instanceType"]`).type('revitalise unimpressively upright');
+      cy.get(`[data-cy="instanceType"]`).should('have.value', 'revitalise unimpressively upright');
 
-      cy.get(`[data-cy="monitoringType"]`).type('although darling lecture');
-      cy.get(`[data-cy="monitoringType"]`).should('have.value', 'although darling lecture');
+      cy.get(`[data-cy="monitoringType"]`).type('well petty');
+      cy.get(`[data-cy="monitoringType"]`).should('have.value', 'well petty');
 
-      cy.get(`[data-cy="operatingSystem"]`).type('excluding cow underpants');
-      cy.get(`[data-cy="operatingSystem"]`).should('have.value', 'excluding cow underpants');
+      cy.get(`[data-cy="operatingSystem"]`).type('furthermore concrete');
+      cy.get(`[data-cy="operatingSystem"]`).should('have.value', 'furthermore concrete');
 
-      cy.get(`[data-cy="platform"]`).type('sock nicely vice');
-      cy.get(`[data-cy="platform"]`).should('have.value', 'sock nicely vice');
+      cy.get(`[data-cy="platform"]`).type('unique analogy');
+      cy.get(`[data-cy="platform"]`).should('have.value', 'unique analogy');
 
-      cy.get(`[data-cy="privateIpAddress"]`).type('elastic ack convoke');
-      cy.get(`[data-cy="privateIpAddress"]`).should('have.value', 'elastic ack convoke');
+      cy.get(`[data-cy="privateIpAddress"]`).type('circular');
+      cy.get(`[data-cy="privateIpAddress"]`).should('have.value', 'circular');
 
-      cy.get(`[data-cy="publicIpAddress"]`).type('near');
-      cy.get(`[data-cy="publicIpAddress"]`).should('have.value', 'near');
+      cy.get(`[data-cy="publicIpAddress"]`).type('litter');
+      cy.get(`[data-cy="publicIpAddress"]`).should('have.value', 'litter');
 
       cy.get(`[data-cy="tags"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="tags"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
@@ -257,55 +262,55 @@ describe('Instance e2e test', () => {
       cy.get(`[data-cy="pingEnabled"]`).click();
       cy.get(`[data-cy="pingEnabled"]`).should('be.checked');
 
-      cy.get(`[data-cy="pingInterval"]`).type('29936');
-      cy.get(`[data-cy="pingInterval"]`).should('have.value', '29936');
+      cy.get(`[data-cy="pingInterval"]`).type('2541');
+      cy.get(`[data-cy="pingInterval"]`).should('have.value', '2541');
 
-      cy.get(`[data-cy="pingTimeoutMs"]`).type('23649');
-      cy.get(`[data-cy="pingTimeoutMs"]`).should('have.value', '23649');
+      cy.get(`[data-cy="pingTimeoutMs"]`).type('1678');
+      cy.get(`[data-cy="pingTimeoutMs"]`).should('have.value', '1678');
 
-      cy.get(`[data-cy="pingRetryCount"]`).type('31048');
-      cy.get(`[data-cy="pingRetryCount"]`).should('have.value', '31048');
+      cy.get(`[data-cy="pingRetryCount"]`).type('27265');
+      cy.get(`[data-cy="pingRetryCount"]`).should('have.value', '27265');
 
       cy.get(`[data-cy="hardwareMonitoringEnabled"]`).should('not.be.checked');
       cy.get(`[data-cy="hardwareMonitoringEnabled"]`).click();
       cy.get(`[data-cy="hardwareMonitoringEnabled"]`).should('be.checked');
 
-      cy.get(`[data-cy="hardwareMonitoringInterval"]`).type('1868');
-      cy.get(`[data-cy="hardwareMonitoringInterval"]`).should('have.value', '1868');
+      cy.get(`[data-cy="hardwareMonitoringInterval"]`).type('8246');
+      cy.get(`[data-cy="hardwareMonitoringInterval"]`).should('have.value', '8246');
 
-      cy.get(`[data-cy="cpuWarningThreshold"]`).type('26217');
-      cy.get(`[data-cy="cpuWarningThreshold"]`).should('have.value', '26217');
+      cy.get(`[data-cy="cpuWarningThreshold"]`).type('21313');
+      cy.get(`[data-cy="cpuWarningThreshold"]`).should('have.value', '21313');
 
-      cy.get(`[data-cy="cpuDangerThreshold"]`).type('9108');
-      cy.get(`[data-cy="cpuDangerThreshold"]`).should('have.value', '9108');
+      cy.get(`[data-cy="cpuDangerThreshold"]`).type('23840');
+      cy.get(`[data-cy="cpuDangerThreshold"]`).should('have.value', '23840');
 
-      cy.get(`[data-cy="memoryWarningThreshold"]`).type('19704');
-      cy.get(`[data-cy="memoryWarningThreshold"]`).should('have.value', '19704');
+      cy.get(`[data-cy="memoryWarningThreshold"]`).type('5148');
+      cy.get(`[data-cy="memoryWarningThreshold"]`).should('have.value', '5148');
 
-      cy.get(`[data-cy="memoryDangerThreshold"]`).type('9344');
-      cy.get(`[data-cy="memoryDangerThreshold"]`).should('have.value', '9344');
+      cy.get(`[data-cy="memoryDangerThreshold"]`).type('14840');
+      cy.get(`[data-cy="memoryDangerThreshold"]`).should('have.value', '14840');
 
-      cy.get(`[data-cy="diskWarningThreshold"]`).type('29214');
-      cy.get(`[data-cy="diskWarningThreshold"]`).should('have.value', '29214');
+      cy.get(`[data-cy="diskWarningThreshold"]`).type('12174');
+      cy.get(`[data-cy="diskWarningThreshold"]`).should('have.value', '12174');
 
-      cy.get(`[data-cy="diskDangerThreshold"]`).type('27841');
-      cy.get(`[data-cy="diskDangerThreshold"]`).should('have.value', '27841');
+      cy.get(`[data-cy="diskDangerThreshold"]`).type('28488');
+      cy.get(`[data-cy="diskDangerThreshold"]`).should('have.value', '28488');
 
-      cy.get(`[data-cy="createdAt"]`).type('2025-12-02T14:31');
+      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T10:41');
       cy.get(`[data-cy="createdAt"]`).blur();
-      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-02T14:31');
+      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T10:41');
 
-      cy.get(`[data-cy="updatedAt"]`).type('2025-12-03T06:12');
+      cy.get(`[data-cy="updatedAt"]`).type('2025-12-04T21:25');
       cy.get(`[data-cy="updatedAt"]`).blur();
-      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-03T06:12');
+      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-04T21:25');
 
-      cy.get(`[data-cy="lastPingAt"]`).type('2025-12-03T03:25');
+      cy.get(`[data-cy="lastPingAt"]`).type('2025-12-04T23:01');
       cy.get(`[data-cy="lastPingAt"]`).blur();
-      cy.get(`[data-cy="lastPingAt"]`).should('have.value', '2025-12-03T03:25');
+      cy.get(`[data-cy="lastPingAt"]`).should('have.value', '2025-12-04T23:01');
 
-      cy.get(`[data-cy="lastHardwareCheckAt"]`).type('2025-12-02T19:40');
+      cy.get(`[data-cy="lastHardwareCheckAt"]`).type('2025-12-05T00:16');
       cy.get(`[data-cy="lastHardwareCheckAt"]`).blur();
-      cy.get(`[data-cy="lastHardwareCheckAt"]`).should('have.value', '2025-12-02T19:40');
+      cy.get(`[data-cy="lastHardwareCheckAt"]`).should('have.value', '2025-12-05T00:16');
 
       cy.get(`[data-cy="datacenter"]`).select(1);
 

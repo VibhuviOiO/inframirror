@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "Status Dependencies",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Status Dependency",
+        "createOrEditLabel": "Lisa või muuda Status Dependency",
+        "search": "Otsi Status Dependency",
+        "notFound": "Ei leitud ühtegi Status Dependencies"
+      },
+      "created": "Uus Status Dependency on loodud identifikaatoriga {{ param }}",
+      "updated": "Status Dependency identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Status Dependency identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Status Dependency {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

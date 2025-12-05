@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "Status Dependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Status Dependency baru",
+        "createOrEditLabel": "Buat atau edit Status Dependency",
+        "search": "Cari Status Dependency",
+        "notFound": "No Status Dependencies found"
+      },
+      "created": "Status Dependency dengan id {{ param }} telah dibuat",
+      "updated": "Status Dependency dengan id {{ param }} telah diperbaharui",
+      "deleted": "Status Dependency dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Status Dependency {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

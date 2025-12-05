@@ -1,0 +1,44 @@
+{
+  "infraMirrorApp": {
+    "statusPage": {
+      "home": {
+        "title": "Status Pages",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "නව Status Page එකක් සාදන්න",
+        "createOrEditLabel": "Status Page සාදන්න හෝ සංස්කරණය කරන්න",
+        "search": "Status Page සඳහා සොයන්න",
+        "notFound": "Status Pages හමු නොවීය"
+      },
+      "created": "{{ param }} හඳුනාගැනීමෙන් නව Status Page සාදනු ලැබේ",
+      "updated": "{{ param }} හඳුනාගැනීමෙන් Status Page යාවත්කාලීන වේ",
+      "deleted": "{{ param }} හඳුනාගැනීමෙන් Status Page මකා දමනු ලැබේ",
+      "delete": {
+        "question": "Status Page {{ id }} මකා දැමීමට ඔබට විශ්වාසද?"
+      },
+      "detail": {
+        "title": "Status Page"
+      },
+      "id": "Id",
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "isPublic": "Is Public",
+      "customDomain": "Custom Domain",
+      "logoUrl": "Logo Url",
+      "themeColor": "Theme Color",
+      "headerText": "Header Text",
+      "footerText": "Footer Text",
+      "showResponseTimes": "Show Response Times",
+      "showUptimePercentage": "Show Uptime Percentage",
+      "autoRefreshSeconds": "Auto Refresh Seconds",
+      "monitorSelection": "Monitor Selection",
+      "isActive": "Is Active",
+      "isHomePage": "Is Home Page",
+      "allowedRoles": "Allowed Roles",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "item": "Item",
+      "statusDependency": "Status Dependency"
+    }
+  }
+}

@@ -2,11 +2,19 @@ import axios from 'axios';
 
 import { configureStore } from '@reduxjs/toolkit';
 import sinon from 'sinon';
-import { parseHeaderForLinks } from 'react-jhipster';
 
 import { EntityState } from 'app/shared/reducers/reducer.utils';
 import { IHttpHeartbeat, defaultValue } from 'app/shared/model/http-heartbeat.model';
-import reducer, { getEntities, getEntity, reset, searchEntities } from './http-heartbeat.reducer';
+import reducer, {
+  createEntity,
+  deleteEntity,
+  getEntities,
+  getEntity,
+  partialUpdateEntity,
+  reset,
+  searchEntities,
+  updateEntity,
+} from './http-heartbeat.reducer';
 
 describe('Entities reducer tests', () => {
   function isEmpty(element): boolean {
@@ -21,9 +29,6 @@ describe('Entities reducer tests', () => {
     errorMessage: null,
     entities: [],
     entity: defaultValue,
-    links: {
-      next: 0,
-    },
     totalItems: 0,
     updating: false,
     updateSuccess: false,
@@ -63,6 +68,20 @@ describe('Entities reducer tests', () => {
       });
     });
 
+    it('should set state to updating', () => {
+      testMultipleTypes(
+        [createEntity.pending.type, updateEntity.pending.type, partialUpdateEntity.pending.type, deleteEntity.pending.type],
+        {},
+        state => {
+          expect(state).toMatchObject({
+            errorMessage: null,
+            updateSuccess: false,
+            updating: true,
+          });
+        },
+      );
+    });
+
     it('should reset the state', () => {
       expect(reducer({ ...initialState, loading: true }, reset())).toEqual({
         ...initialState,
@@ -73,7 +92,15 @@ describe('Entities reducer tests', () => {
   describe('Failures', () => {
     it('should set a message in errorMessage', () => {
       testMultipleTypes(
-        [getEntities.rejected.type, searchEntities.rejected.type, getEntity.rejected.type],
+        [
+          getEntities.rejected.type,
+          searchEntities.rejected.type,
+          getEntity.rejected.type,
+          createEntity.rejected.type,
+          updateEntity.rejected.type,
+          partialUpdateEntity.rejected.type,
+          deleteEntity.rejected.type,
+        ],
         'some message',
         state => {
           expect(state).toMatchObject({
@@ -91,8 +118,7 @@ describe('Entities reducer tests', () => {
 
   describe('Successes', () => {
     it('should fetch all entities', () => {
-      const payload = { data: [{ 1: 'fake1' }, { 2: 'fake2' }], headers: { 'x-total-count': 123, link: ';' } };
-      const links = parseHeaderForLinks(payload.headers.link);
+      const payload = { data: [{ 1: 'fake1' }, { 2: 'fake2' }], headers: { 'x-total-count': 123 } };
       expect(
         reducer(undefined, {
           type: getEntities.fulfilled.type,
@@ -100,15 +126,13 @@ describe('Entities reducer tests', () => {
         }),
       ).toEqual({
         ...initialState,
-        links,
         loading: false,
         totalItems: payload.headers['x-total-count'],
         entities: payload.data,
       });
     });
     it('should search all entities', () => {
-      const payload = { data: [{ 1: 'fake1' }, { 2: 'fake2' }], headers: { 'x-total-count': 123, link: ';' } };
-      const links = parseHeaderForLinks(payload.headers.link);
+      const payload = { data: [{ 1: 'fake1' }, { 2: 'fake2' }], headers: { 'x-total-count': 123 } };
       expect(
         reducer(undefined, {
           type: searchEntities.fulfilled.type,
@@ -116,7 +140,6 @@ describe('Entities reducer tests', () => {
         }),
       ).toEqual({
         ...initialState,
-        links,
         loading: false,
         totalItems: payload.headers['x-total-count'],
         entities: payload.data,
@@ -134,6 +157,33 @@ describe('Entities reducer tests', () => {
         ...initialState,
         loading: false,
         entity: payload.data,
+      });
+    });
+
+    it('should create/update entity', () => {
+      const payload = { data: 'fake payload' };
+      expect(
+        reducer(undefined, {
+          type: createEntity.fulfilled.type,
+          payload,
+        }),
+      ).toEqual({
+        ...initialState,
+        updating: false,
+        updateSuccess: true,
+        entity: payload.data,
+      });
+    });
+
+    it('should delete entity', () => {
+      const payload = 'fake payload';
+      const toTest = reducer(undefined, {
+        type: deleteEntity.fulfilled.type,
+        payload,
+      });
+      expect(toTest).toMatchObject({
+        updating: false,
+        updateSuccess: true,
       });
     });
   });
@@ -183,6 +233,46 @@ describe('Entities reducer tests', () => {
       const pendingAction = dispatch.mock.calls[0][0];
       expect(pendingAction.meta.requestStatus).toBe('pending');
       expect(getEntity.fulfilled.match(result)).toBe(true);
+    });
+
+    it('dispatches CREATE_HTTPHEARTBEAT actions', async () => {
+      const arg = { id: 4396 };
+
+      const result = await createEntity(arg)(dispatch, getState, extra);
+
+      const pendingAction = dispatch.mock.calls[0][0];
+      expect(pendingAction.meta.requestStatus).toBe('pending');
+      expect(createEntity.fulfilled.match(result)).toBe(true);
+    });
+
+    it('dispatches UPDATE_HTTPHEARTBEAT actions', async () => {
+      const arg = { id: 4396 };
+
+      const result = await updateEntity(arg)(dispatch, getState, extra);
+
+      const pendingAction = dispatch.mock.calls[0][0];
+      expect(pendingAction.meta.requestStatus).toBe('pending');
+      expect(updateEntity.fulfilled.match(result)).toBe(true);
+    });
+
+    it('dispatches PARTIAL_UPDATE_HTTPHEARTBEAT actions', async () => {
+      const arg = { id: 123 };
+
+      const result = await partialUpdateEntity(arg)(dispatch, getState, extra);
+
+      const pendingAction = dispatch.mock.calls[0][0];
+      expect(pendingAction.meta.requestStatus).toBe('pending');
+      expect(partialUpdateEntity.fulfilled.match(result)).toBe(true);
+    });
+
+    it('dispatches DELETE_HTTPHEARTBEAT actions', async () => {
+      const arg = 42666;
+
+      const result = await deleteEntity(arg)(dispatch, getState, extra);
+
+      const pendingAction = dispatch.mock.calls[0][0];
+      expect(pendingAction.meta.requestStatus).toBe('pending');
+      expect(deleteEntity.fulfilled.match(result)).toBe(true);
     });
 
     it('dispatches RESET actions', async () => {

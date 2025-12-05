@@ -25,18 +25,6 @@ class HttpHeartbeatTest {
     }
 
     @Test
-    void monitorTest() {
-        HttpHeartbeat httpHeartbeat = getHttpHeartbeatRandomSampleGenerator();
-        HttpMonitor httpMonitorBack = getHttpMonitorRandomSampleGenerator();
-
-        httpHeartbeat.setMonitor(httpMonitorBack);
-        assertThat(httpHeartbeat.getMonitor()).isEqualTo(httpMonitorBack);
-
-        httpHeartbeat.monitor(null);
-        assertThat(httpHeartbeat.getMonitor()).isNull();
-    }
-
-    @Test
     void agentTest() {
         HttpHeartbeat httpHeartbeat = getHttpHeartbeatRandomSampleGenerator();
         Agent agentBack = getAgentRandomSampleGenerator();
@@ -46,5 +34,17 @@ class HttpHeartbeatTest {
 
         httpHeartbeat.agent(null);
         assertThat(httpHeartbeat.getAgent()).isNull();
+    }
+
+    @Test
+    void monitorTest() {
+        HttpHeartbeat httpHeartbeat = getHttpHeartbeatRandomSampleGenerator();
+        HttpMonitor httpMonitorBack = getHttpMonitorRandomSampleGenerator();
+
+        httpHeartbeat.setMonitor(httpMonitorBack);
+        assertThat(httpHeartbeat.getMonitor()).isEqualTo(httpMonitorBack);
+
+        httpHeartbeat.monitor(null);
+        assertThat(httpHeartbeat.getMonitor()).isNull();
     }
 }

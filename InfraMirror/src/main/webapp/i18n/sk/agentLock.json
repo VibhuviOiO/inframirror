@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Pridať Agent Lock",
+        "createOrEditLabel": "Pridať alebo upraviť Agent Lock",
+        "search": "Vyhľadať Agent Lock",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "Bol vytvorený potomok entity Agent Lock s identifikátorom {{ param }}",
+      "updated": "Potomok entity Agent Lock s identifikátorom {{ param }} bol upravený.",
+      "deleted": "Potomok entity Agent Lock s identifikátorom {{ param }} bol vymazaný.",
+      "delete": {
+        "question": "Ste si istý, že chcete vymazať Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

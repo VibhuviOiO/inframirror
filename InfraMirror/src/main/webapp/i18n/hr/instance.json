@@ -18,7 +18,7 @@
       "detail": {
         "title": "Instance"
       },
-      "id": "ID",
+      "id": "Id",
       "name": "Name",
       "hostname": "Hostname",
       "description": "Description",
@@ -45,7 +45,8 @@
       "updatedAt": "Updated At",
       "lastPingAt": "Last Ping At",
       "lastHardwareCheckAt": "Last Hardware Check At",
-      "pingHeartbeats": "Ping Heartbeats",
+      "heartbeat": "Heartbeat",
+      "serviceInstance": "Service Instance",
       "datacenter": "Datacenter",
       "agent": "Agent"
     }

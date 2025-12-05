@@ -15,7 +15,7 @@ describe('Agent e2e test', () => {
   const agentPageUrlPattern = new RegExp('/agent(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const agentSample = { name: 'publication opposite' };
+  const agentSample = { name: 'ew calmly since' };
 
   let agent;
 
@@ -162,8 +162,8 @@ describe('Agent e2e test', () => {
     });
 
     it('should create an instance of Agent', () => {
-      cy.get(`[data-cy="name"]`).type('worthless');
-      cy.get(`[data-cy="name"]`).should('have.value', 'worthless');
+      cy.get(`[data-cy="name"]`).type('ack while huzzah');
+      cy.get(`[data-cy="name"]`).should('have.value', 'ack while huzzah');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

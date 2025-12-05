@@ -114,6 +114,28 @@ public class HttpMonitorGatlingTest extends Simulation {
                                 ", \"url\": null" +
                                 ", \"headers\": null" +
                                 ", \"body\": null" +
+                                ", \"intervalSeconds\": 0" +
+                                ", \"timeoutSeconds\": 0" +
+                                ", \"retryCount\": 0" +
+                                ", \"retryDelaySeconds\": 0" +
+                                ", \"responseTimeWarningMs\": 0" +
+                                ", \"responseTimeCriticalMs\": 0" +
+                                ", \"uptimeWarningPercent\": 0" +
+                                ", \"uptimeCriticalPercent\": 0" +
+                                ", \"includeResponseBody\": null" +
+                                ", \"resendNotificationCount\": 0" +
+                                ", \"certificateExpiryDays\": 0" +
+                                ", \"ignoreTlsError\": null" +
+                                ", \"checkSslCertificate\": null" +
+                                ", \"checkDnsResolution\": null" +
+                                ", \"upsideDownMode\": null" +
+                                ", \"maxRedirects\": 0" +
+                                ", \"description\": null" +
+                                ", \"tags\": \"SAMPLE_TEXT\"" +
+                                ", \"enabled\": null" +
+                                ", \"expectedStatusCodes\": \"SAMPLE_TEXT\"" +
+                                ", \"performanceBudgetMs\": 0" +
+                                ", \"sizeBudgetKb\": 0" +
                                 "}"
                             )
                         )

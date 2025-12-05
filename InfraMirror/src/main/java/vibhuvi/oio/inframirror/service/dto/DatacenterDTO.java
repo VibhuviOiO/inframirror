@@ -1,6 +1,5 @@
 package vibhuvi.oio.inframirror.service.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -8,10 +7,10 @@ import java.util.Objects;
 /**
  * A DTO for the {@link vibhuvi.oio.inframirror.domain.Datacenter} entity.
  */
-@Schema(description = "Datacenter - Physical datacenter locations within regions\nTable: datacenters")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class DatacenterDTO implements Serializable {
 
+    @NotNull
     private Long id;
 
     @NotNull

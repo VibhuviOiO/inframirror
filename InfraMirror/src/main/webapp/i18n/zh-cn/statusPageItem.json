@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "创建新 Status Page Item",
+        "createOrEditLabel": "创建或编辑 Status Page Item",
+        "search": "查找 Status Page Item",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "Status Page Item {{ param }} 创建成功",
+      "updated": "Status Page Item {{ param }} 更新成功",
+      "deleted": "Status Page Item {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Status Page Item {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

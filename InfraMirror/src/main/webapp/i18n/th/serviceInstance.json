@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "สร้าง Service Instance",
+        "createOrEditLabel": "สร้างหรือแก้ไข Service Instance",
+        "search": "ค้นหา Service Instance",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Service Instance ถูกสร้างด้วย {{ param }}",
+      "updated": "Service Instance ถูกแก้ไขด้วย {{ param }}",
+      "deleted": "Service Instance ถูกลบด้วย {{ param }}",
+      "delete": {
+        "question": "คุณต้องการที่จะลบ Service Instance {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

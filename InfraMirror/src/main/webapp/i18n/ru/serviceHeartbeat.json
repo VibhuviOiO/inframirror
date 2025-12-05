@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Service Heartbeat",
+        "createOrEditLabel": "Создать или отредактировать Service Heartbeat",
+        "search": "Найти Service Heartbeat",
+        "notFound": "Service Heartbeats не найдено"
+      },
+      "created": "Новый Service Heartbeat создан с идентификатором {{ param }}",
+      "updated": "Service Heartbeat обновлен с идентификатором {{ param }}",
+      "deleted": "Service Heartbeat удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Service Heartbeat {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

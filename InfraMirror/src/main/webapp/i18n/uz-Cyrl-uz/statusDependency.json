@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "Status Dependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Янги Status Dependency қўшиш",
+        "createOrEditLabel": "Status Dependencyни таҳрирлаш",
+        "search": "Status Dependencyни излаш",
+        "notFound": "No Status Dependencies found"
+      },
+      "created": "Status Dependency {{ param }} билан қўшилди.",
+      "updated": "{{ param }}- Status Dependency сақланди.",
+      "deleted": "{{ param }}- Status Dependency ўчирилди.",
+      "delete": {
+        "question": "{{ id }}- Status Dependencyни ўчирмоқчимисиз? "
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

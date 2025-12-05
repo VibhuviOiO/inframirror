@@ -1,0 +1,208 @@
+/**
+ * InfraMirror — Generated JDL (updated from latest Liquibase changelogs)
+ *
+ * This file was created by scanning Liquibase changelogs present in
+ * `src/main/resources/config/liquibase/changelog` and reflects the
+ * current entities, fields and relationships discovered (Dec 2025).
+ */
+
+entity Region {
+  name String required maxlength(50)
+  regionCode String maxlength(20)
+  groupName String maxlength(20)
+}
+
+entity Datacenter {
+  code String required maxlength(10)
+  name String required maxlength(50)
+}
+
+entity Agent {
+  name String required maxlength(50)
+}
+
+entity Instance {
+  name String required maxlength(255)
+  hostname String required maxlength(255)
+  description String maxlength(500)
+  instanceType String required maxlength(50)
+  monitoringType String required maxlength(50)
+  operatingSystem String maxlength(100)
+  platform String maxlength(100)
+  privateIpAddress String maxlength(50)
+  publicIpAddress String maxlength(50)
+  tags TextBlob
+  pingEnabled Boolean required
+  pingInterval Integer required
+  pingTimeoutMs Integer required
+  pingRetryCount Integer required
+  hardwareMonitoringEnabled Boolean required
+  hardwareMonitoringInterval Integer required
+  cpuWarningThreshold Integer required
+  cpuDangerThreshold Integer required
+  memoryWarningThreshold Integer required
+  memoryDangerThreshold Integer required
+  diskWarningThreshold Integer required
+  diskDangerThreshold Integer required
+  createdAt Instant
+  updatedAt Instant
+  lastPingAt Instant
+  lastHardwareCheckAt Instant
+}
+
+entity Schedule {
+  name String required maxlength(50)
+  interval Integer required
+  includeResponseBody Boolean
+  thresholdsWarning Integer
+  thresholdsCritical Integer
+}
+
+entity HttpMonitor {
+  name String required maxlength(100)
+  method String required maxlength(10)
+  type String required maxlength(10)
+  url TextBlob required
+  headers TextBlob
+  body TextBlob
+  interval Integer
+  includeResponseBody Boolean
+  thresholdsWarning Integer
+  thresholdsCritical Integer
+}
+
+entity HttpHeartbeat {
+  executedAt Instant required
+  success Boolean
+  responseTimeMs Integer
+  responseSizeBytes Integer
+  responseStatusCode Integer
+  responseContentType String maxlength(50)
+  responseServer String maxlength(50)
+  responseCacheStatus String maxlength(50)
+  dnsLookupMs Integer
+  tcpConnectMs Integer
+  tlsHandshakeMs Integer
+  timeToFirstByteMs Integer
+  warningThresholdMs Integer
+  criticalThresholdMs Integer
+  errorType String maxlength(50)
+  errorMessage TextBlob
+  rawRequestHeaders TextBlob
+  rawResponseHeaders TextBlob
+  rawResponseBody TextBlob
+}
+
+entity PingHeartbeat {
+  executedAt Instant required
+  heartbeatType String required maxlength(20)
+  success Boolean required
+  responseTimeMs Integer
+  packetLoss Float
+  jitterMs Integer
+  cpuUsage Float
+  memoryUsage Float
+  diskUsage Float
+  loadAverage Float
+  processCount Integer
+  networkRxBytes Long
+  networkTxBytes Long
+  uptimeSeconds Long
+  status String required maxlength(20)
+  errorMessage TextBlob
+  errorType String maxlength(100)
+  metadata TextBlob
+}
+
+entity AgentMonitor {
+  active Boolean required
+  createdBy String required maxlength(50)
+  createdDate Instant
+  lastModifiedBy String maxlength(50)
+  lastModifiedDate Instant
+}
+
+entity ApiKey {
+  name String required maxlength(100)
+  description String maxlength(500)
+  keyHash String required maxlength(500)
+  active Boolean required
+  lastUsedDate Instant
+  expiresAt Instant
+  createdBy String required maxlength(50)
+  createdDate Instant
+  lastModifiedBy String maxlength(50)
+  lastModifiedDate Instant
+}
+
+entity AuditTrail {
+  action String required maxlength(100)
+  entityName String required maxlength(100)
+  entityId Long required
+  oldValue TextBlob
+  newValue TextBlob
+  timestamp Instant required
+  ipAddress String maxlength(45)
+  userAgent TextBlob
+  userId String maxlength(100)
+}
+
+entity Tag {
+  key String required maxlength(50)
+  value String required maxlength(200)
+  entityType String required maxlength(50)
+  entityId Long required
+  createdBy String maxlength(50)
+  createdDate Instant
+}
+
+entity SessionLog {
+  sessionType String required maxlength(20)
+  startTime Instant required
+  endTime Instant
+  duration Integer
+  sourceIpAddress String required maxlength(45)
+  status String required maxlength(20)
+  terminationReason String maxlength(200)
+  commandsExecuted Integer
+  bytesTransferred Long
+  sessionId String required maxlength(100) unique
+  metadata TextBlob
+  instanceId Long
+  agentId Long
+  userId String required maxlength(100)
+}
+
+// Relationships
+relationship OneToMany {
+  Region{datacenters} to Datacenter{region}
+  Datacenter{agents} to Agent{datacenter}
+  Datacenter{instances} to Instance{datacenter required}
+  Agent{instances} to Instance{agent}
+  Schedule{monitors} to HttpMonitor{schedule}
+  HttpMonitor{heartbeats} to HttpHeartbeat{monitor}
+  Agent{httpHeartbeats} to HttpHeartbeat{agent}
+  Instance{pingHeartbeats} to PingHeartbeat{instance required}
+  Agent{pingHeartbeats} to PingHeartbeat{agent}
+}
+
+relationship ManyToOne {
+  AgentMonitor{agent required} to Agent
+  AgentMonitor{monitor required} to HttpMonitor
+  SessionLog{instance required} to Instance
+  SessionLog{agent} to Agent
+  SessionLog{user required} to User with builtInEntity
+  AuditTrail{user} to User with builtInEntity
+}
+
+// Options
+dto * with mapstruct
+service * with serviceImpl
+paginate Region, Datacenter, Agent, Instance, HttpMonitor with pagination
+paginate HttpHeartbeat, PingHeartbeat, AuditTrail, SessionLog, Tag with infinite-scroll
+filter Region, Datacenter, Agent, Instance, HttpMonitor, Schedule
+filter HttpHeartbeat, PingHeartbeat, AuditTrail, ApiKey
+filter SessionLog, Tag
+skipClient AgentMonitor
+readOnly HttpHeartbeat, PingHeartbeat, AuditTrail, SessionLog
+search HttpHeartbeat, PingHeartbeat, AuditTrail, SessionLog with elasticsearch

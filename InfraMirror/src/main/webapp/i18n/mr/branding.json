@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नवीन Branding तयार करा",
+        "createOrEditLabel": "Branding तयार किंवा संपादित करा",
+        "search": "Branding शोधा",
+        "notFound": "No Brandings found"
+      },
+      "created": "Branding [identifier: {{ param }}] तयार आहे",
+      "updated": "Branding [identifier: {{ param }}] सुधारित केले आहे",
+      "deleted": "Branding [identifier: {{ param }}] हटविले आहे",
+      "delete": {
+        "question": "Branding [id: {{ id }}] काढून टाकण्याबाबत पुष्टी?"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

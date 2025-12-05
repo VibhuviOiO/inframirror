@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Krijo një të ri Branding",
+        "createOrEditLabel": "Krijo ose përpuno një Branding",
+        "search": "Kërko për Branding",
+        "notFound": "No Brandings found"
+      },
+      "created": "Një Branding i ri u krijua me identifikues {{ param }}",
+      "updated": "Një Branding u përpunua me identifikues {{ param }}",
+      "deleted": "Një Branding u fshi me identifikues {{ param }}",
+      "delete": {
+        "question": "Jeni i sigurtë që doni të fshini Branding {{ id }}?"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "创建新 Audit Trail",
+        "createOrEditLabel": "创建或编辑 Audit Trail",
         "search": "查找 Audit Trail",
         "notFound": "No Audit Trails found"
+      },
+      "created": "Audit Trail {{ param }} 创建成功",
+      "updated": "Audit Trail {{ param }} 更新成功",
+      "deleted": "Audit Trail {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Audit Trail {{ id }} 吗？"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

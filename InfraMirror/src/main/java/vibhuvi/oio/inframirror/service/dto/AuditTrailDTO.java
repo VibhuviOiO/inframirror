@@ -1,6 +1,5 @@
 package vibhuvi.oio.inframirror.service.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -10,12 +9,10 @@ import java.util.Objects;
 /**
  * A DTO for the {@link vibhuvi.oio.inframirror.domain.AuditTrail} entity.
  */
-@Schema(
-    description = "AuditTrail - Comprehensive audit logging for all system changes\nTable: audit_logs\nNote: Renamed from AuditLog to AuditTrail as requested\n\nLinks to JHipster User entity for tracking who made changes"
-)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class AuditTrailDTO implements Serializable {
 
+    @NotNull
     private Long id;
 
     @NotNull
@@ -43,8 +40,6 @@ public class AuditTrailDTO implements Serializable {
 
     @Lob
     private String userAgent;
-
-    private UserDTO user;
 
     public Long getId() {
         return id;
@@ -118,14 +113,6 @@ public class AuditTrailDTO implements Serializable {
         this.userAgent = userAgent;
     }
 
-    public UserDTO getUser() {
-        return user;
-    }
-
-    public void setUser(UserDTO user) {
-        this.user = user;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -160,7 +147,6 @@ public class AuditTrailDTO implements Serializable {
             ", timestamp='" + getTimestamp() + "'" +
             ", ipAddress='" + getIpAddress() + "'" +
             ", userAgent='" + getUserAgent() + "'" +
-            ", user=" + getUser() +
             "}";
     }
 }

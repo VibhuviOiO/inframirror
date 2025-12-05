@@ -1,6 +1,7 @@
 package vibhuvi.oio.inframirror.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static vibhuvi.oio.inframirror.domain.AgentTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.DatacenterTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.RegionTestSamples.*;
 
@@ -26,15 +27,15 @@ class RegionTest {
     }
 
     @Test
-    void datacentersTest() {
+    void datacenterTest() {
         Region region = getRegionRandomSampleGenerator();
         Datacenter datacenterBack = getDatacenterRandomSampleGenerator();
 
-        region.addDatacenters(datacenterBack);
+        region.addDatacenter(datacenterBack);
         assertThat(region.getDatacenters()).containsOnly(datacenterBack);
         assertThat(datacenterBack.getRegion()).isEqualTo(region);
 
-        region.removeDatacenters(datacenterBack);
+        region.removeDatacenter(datacenterBack);
         assertThat(region.getDatacenters()).doesNotContain(datacenterBack);
         assertThat(datacenterBack.getRegion()).isNull();
 
@@ -45,5 +46,27 @@ class RegionTest {
         region.setDatacenters(new HashSet<>());
         assertThat(region.getDatacenters()).doesNotContain(datacenterBack);
         assertThat(datacenterBack.getRegion()).isNull();
+    }
+
+    @Test
+    void agentTest() {
+        Region region = getRegionRandomSampleGenerator();
+        Agent agentBack = getAgentRandomSampleGenerator();
+
+        region.addAgent(agentBack);
+        assertThat(region.getAgents()).containsOnly(agentBack);
+        assertThat(agentBack.getRegion()).isEqualTo(region);
+
+        region.removeAgent(agentBack);
+        assertThat(region.getAgents()).doesNotContain(agentBack);
+        assertThat(agentBack.getRegion()).isNull();
+
+        region.agents(new HashSet<>(Set.of(agentBack)));
+        assertThat(region.getAgents()).containsOnly(agentBack);
+        assertThat(agentBack.getRegion()).isEqualTo(region);
+
+        region.setAgents(new HashSet<>());
+        assertThat(region.getAgents()).doesNotContain(agentBack);
+        assertThat(agentBack.getRegion()).isNull();
     }
 }

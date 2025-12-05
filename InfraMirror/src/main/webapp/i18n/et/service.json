@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "service": {
+      "home": {
+        "title": "Services",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Service",
+        "createOrEditLabel": "Lisa või muuda Service",
+        "search": "Otsi Service",
+        "notFound": "Ei leitud ühtegi Services"
+      },
+      "created": "Uus Service on loodud identifikaatoriga {{ param }}",
+      "updated": "Service identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Service identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Service {{ id }}?"
+      },
+      "detail": {
+        "title": "Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

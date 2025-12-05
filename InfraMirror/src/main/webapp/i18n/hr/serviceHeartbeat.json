@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Kreirati Service Heartbeat",
+        "createOrEditLabel": "Kreirati ili urediti Service Heartbeat",
+        "search": "Tražiti Service Heartbeat",
+        "notFound": "Nije nađeno Service Heartbeats"
+      },
+      "created": "Kreiran je Service Heartbeat sa identifikatorom {{ param }}",
+      "updated": "Ažuriran je Service Heartbeat sa identifikatorom {{ param }}",
+      "deleted": "Obrisan je Service Heartbeat sa identifikatorom {{ param }}",
+      "delete": {
+        "question": "Da li ste sigurni da želite obrisati Service Heartbeat {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

@@ -9,8 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Instance - Physical or virtual machines managed by the platform
- * Table: instance
+ * A Instance.
  */
 @Entity
 @Table(name = "instance")
@@ -20,10 +19,11 @@ public class Instance implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
@@ -154,16 +154,24 @@ public class Instance implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instance")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "instance", "agent" }, allowSetters = true)
-    private Set<PingHeartbeat> pingHeartbeats = new HashSet<>();
+    @JsonIgnoreProperties(value = { "agent", "instance" }, allowSetters = true)
+    private Set<InstanceHeartbeat> heartbeats = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instance")
+    @org.springframework.data.annotation.Transient
+    @JsonIgnoreProperties(value = { "heartbeats", "instance", "service" }, allowSetters = true)
+    private Set<ServiceInstance> serviceInstances = new HashSet<>();
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "agents", "instances", "region" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "instances", "services", "region" }, allowSetters = true)
     private Datacenter datacenter;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "instances", "httpHeartbeats", "pingHeartbeats", "datacenter" }, allowSetters = true)
+    @JsonIgnoreProperties(
+        value = { "instances", "httpHeartbeats", "instanceHeartbeats", "serviceHeartbeats", "region" },
+        allowSetters = true
+    )
     private Agent agent;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -519,34 +527,65 @@ public class Instance implements Serializable {
         this.lastHardwareCheckAt = lastHardwareCheckAt;
     }
 
-    public Set<PingHeartbeat> getPingHeartbeats() {
-        return this.pingHeartbeats;
+    public Set<InstanceHeartbeat> getHeartbeats() {
+        return this.heartbeats;
     }
 
-    public void setPingHeartbeats(Set<PingHeartbeat> pingHeartbeats) {
-        if (this.pingHeartbeats != null) {
-            this.pingHeartbeats.forEach(i -> i.setInstance(null));
+    public void setHeartbeats(Set<InstanceHeartbeat> instanceHeartbeats) {
+        if (this.heartbeats != null) {
+            this.heartbeats.forEach(i -> i.setInstance(null));
         }
-        if (pingHeartbeats != null) {
-            pingHeartbeats.forEach(i -> i.setInstance(this));
+        if (instanceHeartbeats != null) {
+            instanceHeartbeats.forEach(i -> i.setInstance(this));
         }
-        this.pingHeartbeats = pingHeartbeats;
+        this.heartbeats = instanceHeartbeats;
     }
 
-    public Instance pingHeartbeats(Set<PingHeartbeat> pingHeartbeats) {
-        this.setPingHeartbeats(pingHeartbeats);
+    public Instance heartbeats(Set<InstanceHeartbeat> instanceHeartbeats) {
+        this.setHeartbeats(instanceHeartbeats);
         return this;
     }
 
-    public Instance addPingHeartbeats(PingHeartbeat pingHeartbeat) {
-        this.pingHeartbeats.add(pingHeartbeat);
-        pingHeartbeat.setInstance(this);
+    public Instance addHeartbeat(InstanceHeartbeat instanceHeartbeat) {
+        this.heartbeats.add(instanceHeartbeat);
+        instanceHeartbeat.setInstance(this);
         return this;
     }
 
-    public Instance removePingHeartbeats(PingHeartbeat pingHeartbeat) {
-        this.pingHeartbeats.remove(pingHeartbeat);
-        pingHeartbeat.setInstance(null);
+    public Instance removeHeartbeat(InstanceHeartbeat instanceHeartbeat) {
+        this.heartbeats.remove(instanceHeartbeat);
+        instanceHeartbeat.setInstance(null);
+        return this;
+    }
+
+    public Set<ServiceInstance> getServiceInstances() {
+        return this.serviceInstances;
+    }
+
+    public void setServiceInstances(Set<ServiceInstance> serviceInstances) {
+        if (this.serviceInstances != null) {
+            this.serviceInstances.forEach(i -> i.setInstance(null));
+        }
+        if (serviceInstances != null) {
+            serviceInstances.forEach(i -> i.setInstance(this));
+        }
+        this.serviceInstances = serviceInstances;
+    }
+
+    public Instance serviceInstances(Set<ServiceInstance> serviceInstances) {
+        this.setServiceInstances(serviceInstances);
+        return this;
+    }
+
+    public Instance addServiceInstance(ServiceInstance serviceInstance) {
+        this.serviceInstances.add(serviceInstance);
+        serviceInstance.setInstance(this);
+        return this;
+    }
+
+    public Instance removeServiceInstance(ServiceInstance serviceInstance) {
+        this.serviceInstances.remove(serviceInstance);
+        serviceInstance.setInstance(null);
         return this;
     }
 

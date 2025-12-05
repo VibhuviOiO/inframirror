@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "Status Dependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "නව Status Dependency එකක් සාදන්න",
+        "createOrEditLabel": "Status Dependency සාදන්න හෝ සංස්කරණය කරන්න",
+        "search": "Status Dependency සඳහා සොයන්න",
+        "notFound": "Status Dependencies හමු නොවීය"
+      },
+      "created": "{{ param }} හඳුනාගැනීමෙන් නව Status Dependency සාදනු ලැබේ",
+      "updated": "{{ param }} හඳුනාගැනීමෙන් Status Dependency යාවත්කාලීන වේ",
+      "deleted": "{{ param }} හඳුනාගැනීමෙන් Status Dependency මකා දමනු ලැබේ",
+      "delete": {
+        "question": "Status Dependency {{ id }} මකා දැමීමට ඔබට විශ්වාසද?"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

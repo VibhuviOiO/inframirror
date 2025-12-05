@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "AgentLocks",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Agent Lock の作成",
+        "createOrEditLabel": "Agent Lockの作成または編集",
+        "search": "Agent Lock の検索",
+        "notFound": "Agent Locks が見つかりません。"
+      },
+      "created": "新しい Agent Lock がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Agent Lock が更新されました。",
+      "deleted": "ID {{ param }} の Agent Lock が削除されました。",
+      "delete": {
+        "question": "Agent Lock {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

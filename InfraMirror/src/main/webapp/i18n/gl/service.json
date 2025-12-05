@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "service": {
+      "home": {
+        "title": "Services",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Crear novo Service",
+        "createOrEditLabel": "Crear ou editar Service",
+        "search": "Search for Service",
+        "notFound": "No Services found"
+      },
+      "created": "Un novo Service foi creado co identificador {{ param }}",
+      "updated": "Un Service foi actualizado co identificador {{ param }}",
+      "deleted": "Un Service foi eliminado co identificador {{ param }}",
+      "delete": {
+        "question": "Seguro que desexa eliminar Service {{ id }}?"
+      },
+      "detail": {
+        "title": "Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

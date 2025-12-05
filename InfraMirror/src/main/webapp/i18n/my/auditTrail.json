@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Audit Trail အသစ်ထည့်မည်",
+        "createOrEditLabel": "Audit Trail အသစ်ထည့်ခြင်း (သို့) ပြုပြင်ခြင်း",
         "search": "ရှာဖွေရန် Audit Trail",
         "notFound": "No Audit Trails found"
+      },
+      "created": "{{ param }} အိုင်ဒီဖြင့် Audit Trail အသစ်တစ်ခုအား ထည့်ပြီးပါပြီ။",
+      "updated": "{{ param }} အိုင်ဒီဖြင့် Audit Trail တစ်ခုအား ပြုပြင်ပြီးပါပြီ။",
+      "deleted": "{{ param }} အိုင်ဒီဖြင့် Audit Trail တစ်ခုအား ဖျက်ပြီးပါပြီ။",
+      "delete": {
+        "question": "Audit Trail {{ id }} အား ဖျက်ပါမည်။ သေချာပါသလား?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

@@ -78,8 +78,8 @@ class DatacenterCriteriaTest {
         datacenterCriteria.id();
         datacenterCriteria.code();
         datacenterCriteria.name();
-        datacenterCriteria.agentsId();
-        datacenterCriteria.instancesId();
+        datacenterCriteria.instanceId();
+        datacenterCriteria.serviceId();
         datacenterCriteria.regionId();
         datacenterCriteria.distinct();
     }
@@ -90,8 +90,8 @@ class DatacenterCriteriaTest {
                 condition.apply(criteria.getId()) &&
                 condition.apply(criteria.getCode()) &&
                 condition.apply(criteria.getName()) &&
-                condition.apply(criteria.getAgentsId()) &&
-                condition.apply(criteria.getInstancesId()) &&
+                condition.apply(criteria.getInstanceId()) &&
+                condition.apply(criteria.getServiceId()) &&
                 condition.apply(criteria.getRegionId()) &&
                 condition.apply(criteria.getDistinct()),
             "every filter matches"
@@ -104,8 +104,8 @@ class DatacenterCriteriaTest {
                 condition.apply(criteria.getId(), copy.getId()) &&
                 condition.apply(criteria.getCode(), copy.getCode()) &&
                 condition.apply(criteria.getName(), copy.getName()) &&
-                condition.apply(criteria.getAgentsId(), copy.getAgentsId()) &&
-                condition.apply(criteria.getInstancesId(), copy.getInstancesId()) &&
+                condition.apply(criteria.getInstanceId(), copy.getInstanceId()) &&
+                condition.apply(criteria.getServiceId(), copy.getServiceId()) &&
                 condition.apply(criteria.getRegionId(), copy.getRegionId()) &&
                 condition.apply(criteria.getDistinct(), copy.getDistinct()),
             "every filter matches"

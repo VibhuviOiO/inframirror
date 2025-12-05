@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Branding جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Branding",
+        "search": "البحث عن Branding",
+        "notFound": "لم يتم العثور على Brandings"
+      },
+      "created": "Branding جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Branding تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Branding تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Branding {{ id }}؟"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

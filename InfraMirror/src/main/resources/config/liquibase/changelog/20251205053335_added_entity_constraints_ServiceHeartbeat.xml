@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity ServiceHeartbeat.
+    -->
+    <changeSet id="20251205053335-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="agent_id"
+                                 baseTableName="service_heartbeat"
+                                 constraintName="fk_service_heartbeat__agent_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="agent"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="service_id"
+                                 baseTableName="service_heartbeat"
+                                 constraintName="fk_service_heartbeat__service_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="service"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="service_instance_id"
+                                 baseTableName="service_heartbeat"
+                                 constraintName="fk_service_heartbeat__service_instance_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="service_instance"
+                                 />
+    </changeSet>
+</databaseChangeLog>

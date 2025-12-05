@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "สร้าง Audit Trail",
+        "createOrEditLabel": "สร้างหรือแก้ไข Audit Trail",
         "search": "ค้นหา Audit Trail",
         "notFound": "No Audit Trails found"
+      },
+      "created": "Audit Trail ถูกสร้างด้วย {{ param }}",
+      "updated": "Audit Trail ถูกแก้ไขด้วย {{ param }}",
+      "deleted": "Audit Trail ถูกลบด้วย {{ param }}",
+      "delete": {
+        "question": "คุณต้องการที่จะลบ Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

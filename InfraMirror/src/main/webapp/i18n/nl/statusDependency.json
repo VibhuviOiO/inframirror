@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "Status Dependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Maak een nieuwe Status Dependency",
+        "createOrEditLabel": "Maak of wijzig een Status Dependency",
+        "search": "Search for Status Dependency",
+        "notFound": "No Status Dependencies found"
+      },
+      "created": "A new Status Dependency is created with identifier {{ param }}",
+      "updated": "A Status Dependency is updated with identifier {{ param }}",
+      "deleted": "A Status Dependency is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Bent u zeker dat u Status Dependency {{ id }} wilt verwijderen?"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

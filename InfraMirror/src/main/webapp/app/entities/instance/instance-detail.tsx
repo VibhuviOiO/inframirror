@@ -28,7 +28,7 @@ export const InstanceDetail = () => {
         <dl className="jh-entity-details">
           <dt>
             <span id="id">
-              <Translate contentKey="global.field.id">ID</Translate>
+              <Translate contentKey="infraMirrorApp.instance.id">Id</Translate>
             </span>
           </dt>
           <dd>{instanceEntity.id}</dd>

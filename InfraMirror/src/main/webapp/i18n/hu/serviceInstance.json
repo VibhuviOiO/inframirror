@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "ServiceInstances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Service Instance létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Service Instancet",
+        "search": "Service Instance keresése",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Egy új Service Instance lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Service Instance módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Service Instance törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Service Instancet {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

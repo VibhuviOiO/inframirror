@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "agentMonitor": {
+      "home": {
+        "title": "Agent Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Skapa en ny Agent Monitor",
+        "createOrEditLabel": "Skapa eller ändra en Agent Monitor",
+        "search": "Sök efter Agent Monitor",
+        "notFound": "No Agent Monitors found"
+      },
+      "created": "En ny Agent Monitor är skapad med id {{ param }}",
+      "updated": "En Agent Monitor är uppdaterad med id  {{ param }}",
+      "deleted": "En Agent Monitor är borttagen med id  {{ param }}",
+      "delete": {
+        "question": "Är du säker på att du vill ta bort Agent Monitor {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Monitor"
+      },
+      "id": "Id",
+      "active": "Active",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "agent": "Agent",
+      "monitor": "Monitor"
+    }
+  }
+}

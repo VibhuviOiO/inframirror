@@ -1,6 +1,5 @@
 package vibhuvi.oio.inframirror.service.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -10,10 +9,10 @@ import java.util.Objects;
 /**
  * A DTO for the {@link vibhuvi.oio.inframirror.domain.Instance} entity.
  */
-@Schema(description = "Instance - Physical or virtual machines managed by the platform\nTable: instance")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class InstanceDTO implements Serializable {
 
+    @NotNull
     private Long id;
 
     @NotNull

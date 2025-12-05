@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "service": {
+      "home": {
+        "title": "Services",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नया Service बनाएँ",
+        "createOrEditLabel": "Service बनाएँ या संपादित करें",
+        "search": "Service खोजें",
+        "notFound": "No Services found"
+      },
+      "created": "एक नया Service [identifier: {{ param }}] तैयार है",
+      "updated": "एक Service [identifier: {{ param }}] का अद्यतन हुआ है",
+      "deleted": "Service [identifier: {{ param }}] हटा दिया है",
+      "delete": {
+        "question": "Service [id: {{ id }}] हटाने की पुष्टि करें"
+      },
+      "detail": {
+        "title": "Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "StatusDependencies",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Status Dependency の作成",
+        "createOrEditLabel": "Status Dependencyの作成または編集",
+        "search": "Status Dependency の検索",
+        "notFound": "Status Dependencies が見つかりません。"
+      },
+      "created": "新しい Status Dependency がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Status Dependency が更新されました。",
+      "deleted": "ID {{ param }} の Status Dependency が削除されました。",
+      "delete": {
+        "question": "Status Dependency {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

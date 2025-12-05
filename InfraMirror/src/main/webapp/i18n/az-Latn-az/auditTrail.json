@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Siyahını yenilə",
+        "createLabel": "Yeni Audit Trail əlavə et",
+        "createOrEditLabel": "Yeni Audit Trail əlavə et və ya yenilə",
         "search": "Audit Trail axtar",
         "notFound": "Audit Trails məlumatı tapılmadı"
+      },
+      "created": "{{ param }} ID ilə bir Audit Trail əlavə edildi",
+      "updated": "{{ param }} nolu Audit Trail dəyişildi",
+      "deleted": "{{ param }} nolu Audit Trail silindi",
+      "delete": {
+        "question": "{{ id }} nolu Audit Trail silinəcək. Davam etmək istəyirsiniz?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

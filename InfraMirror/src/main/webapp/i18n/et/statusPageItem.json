@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Status Page Item",
+        "createOrEditLabel": "Lisa või muuda Status Page Item",
+        "search": "Otsi Status Page Item",
+        "notFound": "Ei leitud ühtegi Status Page Items"
+      },
+      "created": "Uus Status Page Item on loodud identifikaatoriga {{ param }}",
+      "updated": "Status Page Item identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Status Page Item identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Status Page Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

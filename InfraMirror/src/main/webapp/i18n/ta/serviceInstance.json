@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Service Instance-ஐ உருவாக்கு",
+        "createOrEditLabel": "Service Instance -ஐ மாற்று (அ) உருவாக்கு",
+        "search": "Search for Service Instance",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Service Instance புதிதாக உருவாக்கப்பட்டது, அடையாளம் {{ param }}",
+      "updated": "Service Instance மாற்றப்பட்டது, அடையாளம்  {{ param }}",
+      "deleted": "A Service Instance நீக்கப்பட்டது, அடையாளம {{ param }}",
+      "delete": {
+        "question": "நீக்குவதற்கு உறுதி செய் Service Instance {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "infraMirrorApp": {
+    "instanceHeartbeat": {
+      "home": {
+        "title": "Instance Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Створити новий Instance Heartbeat",
+        "createOrEditLabel": "Створити чи редагувати Instance Heartbeat",
+        "search": "Знайти Instance Heartbeat",
+        "notFound": "No Instance Heartbeats found"
+      },
+      "created": "Новий Instance Heartbeat створений з ідентифікатором {{ param }}",
+      "updated": "Instance Heartbeat оновлений з ідентифікатором {{ param }}",
+      "deleted": "Instance Heartbeat видалений з ідентифікатором {{ param }}",
+      "delete": {
+        "question": "Ви впевнені, що хочете видалити Instance Heartbeat {{ id }}?"
+      },
+      "detail": {
+        "title": "Instance Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "heartbeatType": "Heartbeat Type",
+      "success": "Success",
+      "responseTimeMs": "Response Time Ms",
+      "packetLoss": "Packet Loss",
+      "jitterMs": "Jitter Ms",
+      "cpuUsage": "Cpu Usage",
+      "memoryUsage": "Memory Usage",
+      "diskUsage": "Disk Usage",
+      "loadAverage": "Load Average",
+      "processCount": "Process Count",
+      "networkRxBytes": "Network Rx Bytes",
+      "networkTxBytes": "Network Tx Bytes",
+      "uptimeSeconds": "Uptime Seconds",
+      "status": "Status",
+      "errorMessage": "Error Message",
+      "errorType": "Error Type",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "instance": "Instance"
+    }
+  }
+}

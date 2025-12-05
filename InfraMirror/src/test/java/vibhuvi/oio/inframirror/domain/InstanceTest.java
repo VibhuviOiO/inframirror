@@ -3,8 +3,9 @@ package vibhuvi.oio.inframirror.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static vibhuvi.oio.inframirror.domain.AgentTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.DatacenterTestSamples.*;
+import static vibhuvi.oio.inframirror.domain.InstanceHeartbeatTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.InstanceTestSamples.*;
-import static vibhuvi.oio.inframirror.domain.PingHeartbeatTestSamples.*;
+import static vibhuvi.oio.inframirror.domain.ServiceInstanceTestSamples.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,25 +29,47 @@ class InstanceTest {
     }
 
     @Test
-    void pingHeartbeatsTest() {
+    void heartbeatTest() {
         Instance instance = getInstanceRandomSampleGenerator();
-        PingHeartbeat pingHeartbeatBack = getPingHeartbeatRandomSampleGenerator();
+        InstanceHeartbeat instanceHeartbeatBack = getInstanceHeartbeatRandomSampleGenerator();
 
-        instance.addPingHeartbeats(pingHeartbeatBack);
-        assertThat(instance.getPingHeartbeats()).containsOnly(pingHeartbeatBack);
-        assertThat(pingHeartbeatBack.getInstance()).isEqualTo(instance);
+        instance.addHeartbeat(instanceHeartbeatBack);
+        assertThat(instance.getHeartbeats()).containsOnly(instanceHeartbeatBack);
+        assertThat(instanceHeartbeatBack.getInstance()).isEqualTo(instance);
 
-        instance.removePingHeartbeats(pingHeartbeatBack);
-        assertThat(instance.getPingHeartbeats()).doesNotContain(pingHeartbeatBack);
-        assertThat(pingHeartbeatBack.getInstance()).isNull();
+        instance.removeHeartbeat(instanceHeartbeatBack);
+        assertThat(instance.getHeartbeats()).doesNotContain(instanceHeartbeatBack);
+        assertThat(instanceHeartbeatBack.getInstance()).isNull();
 
-        instance.pingHeartbeats(new HashSet<>(Set.of(pingHeartbeatBack)));
-        assertThat(instance.getPingHeartbeats()).containsOnly(pingHeartbeatBack);
-        assertThat(pingHeartbeatBack.getInstance()).isEqualTo(instance);
+        instance.heartbeats(new HashSet<>(Set.of(instanceHeartbeatBack)));
+        assertThat(instance.getHeartbeats()).containsOnly(instanceHeartbeatBack);
+        assertThat(instanceHeartbeatBack.getInstance()).isEqualTo(instance);
 
-        instance.setPingHeartbeats(new HashSet<>());
-        assertThat(instance.getPingHeartbeats()).doesNotContain(pingHeartbeatBack);
-        assertThat(pingHeartbeatBack.getInstance()).isNull();
+        instance.setHeartbeats(new HashSet<>());
+        assertThat(instance.getHeartbeats()).doesNotContain(instanceHeartbeatBack);
+        assertThat(instanceHeartbeatBack.getInstance()).isNull();
+    }
+
+    @Test
+    void serviceInstanceTest() {
+        Instance instance = getInstanceRandomSampleGenerator();
+        ServiceInstance serviceInstanceBack = getServiceInstanceRandomSampleGenerator();
+
+        instance.addServiceInstance(serviceInstanceBack);
+        assertThat(instance.getServiceInstances()).containsOnly(serviceInstanceBack);
+        assertThat(serviceInstanceBack.getInstance()).isEqualTo(instance);
+
+        instance.removeServiceInstance(serviceInstanceBack);
+        assertThat(instance.getServiceInstances()).doesNotContain(serviceInstanceBack);
+        assertThat(serviceInstanceBack.getInstance()).isNull();
+
+        instance.serviceInstances(new HashSet<>(Set.of(serviceInstanceBack)));
+        assertThat(instance.getServiceInstances()).containsOnly(serviceInstanceBack);
+        assertThat(serviceInstanceBack.getInstance()).isEqualTo(instance);
+
+        instance.setServiceInstances(new HashSet<>());
+        assertThat(instance.getServiceInstances()).doesNotContain(serviceInstanceBack);
+        assertThat(serviceInstanceBack.getInstance()).isNull();
     }
 
     @Test

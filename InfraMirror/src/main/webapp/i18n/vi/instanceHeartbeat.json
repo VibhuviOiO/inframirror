@@ -1,0 +1,44 @@
+{
+  "infraMirrorApp": {
+    "instanceHeartbeat": {
+      "home": {
+        "title": "Instance Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Thêm mới một Instance Heartbeat",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Instance Heartbeat",
+        "search": "Tìm Instance Heartbeat",
+        "notFound": "No Instance Heartbeats found"
+      },
+      "created": "Một Instance Heartbeat mới được tạo với định danh {{ param }}",
+      "updated": "Một Instance Heartbeat cập nhật với định danh {{ param }}",
+      "deleted": "Một Instance Heartbeat đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Instance Heartbeat {{ id }}?"
+      },
+      "detail": {
+        "title": "Instance Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "heartbeatType": "Heartbeat Type",
+      "success": "Success",
+      "responseTimeMs": "Response Time Ms",
+      "packetLoss": "Packet Loss",
+      "jitterMs": "Jitter Ms",
+      "cpuUsage": "Cpu Usage",
+      "memoryUsage": "Memory Usage",
+      "diskUsage": "Disk Usage",
+      "loadAverage": "Load Average",
+      "processCount": "Process Count",
+      "networkRxBytes": "Network Rx Bytes",
+      "networkTxBytes": "Network Tx Bytes",
+      "uptimeSeconds": "Uptime Seconds",
+      "status": "Status",
+      "errorMessage": "Error Message",
+      "errorType": "Error Type",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "instance": "Instance"
+    }
+  }
+}

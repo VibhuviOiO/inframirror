@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "नवीन Audit Trail तयार करा",
+        "createOrEditLabel": "Audit Trail तयार किंवा संपादित करा",
         "search": "Audit Trail शोधा",
         "notFound": "No Audit Trails found"
+      },
+      "created": "Audit Trail [identifier: {{ param }}] तयार आहे",
+      "updated": "Audit Trail [identifier: {{ param }}] सुधारित केले आहे",
+      "deleted": "Audit Trail [identifier: {{ param }}] हटविले आहे",
+      "delete": {
+        "question": "Audit Trail [id: {{ id }}] काढून टाकण्याबाबत पुष्टी?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

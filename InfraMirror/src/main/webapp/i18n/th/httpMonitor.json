@@ -18,15 +18,38 @@
       "detail": {
         "title": "Http Monitor"
       },
-      "id": "ID",
+      "id": "Id",
       "name": "Name",
       "method": "Method",
       "type": "Type",
       "url": "Url",
       "headers": "Headers",
       "body": "Body",
-      "heartbeats": "Heartbeats",
-      "schedule": "Schedule"
+      "intervalSeconds": "Interval Seconds",
+      "timeoutSeconds": "Timeout Seconds",
+      "retryCount": "Retry Count",
+      "retryDelaySeconds": "Retry Delay Seconds",
+      "responseTimeWarningMs": "Response Time Warning Ms",
+      "responseTimeCriticalMs": "Response Time Critical Ms",
+      "uptimeWarningPercent": "Uptime Warning Percent",
+      "uptimeCriticalPercent": "Uptime Critical Percent",
+      "includeResponseBody": "Include Response Body",
+      "resendNotificationCount": "Resend Notification Count",
+      "certificateExpiryDays": "Certificate Expiry Days",
+      "ignoreTlsError": "Ignore Tls Error",
+      "checkSslCertificate": "Check Ssl Certificate",
+      "checkDnsResolution": "Check Dns Resolution",
+      "upsideDownMode": "Upside Down Mode",
+      "maxRedirects": "Max Redirects",
+      "description": "Description",
+      "tags": "Tags",
+      "enabled": "Enabled",
+      "expectedStatusCodes": "Expected Status Codes",
+      "performanceBudgetMs": "Performance Budget Ms",
+      "sizeBudgetKb": "Size Budget Kb",
+      "children": "Children",
+      "heartbeat": "Heartbeat",
+      "parent": "Parent"
     }
   }
 }

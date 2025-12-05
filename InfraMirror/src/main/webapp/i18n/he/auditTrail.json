@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "רענן רשימה",
+        "createLabel": "צור חדש Audit Trail",
+        "createOrEditLabel": "צור או ערוך Audit Trail",
         "search": "חפש Audit Trail",
         "notFound": "לא נמצאו Audit Trails"
+      },
+      "created": "Audit Trail חדש נוצר עם מזהה {{ param }}",
+      "updated": "Audit Trail עודכן עם מזהה {{ param }}",
+      "deleted": "Audit Trail נמחק עם מזהה {{ param }}",
+      "delete": {
+        "question": "האם אתה בטוח שברצונך למחוק את Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

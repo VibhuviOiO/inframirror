@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "สร้าง Service Heartbeat",
+        "createOrEditLabel": "สร้างหรือแก้ไข Service Heartbeat",
+        "search": "ค้นหา Service Heartbeat",
+        "notFound": "No Service Heartbeats found"
+      },
+      "created": "Service Heartbeat ถูกสร้างด้วย {{ param }}",
+      "updated": "Service Heartbeat ถูกแก้ไขด้วย {{ param }}",
+      "deleted": "Service Heartbeat ถูกลบด้วย {{ param }}",
+      "delete": {
+        "question": "คุณต้องการที่จะลบ Service Heartbeat {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

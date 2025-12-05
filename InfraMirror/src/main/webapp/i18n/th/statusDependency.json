@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "Status Dependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "สร้าง Status Dependency",
+        "createOrEditLabel": "สร้างหรือแก้ไข Status Dependency",
+        "search": "ค้นหา Status Dependency",
+        "notFound": "No Status Dependencies found"
+      },
+      "created": "Status Dependency ถูกสร้างด้วย {{ param }}",
+      "updated": "Status Dependency ถูกแก้ไขด้วย {{ param }}",
+      "deleted": "Status Dependency ถูกลบด้วย {{ param }}",
+      "delete": {
+        "question": "คุณต้องการที่จะลบ Status Dependency {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

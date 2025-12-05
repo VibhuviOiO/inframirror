@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "agentMonitor": {
+      "home": {
+        "title": "Agent Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Янги Agent Monitor қўшиш",
+        "createOrEditLabel": "Agent Monitorни таҳрирлаш",
+        "search": "Agent Monitorни излаш",
+        "notFound": "No Agent Monitors found"
+      },
+      "created": "Agent Monitor {{ param }} билан қўшилди.",
+      "updated": "{{ param }}- Agent Monitor сақланди.",
+      "deleted": "{{ param }}- Agent Monitor ўчирилди.",
+      "delete": {
+        "question": "{{ id }}- Agent Monitorни ўчирмоқчимисиз? "
+      },
+      "detail": {
+        "title": "Agent Monitor"
+      },
+      "id": "Id",
+      "active": "Active",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "agent": "Agent",
+      "monitor": "Monitor"
+    }
+  }
+}

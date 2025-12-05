@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Agent Lock အသစ်ထည့်မည်",
+        "createOrEditLabel": "Agent Lock အသစ်ထည့်ခြင်း (သို့) ပြုပြင်ခြင်း",
+        "search": "ရှာဖွေရန် Agent Lock",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "{{ param }} အိုင်ဒီဖြင့် Agent Lock အသစ်တစ်ခုအား ထည့်ပြီးပါပြီ။",
+      "updated": "{{ param }} အိုင်ဒီဖြင့် Agent Lock တစ်ခုအား ပြုပြင်ပြီးပါပြီ။",
+      "deleted": "{{ param }} အိုင်ဒီဖြင့် Agent Lock တစ်ခုအား ဖျက်ပြီးပါပြီ။",
+      "delete": {
+        "question": "Agent Lock {{ id }} အား ဖျက်ပါမည်။ သေချာပါသလား?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

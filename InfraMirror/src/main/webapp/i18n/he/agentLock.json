@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "רענן רשימה",
+        "createLabel": "צור חדש Agent Lock",
+        "createOrEditLabel": "צור או ערוך Agent Lock",
+        "search": "חפש Agent Lock",
+        "notFound": "לא נמצאו Agent Locks"
+      },
+      "created": "Agent Lock חדש נוצר עם מזהה {{ param }}",
+      "updated": "Agent Lock עודכן עם מזהה {{ param }}",
+      "deleted": "Agent Lock נמחק עם מזהה {{ param }}",
+      "delete": {
+        "question": "האם אתה בטוח שברצונך למחוק את Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

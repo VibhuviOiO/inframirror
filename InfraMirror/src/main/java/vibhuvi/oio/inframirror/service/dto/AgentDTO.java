@@ -1,6 +1,5 @@
 package vibhuvi.oio.inframirror.service.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -8,17 +7,17 @@ import java.util.Objects;
 /**
  * A DTO for the {@link vibhuvi.oio.inframirror.domain.Agent} entity.
  */
-@Schema(description = "Agent - Monitoring agents deployed in datacenters to collect metrics\nTable: agents")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class AgentDTO implements Serializable {
 
+    @NotNull
     private Long id;
 
     @NotNull
     @Size(max = 50)
     private String name;
 
-    private DatacenterDTO datacenter;
+    private RegionDTO region;
 
     public Long getId() {
         return id;
@@ -36,12 +35,12 @@ public class AgentDTO implements Serializable {
         this.name = name;
     }
 
-    public DatacenterDTO getDatacenter() {
-        return datacenter;
+    public RegionDTO getRegion() {
+        return region;
     }
 
-    public void setDatacenter(DatacenterDTO datacenter) {
-        this.datacenter = datacenter;
+    public void setRegion(RegionDTO region) {
+        this.region = region;
     }
 
     @Override
@@ -71,7 +70,7 @@ public class AgentDTO implements Serializable {
         return "AgentDTO{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", datacenter=" + getDatacenter() +
+            ", region=" + getRegion() +
             "}";
     }
 }

@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Branding",
+        "createOrEditLabel": "Создать или отредактировать Branding",
+        "search": "Найти Branding",
+        "notFound": "Brandings не найдено"
+      },
+      "created": "Новый Branding создан с идентификатором {{ param }}",
+      "updated": "Branding обновлен с идентификатором {{ param }}",
+      "deleted": "Branding удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Branding {{ id }}?"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

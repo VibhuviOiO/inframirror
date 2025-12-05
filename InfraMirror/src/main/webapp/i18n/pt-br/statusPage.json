@@ -1,0 +1,44 @@
+{
+  "infraMirrorApp": {
+    "statusPage": {
+      "home": {
+        "title": "Status Pages",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Status Page",
+        "createOrEditLabel": "Criar ou editar Status Page",
+        "search": "Pesquisar por Status Page",
+        "notFound": "Nenhum Status Page encontrado"
+      },
+      "created": "Um novo Status Page foi criado com o identificador {{ param }}",
+      "updated": "Um Status Page foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Status Page foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Status Page {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page"
+      },
+      "id": "Id",
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "isPublic": "Is Public",
+      "customDomain": "Custom Domain",
+      "logoUrl": "Logo Url",
+      "themeColor": "Theme Color",
+      "headerText": "Header Text",
+      "footerText": "Footer Text",
+      "showResponseTimes": "Show Response Times",
+      "showUptimePercentage": "Show Uptime Percentage",
+      "autoRefreshSeconds": "Auto Refresh Seconds",
+      "monitorSelection": "Monitor Selection",
+      "isActive": "Is Active",
+      "isHomePage": "Is Home Page",
+      "allowedRoles": "Allowed Roles",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "item": "Item",
+      "statusDependency": "Status Dependency"
+    }
+  }
+}

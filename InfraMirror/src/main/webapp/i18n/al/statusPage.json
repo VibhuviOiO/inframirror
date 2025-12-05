@@ -1,0 +1,44 @@
+{
+  "infraMirrorApp": {
+    "statusPage": {
+      "home": {
+        "title": "Status Pages",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Krijo një të ri Status Page",
+        "createOrEditLabel": "Krijo ose përpuno një Status Page",
+        "search": "Kërko për Status Page",
+        "notFound": "No Status Pages found"
+      },
+      "created": "Një Status Page i ri u krijua me identifikues {{ param }}",
+      "updated": "Një Status Page u përpunua me identifikues {{ param }}",
+      "deleted": "Një Status Page u fshi me identifikues {{ param }}",
+      "delete": {
+        "question": "Jeni i sigurtë që doni të fshini Status Page {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page"
+      },
+      "id": "Id",
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "isPublic": "Is Public",
+      "customDomain": "Custom Domain",
+      "logoUrl": "Logo Url",
+      "themeColor": "Theme Color",
+      "headerText": "Header Text",
+      "footerText": "Footer Text",
+      "showResponseTimes": "Show Response Times",
+      "showUptimePercentage": "Show Uptime Percentage",
+      "autoRefreshSeconds": "Auto Refresh Seconds",
+      "monitorSelection": "Monitor Selection",
+      "isActive": "Is Active",
+      "isHomePage": "Is Home Page",
+      "allowedRoles": "Allowed Roles",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "item": "Item",
+      "statusDependency": "Status Dependency"
+    }
+  }
+}

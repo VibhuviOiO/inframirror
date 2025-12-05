@@ -1,54 +1,168 @@
-/**
- * InfraMirror JDL Model
- * 
- * This JDL file defines all entities for the InfraMirror infrastructure management platform.
- * It matches the exact properties from Liquibase schemas and supports PostgreSQL database.
- * 
- * Features:
- * - Multi-datacenter infrastructure management
- * - Monitoring and health checks (HTTP, Ping, Hardware)
- * - Instance and agent management
- * - Audit trails and API key management
- * 
- * Generated from Liquibase schemas on 2025
- */
+// JHipster JDL for InfraMirror Application
+// Generated from Liquibase changelog files
 
-// ========================================
-// CORE INFRASTRUCTURE ENTITIES
-// ========================================
+// ========== Core Entities ==========
 
-/**
- * Region - Represents geographical regions containing multiple datacenters
- * Table: regions
- */
+entity Branding {
+  title String required maxlength(200)
+  description String maxlength(500)
+  keywords String maxlength(300)
+  author String maxlength(100)
+  faviconPath String maxlength(255)
+  logoPath String maxlength(255)
+  logoWidth Integer
+  logoHeight Integer
+  footerTitle String maxlength(200)
+  isActive Boolean required
+  createdAt Instant
+  updatedAt Instant
+}
+
 entity Region {
+  id Long required
   name String required maxlength(50)
   regionCode String maxlength(20)
   groupName String maxlength(20)
 }
 
-/**
- * Datacenter - Physical datacenter locations within regions
- * Table: datacenters
- */
 entity Datacenter {
+  id Long required
   code String required maxlength(10)
   name String required maxlength(50)
 }
 
-/**
- * Agent - Monitoring agents deployed in datacenters to collect metrics
- * Table: agents
- */
 entity Agent {
+  id Long required
   name String required maxlength(50)
 }
 
-/**
- * Instance - Physical or virtual machines managed by the platform
- * Table: instance
- */
+entity AuditTrail {
+  id Long required
+  action String required maxlength(100)
+  entityName String required maxlength(100)
+  entityId Long required
+  oldValue TextBlob
+  newValue TextBlob
+  timestamp Instant required
+  ipAddress String maxlength(45)
+  userAgent TextBlob
+}
+
+entity ApiKey {
+  id Long required
+  name String required maxlength(100)
+  description String maxlength(500)
+  keyHash String required maxlength(500)
+  active Boolean required
+  lastUsedDate Instant
+  expiresAt Instant
+  createdBy String required maxlength(50)
+  createdDate Instant
+  lastModifiedBy String maxlength(50)
+  lastModifiedDate Instant
+}
+
+// ========== Monitoring Entities ==========
+
+entity HttpMonitor {
+  id Long required
+  name String required maxlength(100)
+  method String required maxlength(10)
+  type String required maxlength(10)
+  url TextBlob
+  headers TextBlob
+  body TextBlob
+  intervalSeconds Integer required
+  timeoutSeconds Integer required
+  retryCount Integer required
+  retryDelaySeconds Integer required
+  responseTimeWarningMs Integer
+  responseTimeCriticalMs Integer
+  uptimeWarningPercent Float
+  uptimeCriticalPercent Float
+  includeResponseBody Boolean
+  resendNotificationCount Integer
+  certificateExpiryDays Integer
+  ignoreTlsError Boolean
+  checkSslCertificate Boolean
+  checkDnsResolution Boolean
+  upsideDownMode Boolean
+  maxRedirects Integer
+  description TextBlob
+  tags String maxlength(500)
+  enabled Boolean
+  expectedStatusCodes String maxlength(100)
+  performanceBudgetMs Integer
+  sizeBudgetKb Integer
+}
+
+entity HttpHeartbeat {
+  id Long required
+  executedAt Instant required
+  success Boolean
+  responseTimeMs Integer
+  responseSizeBytes Integer
+  responseStatusCode Integer
+  responseContentType String maxlength(50)
+  responseServer String maxlength(50)
+  responseCacheStatus String maxlength(50)
+  dnsLookupMs Integer
+  dnsResolvedIp String maxlength(100)
+  tcpConnectMs Integer
+  tlsHandshakeMs Integer
+  sslCertificateValid Boolean
+  sslCertificateExpiry Instant
+  sslCertificateIssuer String maxlength(500)
+  sslDaysUntilExpiry Integer
+  timeToFirstByteMs Integer
+  warningThresholdMs Integer
+  criticalThresholdMs Integer
+  errorType String maxlength(50)
+  errorMessage TextBlob
+  rawRequestHeaders TextBlob
+  rawResponseHeaders TextBlob
+  rawResponseBody TextBlob
+  dnsDetails TextBlob
+  tlsDetails TextBlob
+  httpVersion String maxlength(10)
+  contentEncoding String maxlength(20)
+  compressionRatio Float
+  transferEncoding String maxlength(20)
+  responseBodyHash String maxlength(64)
+  responseBodySample TextBlob
+  responseBodyValid Boolean
+  responseBodyUncompressedBytes Integer
+  redirectDetails TextBlob
+  cacheControl String maxlength(255)
+  etag String maxlength(255)
+  cacheAge Integer
+  cdnProvider String maxlength(50)
+  cdnPop String maxlength(10)
+  rateLimitDetails TextBlob
+  networkPath TextBlob
+  agentMetrics TextBlob
+  phaseLatencies TextBlob
+}
+
+entity AgentMonitor {
+  id Long required
+  active Boolean required
+  createdBy String required maxlength(50)
+  createdDate Instant
+  lastModifiedBy String maxlength(50)
+  lastModifiedDate Instant
+}
+
+entity AgentLock {
+  agentId Long required
+  acquiredAt Instant required
+  expiresAt Instant required
+}
+
+// ========== Instance Entities ==========
+
 entity Instance {
+  id Long required
   name String required maxlength(255)
   hostname String required maxlength(255)
   description String maxlength(500)
@@ -77,68 +191,8 @@ entity Instance {
   lastHardwareCheckAt Instant
 }
 
-// ========================================
-// MONITORING & HEALTH CHECK ENTITIES
-// ========================================
-
-/**
- * Schedule - Defines monitoring schedules and intervals
- * Table: schedules
- */
-entity Schedule {
-  name String required maxlength(50)
-  interval Integer required
-  includeResponseBody Boolean
-  thresholdsWarning Integer
-  thresholdsCritical Integer
-}
-
-/**
- * HttpMonitor - HTTP/HTTPS endpoint monitoring configuration
- * Table: api_monitors
- * Note: Table is named api_monitors in database, entity name is HttpMonitor
- */
-entity HttpMonitor {
-  name String required maxlength(100)
-  method String required maxlength(10)
-  type String required maxlength(10)
-  url TextBlob required
-  headers TextBlob
-  body TextBlob
-}
-
-/**
- * HttpHeartbeat - Results from HTTP endpoint health checks
- * Table: api_heartbeats
- * Note: Table is named api_heartbeats in database, entity name is HttpHeartbeat
- */
-entity HttpHeartbeat {
-  executedAt Instant required
-  success Boolean
-  responseTimeMs Integer
-  responseSizeBytes Integer
-  responseStatusCode Integer
-  responseContentType String maxlength(50)
-  responseServer String maxlength(50)
-  responseCacheStatus String maxlength(50)
-  dnsLookupMs Integer
-  tcpConnectMs Integer
-  tlsHandshakeMs Integer
-  timeToFirstByteMs Integer
-  warningThresholdMs Integer
-  criticalThresholdMs Integer
-  errorType String maxlength(50)
-  errorMessage TextBlob
-  rawRequestHeaders TextBlob
-  rawResponseHeaders TextBlob
-  rawResponseBody TextBlob
-}
-
-/**
- * PingHeartbeat - Results from ping and hardware monitoring checks
- * Table: ping_heartbeat
- */
-entity PingHeartbeat {
+entity InstanceHeartbeat {
+  id Long required
   executedAt Instant required
   heartbeatType String required maxlength(20)
   success Boolean required
@@ -159,202 +213,150 @@ entity PingHeartbeat {
   metadata TextBlob
 }
 
-/**
- * AgentMonitor - Many-to-many mapping between agents and HTTP monitors
- * Table: agent_monitors
- */
-entity AgentMonitor {
-  active Boolean required
-  createdBy String required maxlength(50)
-  createdDate Instant
-  lastModifiedBy String maxlength(50)
-  lastModifiedDate Instant
-}
+// ========== Service Entities ==========
 
-// ========================================
-// SECURITY & AUDIT ENTITIES
-// ========================================
-
-/**
- * ApiKey - API keys for external system authentication
- * Table: api_key
- */
-entity ApiKey {
-  name String required maxlength(100)
+entity Service {
+  id Long required
+  name String required maxlength(200)
   description String maxlength(500)
-  keyHash String required maxlength(500)
-  active Boolean required
-  lastUsedDate Instant
-  expiresAt Instant
-  createdBy String required maxlength(50)
-  createdDate Instant
-  lastModifiedBy String maxlength(50)
-  lastModifiedDate Instant
+  serviceType String required maxlength(50)
+  environment String required maxlength(20)
+  monitoringEnabled Boolean
+  clusterMonitoringEnabled Boolean
+  intervalSeconds Integer required
+  timeoutMs Integer required
+  retryCount Integer required
+  latencyWarningMs Integer
+  latencyCriticalMs Integer
+  advancedConfig TextBlob
+  isActive Boolean
+  createdAt Instant
+  updatedAt Instant
 }
 
-/**
- * AuditTrail - Comprehensive audit logging for all system changes
- * Table: audit_logs
- * Note: Renamed from AuditLog to AuditTrail as requested
- * 
- * Links to JHipster User entity for tracking who made changes
- */
-entity AuditTrail {
-  action String required maxlength(100)
-  entityName String required maxlength(100)
-  entityId Long required
-  oldValue TextBlob
-  newValue TextBlob
-  timestamp Instant required
-  ipAddress String maxlength(45)
-  userAgent TextBlob
+entity ServiceInstance {
+  id Long required
+  port Integer required
+  isActive Boolean
+  createdAt Instant
+  updatedAt Instant
 }
 
-// ========================================
-// TAGGING SYSTEM
-// ========================================
-
-/**
- * Tag - Flexible tagging system for resource organization
- * Supports key-value pairs for categorization, cost allocation, and filtering
- * 
- * Usage: Tag can be applied to any entity via entityType + entityId
- * Common tags:
- * - Environment: prod, staging, dev
- * - Owner: team-devops, team-platform
- * - CostCenter: cc-engineering, cc-operations
- * - Compliance: pci-compliant, hipaa-compliant
- * - Application: app-web, app-api
- * 
- * Note: Instance entity already has JSONB 'tags' field for backward compatibility
- */
-entity Tag {
-  key String required maxlength(50)
-  value String required maxlength(200)
-  entityType String required maxlength(50) // instance, datacenter, agent, httpmonitor, region
-  entityId Long required
-  createdBy String maxlength(50)
-  createdDate Instant
+entity ServiceHeartbeat {
+  id Long required
+  executedAt Instant required
+  success Boolean required
+  status String required maxlength(20)
+  responseTimeMs Integer
+  errorMessage TextBlob
+  metadata TextBlob
 }
 
-// ========================================
-// SESSION MANAGEMENT
-// ========================================
+// ========== Status Page Entities ==========
 
-/**
- * SessionLog - Tracks user connections to instances (SSH, RDP, Console)
- * Critical for security auditing and compliance
- * 
- * Links to JHipster User entity for audit trail
- */
-entity SessionLog {
-  sessionType String required maxlength(20) // SSH, RDP, CONSOLE, WEB
-  startTime Instant required
-  endTime Instant
-  duration Integer // Duration in seconds
-  sourceIpAddress String required maxlength(45)
-  status String required maxlength(20) // ACTIVE, COMPLETED, TERMINATED, FAILED
-  terminationReason String maxlength(200)
-  commandsExecuted Integer
-  bytesTransferred Long
-  sessionId String required maxlength(100) unique
-  metadata TextBlob // Additional session details (client version, protocol, etc.)
+entity StatusPage {
+  id Long required
+  name String required maxlength(200)
+  slug String required unique maxlength(100)
+  description String maxlength(500)
+  isPublic Boolean required
+  customDomain String maxlength(255)
+  logoUrl String maxlength(500)
+  themeColor String maxlength(7)
+  headerText String maxlength(500)
+  footerText String maxlength(500)
+  showResponseTimes Boolean
+  showUptimePercentage Boolean
+  autoRefreshSeconds Integer
+  monitorSelection TextBlob
+  isActive Boolean
+  isHomePage Boolean
+  allowedRoles TextBlob
+  createdAt Instant required
+  updatedAt Instant required
 }
 
-// ========================================
-// RELATIONSHIPS
-// ========================================
+entity StatusPageItem {
+  id Long required
+  itemType String required maxlength(50)
+  itemId Long required
+  displayOrder Integer
+  createdAt Instant
+}
 
-// Region -> Datacenter (One-to-Many)
+entity StatusDependency {
+  id Long required
+  parentType String required
+  parentId Long required
+  childType String required
+  childId Long required
+  metadata TextBlob
+  createdAt Instant required
+}
+
+// ========== Relationships ==========
+
+// Region relationships
 relationship OneToMany {
-  Region{datacenters} to Datacenter{region}
+  Region{datacenter} to Datacenter{region}
+  Region{agent} to Agent{region}
 }
 
-// Datacenter -> Agent (One-to-Many)
+// Datacenter relationships
 relationship OneToMany {
-  Datacenter{agents} to Agent{datacenter}
+  Datacenter{instance} to Instance{datacenter required}
+  Datacenter{service} to Service{datacenter}
 }
 
-// Datacenter -> Instance (One-to-Many)
+// Agent relationships
 relationship OneToMany {
-  Datacenter{instances} to Instance{datacenter required}
+  Agent{instance} to Instance{agent}
+  Agent{httpHeartbeat} to HttpHeartbeat{agent}
+  Agent{instanceHeartbeat} to InstanceHeartbeat{agent}
+  Agent{serviceHeartbeat} to ServiceHeartbeat{agent}
 }
 
-// Agent -> Instance (One-to-Many)
+// HttpMonitor relationships
 relationship OneToMany {
-  Agent{instances} to Instance{agent}
+  HttpMonitor{children} to HttpMonitor{parent}
+  HttpMonitor{heartbeat} to HttpHeartbeat{monitor}
 }
 
-// Schedule -> HttpMonitor (One-to-Many)
-relationship OneToMany {
-  Schedule{monitors} to HttpMonitor{schedule}
-}
-
-// HttpMonitor -> HttpHeartbeat (One-to-Many)
-relationship OneToMany {
-  HttpMonitor{heartbeats} to HttpHeartbeat{monitor}
-}
-
-// Agent -> HttpHeartbeat (One-to-Many)
-relationship OneToMany {
-  Agent{httpHeartbeats} to HttpHeartbeat{agent}
-}
-
-// Instance -> PingHeartbeat (One-to-Many)
-relationship OneToMany {
-  Instance{pingHeartbeats} to PingHeartbeat{instance required}
-}
-
-// Agent -> PingHeartbeat (One-to-Many)
-relationship OneToMany {
-  Agent{pingHeartbeats} to PingHeartbeat{agent}
-}
-
-// Agent <-> HttpMonitor (Many-to-Many through AgentMonitor)
+// AgentMonitor relationships (many-to-many through join entity)
 relationship ManyToOne {
   AgentMonitor{agent required} to Agent
   AgentMonitor{monitor required} to HttpMonitor
 }
 
-// SessionLog -> Instance (Many-to-One)
-relationship ManyToOne {
-  SessionLog{instance required} to Instance
+// Instance relationships
+relationship OneToMany {
+  Instance{heartbeat} to InstanceHeartbeat{instance required}
+  Instance{serviceInstance} to ServiceInstance{instance required}
 }
 
-// SessionLog -> Agent (Many-to-One) - Agent that facilitated the connection
-relationship ManyToOne {
-  SessionLog{agent} to Agent
-  SessionLog{user required} to User with builtInEntity
-  AuditTrail{user} to User with builtInEntity
+// Service relationships
+relationship OneToMany {
+  Service{serviceInstance} to ServiceInstance{service required}
+  Service{heartbeat} to ServiceHeartbeat{service required}
 }
 
-// ========================================
-// JDL OPTIONS
-// ========================================
+// ServiceInstance relationships
+relationship OneToMany {
+  ServiceInstance{heartbeat} to ServiceHeartbeat{serviceInstance}
+}
 
-// DTOs for all entities
-dto * with mapstruct
+// StatusPage relationships
+relationship OneToMany {
+  StatusPage{item} to StatusPageItem{statusPage required}
+  StatusPage{statusDependency} to StatusDependency{statusPage}
+}
 
-// Service layer for all entities
-service * with serviceImpl
+// Pagination and service options
+paginate Branding, Region, Datacenter, Agent, AuditTrail, ApiKey, AgentLock with pagination
+paginate HttpMonitor, HttpHeartbeat, Instance, InstanceHeartbeat with pagination
+paginate Service, ServiceInstance, ServiceHeartbeat with pagination
+paginate StatusPage, StatusPageItem, StatusDependency with pagination
 
-// Pagination for large datasets
-paginate Region, Datacenter, Agent, Instance, HttpMonitor with pagination
-paginate HttpHeartbeat, PingHeartbeat, AuditTrail, SessionLog, Tag with infinite-scroll
-
-// Filtering support for search functionality
-filter Region, Datacenter, Agent, Instance, HttpMonitor, Schedule
-filter HttpHeartbeat, PingHeartbeat, AuditTrail, ApiKey
-filter SessionLog, Tag
-
-// Skip client generation for join tables and pure backend entities
-skipClient AgentMonitor
-
-// Read-only entities (no create/update/delete operations)
-readOnly HttpHeartbeat, PingHeartbeat, AuditTrail, SessionLog
-
-// Enable Elasticsearch indexing for search
-search HttpHeartbeat, PingHeartbeat, AuditTrail, SessionLog with elasticsearch
-
-// Microservice options (if using microservices architecture)
-// microservice * with inframonitor
+service all with serviceImpl
+dto all with mapstruct
+filter Region, Datacenter, Agent, Instance, Service, HttpMonitor, StatusPage

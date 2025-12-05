@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Audit Trail-ஐ உருவாக்கு",
+        "createOrEditLabel": "Audit Trail -ஐ மாற்று (அ) உருவாக்கு",
         "search": "Search for Audit Trail",
         "notFound": "No Audit Trails found"
+      },
+      "created": "Audit Trail புதிதாக உருவாக்கப்பட்டது, அடையாளம் {{ param }}",
+      "updated": "Audit Trail மாற்றப்பட்டது, அடையாளம்  {{ param }}",
+      "deleted": "A Audit Trail நீக்கப்பட்டது, அடையாளம {{ param }}",
+      "delete": {
+        "question": "நீக்குவதற்கு உறுதி செய் Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

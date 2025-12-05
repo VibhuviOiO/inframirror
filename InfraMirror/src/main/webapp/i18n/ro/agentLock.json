@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Agent Lock",
+        "createOrEditLabel": "Creeare sau editare Agent Lock",
+        "search": "Căutare după Agent Lock",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "A fost creată o nouă entitate Agent Lock cu identificatorul {{ param }}",
+      "updated": "Agent Lock cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Agent Lock cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

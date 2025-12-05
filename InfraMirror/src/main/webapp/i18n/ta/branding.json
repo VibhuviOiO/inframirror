@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Branding-ஐ உருவாக்கு",
+        "createOrEditLabel": "Branding -ஐ மாற்று (அ) உருவாக்கு",
+        "search": "Search for Branding",
+        "notFound": "No Brandings found"
+      },
+      "created": "Branding புதிதாக உருவாக்கப்பட்டது, அடையாளம் {{ param }}",
+      "updated": "Branding மாற்றப்பட்டது, அடையாளம்  {{ param }}",
+      "deleted": "A Branding நீக்கப்பட்டது, அடையாளம {{ param }}",
+      "delete": {
+        "question": "நீக்குவதற்கு உறுதி செய் Branding {{ id }}?"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

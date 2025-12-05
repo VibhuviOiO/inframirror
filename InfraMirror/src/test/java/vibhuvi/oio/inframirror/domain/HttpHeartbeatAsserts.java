@@ -61,8 +61,20 @@ public class HttpHeartbeatAsserts {
                 assertThat(a.getResponseCacheStatus()).as("check responseCacheStatus").isEqualTo(expected.getResponseCacheStatus())
             )
             .satisfies(a -> assertThat(a.getDnsLookupMs()).as("check dnsLookupMs").isEqualTo(expected.getDnsLookupMs()))
+            .satisfies(a -> assertThat(a.getDnsResolvedIp()).as("check dnsResolvedIp").isEqualTo(expected.getDnsResolvedIp()))
             .satisfies(a -> assertThat(a.getTcpConnectMs()).as("check tcpConnectMs").isEqualTo(expected.getTcpConnectMs()))
             .satisfies(a -> assertThat(a.getTlsHandshakeMs()).as("check tlsHandshakeMs").isEqualTo(expected.getTlsHandshakeMs()))
+            .satisfies(a ->
+                assertThat(a.getSslCertificateValid()).as("check sslCertificateValid").isEqualTo(expected.getSslCertificateValid())
+            )
+            .satisfies(a ->
+                assertThat(a.getSslCertificateExpiry()).as("check sslCertificateExpiry").isEqualTo(expected.getSslCertificateExpiry())
+            )
+            .satisfies(a ->
+                assertThat(a.getSslCertificateIssuer()).as("check sslCertificateIssuer").isEqualTo(expected.getSslCertificateIssuer())
+            )
+            .satisfies(a -> assertThat(a.getSslDaysUntilExpiry()).as("check sslDaysUntilExpiry").isEqualTo(expected.getSslDaysUntilExpiry())
+            )
             .satisfies(a -> assertThat(a.getTimeToFirstByteMs()).as("check timeToFirstByteMs").isEqualTo(expected.getTimeToFirstByteMs()))
             .satisfies(a -> assertThat(a.getWarningThresholdMs()).as("check warningThresholdMs").isEqualTo(expected.getWarningThresholdMs())
             )
@@ -74,7 +86,32 @@ public class HttpHeartbeatAsserts {
             .satisfies(a -> assertThat(a.getRawRequestHeaders()).as("check rawRequestHeaders").isEqualTo(expected.getRawRequestHeaders()))
             .satisfies(a -> assertThat(a.getRawResponseHeaders()).as("check rawResponseHeaders").isEqualTo(expected.getRawResponseHeaders())
             )
-            .satisfies(a -> assertThat(a.getRawResponseBody()).as("check rawResponseBody").isEqualTo(expected.getRawResponseBody()));
+            .satisfies(a -> assertThat(a.getRawResponseBody()).as("check rawResponseBody").isEqualTo(expected.getRawResponseBody()))
+            .satisfies(a -> assertThat(a.getDnsDetails()).as("check dnsDetails").isEqualTo(expected.getDnsDetails()))
+            .satisfies(a -> assertThat(a.getTlsDetails()).as("check tlsDetails").isEqualTo(expected.getTlsDetails()))
+            .satisfies(a -> assertThat(a.getHttpVersion()).as("check httpVersion").isEqualTo(expected.getHttpVersion()))
+            .satisfies(a -> assertThat(a.getContentEncoding()).as("check contentEncoding").isEqualTo(expected.getContentEncoding()))
+            .satisfies(a -> assertThat(a.getCompressionRatio()).as("check compressionRatio").isEqualTo(expected.getCompressionRatio()))
+            .satisfies(a -> assertThat(a.getTransferEncoding()).as("check transferEncoding").isEqualTo(expected.getTransferEncoding()))
+            .satisfies(a -> assertThat(a.getResponseBodyHash()).as("check responseBodyHash").isEqualTo(expected.getResponseBodyHash()))
+            .satisfies(a -> assertThat(a.getResponseBodySample()).as("check responseBodySample").isEqualTo(expected.getResponseBodySample())
+            )
+            .satisfies(a -> assertThat(a.getResponseBodyValid()).as("check responseBodyValid").isEqualTo(expected.getResponseBodyValid()))
+            .satisfies(a ->
+                assertThat(a.getResponseBodyUncompressedBytes())
+                    .as("check responseBodyUncompressedBytes")
+                    .isEqualTo(expected.getResponseBodyUncompressedBytes())
+            )
+            .satisfies(a -> assertThat(a.getRedirectDetails()).as("check redirectDetails").isEqualTo(expected.getRedirectDetails()))
+            .satisfies(a -> assertThat(a.getCacheControl()).as("check cacheControl").isEqualTo(expected.getCacheControl()))
+            .satisfies(a -> assertThat(a.getEtag()).as("check etag").isEqualTo(expected.getEtag()))
+            .satisfies(a -> assertThat(a.getCacheAge()).as("check cacheAge").isEqualTo(expected.getCacheAge()))
+            .satisfies(a -> assertThat(a.getCdnProvider()).as("check cdnProvider").isEqualTo(expected.getCdnProvider()))
+            .satisfies(a -> assertThat(a.getCdnPop()).as("check cdnPop").isEqualTo(expected.getCdnPop()))
+            .satisfies(a -> assertThat(a.getRateLimitDetails()).as("check rateLimitDetails").isEqualTo(expected.getRateLimitDetails()))
+            .satisfies(a -> assertThat(a.getNetworkPath()).as("check networkPath").isEqualTo(expected.getNetworkPath()))
+            .satisfies(a -> assertThat(a.getAgentMetrics()).as("check agentMetrics").isEqualTo(expected.getAgentMetrics()))
+            .satisfies(a -> assertThat(a.getPhaseLatencies()).as("check phaseLatencies").isEqualTo(expected.getPhaseLatencies()));
     }
 
     /**
@@ -86,7 +123,7 @@ public class HttpHeartbeatAsserts {
     public static void assertHttpHeartbeatUpdatableRelationshipsEquals(HttpHeartbeat expected, HttpHeartbeat actual) {
         assertThat(actual)
             .as("Verify HttpHeartbeat relationships")
-            .satisfies(a -> assertThat(a.getMonitor()).as("check monitor").isEqualTo(expected.getMonitor()))
-            .satisfies(a -> assertThat(a.getAgent()).as("check agent").isEqualTo(expected.getAgent()));
+            .satisfies(a -> assertThat(a.getAgent()).as("check agent").isEqualTo(expected.getAgent()))
+            .satisfies(a -> assertThat(a.getMonitor()).as("check monitor").isEqualTo(expected.getMonitor()));
     }
 }

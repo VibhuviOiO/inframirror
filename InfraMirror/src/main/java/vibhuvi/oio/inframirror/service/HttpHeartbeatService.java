@@ -34,6 +34,14 @@ public interface HttpHeartbeatService {
     Optional<HttpHeartbeatDTO> partialUpdate(HttpHeartbeatDTO httpHeartbeatDTO);
 
     /**
+     * Get all the httpHeartbeats.
+     *
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    Page<HttpHeartbeatDTO> findAll(Pageable pageable);
+
+    /**
      * Get the "id" httpHeartbeat.
      *
      * @param id the id of the entity.

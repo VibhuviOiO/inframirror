@@ -9,4 +9,4 @@ import vibhuvi.oio.inframirror.domain.ApiKey;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ApiKeyRepository extends JpaRepository<ApiKey, Long>, JpaSpecificationExecutor<ApiKey> {}
+public interface ApiKeyRepository extends JpaRepository<ApiKey, Long> {}

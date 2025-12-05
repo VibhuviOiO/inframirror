@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Skapa en ny Status Page Item",
+        "createOrEditLabel": "Skapa eller ändra en Status Page Item",
+        "search": "Sök efter Status Page Item",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "En ny Status Page Item är skapad med id {{ param }}",
+      "updated": "En Status Page Item är uppdaterad med id  {{ param }}",
+      "deleted": "En Status Page Item är borttagen med id  {{ param }}",
+      "delete": {
+        "question": "Är du säker på att du vill ta bort Status Page Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

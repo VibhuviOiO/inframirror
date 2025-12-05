@@ -10,14 +10,17 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 import vibhuvi.oio.inframirror.repository.ApiKeyRepository;
-import vibhuvi.oio.inframirror.service.ApiKeyQueryService;
 import vibhuvi.oio.inframirror.service.ApiKeyService;
-import vibhuvi.oio.inframirror.service.criteria.ApiKeyCriteria;
 import vibhuvi.oio.inframirror.service.dto.ApiKeyDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
 import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
@@ -40,12 +43,9 @@ public class ApiKeyResource {
 
     private final ApiKeyRepository apiKeyRepository;
 
-    private final ApiKeyQueryService apiKeyQueryService;
-
-    public ApiKeyResource(ApiKeyService apiKeyService, ApiKeyRepository apiKeyRepository, ApiKeyQueryService apiKeyQueryService) {
+    public ApiKeyResource(ApiKeyService apiKeyService, ApiKeyRepository apiKeyRepository) {
         this.apiKeyService = apiKeyService;
         this.apiKeyRepository = apiKeyRepository;
-        this.apiKeyQueryService = apiKeyQueryService;
     }
 
     /**
@@ -139,27 +139,15 @@ public class ApiKeyResource {
     /**
      * {@code GET  /api-keys} : get all the apiKeys.
      *
-     * @param criteria the criteria which the requested entities should match.
+     * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of apiKeys in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<ApiKeyDTO>> getAllApiKeys(ApiKeyCriteria criteria) {
-        LOG.debug("REST request to get ApiKeys by criteria: {}", criteria);
-
-        List<ApiKeyDTO> entityList = apiKeyQueryService.findByCriteria(criteria);
-        return ResponseEntity.ok().body(entityList);
-    }
-
-    /**
-     * {@code GET  /api-keys/count} : count all the apiKeys.
-     *
-     * @param criteria the criteria which the requested entities should match.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
-     */
-    @GetMapping("/count")
-    public ResponseEntity<Long> countApiKeys(ApiKeyCriteria criteria) {
-        LOG.debug("REST request to count ApiKeys by criteria: {}", criteria);
-        return ResponseEntity.ok().body(apiKeyQueryService.countByCriteria(criteria));
+    public ResponseEntity<List<ApiKeyDTO>> getAllApiKeys(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+        LOG.debug("REST request to get a page of ApiKeys");
+        Page<ApiKeyDTO> page = apiKeyService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
@@ -195,13 +183,19 @@ public class ApiKeyResource {
      * to the query.
      *
      * @param query the query of the apiKey search.
+     * @param pageable the pagination information.
      * @return the result of the search.
      */
     @GetMapping("/_search")
-    public List<ApiKeyDTO> searchApiKeys(@RequestParam("query") String query) {
-        LOG.debug("REST request to search ApiKeys for query {}", query);
+    public ResponseEntity<List<ApiKeyDTO>> searchApiKeys(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to search for a page of ApiKeys for query {}", query);
         try {
-            return apiKeyService.search(query);
+            Page<ApiKeyDTO> page = apiKeyService.search(query, pageable);
+            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+            return ResponseEntity.ok().headers(headers).body(page.getContent());
         } catch (RuntimeException e) {
             throw ElasticsearchExceptionMapper.mapException(e);
         }

@@ -1,10 +1,10 @@
 package vibhuvi.oio.inframirror.service.impl;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.ApiKey;
@@ -74,6 +74,13 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<ApiKeyDTO> findAll(Pageable pageable) {
+        LOG.debug("Request to get all ApiKeys");
+        return apiKeyRepository.findAll(pageable).map(apiKeyMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<ApiKeyDTO> findOne(Long id) {
         LOG.debug("Request to get ApiKey : {}", id);
         return apiKeyRepository.findById(id).map(apiKeyMapper::toDto);
@@ -88,12 +95,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ApiKeyDTO> search(String query) {
-        LOG.debug("Request to search ApiKeys for query {}", query);
-        try {
-            return StreamSupport.stream(apiKeySearchRepository.search(query).spliterator(), false).map(apiKeyMapper::toDto).toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
+    public Page<ApiKeyDTO> search(String query, Pageable pageable) {
+        LOG.debug("Request to search for a page of ApiKeys for query {}", query);
+        return apiKeySearchRepository.search(query, pageable).map(apiKeyMapper::toDto);
     }
 }

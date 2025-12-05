@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Yangi Branding qo`shish",
+        "createOrEditLabel": "Brandingni tahrirlash",
+        "search": "Brandingni izlash",
+        "notFound": "No Brandings found"
+      },
+      "created": "Branding {{ param }} bilan qo`shildi",
+      "updated": "{{ param }}- Branding saqlandi",
+      "deleted": "{{ param }}- Branding o`chirildi",
+      "delete": {
+        "question": "{{ id }}- Brandingni o`chirmoqchimisiz? "
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

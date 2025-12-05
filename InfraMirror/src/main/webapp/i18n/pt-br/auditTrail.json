@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Audit Trail",
+        "createOrEditLabel": "Criar ou editar Audit Trail",
         "search": "Pesquisar por Audit Trail",
         "notFound": "Nenhum Audit Trail encontrado"
+      },
+      "created": "Um novo Audit Trail foi criado com o identificador {{ param }}",
+      "updated": "Um Audit Trail foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Audit Trail foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

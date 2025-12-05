@@ -84,7 +84,7 @@ export const RegionUpdate = () => {
                   required
                   readOnly
                   id="region-id"
-                  label={translate('global.field.id')}
+                  label={translate('infraMirrorApp.region.id')}
                   validate={{ required: true }}
                 />
               ) : null}

@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "רענן רשימה",
+        "createLabel": "צור חדש Branding",
+        "createOrEditLabel": "צור או ערוך Branding",
+        "search": "חפש Branding",
+        "notFound": "לא נמצאו Brandings"
+      },
+      "created": "Branding חדש נוצר עם מזהה {{ param }}",
+      "updated": "Branding עודכן עם מזהה {{ param }}",
+      "deleted": "Branding נמחק עם מזהה {{ param }}",
+      "delete": {
+        "question": "האם אתה בטוח שברצונך למחוק את Branding {{ id }}?"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

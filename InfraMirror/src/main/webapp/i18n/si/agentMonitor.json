@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "agentMonitor": {
+      "home": {
+        "title": "Agent Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "නව Agent Monitor එකක් සාදන්න",
+        "createOrEditLabel": "Agent Monitor සාදන්න හෝ සංස්කරණය කරන්න",
+        "search": "Agent Monitor සඳහා සොයන්න",
+        "notFound": "Agent Monitors හමු නොවීය"
+      },
+      "created": "{{ param }} හඳුනාගැනීමෙන් නව Agent Monitor සාදනු ලැබේ",
+      "updated": "{{ param }} හඳුනාගැනීමෙන් Agent Monitor යාවත්කාලීන වේ",
+      "deleted": "{{ param }} හඳුනාගැනීමෙන් Agent Monitor මකා දමනු ලැබේ",
+      "delete": {
+        "question": "Agent Monitor {{ id }} මකා දැමීමට ඔබට විශ්වාසද?"
+      },
+      "detail": {
+        "title": "Agent Monitor"
+      },
+      "id": "Id",
+      "active": "Active",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "agent": "Agent",
+      "monitor": "Monitor"
+    }
+  }
+}

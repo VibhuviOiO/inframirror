@@ -28,7 +28,7 @@ export const ApiKeyDetail = () => {
         <dl className="jh-entity-details">
           <dt>
             <span id="id">
-              <Translate contentKey="global.field.id">ID</Translate>
+              <Translate contentKey="infraMirrorApp.apiKey.id">Id</Translate>
             </span>
           </dt>
           <dd>{apiKeyEntity.id}</dd>

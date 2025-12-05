@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "ServiceHeartbeats",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Service Heartbeat の作成",
+        "createOrEditLabel": "Service Heartbeatの作成または編集",
+        "search": "Service Heartbeat の検索",
+        "notFound": "Service Heartbeats が見つかりません。"
+      },
+      "created": "新しい Service Heartbeat がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Service Heartbeat が更新されました。",
+      "deleted": "ID {{ param }} の Service Heartbeat が削除されました。",
+      "delete": {
+        "question": "Service Heartbeat {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

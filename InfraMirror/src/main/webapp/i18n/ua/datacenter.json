@@ -18,11 +18,11 @@
       "detail": {
         "title": "Datacenter"
       },
-      "id": "ID",
+      "id": "Id",
       "code": "Code",
       "name": "Name",
-      "agents": "Agents",
-      "instances": "Instances",
+      "instance": "Instance",
+      "service": "Service",
       "region": "Region"
     }
   }

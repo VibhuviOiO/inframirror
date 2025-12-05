@@ -52,7 +52,52 @@ public class HttpMonitorAsserts {
             .satisfies(a -> assertThat(a.getType()).as("check type").isEqualTo(expected.getType()))
             .satisfies(a -> assertThat(a.getUrl()).as("check url").isEqualTo(expected.getUrl()))
             .satisfies(a -> assertThat(a.getHeaders()).as("check headers").isEqualTo(expected.getHeaders()))
-            .satisfies(a -> assertThat(a.getBody()).as("check body").isEqualTo(expected.getBody()));
+            .satisfies(a -> assertThat(a.getBody()).as("check body").isEqualTo(expected.getBody()))
+            .satisfies(a -> assertThat(a.getIntervalSeconds()).as("check intervalSeconds").isEqualTo(expected.getIntervalSeconds()))
+            .satisfies(a -> assertThat(a.getTimeoutSeconds()).as("check timeoutSeconds").isEqualTo(expected.getTimeoutSeconds()))
+            .satisfies(a -> assertThat(a.getRetryCount()).as("check retryCount").isEqualTo(expected.getRetryCount()))
+            .satisfies(a -> assertThat(a.getRetryDelaySeconds()).as("check retryDelaySeconds").isEqualTo(expected.getRetryDelaySeconds()))
+            .satisfies(a ->
+                assertThat(a.getResponseTimeWarningMs()).as("check responseTimeWarningMs").isEqualTo(expected.getResponseTimeWarningMs())
+            )
+            .satisfies(a ->
+                assertThat(a.getResponseTimeCriticalMs()).as("check responseTimeCriticalMs").isEqualTo(expected.getResponseTimeCriticalMs())
+            )
+            .satisfies(a ->
+                assertThat(a.getUptimeWarningPercent()).as("check uptimeWarningPercent").isEqualTo(expected.getUptimeWarningPercent())
+            )
+            .satisfies(a ->
+                assertThat(a.getUptimeCriticalPercent()).as("check uptimeCriticalPercent").isEqualTo(expected.getUptimeCriticalPercent())
+            )
+            .satisfies(a ->
+                assertThat(a.getIncludeResponseBody()).as("check includeResponseBody").isEqualTo(expected.getIncludeResponseBody())
+            )
+            .satisfies(a ->
+                assertThat(a.getResendNotificationCount())
+                    .as("check resendNotificationCount")
+                    .isEqualTo(expected.getResendNotificationCount())
+            )
+            .satisfies(a ->
+                assertThat(a.getCertificateExpiryDays()).as("check certificateExpiryDays").isEqualTo(expected.getCertificateExpiryDays())
+            )
+            .satisfies(a -> assertThat(a.getIgnoreTlsError()).as("check ignoreTlsError").isEqualTo(expected.getIgnoreTlsError()))
+            .satisfies(a ->
+                assertThat(a.getCheckSslCertificate()).as("check checkSslCertificate").isEqualTo(expected.getCheckSslCertificate())
+            )
+            .satisfies(a -> assertThat(a.getCheckDnsResolution()).as("check checkDnsResolution").isEqualTo(expected.getCheckDnsResolution())
+            )
+            .satisfies(a -> assertThat(a.getUpsideDownMode()).as("check upsideDownMode").isEqualTo(expected.getUpsideDownMode()))
+            .satisfies(a -> assertThat(a.getMaxRedirects()).as("check maxRedirects").isEqualTo(expected.getMaxRedirects()))
+            .satisfies(a -> assertThat(a.getDescription()).as("check description").isEqualTo(expected.getDescription()))
+            .satisfies(a -> assertThat(a.getTags()).as("check tags").isEqualTo(expected.getTags()))
+            .satisfies(a -> assertThat(a.getEnabled()).as("check enabled").isEqualTo(expected.getEnabled()))
+            .satisfies(a ->
+                assertThat(a.getExpectedStatusCodes()).as("check expectedStatusCodes").isEqualTo(expected.getExpectedStatusCodes())
+            )
+            .satisfies(a ->
+                assertThat(a.getPerformanceBudgetMs()).as("check performanceBudgetMs").isEqualTo(expected.getPerformanceBudgetMs())
+            )
+            .satisfies(a -> assertThat(a.getSizeBudgetKb()).as("check sizeBudgetKb").isEqualTo(expected.getSizeBudgetKb()));
     }
 
     /**
@@ -64,6 +109,6 @@ public class HttpMonitorAsserts {
     public static void assertHttpMonitorUpdatableRelationshipsEquals(HttpMonitor expected, HttpMonitor actual) {
         assertThat(actual)
             .as("Verify HttpMonitor relationships")
-            .satisfies(a -> assertThat(a.getSchedule()).as("check schedule").isEqualTo(expected.getSchedule()));
+            .satisfies(a -> assertThat(a.getParent()).as("check parent").isEqualTo(expected.getParent()));
     }
 }

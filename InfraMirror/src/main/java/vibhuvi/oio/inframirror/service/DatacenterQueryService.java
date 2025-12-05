@@ -84,8 +84,8 @@ public class DatacenterQueryService extends QueryService<Datacenter> {
                 buildRangeSpecification(criteria.getId(), Datacenter_.id),
                 buildStringSpecification(criteria.getCode(), Datacenter_.code),
                 buildStringSpecification(criteria.getName(), Datacenter_.name),
-                buildSpecification(criteria.getAgentsId(), root -> root.join(Datacenter_.agents, JoinType.LEFT).get(Agent_.id)),
-                buildSpecification(criteria.getInstancesId(), root -> root.join(Datacenter_.instances, JoinType.LEFT).get(Instance_.id)),
+                buildSpecification(criteria.getInstanceId(), root -> root.join(Datacenter_.instances, JoinType.LEFT).get(Instance_.id)),
+                buildSpecification(criteria.getServiceId(), root -> root.join(Datacenter_.services, JoinType.LEFT).get(Service_.id)),
                 buildSpecification(criteria.getRegionId(), root -> root.join(Datacenter_.region, JoinType.LEFT).get(Region_.id))
             );
         }

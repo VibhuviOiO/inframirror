@@ -90,7 +90,7 @@ export const DatacenterUpdate = () => {
                   required
                   readOnly
                   id="datacenter-id"
-                  label={translate('global.field.id')}
+                  label={translate('infraMirrorApp.datacenter.id')}
                   validate={{ required: true }}
                 />
               ) : null}

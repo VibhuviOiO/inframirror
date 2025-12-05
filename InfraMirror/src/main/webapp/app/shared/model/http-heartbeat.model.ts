@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { IHttpMonitor } from 'app/shared/model/http-monitor.model';
 import { IAgent } from 'app/shared/model/agent.model';
+import { IHttpMonitor } from 'app/shared/model/http-monitor.model';
 
 export interface IHttpHeartbeat {
   id?: number;
@@ -13,8 +13,13 @@ export interface IHttpHeartbeat {
   responseServer?: string | null;
   responseCacheStatus?: string | null;
   dnsLookupMs?: number | null;
+  dnsResolvedIp?: string | null;
   tcpConnectMs?: number | null;
   tlsHandshakeMs?: number | null;
+  sslCertificateValid?: boolean | null;
+  sslCertificateExpiry?: dayjs.Dayjs | null;
+  sslCertificateIssuer?: string | null;
+  sslDaysUntilExpiry?: number | null;
   timeToFirstByteMs?: number | null;
   warningThresholdMs?: number | null;
   criticalThresholdMs?: number | null;
@@ -23,10 +28,32 @@ export interface IHttpHeartbeat {
   rawRequestHeaders?: string | null;
   rawResponseHeaders?: string | null;
   rawResponseBody?: string | null;
-  monitor?: IHttpMonitor | null;
+  dnsDetails?: string | null;
+  tlsDetails?: string | null;
+  httpVersion?: string | null;
+  contentEncoding?: string | null;
+  compressionRatio?: number | null;
+  transferEncoding?: string | null;
+  responseBodyHash?: string | null;
+  responseBodySample?: string | null;
+  responseBodyValid?: boolean | null;
+  responseBodyUncompressedBytes?: number | null;
+  redirectDetails?: string | null;
+  cacheControl?: string | null;
+  etag?: string | null;
+  cacheAge?: number | null;
+  cdnProvider?: string | null;
+  cdnPop?: string | null;
+  rateLimitDetails?: string | null;
+  networkPath?: string | null;
+  agentMetrics?: string | null;
+  phaseLatencies?: string | null;
   agent?: IAgent | null;
+  monitor?: IHttpMonitor | null;
 }
 
 export const defaultValue: Readonly<IHttpHeartbeat> = {
   success: false,
+  sslCertificateValid: false,
+  responseBodyValid: false,
 };

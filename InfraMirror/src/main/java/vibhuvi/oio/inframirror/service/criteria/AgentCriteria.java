@@ -26,13 +26,15 @@ public class AgentCriteria implements Serializable, Criteria {
 
     private StringFilter name;
 
-    private LongFilter instancesId;
+    private LongFilter instanceId;
 
-    private LongFilter httpHeartbeatsId;
+    private LongFilter httpHeartbeatId;
 
-    private LongFilter pingHeartbeatsId;
+    private LongFilter instanceHeartbeatId;
 
-    private LongFilter datacenterId;
+    private LongFilter serviceHeartbeatId;
+
+    private LongFilter regionId;
 
     private Boolean distinct;
 
@@ -41,10 +43,11 @@ public class AgentCriteria implements Serializable, Criteria {
     public AgentCriteria(AgentCriteria other) {
         this.id = other.optionalId().map(LongFilter::copy).orElse(null);
         this.name = other.optionalName().map(StringFilter::copy).orElse(null);
-        this.instancesId = other.optionalInstancesId().map(LongFilter::copy).orElse(null);
-        this.httpHeartbeatsId = other.optionalHttpHeartbeatsId().map(LongFilter::copy).orElse(null);
-        this.pingHeartbeatsId = other.optionalPingHeartbeatsId().map(LongFilter::copy).orElse(null);
-        this.datacenterId = other.optionalDatacenterId().map(LongFilter::copy).orElse(null);
+        this.instanceId = other.optionalInstanceId().map(LongFilter::copy).orElse(null);
+        this.httpHeartbeatId = other.optionalHttpHeartbeatId().map(LongFilter::copy).orElse(null);
+        this.instanceHeartbeatId = other.optionalInstanceHeartbeatId().map(LongFilter::copy).orElse(null);
+        this.serviceHeartbeatId = other.optionalServiceHeartbeatId().map(LongFilter::copy).orElse(null);
+        this.regionId = other.optionalRegionId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -91,80 +94,99 @@ public class AgentCriteria implements Serializable, Criteria {
         this.name = name;
     }
 
-    public LongFilter getInstancesId() {
-        return instancesId;
+    public LongFilter getInstanceId() {
+        return instanceId;
     }
 
-    public Optional<LongFilter> optionalInstancesId() {
-        return Optional.ofNullable(instancesId);
+    public Optional<LongFilter> optionalInstanceId() {
+        return Optional.ofNullable(instanceId);
     }
 
-    public LongFilter instancesId() {
-        if (instancesId == null) {
-            setInstancesId(new LongFilter());
+    public LongFilter instanceId() {
+        if (instanceId == null) {
+            setInstanceId(new LongFilter());
         }
-        return instancesId;
+        return instanceId;
     }
 
-    public void setInstancesId(LongFilter instancesId) {
-        this.instancesId = instancesId;
+    public void setInstanceId(LongFilter instanceId) {
+        this.instanceId = instanceId;
     }
 
-    public LongFilter getHttpHeartbeatsId() {
-        return httpHeartbeatsId;
+    public LongFilter getHttpHeartbeatId() {
+        return httpHeartbeatId;
     }
 
-    public Optional<LongFilter> optionalHttpHeartbeatsId() {
-        return Optional.ofNullable(httpHeartbeatsId);
+    public Optional<LongFilter> optionalHttpHeartbeatId() {
+        return Optional.ofNullable(httpHeartbeatId);
     }
 
-    public LongFilter httpHeartbeatsId() {
-        if (httpHeartbeatsId == null) {
-            setHttpHeartbeatsId(new LongFilter());
+    public LongFilter httpHeartbeatId() {
+        if (httpHeartbeatId == null) {
+            setHttpHeartbeatId(new LongFilter());
         }
-        return httpHeartbeatsId;
+        return httpHeartbeatId;
     }
 
-    public void setHttpHeartbeatsId(LongFilter httpHeartbeatsId) {
-        this.httpHeartbeatsId = httpHeartbeatsId;
+    public void setHttpHeartbeatId(LongFilter httpHeartbeatId) {
+        this.httpHeartbeatId = httpHeartbeatId;
     }
 
-    public LongFilter getPingHeartbeatsId() {
-        return pingHeartbeatsId;
+    public LongFilter getInstanceHeartbeatId() {
+        return instanceHeartbeatId;
     }
 
-    public Optional<LongFilter> optionalPingHeartbeatsId() {
-        return Optional.ofNullable(pingHeartbeatsId);
+    public Optional<LongFilter> optionalInstanceHeartbeatId() {
+        return Optional.ofNullable(instanceHeartbeatId);
     }
 
-    public LongFilter pingHeartbeatsId() {
-        if (pingHeartbeatsId == null) {
-            setPingHeartbeatsId(new LongFilter());
+    public LongFilter instanceHeartbeatId() {
+        if (instanceHeartbeatId == null) {
+            setInstanceHeartbeatId(new LongFilter());
         }
-        return pingHeartbeatsId;
+        return instanceHeartbeatId;
     }
 
-    public void setPingHeartbeatsId(LongFilter pingHeartbeatsId) {
-        this.pingHeartbeatsId = pingHeartbeatsId;
+    public void setInstanceHeartbeatId(LongFilter instanceHeartbeatId) {
+        this.instanceHeartbeatId = instanceHeartbeatId;
     }
 
-    public LongFilter getDatacenterId() {
-        return datacenterId;
+    public LongFilter getServiceHeartbeatId() {
+        return serviceHeartbeatId;
     }
 
-    public Optional<LongFilter> optionalDatacenterId() {
-        return Optional.ofNullable(datacenterId);
+    public Optional<LongFilter> optionalServiceHeartbeatId() {
+        return Optional.ofNullable(serviceHeartbeatId);
     }
 
-    public LongFilter datacenterId() {
-        if (datacenterId == null) {
-            setDatacenterId(new LongFilter());
+    public LongFilter serviceHeartbeatId() {
+        if (serviceHeartbeatId == null) {
+            setServiceHeartbeatId(new LongFilter());
         }
-        return datacenterId;
+        return serviceHeartbeatId;
     }
 
-    public void setDatacenterId(LongFilter datacenterId) {
-        this.datacenterId = datacenterId;
+    public void setServiceHeartbeatId(LongFilter serviceHeartbeatId) {
+        this.serviceHeartbeatId = serviceHeartbeatId;
+    }
+
+    public LongFilter getRegionId() {
+        return regionId;
+    }
+
+    public Optional<LongFilter> optionalRegionId() {
+        return Optional.ofNullable(regionId);
+    }
+
+    public LongFilter regionId() {
+        if (regionId == null) {
+            setRegionId(new LongFilter());
+        }
+        return regionId;
+    }
+
+    public void setRegionId(LongFilter regionId) {
+        this.regionId = regionId;
     }
 
     public Boolean getDistinct() {
@@ -198,17 +220,18 @@ public class AgentCriteria implements Serializable, Criteria {
         return (
             Objects.equals(id, that.id) &&
             Objects.equals(name, that.name) &&
-            Objects.equals(instancesId, that.instancesId) &&
-            Objects.equals(httpHeartbeatsId, that.httpHeartbeatsId) &&
-            Objects.equals(pingHeartbeatsId, that.pingHeartbeatsId) &&
-            Objects.equals(datacenterId, that.datacenterId) &&
+            Objects.equals(instanceId, that.instanceId) &&
+            Objects.equals(httpHeartbeatId, that.httpHeartbeatId) &&
+            Objects.equals(instanceHeartbeatId, that.instanceHeartbeatId) &&
+            Objects.equals(serviceHeartbeatId, that.serviceHeartbeatId) &&
+            Objects.equals(regionId, that.regionId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, instancesId, httpHeartbeatsId, pingHeartbeatsId, datacenterId, distinct);
+        return Objects.hash(id, name, instanceId, httpHeartbeatId, instanceHeartbeatId, serviceHeartbeatId, regionId, distinct);
     }
 
     // prettier-ignore
@@ -217,10 +240,11 @@ public class AgentCriteria implements Serializable, Criteria {
         return "AgentCriteria{" +
             optionalId().map(f -> "id=" + f + ", ").orElse("") +
             optionalName().map(f -> "name=" + f + ", ").orElse("") +
-            optionalInstancesId().map(f -> "instancesId=" + f + ", ").orElse("") +
-            optionalHttpHeartbeatsId().map(f -> "httpHeartbeatsId=" + f + ", ").orElse("") +
-            optionalPingHeartbeatsId().map(f -> "pingHeartbeatsId=" + f + ", ").orElse("") +
-            optionalDatacenterId().map(f -> "datacenterId=" + f + ", ").orElse("") +
+            optionalInstanceId().map(f -> "instanceId=" + f + ", ").orElse("") +
+            optionalHttpHeartbeatId().map(f -> "httpHeartbeatId=" + f + ", ").orElse("") +
+            optionalInstanceHeartbeatId().map(f -> "instanceHeartbeatId=" + f + ", ").orElse("") +
+            optionalServiceHeartbeatId().map(f -> "serviceHeartbeatId=" + f + ", ").orElse("") +
+            optionalRegionId().map(f -> "regionId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";
     }

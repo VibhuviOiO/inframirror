@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Kreirati Audit Trail",
+        "createOrEditLabel": "Kreirati ili urediti Audit Trail",
         "search": "Tražiti Audit Trail",
         "notFound": "Nije nađeno Audit Trails"
+      },
+      "created": "Kreiran je Audit Trail sa identifikatorom {{ param }}",
+      "updated": "Ažuriran je Audit Trail sa identifikatorom {{ param }}",
+      "deleted": "Obrisan je Audit Trail sa identifikatorom {{ param }}",
+      "delete": {
+        "question": "Da li ste sigurni da želite obrisati Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

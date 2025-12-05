@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "สร้าง Status Page Item",
+        "createOrEditLabel": "สร้างหรือแก้ไข Status Page Item",
+        "search": "ค้นหา Status Page Item",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "Status Page Item ถูกสร้างด้วย {{ param }}",
+      "updated": "Status Page Item ถูกแก้ไขด้วย {{ param }}",
+      "deleted": "Status Page Item ถูกลบด้วย {{ param }}",
+      "delete": {
+        "question": "คุณต้องการที่จะลบ Status Page Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

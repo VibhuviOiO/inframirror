@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "agentMonitor": {
+      "home": {
+        "title": "Agent Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Pridať Agent Monitor",
+        "createOrEditLabel": "Pridať alebo upraviť Agent Monitor",
+        "search": "Vyhľadať Agent Monitor",
+        "notFound": "No Agent Monitors found"
+      },
+      "created": "Bol vytvorený potomok entity Agent Monitor s identifikátorom {{ param }}",
+      "updated": "Potomok entity Agent Monitor s identifikátorom {{ param }} bol upravený.",
+      "deleted": "Potomok entity Agent Monitor s identifikátorom {{ param }} bol vymazaný.",
+      "delete": {
+        "question": "Ste si istý, že chcete vymazať Agent Monitor {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Monitor"
+      },
+      "id": "Id",
+      "active": "Active",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "agent": "Agent",
+      "monitor": "Monitor"
+    }
+  }
+}

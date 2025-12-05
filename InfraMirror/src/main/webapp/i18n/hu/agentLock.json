@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "AgentLocks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Agent Lock létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Agent Lockt",
+        "search": "Agent Lock keresése",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "Egy új Agent Lock lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Agent Lock módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Agent Lock törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Agent Lockt {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

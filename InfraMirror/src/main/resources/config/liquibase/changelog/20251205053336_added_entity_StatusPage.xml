@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the entity StatusPage.
+    -->
+    <changeSet id="20251205053336-1" author="jhipster">
+        <createTable tableName="status_page">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(200)">
+                <constraints nullable="false" />
+            </column>
+            <column name="slug" type="varchar(100)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="ux_status_page__slug" />
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="true" />
+            </column>
+            <column name="is_public" type="boolean">
+                <constraints nullable="false" />
+            </column>
+            <column name="custom_domain" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="logo_url" type="varchar(500)">
+                <constraints nullable="true" />
+            </column>
+            <column name="theme_color" type="varchar(7)">
+                <constraints nullable="true" />
+            </column>
+            <column name="header_text" type="varchar(500)">
+                <constraints nullable="true" />
+            </column>
+            <column name="footer_text" type="varchar(500)">
+                <constraints nullable="true" />
+            </column>
+            <column name="show_response_times" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="show_uptime_percentage" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="auto_refresh_seconds" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="monitor_selection" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="is_active" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="is_home_page" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="allowed_roles" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_at" type="${datetimeType}">
+                <constraints nullable="false" />
+            </column>
+            <column name="updated_at" type="${datetimeType}">
+                <constraints nullable="false" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+        <dropDefaultValue tableName="status_page" columnName="created_at" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="status_page" columnName="updated_at" columnDataType="${datetimeType}"/>
+    </changeSet>
+
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+
+    <!--
+        Load sample data generated with Faker.js
+        - This data can be easily edited using a CSV editor (or even MS Excel) and
+          is located in the 'src/main/resources/config/liquibase/fake-data' directory
+        - By default this data is applied when running with the JHipster 'dev' profile.
+          This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
+          Spring Boot configuration key.
+    -->
+    <changeSet id="20251205053336-1-data" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/status_page.csv"
+                  separator=";"
+                  tableName="status_page"
+                  usePreparedStatements="true">
+            <column name="id" type="numeric"/>
+            <column name="name" type="string"/>
+            <column name="slug" type="string"/>
+            <column name="description" type="string"/>
+            <column name="is_public" type="boolean"/>
+            <column name="custom_domain" type="string"/>
+            <column name="logo_url" type="string"/>
+            <column name="theme_color" type="string"/>
+            <column name="header_text" type="string"/>
+            <column name="footer_text" type="string"/>
+            <column name="show_response_times" type="boolean"/>
+            <column name="show_uptime_percentage" type="boolean"/>
+            <column name="auto_refresh_seconds" type="numeric"/>
+            <column name="monitor_selection" type="clob"/>
+            <column name="is_active" type="boolean"/>
+            <column name="is_home_page" type="boolean"/>
+            <column name="allowed_roles" type="clob"/>
+            <column name="created_at" type="date"/>
+            <column name="updated_at" type="date"/>
+            <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
+        </loadData>
+    </changeSet>
+</databaseChangeLog>

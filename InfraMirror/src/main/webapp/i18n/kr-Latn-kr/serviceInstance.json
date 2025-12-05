@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Jańa Service Instance qosıw",
+        "createOrEditLabel": "Service Instancedi redaktorlaw",
+        "search": "Service Instance izlew",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Service Instance {{ param }} menen qosıldı",
+      "updated": "{{ param }}- Service Instance saqlandı",
+      "deleted": "{{ param }}- Service Instance óshirildi",
+      "delete": {
+        "question": "{{ id }}- Service Instance tı óshirejaqsizba?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

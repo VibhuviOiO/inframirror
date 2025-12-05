@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Ստեղծել նոր Service Heartbeat",
+        "createOrEditLabel": "Ստեղծել կամ փոփոխել Service Heartbeat",
+        "search": "Գտնել Service Heartbeat",
+        "notFound": "No Service Heartbeats found"
+      },
+      "created": "Նոր Service Heartbeat ստեղծված է {{ param }} նունացուցիչով",
+      "updated": "Service Heartbeat թարմացվաց է {{ param }} նունացուցիչով",
+      "deleted": "Service Heartbeat հեռացված է {{ param }}  նունացուցիչով",
+      "delete": {
+        "question": "Դուք վստահ ե՞ք, որ ցանկանում եք հեռացնել Service Heartbeat {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

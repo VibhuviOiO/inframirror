@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "创建新 Service Instance",
+        "createOrEditLabel": "创建或编辑 Service Instance",
+        "search": "查找 Service Instance",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Service Instance {{ param }} 创建成功",
+      "updated": "Service Instance {{ param }} 更新成功",
+      "deleted": "Service Instance {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Service Instance {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

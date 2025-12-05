@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "agentMonitor": {
+      "home": {
+        "title": "AgentMonitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नया Agent Monitor बनाएँ",
+        "createOrEditLabel": "Agent Monitor बनाएँ या संपादित करें",
+        "search": "Agent Monitor खोजें",
+        "notFound": "No Agent Monitors found"
+      },
+      "created": "एक नया Agent Monitor [identifier: {{ param }}] तैयार है",
+      "updated": "एक Agent Monitor [identifier: {{ param }}] का अद्यतन हुआ है",
+      "deleted": "Agent Monitor [identifier: {{ param }}] हटा दिया है",
+      "delete": {
+        "question": "Agent Monitor [id: {{ id }}] हटाने की पुष्टि करें"
+      },
+      "detail": {
+        "title": "Agent Monitor"
+      },
+      "id": "Id",
+      "active": "Active",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "agent": "Agent",
+      "monitor": "Monitor"
+    }
+  }
+}

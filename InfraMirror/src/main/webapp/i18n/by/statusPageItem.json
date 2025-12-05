@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Стварыць новы Status Page Item",
+        "createOrEditLabel": "Стварыць або адрэдагаваць Status Page Item",
+        "search": "Знайсці Status Page Item",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "Новы Status Page Item створан з ідэнтыфікатарам {{ param }}",
+      "updated": "Status Page Item абноўлен з ідэнтыфікатарам {{ param }}",
+      "deleted": "Status Page Item выдален з ідэнтыфікатарам {{ param }}",
+      "delete": {
+        "question": "Вы ўпэўнены, што жадаеце выдаліць Status Page Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

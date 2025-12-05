@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "agentMonitor": {
+      "home": {
+        "title": "Agent Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Krijo një të ri Agent Monitor",
+        "createOrEditLabel": "Krijo ose përpuno një Agent Monitor",
+        "search": "Kërko për Agent Monitor",
+        "notFound": "No Agent Monitors found"
+      },
+      "created": "Një Agent Monitor i ri u krijua me identifikues {{ param }}",
+      "updated": "Një Agent Monitor u përpunua me identifikues {{ param }}",
+      "deleted": "Një Agent Monitor u fshi me identifikues {{ param }}",
+      "delete": {
+        "question": "Jeni i sigurtë që doni të fshini Agent Monitor {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Monitor"
+      },
+      "id": "Id",
+      "active": "Active",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "agent": "Agent",
+      "monitor": "Monitor"
+    }
+  }
+}

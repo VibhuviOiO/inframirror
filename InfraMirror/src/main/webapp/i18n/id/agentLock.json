@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Agent Lock baru",
+        "createOrEditLabel": "Buat atau edit Agent Lock",
+        "search": "Cari Agent Lock",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "Agent Lock dengan id {{ param }} telah dibuat",
+      "updated": "Agent Lock dengan id {{ param }} telah diperbaharui",
+      "deleted": "Agent Lock dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

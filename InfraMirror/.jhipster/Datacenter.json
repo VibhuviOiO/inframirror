@@ -1,11 +1,15 @@
 {
   "annotations": {
-    "changelogDate": "20251203083825"
+    "changelogDate": "20251205053323"
   },
   "applications": "*",
-  "documentation": "Datacenter - Physical datacenter locations within regions\\nTable: datacenters",
   "dto": "mapstruct",
   "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
     {
       "fieldName": "code",
       "fieldType": "String",
@@ -24,22 +28,22 @@
   "pagination": "pagination",
   "relationships": [
     {
-      "otherEntityName": "agent",
+      "otherEntityName": "instance",
       "otherEntityRelationshipName": "datacenter",
-      "relationshipName": "agents",
+      "relationshipName": "instance",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
     {
-      "otherEntityName": "instance",
+      "otherEntityName": "service",
       "otherEntityRelationshipName": "datacenter",
-      "relationshipName": "instances",
+      "relationshipName": "service",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
     {
       "otherEntityName": "region",
-      "otherEntityRelationshipName": "datacenters",
+      "otherEntityRelationshipName": "datacenter",
       "relationshipName": "region",
       "relationshipSide": "right",
       "relationshipType": "many-to-one"

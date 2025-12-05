@@ -15,7 +15,7 @@ describe('ApiKey e2e test', () => {
   const apiKeyPageUrlPattern = new RegExp('/api-key(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const apiKeySample = { name: 'boo afore', keyHash: 'lowball', active: false, createdBy: 'which aw' };
+  const apiKeySample = { name: 'mature individual', keyHash: 'whether greedy', active: true, createdBy: 'ack yearly' };
 
   let apiKey;
 
@@ -91,6 +91,9 @@ describe('ApiKey e2e test', () => {
             },
             {
               statusCode: 200,
+              headers: {
+                link: '<http://localhost/api/api-keys?page=0&size=20>; rel="last",<http://localhost/api/api-keys?page=0&size=20>; rel="first"',
+              },
               body: [apiKey],
             },
           ).as('entitiesRequestInternal');
@@ -159,40 +162,40 @@ describe('ApiKey e2e test', () => {
     });
 
     it('should create an instance of ApiKey', () => {
-      cy.get(`[data-cy="name"]`).type('hourly briskly');
-      cy.get(`[data-cy="name"]`).should('have.value', 'hourly briskly');
+      cy.get(`[data-cy="name"]`).type('whoa on');
+      cy.get(`[data-cy="name"]`).should('have.value', 'whoa on');
 
-      cy.get(`[data-cy="description"]`).type('assail popularize');
-      cy.get(`[data-cy="description"]`).should('have.value', 'assail popularize');
+      cy.get(`[data-cy="description"]`).type('harmful fooey');
+      cy.get(`[data-cy="description"]`).should('have.value', 'harmful fooey');
 
-      cy.get(`[data-cy="keyHash"]`).type('puritan');
-      cy.get(`[data-cy="keyHash"]`).should('have.value', 'puritan');
+      cy.get(`[data-cy="keyHash"]`).type('unwieldy');
+      cy.get(`[data-cy="keyHash"]`).should('have.value', 'unwieldy');
 
       cy.get(`[data-cy="active"]`).should('not.be.checked');
       cy.get(`[data-cy="active"]`).click();
       cy.get(`[data-cy="active"]`).should('be.checked');
 
-      cy.get(`[data-cy="lastUsedDate"]`).type('2025-12-03T05:42');
+      cy.get(`[data-cy="lastUsedDate"]`).type('2025-12-05T04:47');
       cy.get(`[data-cy="lastUsedDate"]`).blur();
-      cy.get(`[data-cy="lastUsedDate"]`).should('have.value', '2025-12-03T05:42');
+      cy.get(`[data-cy="lastUsedDate"]`).should('have.value', '2025-12-05T04:47');
 
-      cy.get(`[data-cy="expiresAt"]`).type('2025-12-03T07:13');
+      cy.get(`[data-cy="expiresAt"]`).type('2025-12-04T06:43');
       cy.get(`[data-cy="expiresAt"]`).blur();
-      cy.get(`[data-cy="expiresAt"]`).should('have.value', '2025-12-03T07:13');
+      cy.get(`[data-cy="expiresAt"]`).should('have.value', '2025-12-04T06:43');
 
-      cy.get(`[data-cy="createdBy"]`).type('corporation yippee astride');
-      cy.get(`[data-cy="createdBy"]`).should('have.value', 'corporation yippee astride');
+      cy.get(`[data-cy="createdBy"]`).type('oof');
+      cy.get(`[data-cy="createdBy"]`).should('have.value', 'oof');
 
-      cy.get(`[data-cy="createdDate"]`).type('2025-12-03T01:02');
+      cy.get(`[data-cy="createdDate"]`).type('2025-12-05T01:08');
       cy.get(`[data-cy="createdDate"]`).blur();
-      cy.get(`[data-cy="createdDate"]`).should('have.value', '2025-12-03T01:02');
+      cy.get(`[data-cy="createdDate"]`).should('have.value', '2025-12-05T01:08');
 
-      cy.get(`[data-cy="lastModifiedBy"]`).type('gadzooks');
-      cy.get(`[data-cy="lastModifiedBy"]`).should('have.value', 'gadzooks');
+      cy.get(`[data-cy="lastModifiedBy"]`).type('aggravating');
+      cy.get(`[data-cy="lastModifiedBy"]`).should('have.value', 'aggravating');
 
-      cy.get(`[data-cy="lastModifiedDate"]`).type('2025-12-02T20:31');
+      cy.get(`[data-cy="lastModifiedDate"]`).type('2025-12-05T01:39');
       cy.get(`[data-cy="lastModifiedDate"]`).blur();
-      cy.get(`[data-cy="lastModifiedDate"]`).should('have.value', '2025-12-02T20:31');
+      cy.get(`[data-cy="lastModifiedDate"]`).should('have.value', '2025-12-05T01:39');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

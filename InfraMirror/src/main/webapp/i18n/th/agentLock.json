@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "สร้าง Agent Lock",
+        "createOrEditLabel": "สร้างหรือแก้ไข Agent Lock",
+        "search": "ค้นหา Agent Lock",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "Agent Lock ถูกสร้างด้วย {{ param }}",
+      "updated": "Agent Lock ถูกแก้ไขด้วย {{ param }}",
+      "deleted": "Agent Lock ถูกลบด้วย {{ param }}",
+      "delete": {
+        "question": "คุณต้องการที่จะลบ Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

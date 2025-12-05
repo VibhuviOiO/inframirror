@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Audit Trail baru",
+        "createOrEditLabel": "Buat atau edit Audit Trail",
         "search": "Cari Audit Trail",
         "notFound": "No Audit Trails found"
+      },
+      "created": "Audit Trail dengan id {{ param }} telah dibuat",
+      "updated": "Audit Trail dengan id {{ param }} telah diperbaharui",
+      "deleted": "Audit Trail dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

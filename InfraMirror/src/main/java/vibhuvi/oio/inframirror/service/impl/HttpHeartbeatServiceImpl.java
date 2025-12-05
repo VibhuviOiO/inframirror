@@ -78,6 +78,13 @@ public class HttpHeartbeatServiceImpl implements HttpHeartbeatService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<HttpHeartbeatDTO> findAll(Pageable pageable) {
+        LOG.debug("Request to get all HttpHeartbeats");
+        return httpHeartbeatRepository.findAll(pageable).map(httpHeartbeatMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<HttpHeartbeatDTO> findOne(Long id) {
         LOG.debug("Request to get HttpHeartbeat : {}", id);
         return httpHeartbeatRepository.findById(id).map(httpHeartbeatMapper::toDto);

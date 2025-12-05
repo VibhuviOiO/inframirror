@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni Service Heartbeat ekle",
+        "createOrEditLabel": "Yeni Service Heartbeat ekle veya guncelle",
+        "search": "Service Heartbeat ara",
+        "notFound": "Service Heartbeats kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir Service Heartbeat eklendi",
+      "updated": "{{ param }} nolu Service Heartbeat guncellendi",
+      "deleted": "{{ param }} nolu Service Heartbeat silindi",
+      "delete": {
+        "question": "{{ id }} nolu Service Heartbeat silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

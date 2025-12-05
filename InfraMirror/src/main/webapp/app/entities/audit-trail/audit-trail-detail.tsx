@@ -28,7 +28,7 @@ export const AuditTrailDetail = () => {
         <dl className="jh-entity-details">
           <dt>
             <span id="id">
-              <Translate contentKey="global.field.id">ID</Translate>
+              <Translate contentKey="infraMirrorApp.auditTrail.id">Id</Translate>
             </span>
           </dt>
           <dd>{auditTrailEntity.id}</dd>
@@ -82,10 +82,6 @@ export const AuditTrailDetail = () => {
             </span>
           </dt>
           <dd>{auditTrailEntity.userAgent}</dd>
-          <dt>
-            <Translate contentKey="infraMirrorApp.auditTrail.user">User</Translate>
-          </dt>
-          <dd>{auditTrailEntity.user ? auditTrailEntity.user.id : ''}</dd>
         </dl>
         <Button tag={Link} to="/audit-trail" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}

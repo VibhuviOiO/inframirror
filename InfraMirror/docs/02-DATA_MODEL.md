@@ -1086,46 +1086,17 @@ CREATE INDEX idx_session_commands_session ON session_commands(session_id);
 CREATE INDEX idx_session_commands_executed ON session_commands(executed_at);
 ```
 
-### 5.4 RolePermission
-
-**Purpose**: Fine-grained RBAC (beyond Keycloak roles)
-
-```sql
-CREATE TABLE role_permissions (
-    id BIGINT PRIMARY KEY,
-    role_name VARCHAR(50) NOT NULL,
-    
-    -- Resource
-    resource_type VARCHAR(50) NOT NULL, -- INSTANCE, APPLICATION, SERVICE, etc.
-    resource_id BIGINT, -- NULL means all resources of this type
-    
-    -- Action
-    action VARCHAR(50) NOT NULL, -- READ, WRITE, DELETE, EXECUTE, ADMIN
-    
-    -- Scope
-    datacenter_scope BIGINT[], -- NULL means all datacenters
-    
-    -- Constraints
-    constraints JSONB, -- Additional constraints (time-based, IP-based, etc.)
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    UNIQUE(role_name, resource_type, resource_id, action)
-);
-
-CREATE INDEX idx_role_permissions_role ON role_permissions(role_name);
-CREATE INDEX idx_role_permissions_resource ON role_permissions(resource_type, resource_id);
-```
+> Note: The project intentionally does not include a custom `RolePermission` entity. To keep authorization simple we rely on JHipster's default static roles (for example `ROLE_ADMIN`, `ROLE_USER`) and Keycloak role mappings. If a fine-grained RBAC layer is required later, it can be added as an extension.
 
 ---
 
 ## 6. Audit & Logging Domain
 
-### 6.1 AuditLog
+### 6.1 AuditTrail
 
 **Purpose**: Comprehensive audit trail of all system changes
 
-**Liquibase**: `20251025202842_added_entity_AuditLog.xml`
+**Liquibase**: `20251203083834_added_entity_AuditTrail.xml`
 
 ```sql
 CREATE TABLE audit_logs (
@@ -1521,7 +1492,7 @@ $$ LANGUAGE plpgsql;
 | Application Management | 2 (Application, ApplicationProcess) |
 | Distributed Services | 3 (Service, Cluster, ServiceInstance) |
 | Security & Access | 4 (ApiKey, RemoteSession, SessionCommand, RolePermission) |
-| Audit & Logging | 2 (AuditLog, SecurityEvent) |
+| Audit & Logging | 2 (AuditTrail, SecurityEvent) |
 | Logs & Metrics | 2 (LogSource, + Elasticsearch indices) |
 | Plugin System | 2 (Plugin, PluginExecution) |
 | **Total** | **24 PostgreSQL entities + 2 Elasticsearch indices** |

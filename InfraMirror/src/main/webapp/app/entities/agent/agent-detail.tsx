@@ -27,7 +27,7 @@ export const AgentDetail = () => {
         <dl className="jh-entity-details">
           <dt>
             <span id="id">
-              <Translate contentKey="global.field.id">ID</Translate>
+              <Translate contentKey="infraMirrorApp.agent.id">Id</Translate>
             </span>
           </dt>
           <dd>{agentEntity.id}</dd>
@@ -38,9 +38,9 @@ export const AgentDetail = () => {
           </dt>
           <dd>{agentEntity.name}</dd>
           <dt>
-            <Translate contentKey="infraMirrorApp.agent.datacenter">Datacenter</Translate>
+            <Translate contentKey="infraMirrorApp.agent.region">Region</Translate>
           </dt>
-          <dd>{agentEntity.datacenter ? agentEntity.datacenter.id : ''}</dd>
+          <dd>{agentEntity.region ? agentEntity.region.id : ''}</dd>
         </dl>
         <Button tag={Link} to="/agent" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}

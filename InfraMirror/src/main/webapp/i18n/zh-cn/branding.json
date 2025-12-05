@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "创建新 Branding",
+        "createOrEditLabel": "创建或编辑 Branding",
+        "search": "查找 Branding",
+        "notFound": "No Brandings found"
+      },
+      "created": "Branding {{ param }} 创建成功",
+      "updated": "Branding {{ param }} 更新成功",
+      "deleted": "Branding {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Branding {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

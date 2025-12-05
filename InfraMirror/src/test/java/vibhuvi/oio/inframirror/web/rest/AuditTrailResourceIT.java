@@ -1,31 +1,39 @@
 package vibhuvi.oio.inframirror.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static vibhuvi.oio.inframirror.domain.AuditTrailAsserts.*;
+import static vibhuvi.oio.inframirror.web.rest.TestUtil.createUpdateProxyForBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.AuditTrail;
-import vibhuvi.oio.inframirror.domain.User;
 import vibhuvi.oio.inframirror.repository.AuditTrailRepository;
-import vibhuvi.oio.inframirror.repository.UserRepository;
 import vibhuvi.oio.inframirror.repository.search.AuditTrailSearchRepository;
+import vibhuvi.oio.inframirror.service.dto.AuditTrailDTO;
 import vibhuvi.oio.inframirror.service.mapper.AuditTrailMapper;
 
 /**
@@ -44,7 +52,6 @@ class AuditTrailResourceIT {
 
     private static final Long DEFAULT_ENTITY_ID = 1L;
     private static final Long UPDATED_ENTITY_ID = 2L;
-    private static final Long SMALLER_ENTITY_ID = 1L - 1L;
 
     private static final String DEFAULT_OLD_VALUE = "AAAAAAAAAA";
     private static final String UPDATED_OLD_VALUE = "BBBBBBBBBB";
@@ -65,14 +72,14 @@ class AuditTrailResourceIT {
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/audit-trails/_search";
 
+    private static Random random = new Random();
+    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private ObjectMapper om;
 
     @Autowired
     private AuditTrailRepository auditTrailRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private AuditTrailMapper auditTrailMapper;
@@ -138,7 +145,145 @@ class AuditTrailResourceIT {
             auditTrailSearchRepository.delete(insertedAuditTrail);
             insertedAuditTrail = null;
         }
-        userRepository.deleteAll();
+    }
+
+    @Test
+    @Transactional
+    void createAuditTrail() throws Exception {
+        long databaseSizeBeforeCreate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        // Create the AuditTrail
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+        var returnedAuditTrailDTO = om.readValue(
+            restAuditTrailMockMvc
+                .perform(
+                    post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(auditTrailDTO))
+                )
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(),
+            AuditTrailDTO.class
+        );
+
+        // Validate the AuditTrail in the database
+        assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
+        var returnedAuditTrail = auditTrailMapper.toEntity(returnedAuditTrailDTO);
+        assertAuditTrailUpdatableFieldsEquals(returnedAuditTrail, getPersistedAuditTrail(returnedAuditTrail));
+
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
+            });
+
+        insertedAuditTrail = returnedAuditTrail;
+    }
+
+    @Test
+    @Transactional
+    void createAuditTrailWithExistingId() throws Exception {
+        // Create the AuditTrail with an existing ID
+        auditTrail.setId(1L);
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        long databaseSizeBeforeCreate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+
+        // An entity with an existing ID cannot be created, so this API call must fail
+        restAuditTrailMockMvc
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(auditTrailDTO)))
+            .andExpect(status().isBadRequest());
+
+        // Validate the AuditTrail in the database
+        assertSameRepositoryCount(databaseSizeBeforeCreate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void checkActionIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        // set the field null
+        auditTrail.setAction(null);
+
+        // Create the AuditTrail, which fails.
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        restAuditTrailMockMvc
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(auditTrailDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void checkEntityNameIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        // set the field null
+        auditTrail.setEntityName(null);
+
+        // Create the AuditTrail, which fails.
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        restAuditTrailMockMvc
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(auditTrailDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void checkEntityIdIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        // set the field null
+        auditTrail.setEntityId(null);
+
+        // Create the AuditTrail, which fails.
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        restAuditTrailMockMvc
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(auditTrailDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void checkTimestampIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        // set the field null
+        auditTrail.setTimestamp(null);
+
+        // Create the AuditTrail, which fails.
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        restAuditTrailMockMvc
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(auditTrailDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -187,349 +332,303 @@ class AuditTrailResourceIT {
 
     @Test
     @Transactional
-    void getAuditTrailsByIdFiltering() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        Long id = auditTrail.getId();
-
-        defaultAuditTrailFiltering("id.equals=" + id, "id.notEquals=" + id);
-
-        defaultAuditTrailFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
-
-        defaultAuditTrailFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
+    void getNonExistingAuditTrail() throws Exception {
+        // Get the auditTrail
+        restAuditTrailMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    void getAllAuditTrailsByActionIsEqualToSomething() throws Exception {
+    void putExistingAuditTrail() throws Exception {
         // Initialize the database
         insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
 
-        // Get all the auditTrailList where action equals to
-        defaultAuditTrailFiltering("action.equals=" + DEFAULT_ACTION, "action.equals=" + UPDATED_ACTION);
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        auditTrailSearchRepository.save(auditTrail);
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+
+        // Update the auditTrail
+        AuditTrail updatedAuditTrail = auditTrailRepository.findById(auditTrail.getId()).orElseThrow();
+        // Disconnect from session so that the updates on updatedAuditTrail are not directly saved in db
+        em.detach(updatedAuditTrail);
+        updatedAuditTrail
+            .action(UPDATED_ACTION)
+            .entityName(UPDATED_ENTITY_NAME)
+            .entityId(UPDATED_ENTITY_ID)
+            .oldValue(UPDATED_OLD_VALUE)
+            .newValue(UPDATED_NEW_VALUE)
+            .timestamp(UPDATED_TIMESTAMP)
+            .ipAddress(UPDATED_IP_ADDRESS)
+            .userAgent(UPDATED_USER_AGENT);
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(updatedAuditTrail);
+
+        restAuditTrailMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, auditTrailDTO.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(auditTrailDTO))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the AuditTrail in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertPersistedAuditTrailToMatchAllProperties(updatedAuditTrail);
+
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+                List<AuditTrail> auditTrailSearchList = Streamable.of(auditTrailSearchRepository.findAll()).toList();
+                AuditTrail testAuditTrailSearch = auditTrailSearchList.get(searchDatabaseSizeAfter - 1);
+
+                assertAuditTrailAllPropertiesEquals(testAuditTrailSearch, updatedAuditTrail);
+            });
     }
 
     @Test
     @Transactional
-    void getAllAuditTrailsByActionIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
+    void putNonExistingAuditTrail() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        auditTrail.setId(longCount.incrementAndGet());
 
-        // Get all the auditTrailList where action in
-        defaultAuditTrailFiltering("action.in=" + DEFAULT_ACTION + "," + UPDATED_ACTION, "action.in=" + UPDATED_ACTION);
+        // Create the AuditTrail
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restAuditTrailMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, auditTrailDTO.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(auditTrailDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the AuditTrail in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
-    void getAllAuditTrailsByActionIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
+    void putWithIdMismatchAuditTrail() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        auditTrail.setId(longCount.incrementAndGet());
 
-        // Get all the auditTrailList where action is not null
-        defaultAuditTrailFiltering("action.specified=true", "action.specified=false");
+        // Create the AuditTrail
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restAuditTrailMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(auditTrailDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the AuditTrail in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
-    void getAllAuditTrailsByActionContainsSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
+    void putWithMissingIdPathParamAuditTrail() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        auditTrail.setId(longCount.incrementAndGet());
 
-        // Get all the auditTrailList where action contains
-        defaultAuditTrailFiltering("action.contains=" + DEFAULT_ACTION, "action.contains=" + UPDATED_ACTION);
+        // Create the AuditTrail
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restAuditTrailMockMvc
+            .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(auditTrailDTO)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the AuditTrail in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
-    void getAllAuditTrailsByActionNotContainsSomething() throws Exception {
+    void partialUpdateAuditTrailWithPatch() throws Exception {
         // Initialize the database
         insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
 
-        // Get all the auditTrailList where action does not contain
-        defaultAuditTrailFiltering("action.doesNotContain=" + UPDATED_ACTION, "action.doesNotContain=" + DEFAULT_ACTION);
-    }
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityNameIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
+        // Update the auditTrail using partial update
+        AuditTrail partialUpdatedAuditTrail = new AuditTrail();
+        partialUpdatedAuditTrail.setId(auditTrail.getId());
 
-        // Get all the auditTrailList where entityName equals to
-        defaultAuditTrailFiltering("entityName.equals=" + DEFAULT_ENTITY_NAME, "entityName.equals=" + UPDATED_ENTITY_NAME);
-    }
+        partialUpdatedAuditTrail
+            .action(UPDATED_ACTION)
+            .oldValue(UPDATED_OLD_VALUE)
+            .timestamp(UPDATED_TIMESTAMP)
+            .ipAddress(UPDATED_IP_ADDRESS);
 
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityNameIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
+        restAuditTrailMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedAuditTrail.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(partialUpdatedAuditTrail))
+            )
+            .andExpect(status().isOk());
 
-        // Get all the auditTrailList where entityName in
-        defaultAuditTrailFiltering(
-            "entityName.in=" + DEFAULT_ENTITY_NAME + "," + UPDATED_ENTITY_NAME,
-            "entityName.in=" + UPDATED_ENTITY_NAME
+        // Validate the AuditTrail in the database
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertAuditTrailUpdatableFieldsEquals(
+            createUpdateProxyForBean(partialUpdatedAuditTrail, auditTrail),
+            getPersistedAuditTrail(auditTrail)
         );
     }
 
     @Test
     @Transactional
-    void getAllAuditTrailsByEntityNameIsNullOrNotNull() throws Exception {
+    void fullUpdateAuditTrailWithPatch() throws Exception {
         // Initialize the database
         insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
 
-        // Get all the auditTrailList where entityName is not null
-        defaultAuditTrailFiltering("entityName.specified=true", "entityName.specified=false");
-    }
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityNameContainsSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
+        // Update the auditTrail using partial update
+        AuditTrail partialUpdatedAuditTrail = new AuditTrail();
+        partialUpdatedAuditTrail.setId(auditTrail.getId());
 
-        // Get all the auditTrailList where entityName contains
-        defaultAuditTrailFiltering("entityName.contains=" + DEFAULT_ENTITY_NAME, "entityName.contains=" + UPDATED_ENTITY_NAME);
-    }
+        partialUpdatedAuditTrail
+            .action(UPDATED_ACTION)
+            .entityName(UPDATED_ENTITY_NAME)
+            .entityId(UPDATED_ENTITY_ID)
+            .oldValue(UPDATED_OLD_VALUE)
+            .newValue(UPDATED_NEW_VALUE)
+            .timestamp(UPDATED_TIMESTAMP)
+            .ipAddress(UPDATED_IP_ADDRESS)
+            .userAgent(UPDATED_USER_AGENT);
 
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityNameNotContainsSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where entityName does not contain
-        defaultAuditTrailFiltering("entityName.doesNotContain=" + UPDATED_ENTITY_NAME, "entityName.doesNotContain=" + DEFAULT_ENTITY_NAME);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityIdIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where entityId equals to
-        defaultAuditTrailFiltering("entityId.equals=" + DEFAULT_ENTITY_ID, "entityId.equals=" + UPDATED_ENTITY_ID);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityIdIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where entityId in
-        defaultAuditTrailFiltering("entityId.in=" + DEFAULT_ENTITY_ID + "," + UPDATED_ENTITY_ID, "entityId.in=" + UPDATED_ENTITY_ID);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityIdIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where entityId is not null
-        defaultAuditTrailFiltering("entityId.specified=true", "entityId.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityIdIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where entityId is greater than or equal to
-        defaultAuditTrailFiltering("entityId.greaterThanOrEqual=" + DEFAULT_ENTITY_ID, "entityId.greaterThanOrEqual=" + UPDATED_ENTITY_ID);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityIdIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where entityId is less than or equal to
-        defaultAuditTrailFiltering("entityId.lessThanOrEqual=" + DEFAULT_ENTITY_ID, "entityId.lessThanOrEqual=" + SMALLER_ENTITY_ID);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityIdIsLessThanSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where entityId is less than
-        defaultAuditTrailFiltering("entityId.lessThan=" + UPDATED_ENTITY_ID, "entityId.lessThan=" + DEFAULT_ENTITY_ID);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByEntityIdIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where entityId is greater than
-        defaultAuditTrailFiltering("entityId.greaterThan=" + SMALLER_ENTITY_ID, "entityId.greaterThan=" + DEFAULT_ENTITY_ID);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByTimestampIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where timestamp equals to
-        defaultAuditTrailFiltering("timestamp.equals=" + DEFAULT_TIMESTAMP, "timestamp.equals=" + UPDATED_TIMESTAMP);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByTimestampIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where timestamp in
-        defaultAuditTrailFiltering("timestamp.in=" + DEFAULT_TIMESTAMP + "," + UPDATED_TIMESTAMP, "timestamp.in=" + UPDATED_TIMESTAMP);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByTimestampIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where timestamp is not null
-        defaultAuditTrailFiltering("timestamp.specified=true", "timestamp.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByIpAddressIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where ipAddress equals to
-        defaultAuditTrailFiltering("ipAddress.equals=" + DEFAULT_IP_ADDRESS, "ipAddress.equals=" + UPDATED_IP_ADDRESS);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByIpAddressIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where ipAddress in
-        defaultAuditTrailFiltering("ipAddress.in=" + DEFAULT_IP_ADDRESS + "," + UPDATED_IP_ADDRESS, "ipAddress.in=" + UPDATED_IP_ADDRESS);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByIpAddressIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where ipAddress is not null
-        defaultAuditTrailFiltering("ipAddress.specified=true", "ipAddress.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByIpAddressContainsSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where ipAddress contains
-        defaultAuditTrailFiltering("ipAddress.contains=" + DEFAULT_IP_ADDRESS, "ipAddress.contains=" + UPDATED_IP_ADDRESS);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByIpAddressNotContainsSomething() throws Exception {
-        // Initialize the database
-        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-
-        // Get all the auditTrailList where ipAddress does not contain
-        defaultAuditTrailFiltering("ipAddress.doesNotContain=" + UPDATED_IP_ADDRESS, "ipAddress.doesNotContain=" + DEFAULT_IP_ADDRESS);
-    }
-
-    @Test
-    @Transactional
-    void getAllAuditTrailsByUserIsEqualToSomething() throws Exception {
-        User user;
-        if (TestUtil.findAll(em, User.class).isEmpty()) {
-            auditTrailRepository.saveAndFlush(auditTrail);
-            user = UserResourceIT.createEntity();
-        } else {
-            user = TestUtil.findAll(em, User.class).get(0);
-        }
-        em.persist(user);
-        em.flush();
-        auditTrail.setUser(user);
-        auditTrailRepository.saveAndFlush(auditTrail);
-        String userId = user.getId();
-        // Get all the auditTrailList where user equals to userId
-        defaultAuditTrailShouldBeFound("userId.equals=" + userId);
-
-        // Get all the auditTrailList where user equals to "invalid-id"
-        defaultAuditTrailShouldNotBeFound("userId.equals=" + "invalid-id");
-    }
-
-    private void defaultAuditTrailFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
-        defaultAuditTrailShouldBeFound(shouldBeFound);
-        defaultAuditTrailShouldNotBeFound(shouldNotBeFound);
-    }
-
-    /**
-     * Executes the search, and checks that the default entity is returned.
-     */
-    private void defaultAuditTrailShouldBeFound(String filter) throws Exception {
         restAuditTrailMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(auditTrail.getId().intValue())))
-            .andExpect(jsonPath("$.[*].action").value(hasItem(DEFAULT_ACTION)))
-            .andExpect(jsonPath("$.[*].entityName").value(hasItem(DEFAULT_ENTITY_NAME)))
-            .andExpect(jsonPath("$.[*].entityId").value(hasItem(DEFAULT_ENTITY_ID.intValue())))
-            .andExpect(jsonPath("$.[*].oldValue").value(hasItem(DEFAULT_OLD_VALUE)))
-            .andExpect(jsonPath("$.[*].newValue").value(hasItem(DEFAULT_NEW_VALUE)))
-            .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
-            .andExpect(jsonPath("$.[*].ipAddress").value(hasItem(DEFAULT_IP_ADDRESS)))
-            .andExpect(jsonPath("$.[*].userAgent").value(hasItem(DEFAULT_USER_AGENT)));
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedAuditTrail.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(partialUpdatedAuditTrail))
+            )
+            .andExpect(status().isOk());
 
-        // Check, that the count call also returns 1
-        restAuditTrailMockMvc
-            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().string("1"));
-    }
+        // Validate the AuditTrail in the database
 
-    /**
-     * Executes the search, and checks that the default entity is not returned.
-     */
-    private void defaultAuditTrailShouldNotBeFound(String filter) throws Exception {
-        restAuditTrailMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$").isArray())
-            .andExpect(jsonPath("$").isEmpty());
-
-        // Check, that the count call also returns 0
-        restAuditTrailMockMvc
-            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().string("0"));
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertAuditTrailUpdatableFieldsEquals(partialUpdatedAuditTrail, getPersistedAuditTrail(partialUpdatedAuditTrail));
     }
 
     @Test
     @Transactional
-    void getNonExistingAuditTrail() throws Exception {
-        // Get the auditTrail
-        restAuditTrailMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+    void patchNonExistingAuditTrail() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        auditTrail.setId(longCount.incrementAndGet());
+
+        // Create the AuditTrail
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restAuditTrailMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, auditTrailDTO.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(auditTrailDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the AuditTrail in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchAuditTrail() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        auditTrail.setId(longCount.incrementAndGet());
+
+        // Create the AuditTrail
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restAuditTrailMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(auditTrailDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the AuditTrail in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamAuditTrail() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        auditTrail.setId(longCount.incrementAndGet());
+
+        // Create the AuditTrail
+        AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restAuditTrailMockMvc
+            .perform(
+                patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(auditTrailDTO))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the AuditTrail in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void deleteAuditTrail() throws Exception {
+        // Initialize the database
+        insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
+        auditTrailRepository.save(auditTrail);
+        auditTrailSearchRepository.save(auditTrail);
+
+        long databaseSizeBeforeDelete = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
+
+        // Delete the auditTrail
+        restAuditTrailMockMvc
+            .perform(delete(ENTITY_API_URL_ID, auditTrail.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNoContent());
+
+        // Validate the database contains one less item
+        assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test

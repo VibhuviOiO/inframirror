@@ -1,11 +1,15 @@
 {
   "annotations": {
-    "changelogDate": "20251203083833"
+    "changelogDate": "20251205053326"
   },
   "applications": "*",
-  "documentation": "ApiKey - API keys for external system authentication\\nTable: api_key",
   "dto": "mapstruct",
   "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
     {
       "fieldName": "name",
       "fieldType": "String",
@@ -58,8 +62,8 @@
       "fieldType": "Instant"
     }
   ],
-  "jpaMetamodelFiltering": true,
   "name": "ApiKey",
+  "pagination": "pagination",
   "relationships": [],
   "service": "serviceImpl"
 }

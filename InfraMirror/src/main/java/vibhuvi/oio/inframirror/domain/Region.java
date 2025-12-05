@@ -8,8 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Region - Represents geographical regions containing multiple datacenters
- * Table: regions
+ * A Region.
  */
 @Entity
 @Table(name = "region")
@@ -19,10 +18,11 @@ public class Region implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
@@ -43,8 +43,16 @@ public class Region implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "agents", "instances", "region" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "instances", "services", "region" }, allowSetters = true)
     private Set<Datacenter> datacenters = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "region")
+    @org.springframework.data.annotation.Transient
+    @JsonIgnoreProperties(
+        value = { "instances", "httpHeartbeats", "instanceHeartbeats", "serviceHeartbeats", "region" },
+        allowSetters = true
+    )
+    private Set<Agent> agents = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -119,15 +127,46 @@ public class Region implements Serializable {
         return this;
     }
 
-    public Region addDatacenters(Datacenter datacenter) {
+    public Region addDatacenter(Datacenter datacenter) {
         this.datacenters.add(datacenter);
         datacenter.setRegion(this);
         return this;
     }
 
-    public Region removeDatacenters(Datacenter datacenter) {
+    public Region removeDatacenter(Datacenter datacenter) {
         this.datacenters.remove(datacenter);
         datacenter.setRegion(null);
+        return this;
+    }
+
+    public Set<Agent> getAgents() {
+        return this.agents;
+    }
+
+    public void setAgents(Set<Agent> agents) {
+        if (this.agents != null) {
+            this.agents.forEach(i -> i.setRegion(null));
+        }
+        if (agents != null) {
+            agents.forEach(i -> i.setRegion(this));
+        }
+        this.agents = agents;
+    }
+
+    public Region agents(Set<Agent> agents) {
+        this.setAgents(agents);
+        return this;
+    }
+
+    public Region addAgent(Agent agent) {
+        this.agents.add(agent);
+        agent.setRegion(this);
+        return this;
+    }
+
+    public Region removeAgent(Agent agent) {
+        this.agents.remove(agent);
+        agent.setRegion(null);
         return this;
     }
 

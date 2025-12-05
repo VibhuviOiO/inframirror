@@ -34,6 +34,14 @@ public interface AuditTrailService {
     Optional<AuditTrailDTO> partialUpdate(AuditTrailDTO auditTrailDTO);
 
     /**
+     * Get all the auditTrails.
+     *
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    Page<AuditTrailDTO> findAll(Pageable pageable);
+
+    /**
      * Get the "id" auditTrail.
      *
      * @param id the id of the entity.

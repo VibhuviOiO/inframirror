@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Ստեղծել նոր Audit Trail",
+        "createOrEditLabel": "Ստեղծել կամ փոփոխել Audit Trail",
         "search": "Գտնել Audit Trail",
         "notFound": "No Audit Trails found"
+      },
+      "created": "Նոր Audit Trail ստեղծված է {{ param }} նունացուցիչով",
+      "updated": "Audit Trail թարմացվաց է {{ param }} նունացուցիչով",
+      "deleted": "Audit Trail հեռացված է {{ param }}  նունացուցիչով",
+      "delete": {
+        "question": "Դուք վստահ ե՞ք, որ ցանկանում եք հեռացնել Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

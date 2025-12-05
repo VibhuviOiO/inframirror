@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Pridať Branding",
+        "createOrEditLabel": "Pridať alebo upraviť Branding",
+        "search": "Vyhľadať Branding",
+        "notFound": "No Brandings found"
+      },
+      "created": "Bol vytvorený potomok entity Branding s identifikátorom {{ param }}",
+      "updated": "Potomok entity Branding s identifikátorom {{ param }} bol upravený.",
+      "deleted": "Potomok entity Branding s identifikátorom {{ param }} bol vymazaný.",
+      "delete": {
+        "question": "Ste si istý, že chcete vymazať Branding {{ id }}?"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

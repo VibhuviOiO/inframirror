@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "agentMonitor": {
+      "home": {
+        "title": "Agent Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Criar novo(a) Agent Monitor",
+        "createOrEditLabel": "Criar ou editar Agent Monitor",
+        "search": "Procurar por Agent Monitor",
+        "notFound": "Nenhum Agent Monitors encontrado"
+      },
+      "created": "Um novo Agent Monitor foi criado com o identificador {{ param }}",
+      "updated": "Agent Monitor com identificador {{ param }} foi actualizado",
+      "deleted": "Agent Monitor com identificador {{ param }} foi eliminado",
+      "delete": {
+        "question": "Tem a certeza que pretende eliminar o(a) Agent Monitor {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Monitor"
+      },
+      "id": "Id",
+      "active": "Active",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "agent": "Agent",
+      "monitor": "Monitor"
+    }
+  }
+}

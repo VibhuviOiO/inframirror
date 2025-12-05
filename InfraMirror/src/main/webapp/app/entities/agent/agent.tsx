@@ -174,14 +174,14 @@ export const Agent = () => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="infraMirrorApp.agent.id">ID</Translate> <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
+                  <Translate contentKey="infraMirrorApp.agent.id">Id</Translate> <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
                 <th className="hand" onClick={sort('name')}>
                   <Translate contentKey="infraMirrorApp.agent.name">Name</Translate>{' '}
                   <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
                 </th>
                 <th>
-                  <Translate contentKey="infraMirrorApp.agent.datacenter">Datacenter</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="infraMirrorApp.agent.region">Region</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th />
               </tr>
@@ -195,7 +195,7 @@ export const Agent = () => {
                     </Button>
                   </td>
                   <td>{agent.name}</td>
-                  <td>{agent.datacenter ? <Link to={`/datacenter/${agent.datacenter.id}`}>{agent.datacenter.id}</Link> : ''}</td>
+                  <td>{agent.region ? <Link to={`/region/${agent.region.id}`}>{agent.region.id}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/agent/${agent.id}`} color="info" size="sm" data-cy="entityDetailsButton">

@@ -1,11 +1,15 @@
 {
   "annotations": {
-    "changelogDate": "20251203083827"
+    "changelogDate": "20251205053331"
   },
   "applications": "*",
-  "documentation": "Instance - Physical or virtual machines managed by the platform\\nTable: instance",
   "dto": "mapstruct",
   "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
     {
       "fieldName": "name",
       "fieldType": "String",
@@ -146,15 +150,22 @@
   "pagination": "pagination",
   "relationships": [
     {
-      "otherEntityName": "pingHeartbeat",
+      "otherEntityName": "instanceHeartbeat",
       "otherEntityRelationshipName": "instance",
-      "relationshipName": "pingHeartbeats",
+      "relationshipName": "heartbeat",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "serviceInstance",
+      "otherEntityRelationshipName": "instance",
+      "relationshipName": "serviceInstance",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
     {
       "otherEntityName": "datacenter",
-      "otherEntityRelationshipName": "instances",
+      "otherEntityRelationshipName": "instance",
       "relationshipName": "datacenter",
       "relationshipSide": "right",
       "relationshipType": "many-to-one",
@@ -162,7 +173,7 @@
     },
     {
       "otherEntityName": "agent",
-      "otherEntityRelationshipName": "instances",
+      "otherEntityRelationshipName": "instance",
       "relationshipName": "agent",
       "relationshipSide": "right",
       "relationshipType": "many-to-one"

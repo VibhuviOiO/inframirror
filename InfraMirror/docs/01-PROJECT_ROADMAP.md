@@ -116,10 +116,10 @@ Based on Liquibase analysis, implement:
    - Additional: datacenter_access, expires_at, last_used_date
    - Purpose: Programmatic API access for agents and integrations
 
-2. **AuditLog** (Already in Liquibase)
+2. **AuditTrail** (Already in Liquibase)
    - Fields: action, entity_name, entity_id, old_value, new_value, timestamp
    - Additional: user_id, ip_address, user_agent
-   - Purpose: Comprehensive audit trail
+   - Purpose: Comprehensive audit trail (entity is named `AuditTrail` in the codebase)
 
 **Tasks:**
 - [ ] Create API key management system
@@ -463,9 +463,9 @@ Based on Liquibase analysis, implement:
 
 **New Entities:**
 
-1. **RolePermission**
-   - Fields: role_name, resource_type, action, datacenter_scope[]
-   - Purpose: Fine-grained RBAC
+1. **RBAC (JHipster static roles)**
+   - Use JHipster's default static roles (`ROLE_ADMIN`, `ROLE_USER`, etc.) instead of a custom `RolePermission` entity to avoid added IAM complexity.
+   - Purpose: Keep authorization simple and rely on Keycloak/JHipster role mappings. If fine-grained resource permissions are needed later, add an extension.
 
 2. **SecurityEvent**
    - Fields: event_type, severity, user_id, details, timestamp

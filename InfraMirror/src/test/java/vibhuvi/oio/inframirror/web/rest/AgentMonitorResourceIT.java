@@ -458,7 +458,7 @@ class AgentMonitorResourceIT {
         AgentMonitor partialUpdatedAgentMonitor = new AgentMonitor();
         partialUpdatedAgentMonitor.setId(agentMonitor.getId());
 
-        partialUpdatedAgentMonitor.createdBy(UPDATED_CREATED_BY).lastModifiedBy(UPDATED_LAST_MODIFIED_BY);
+        partialUpdatedAgentMonitor.active(UPDATED_ACTIVE).createdBy(UPDATED_CREATED_BY).lastModifiedBy(UPDATED_LAST_MODIFIED_BY);
 
         restAgentMonitorMockMvc
             .perform(

@@ -13,17 +13,17 @@ import vibhuvi.oio.inframirror.service.dto.HttpMonitorDTO;
  */
 @Mapper(componentModel = "spring")
 public interface HttpHeartbeatMapper extends EntityMapper<HttpHeartbeatDTO, HttpHeartbeat> {
-    @Mapping(target = "monitor", source = "monitor", qualifiedByName = "httpMonitorId")
     @Mapping(target = "agent", source = "agent", qualifiedByName = "agentId")
+    @Mapping(target = "monitor", source = "monitor", qualifiedByName = "httpMonitorId")
     HttpHeartbeatDTO toDto(HttpHeartbeat s);
-
-    @Named("httpMonitorId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    HttpMonitorDTO toDtoHttpMonitorId(HttpMonitor httpMonitor);
 
     @Named("agentId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     AgentDTO toDtoAgentId(Agent agent);
+
+    @Named("httpMonitorId")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    HttpMonitorDTO toDtoHttpMonitorId(HttpMonitor httpMonitor);
 }

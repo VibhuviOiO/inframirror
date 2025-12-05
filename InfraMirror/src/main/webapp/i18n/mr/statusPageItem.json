@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नवीन Status Page Item तयार करा",
+        "createOrEditLabel": "Status Page Item तयार किंवा संपादित करा",
+        "search": "Status Page Item शोधा",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "Status Page Item [identifier: {{ param }}] तयार आहे",
+      "updated": "Status Page Item [identifier: {{ param }}] सुधारित केले आहे",
+      "deleted": "Status Page Item [identifier: {{ param }}] हटविले आहे",
+      "delete": {
+        "question": "Status Page Item [id: {{ id }}] काढून टाकण्याबाबत पुष्टी?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

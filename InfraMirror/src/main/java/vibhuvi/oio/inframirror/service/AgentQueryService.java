@@ -79,14 +79,17 @@ public class AgentQueryService extends QueryService<Agent> {
                 Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : null,
                 buildRangeSpecification(criteria.getId(), Agent_.id),
                 buildStringSpecification(criteria.getName(), Agent_.name),
-                buildSpecification(criteria.getInstancesId(), root -> root.join(Agent_.instances, JoinType.LEFT).get(Instance_.id)),
-                buildSpecification(criteria.getHttpHeartbeatsId(), root ->
+                buildSpecification(criteria.getInstanceId(), root -> root.join(Agent_.instances, JoinType.LEFT).get(Instance_.id)),
+                buildSpecification(criteria.getHttpHeartbeatId(), root ->
                     root.join(Agent_.httpHeartbeats, JoinType.LEFT).get(HttpHeartbeat_.id)
                 ),
-                buildSpecification(criteria.getPingHeartbeatsId(), root ->
-                    root.join(Agent_.pingHeartbeats, JoinType.LEFT).get(PingHeartbeat_.id)
+                buildSpecification(criteria.getInstanceHeartbeatId(), root ->
+                    root.join(Agent_.instanceHeartbeats, JoinType.LEFT).get(InstanceHeartbeat_.id)
                 ),
-                buildSpecification(criteria.getDatacenterId(), root -> root.join(Agent_.datacenter, JoinType.LEFT).get(Datacenter_.id))
+                buildSpecification(criteria.getServiceHeartbeatId(), root ->
+                    root.join(Agent_.serviceHeartbeats, JoinType.LEFT).get(ServiceHeartbeat_.id)
+                ),
+                buildSpecification(criteria.getRegionId(), root -> root.join(Agent_.region, JoinType.LEFT).get(Region_.id))
             );
         }
         return specification;

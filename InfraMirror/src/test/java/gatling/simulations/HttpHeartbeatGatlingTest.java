@@ -117,8 +117,13 @@ public class HttpHeartbeatGatlingTest extends Simulation {
                                 ", \"responseServer\": \"SAMPLE_TEXT\"" +
                                 ", \"responseCacheStatus\": \"SAMPLE_TEXT\"" +
                                 ", \"dnsLookupMs\": 0" +
+                                ", \"dnsResolvedIp\": \"SAMPLE_TEXT\"" +
                                 ", \"tcpConnectMs\": 0" +
                                 ", \"tlsHandshakeMs\": 0" +
+                                ", \"sslCertificateValid\": null" +
+                                ", \"sslCertificateExpiry\": \"2020-01-01T00:00:00.000Z\"" +
+                                ", \"sslCertificateIssuer\": \"SAMPLE_TEXT\"" +
+                                ", \"sslDaysUntilExpiry\": 0" +
                                 ", \"timeToFirstByteMs\": 0" +
                                 ", \"warningThresholdMs\": 0" +
                                 ", \"criticalThresholdMs\": 0" +
@@ -127,6 +132,26 @@ public class HttpHeartbeatGatlingTest extends Simulation {
                                 ", \"rawRequestHeaders\": null" +
                                 ", \"rawResponseHeaders\": null" +
                                 ", \"rawResponseBody\": null" +
+                                ", \"dnsDetails\": null" +
+                                ", \"tlsDetails\": null" +
+                                ", \"httpVersion\": \"SAMPLE_TEXT\"" +
+                                ", \"contentEncoding\": \"SAMPLE_TEXT\"" +
+                                ", \"compressionRatio\": 0" +
+                                ", \"transferEncoding\": \"SAMPLE_TEXT\"" +
+                                ", \"responseBodyHash\": \"SAMPLE_TEXT\"" +
+                                ", \"responseBodySample\": null" +
+                                ", \"responseBodyValid\": null" +
+                                ", \"responseBodyUncompressedBytes\": 0" +
+                                ", \"redirectDetails\": null" +
+                                ", \"cacheControl\": \"SAMPLE_TEXT\"" +
+                                ", \"etag\": \"SAMPLE_TEXT\"" +
+                                ", \"cacheAge\": 0" +
+                                ", \"cdnProvider\": \"SAMPLE_TEXT\"" +
+                                ", \"cdnPop\": \"SAMPLE_TEXT\"" +
+                                ", \"rateLimitDetails\": null" +
+                                ", \"networkPath\": null" +
+                                ", \"agentMetrics\": null" +
+                                ", \"phaseLatencies\": null" +
                                 "}"
                             )
                         )

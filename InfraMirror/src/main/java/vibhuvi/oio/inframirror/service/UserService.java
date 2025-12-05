@@ -119,10 +119,9 @@ public class UserService {
         // save account in to sync users between IdP and JHipster's local database
         Optional<User> existingUser = userRepository.findOneByLogin(user.getLogin());
         if (existingUser.isPresent()) {
-            User dbUser = existingUser.get();
             // if IdP sends last updated information, use it to determine if an update should happen
             if (details.get("updated_at") != null) {
-                Instant dbModifiedDate = dbUser.getLastModifiedDate();
+                Instant dbModifiedDate = existingUser.orElseThrow().getLastModifiedDate();
                 Instant idpModifiedDate;
                 if (details.get("updated_at") instanceof Instant) {
                     idpModifiedDate = (Instant) details.get("updated_at");
@@ -138,15 +137,12 @@ public class UserService {
                 LOG.debug("Updating user '{}' in local database", user.getLogin());
                 updateUser(user.getFirstName(), user.getLastName(), user.getEmail(), user.getLangKey(), user.getImageUrl());
             }
-            // Return the existing user from DB with updated authorities
-            dbUser.setAuthorities(user.getAuthorities());
-            return dbUser;
         } else {
             LOG.debug("Saving user '{}' in local database", user.getLogin());
             userRepository.save(user);
             this.clearUserCaches(user);
-            return user;
         }
+        return user;
     }
 
     /**

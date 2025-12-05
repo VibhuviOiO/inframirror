@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "agentMonitor": {
+      "home": {
+        "title": "AgentMonitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Agent Monitor létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Agent Monitort",
+        "search": "Agent Monitor keresése",
+        "notFound": "No Agent Monitors found"
+      },
+      "created": "Egy új Agent Monitor lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Agent Monitor módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Agent Monitor törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Agent Monitort {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Agent Monitor"
+      },
+      "id": "Id",
+      "active": "Active",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "agent": "Agent",
+      "monitor": "Monitor"
+    }
+  }
+}

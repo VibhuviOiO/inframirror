@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Service Instance جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Service Instance",
+        "search": "البحث عن Service Instance",
+        "notFound": "لم يتم العثور على Service Instances"
+      },
+      "created": "Service Instance جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Service Instance تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Service Instance تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Service Instance {{ id }}؟"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

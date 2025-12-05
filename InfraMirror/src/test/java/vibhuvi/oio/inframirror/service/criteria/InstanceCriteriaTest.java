@@ -101,7 +101,8 @@ class InstanceCriteriaTest {
         instanceCriteria.updatedAt();
         instanceCriteria.lastPingAt();
         instanceCriteria.lastHardwareCheckAt();
-        instanceCriteria.pingHeartbeatsId();
+        instanceCriteria.heartbeatId();
+        instanceCriteria.serviceInstanceId();
         instanceCriteria.datacenterId();
         instanceCriteria.agentId();
         instanceCriteria.distinct();
@@ -136,7 +137,8 @@ class InstanceCriteriaTest {
                 condition.apply(criteria.getUpdatedAt()) &&
                 condition.apply(criteria.getLastPingAt()) &&
                 condition.apply(criteria.getLastHardwareCheckAt()) &&
-                condition.apply(criteria.getPingHeartbeatsId()) &&
+                condition.apply(criteria.getHeartbeatId()) &&
+                condition.apply(criteria.getServiceInstanceId()) &&
                 condition.apply(criteria.getDatacenterId()) &&
                 condition.apply(criteria.getAgentId()) &&
                 condition.apply(criteria.getDistinct()),
@@ -173,7 +175,8 @@ class InstanceCriteriaTest {
                 condition.apply(criteria.getUpdatedAt(), copy.getUpdatedAt()) &&
                 condition.apply(criteria.getLastPingAt(), copy.getLastPingAt()) &&
                 condition.apply(criteria.getLastHardwareCheckAt(), copy.getLastHardwareCheckAt()) &&
-                condition.apply(criteria.getPingHeartbeatsId(), copy.getPingHeartbeatsId()) &&
+                condition.apply(criteria.getHeartbeatId(), copy.getHeartbeatId()) &&
+                condition.apply(criteria.getServiceInstanceId(), copy.getServiceInstanceId()) &&
                 condition.apply(criteria.getDatacenterId(), copy.getDatacenterId()) &&
                 condition.apply(criteria.getAgentId(), copy.getAgentId()) &&
                 condition.apply(criteria.getDistinct(), copy.getDistinct()),

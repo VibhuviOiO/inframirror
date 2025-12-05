@@ -29,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.HttpMonitor;
-import vibhuvi.oio.inframirror.domain.Schedule;
+import vibhuvi.oio.inframirror.domain.HttpMonitor;
 import vibhuvi.oio.inframirror.repository.HttpMonitorRepository;
 import vibhuvi.oio.inframirror.repository.search.HttpMonitorSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.HttpMonitorDTO;
@@ -60,6 +60,85 @@ class HttpMonitorResourceIT {
 
     private static final String DEFAULT_BODY = "AAAAAAAAAA";
     private static final String UPDATED_BODY = "BBBBBBBBBB";
+
+    private static final Integer DEFAULT_INTERVAL_SECONDS = 1;
+    private static final Integer UPDATED_INTERVAL_SECONDS = 2;
+    private static final Integer SMALLER_INTERVAL_SECONDS = 1 - 1;
+
+    private static final Integer DEFAULT_TIMEOUT_SECONDS = 1;
+    private static final Integer UPDATED_TIMEOUT_SECONDS = 2;
+    private static final Integer SMALLER_TIMEOUT_SECONDS = 1 - 1;
+
+    private static final Integer DEFAULT_RETRY_COUNT = 1;
+    private static final Integer UPDATED_RETRY_COUNT = 2;
+    private static final Integer SMALLER_RETRY_COUNT = 1 - 1;
+
+    private static final Integer DEFAULT_RETRY_DELAY_SECONDS = 1;
+    private static final Integer UPDATED_RETRY_DELAY_SECONDS = 2;
+    private static final Integer SMALLER_RETRY_DELAY_SECONDS = 1 - 1;
+
+    private static final Integer DEFAULT_RESPONSE_TIME_WARNING_MS = 1;
+    private static final Integer UPDATED_RESPONSE_TIME_WARNING_MS = 2;
+    private static final Integer SMALLER_RESPONSE_TIME_WARNING_MS = 1 - 1;
+
+    private static final Integer DEFAULT_RESPONSE_TIME_CRITICAL_MS = 1;
+    private static final Integer UPDATED_RESPONSE_TIME_CRITICAL_MS = 2;
+    private static final Integer SMALLER_RESPONSE_TIME_CRITICAL_MS = 1 - 1;
+
+    private static final Float DEFAULT_UPTIME_WARNING_PERCENT = 1F;
+    private static final Float UPDATED_UPTIME_WARNING_PERCENT = 2F;
+    private static final Float SMALLER_UPTIME_WARNING_PERCENT = 1F - 1F;
+
+    private static final Float DEFAULT_UPTIME_CRITICAL_PERCENT = 1F;
+    private static final Float UPDATED_UPTIME_CRITICAL_PERCENT = 2F;
+    private static final Float SMALLER_UPTIME_CRITICAL_PERCENT = 1F - 1F;
+
+    private static final Boolean DEFAULT_INCLUDE_RESPONSE_BODY = false;
+    private static final Boolean UPDATED_INCLUDE_RESPONSE_BODY = true;
+
+    private static final Integer DEFAULT_RESEND_NOTIFICATION_COUNT = 1;
+    private static final Integer UPDATED_RESEND_NOTIFICATION_COUNT = 2;
+    private static final Integer SMALLER_RESEND_NOTIFICATION_COUNT = 1 - 1;
+
+    private static final Integer DEFAULT_CERTIFICATE_EXPIRY_DAYS = 1;
+    private static final Integer UPDATED_CERTIFICATE_EXPIRY_DAYS = 2;
+    private static final Integer SMALLER_CERTIFICATE_EXPIRY_DAYS = 1 - 1;
+
+    private static final Boolean DEFAULT_IGNORE_TLS_ERROR = false;
+    private static final Boolean UPDATED_IGNORE_TLS_ERROR = true;
+
+    private static final Boolean DEFAULT_CHECK_SSL_CERTIFICATE = false;
+    private static final Boolean UPDATED_CHECK_SSL_CERTIFICATE = true;
+
+    private static final Boolean DEFAULT_CHECK_DNS_RESOLUTION = false;
+    private static final Boolean UPDATED_CHECK_DNS_RESOLUTION = true;
+
+    private static final Boolean DEFAULT_UPSIDE_DOWN_MODE = false;
+    private static final Boolean UPDATED_UPSIDE_DOWN_MODE = true;
+
+    private static final Integer DEFAULT_MAX_REDIRECTS = 1;
+    private static final Integer UPDATED_MAX_REDIRECTS = 2;
+    private static final Integer SMALLER_MAX_REDIRECTS = 1 - 1;
+
+    private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
+    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
+
+    private static final String DEFAULT_TAGS = "AAAAAAAAAA";
+    private static final String UPDATED_TAGS = "BBBBBBBBBB";
+
+    private static final Boolean DEFAULT_ENABLED = false;
+    private static final Boolean UPDATED_ENABLED = true;
+
+    private static final String DEFAULT_EXPECTED_STATUS_CODES = "AAAAAAAAAA";
+    private static final String UPDATED_EXPECTED_STATUS_CODES = "BBBBBBBBBB";
+
+    private static final Integer DEFAULT_PERFORMANCE_BUDGET_MS = 1;
+    private static final Integer UPDATED_PERFORMANCE_BUDGET_MS = 2;
+    private static final Integer SMALLER_PERFORMANCE_BUDGET_MS = 1 - 1;
+
+    private static final Integer DEFAULT_SIZE_BUDGET_KB = 1;
+    private static final Integer UPDATED_SIZE_BUDGET_KB = 2;
+    private static final Integer SMALLER_SIZE_BUDGET_KB = 1 - 1;
 
     private static final String ENTITY_API_URL = "/api/http-monitors";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -103,7 +182,29 @@ class HttpMonitorResourceIT {
             .type(DEFAULT_TYPE)
             .url(DEFAULT_URL)
             .headers(DEFAULT_HEADERS)
-            .body(DEFAULT_BODY);
+            .body(DEFAULT_BODY)
+            .intervalSeconds(DEFAULT_INTERVAL_SECONDS)
+            .timeoutSeconds(DEFAULT_TIMEOUT_SECONDS)
+            .retryCount(DEFAULT_RETRY_COUNT)
+            .retryDelaySeconds(DEFAULT_RETRY_DELAY_SECONDS)
+            .responseTimeWarningMs(DEFAULT_RESPONSE_TIME_WARNING_MS)
+            .responseTimeCriticalMs(DEFAULT_RESPONSE_TIME_CRITICAL_MS)
+            .uptimeWarningPercent(DEFAULT_UPTIME_WARNING_PERCENT)
+            .uptimeCriticalPercent(DEFAULT_UPTIME_CRITICAL_PERCENT)
+            .includeResponseBody(DEFAULT_INCLUDE_RESPONSE_BODY)
+            .resendNotificationCount(DEFAULT_RESEND_NOTIFICATION_COUNT)
+            .certificateExpiryDays(DEFAULT_CERTIFICATE_EXPIRY_DAYS)
+            .ignoreTlsError(DEFAULT_IGNORE_TLS_ERROR)
+            .checkSslCertificate(DEFAULT_CHECK_SSL_CERTIFICATE)
+            .checkDnsResolution(DEFAULT_CHECK_DNS_RESOLUTION)
+            .upsideDownMode(DEFAULT_UPSIDE_DOWN_MODE)
+            .maxRedirects(DEFAULT_MAX_REDIRECTS)
+            .description(DEFAULT_DESCRIPTION)
+            .tags(DEFAULT_TAGS)
+            .enabled(DEFAULT_ENABLED)
+            .expectedStatusCodes(DEFAULT_EXPECTED_STATUS_CODES)
+            .performanceBudgetMs(DEFAULT_PERFORMANCE_BUDGET_MS)
+            .sizeBudgetKb(DEFAULT_SIZE_BUDGET_KB);
     }
 
     /**
@@ -119,7 +220,29 @@ class HttpMonitorResourceIT {
             .type(UPDATED_TYPE)
             .url(UPDATED_URL)
             .headers(UPDATED_HEADERS)
-            .body(UPDATED_BODY);
+            .body(UPDATED_BODY)
+            .intervalSeconds(UPDATED_INTERVAL_SECONDS)
+            .timeoutSeconds(UPDATED_TIMEOUT_SECONDS)
+            .retryCount(UPDATED_RETRY_COUNT)
+            .retryDelaySeconds(UPDATED_RETRY_DELAY_SECONDS)
+            .responseTimeWarningMs(UPDATED_RESPONSE_TIME_WARNING_MS)
+            .responseTimeCriticalMs(UPDATED_RESPONSE_TIME_CRITICAL_MS)
+            .uptimeWarningPercent(UPDATED_UPTIME_WARNING_PERCENT)
+            .uptimeCriticalPercent(UPDATED_UPTIME_CRITICAL_PERCENT)
+            .includeResponseBody(UPDATED_INCLUDE_RESPONSE_BODY)
+            .resendNotificationCount(UPDATED_RESEND_NOTIFICATION_COUNT)
+            .certificateExpiryDays(UPDATED_CERTIFICATE_EXPIRY_DAYS)
+            .ignoreTlsError(UPDATED_IGNORE_TLS_ERROR)
+            .checkSslCertificate(UPDATED_CHECK_SSL_CERTIFICATE)
+            .checkDnsResolution(UPDATED_CHECK_DNS_RESOLUTION)
+            .upsideDownMode(UPDATED_UPSIDE_DOWN_MODE)
+            .maxRedirects(UPDATED_MAX_REDIRECTS)
+            .description(UPDATED_DESCRIPTION)
+            .tags(UPDATED_TAGS)
+            .enabled(UPDATED_ENABLED)
+            .expectedStatusCodes(UPDATED_EXPECTED_STATUS_CODES)
+            .performanceBudgetMs(UPDATED_PERFORMANCE_BUDGET_MS)
+            .sizeBudgetKb(UPDATED_SIZE_BUDGET_KB);
     }
 
     @BeforeEach
@@ -264,6 +387,98 @@ class HttpMonitorResourceIT {
 
     @Test
     @Transactional
+    void checkIntervalSecondsIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
+        // set the field null
+        httpMonitor.setIntervalSeconds(null);
+
+        // Create the HttpMonitor, which fails.
+        HttpMonitorDTO httpMonitorDTO = httpMonitorMapper.toDto(httpMonitor);
+
+        restHttpMonitorMockMvc
+            .perform(
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(httpMonitorDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void checkTimeoutSecondsIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
+        // set the field null
+        httpMonitor.setTimeoutSeconds(null);
+
+        // Create the HttpMonitor, which fails.
+        HttpMonitorDTO httpMonitorDTO = httpMonitorMapper.toDto(httpMonitor);
+
+        restHttpMonitorMockMvc
+            .perform(
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(httpMonitorDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void checkRetryCountIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
+        // set the field null
+        httpMonitor.setRetryCount(null);
+
+        // Create the HttpMonitor, which fails.
+        HttpMonitorDTO httpMonitorDTO = httpMonitorMapper.toDto(httpMonitor);
+
+        restHttpMonitorMockMvc
+            .perform(
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(httpMonitorDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void checkRetryDelaySecondsIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
+        // set the field null
+        httpMonitor.setRetryDelaySeconds(null);
+
+        // Create the HttpMonitor, which fails.
+        HttpMonitorDTO httpMonitorDTO = httpMonitorMapper.toDto(httpMonitor);
+
+        restHttpMonitorMockMvc
+            .perform(
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(httpMonitorDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
     void getAllHttpMonitors() throws Exception {
         // Initialize the database
         insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
@@ -279,7 +494,29 @@ class HttpMonitorResourceIT {
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)))
             .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL)))
             .andExpect(jsonPath("$.[*].headers").value(hasItem(DEFAULT_HEADERS)))
-            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY)));
+            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY)))
+            .andExpect(jsonPath("$.[*].intervalSeconds").value(hasItem(DEFAULT_INTERVAL_SECONDS)))
+            .andExpect(jsonPath("$.[*].timeoutSeconds").value(hasItem(DEFAULT_TIMEOUT_SECONDS)))
+            .andExpect(jsonPath("$.[*].retryCount").value(hasItem(DEFAULT_RETRY_COUNT)))
+            .andExpect(jsonPath("$.[*].retryDelaySeconds").value(hasItem(DEFAULT_RETRY_DELAY_SECONDS)))
+            .andExpect(jsonPath("$.[*].responseTimeWarningMs").value(hasItem(DEFAULT_RESPONSE_TIME_WARNING_MS)))
+            .andExpect(jsonPath("$.[*].responseTimeCriticalMs").value(hasItem(DEFAULT_RESPONSE_TIME_CRITICAL_MS)))
+            .andExpect(jsonPath("$.[*].uptimeWarningPercent").value(hasItem(DEFAULT_UPTIME_WARNING_PERCENT.doubleValue())))
+            .andExpect(jsonPath("$.[*].uptimeCriticalPercent").value(hasItem(DEFAULT_UPTIME_CRITICAL_PERCENT.doubleValue())))
+            .andExpect(jsonPath("$.[*].includeResponseBody").value(hasItem(DEFAULT_INCLUDE_RESPONSE_BODY)))
+            .andExpect(jsonPath("$.[*].resendNotificationCount").value(hasItem(DEFAULT_RESEND_NOTIFICATION_COUNT)))
+            .andExpect(jsonPath("$.[*].certificateExpiryDays").value(hasItem(DEFAULT_CERTIFICATE_EXPIRY_DAYS)))
+            .andExpect(jsonPath("$.[*].ignoreTlsError").value(hasItem(DEFAULT_IGNORE_TLS_ERROR)))
+            .andExpect(jsonPath("$.[*].checkSslCertificate").value(hasItem(DEFAULT_CHECK_SSL_CERTIFICATE)))
+            .andExpect(jsonPath("$.[*].checkDnsResolution").value(hasItem(DEFAULT_CHECK_DNS_RESOLUTION)))
+            .andExpect(jsonPath("$.[*].upsideDownMode").value(hasItem(DEFAULT_UPSIDE_DOWN_MODE)))
+            .andExpect(jsonPath("$.[*].maxRedirects").value(hasItem(DEFAULT_MAX_REDIRECTS)))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
+            .andExpect(jsonPath("$.[*].tags").value(hasItem(DEFAULT_TAGS)))
+            .andExpect(jsonPath("$.[*].enabled").value(hasItem(DEFAULT_ENABLED)))
+            .andExpect(jsonPath("$.[*].expectedStatusCodes").value(hasItem(DEFAULT_EXPECTED_STATUS_CODES)))
+            .andExpect(jsonPath("$.[*].performanceBudgetMs").value(hasItem(DEFAULT_PERFORMANCE_BUDGET_MS)))
+            .andExpect(jsonPath("$.[*].sizeBudgetKb").value(hasItem(DEFAULT_SIZE_BUDGET_KB)));
     }
 
     @Test
@@ -299,7 +536,29 @@ class HttpMonitorResourceIT {
             .andExpect(jsonPath("$.type").value(DEFAULT_TYPE))
             .andExpect(jsonPath("$.url").value(DEFAULT_URL))
             .andExpect(jsonPath("$.headers").value(DEFAULT_HEADERS))
-            .andExpect(jsonPath("$.body").value(DEFAULT_BODY));
+            .andExpect(jsonPath("$.body").value(DEFAULT_BODY))
+            .andExpect(jsonPath("$.intervalSeconds").value(DEFAULT_INTERVAL_SECONDS))
+            .andExpect(jsonPath("$.timeoutSeconds").value(DEFAULT_TIMEOUT_SECONDS))
+            .andExpect(jsonPath("$.retryCount").value(DEFAULT_RETRY_COUNT))
+            .andExpect(jsonPath("$.retryDelaySeconds").value(DEFAULT_RETRY_DELAY_SECONDS))
+            .andExpect(jsonPath("$.responseTimeWarningMs").value(DEFAULT_RESPONSE_TIME_WARNING_MS))
+            .andExpect(jsonPath("$.responseTimeCriticalMs").value(DEFAULT_RESPONSE_TIME_CRITICAL_MS))
+            .andExpect(jsonPath("$.uptimeWarningPercent").value(DEFAULT_UPTIME_WARNING_PERCENT.doubleValue()))
+            .andExpect(jsonPath("$.uptimeCriticalPercent").value(DEFAULT_UPTIME_CRITICAL_PERCENT.doubleValue()))
+            .andExpect(jsonPath("$.includeResponseBody").value(DEFAULT_INCLUDE_RESPONSE_BODY))
+            .andExpect(jsonPath("$.resendNotificationCount").value(DEFAULT_RESEND_NOTIFICATION_COUNT))
+            .andExpect(jsonPath("$.certificateExpiryDays").value(DEFAULT_CERTIFICATE_EXPIRY_DAYS))
+            .andExpect(jsonPath("$.ignoreTlsError").value(DEFAULT_IGNORE_TLS_ERROR))
+            .andExpect(jsonPath("$.checkSslCertificate").value(DEFAULT_CHECK_SSL_CERTIFICATE))
+            .andExpect(jsonPath("$.checkDnsResolution").value(DEFAULT_CHECK_DNS_RESOLUTION))
+            .andExpect(jsonPath("$.upsideDownMode").value(DEFAULT_UPSIDE_DOWN_MODE))
+            .andExpect(jsonPath("$.maxRedirects").value(DEFAULT_MAX_REDIRECTS))
+            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
+            .andExpect(jsonPath("$.tags").value(DEFAULT_TAGS))
+            .andExpect(jsonPath("$.enabled").value(DEFAULT_ENABLED))
+            .andExpect(jsonPath("$.expectedStatusCodes").value(DEFAULT_EXPECTED_STATUS_CODES))
+            .andExpect(jsonPath("$.performanceBudgetMs").value(DEFAULT_PERFORMANCE_BUDGET_MS))
+            .andExpect(jsonPath("$.sizeBudgetKb").value(DEFAULT_SIZE_BUDGET_KB));
     }
 
     @Test
@@ -469,24 +728,1466 @@ class HttpMonitorResourceIT {
 
     @Test
     @Transactional
-    void getAllHttpMonitorsByScheduleIsEqualToSomething() throws Exception {
-        Schedule schedule;
-        if (TestUtil.findAll(em, Schedule.class).isEmpty()) {
-            httpMonitorRepository.saveAndFlush(httpMonitor);
-            schedule = ScheduleResourceIT.createEntity();
-        } else {
-            schedule = TestUtil.findAll(em, Schedule.class).get(0);
-        }
-        em.persist(schedule);
-        em.flush();
-        httpMonitor.setSchedule(schedule);
-        httpMonitorRepository.saveAndFlush(httpMonitor);
-        Long scheduleId = schedule.getId();
-        // Get all the httpMonitorList where schedule equals to scheduleId
-        defaultHttpMonitorShouldBeFound("scheduleId.equals=" + scheduleId);
+    void getAllHttpMonitorsByIntervalSecondsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
 
-        // Get all the httpMonitorList where schedule equals to (scheduleId + 1)
-        defaultHttpMonitorShouldNotBeFound("scheduleId.equals=" + (scheduleId + 1));
+        // Get all the httpMonitorList where intervalSeconds equals to
+        defaultHttpMonitorFiltering(
+            "intervalSeconds.equals=" + DEFAULT_INTERVAL_SECONDS,
+            "intervalSeconds.equals=" + UPDATED_INTERVAL_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIntervalSecondsIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where intervalSeconds in
+        defaultHttpMonitorFiltering(
+            "intervalSeconds.in=" + DEFAULT_INTERVAL_SECONDS + "," + UPDATED_INTERVAL_SECONDS,
+            "intervalSeconds.in=" + UPDATED_INTERVAL_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIntervalSecondsIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where intervalSeconds is not null
+        defaultHttpMonitorFiltering("intervalSeconds.specified=true", "intervalSeconds.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIntervalSecondsIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where intervalSeconds is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "intervalSeconds.greaterThanOrEqual=" + DEFAULT_INTERVAL_SECONDS,
+            "intervalSeconds.greaterThanOrEqual=" + UPDATED_INTERVAL_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIntervalSecondsIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where intervalSeconds is less than or equal to
+        defaultHttpMonitorFiltering(
+            "intervalSeconds.lessThanOrEqual=" + DEFAULT_INTERVAL_SECONDS,
+            "intervalSeconds.lessThanOrEqual=" + SMALLER_INTERVAL_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIntervalSecondsIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where intervalSeconds is less than
+        defaultHttpMonitorFiltering(
+            "intervalSeconds.lessThan=" + UPDATED_INTERVAL_SECONDS,
+            "intervalSeconds.lessThan=" + DEFAULT_INTERVAL_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIntervalSecondsIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where intervalSeconds is greater than
+        defaultHttpMonitorFiltering(
+            "intervalSeconds.greaterThan=" + SMALLER_INTERVAL_SECONDS,
+            "intervalSeconds.greaterThan=" + DEFAULT_INTERVAL_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTimeoutSecondsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where timeoutSeconds equals to
+        defaultHttpMonitorFiltering("timeoutSeconds.equals=" + DEFAULT_TIMEOUT_SECONDS, "timeoutSeconds.equals=" + UPDATED_TIMEOUT_SECONDS);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTimeoutSecondsIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where timeoutSeconds in
+        defaultHttpMonitorFiltering(
+            "timeoutSeconds.in=" + DEFAULT_TIMEOUT_SECONDS + "," + UPDATED_TIMEOUT_SECONDS,
+            "timeoutSeconds.in=" + UPDATED_TIMEOUT_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTimeoutSecondsIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where timeoutSeconds is not null
+        defaultHttpMonitorFiltering("timeoutSeconds.specified=true", "timeoutSeconds.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTimeoutSecondsIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where timeoutSeconds is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "timeoutSeconds.greaterThanOrEqual=" + DEFAULT_TIMEOUT_SECONDS,
+            "timeoutSeconds.greaterThanOrEqual=" + UPDATED_TIMEOUT_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTimeoutSecondsIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where timeoutSeconds is less than or equal to
+        defaultHttpMonitorFiltering(
+            "timeoutSeconds.lessThanOrEqual=" + DEFAULT_TIMEOUT_SECONDS,
+            "timeoutSeconds.lessThanOrEqual=" + SMALLER_TIMEOUT_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTimeoutSecondsIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where timeoutSeconds is less than
+        defaultHttpMonitorFiltering(
+            "timeoutSeconds.lessThan=" + UPDATED_TIMEOUT_SECONDS,
+            "timeoutSeconds.lessThan=" + DEFAULT_TIMEOUT_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTimeoutSecondsIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where timeoutSeconds is greater than
+        defaultHttpMonitorFiltering(
+            "timeoutSeconds.greaterThan=" + SMALLER_TIMEOUT_SECONDS,
+            "timeoutSeconds.greaterThan=" + DEFAULT_TIMEOUT_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryCountIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryCount equals to
+        defaultHttpMonitorFiltering("retryCount.equals=" + DEFAULT_RETRY_COUNT, "retryCount.equals=" + UPDATED_RETRY_COUNT);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryCountIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryCount in
+        defaultHttpMonitorFiltering(
+            "retryCount.in=" + DEFAULT_RETRY_COUNT + "," + UPDATED_RETRY_COUNT,
+            "retryCount.in=" + UPDATED_RETRY_COUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryCountIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryCount is not null
+        defaultHttpMonitorFiltering("retryCount.specified=true", "retryCount.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryCountIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryCount is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "retryCount.greaterThanOrEqual=" + DEFAULT_RETRY_COUNT,
+            "retryCount.greaterThanOrEqual=" + UPDATED_RETRY_COUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryCountIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryCount is less than or equal to
+        defaultHttpMonitorFiltering(
+            "retryCount.lessThanOrEqual=" + DEFAULT_RETRY_COUNT,
+            "retryCount.lessThanOrEqual=" + SMALLER_RETRY_COUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryCountIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryCount is less than
+        defaultHttpMonitorFiltering("retryCount.lessThan=" + UPDATED_RETRY_COUNT, "retryCount.lessThan=" + DEFAULT_RETRY_COUNT);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryCountIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryCount is greater than
+        defaultHttpMonitorFiltering("retryCount.greaterThan=" + SMALLER_RETRY_COUNT, "retryCount.greaterThan=" + DEFAULT_RETRY_COUNT);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryDelaySecondsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryDelaySeconds equals to
+        defaultHttpMonitorFiltering(
+            "retryDelaySeconds.equals=" + DEFAULT_RETRY_DELAY_SECONDS,
+            "retryDelaySeconds.equals=" + UPDATED_RETRY_DELAY_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryDelaySecondsIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryDelaySeconds in
+        defaultHttpMonitorFiltering(
+            "retryDelaySeconds.in=" + DEFAULT_RETRY_DELAY_SECONDS + "," + UPDATED_RETRY_DELAY_SECONDS,
+            "retryDelaySeconds.in=" + UPDATED_RETRY_DELAY_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryDelaySecondsIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryDelaySeconds is not null
+        defaultHttpMonitorFiltering("retryDelaySeconds.specified=true", "retryDelaySeconds.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryDelaySecondsIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryDelaySeconds is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "retryDelaySeconds.greaterThanOrEqual=" + DEFAULT_RETRY_DELAY_SECONDS,
+            "retryDelaySeconds.greaterThanOrEqual=" + UPDATED_RETRY_DELAY_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryDelaySecondsIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryDelaySeconds is less than or equal to
+        defaultHttpMonitorFiltering(
+            "retryDelaySeconds.lessThanOrEqual=" + DEFAULT_RETRY_DELAY_SECONDS,
+            "retryDelaySeconds.lessThanOrEqual=" + SMALLER_RETRY_DELAY_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryDelaySecondsIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryDelaySeconds is less than
+        defaultHttpMonitorFiltering(
+            "retryDelaySeconds.lessThan=" + UPDATED_RETRY_DELAY_SECONDS,
+            "retryDelaySeconds.lessThan=" + DEFAULT_RETRY_DELAY_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByRetryDelaySecondsIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where retryDelaySeconds is greater than
+        defaultHttpMonitorFiltering(
+            "retryDelaySeconds.greaterThan=" + SMALLER_RETRY_DELAY_SECONDS,
+            "retryDelaySeconds.greaterThan=" + DEFAULT_RETRY_DELAY_SECONDS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeWarningMsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeWarningMs equals to
+        defaultHttpMonitorFiltering(
+            "responseTimeWarningMs.equals=" + DEFAULT_RESPONSE_TIME_WARNING_MS,
+            "responseTimeWarningMs.equals=" + UPDATED_RESPONSE_TIME_WARNING_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeWarningMsIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeWarningMs in
+        defaultHttpMonitorFiltering(
+            "responseTimeWarningMs.in=" + DEFAULT_RESPONSE_TIME_WARNING_MS + "," + UPDATED_RESPONSE_TIME_WARNING_MS,
+            "responseTimeWarningMs.in=" + UPDATED_RESPONSE_TIME_WARNING_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeWarningMsIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeWarningMs is not null
+        defaultHttpMonitorFiltering("responseTimeWarningMs.specified=true", "responseTimeWarningMs.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeWarningMsIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeWarningMs is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "responseTimeWarningMs.greaterThanOrEqual=" + DEFAULT_RESPONSE_TIME_WARNING_MS,
+            "responseTimeWarningMs.greaterThanOrEqual=" + UPDATED_RESPONSE_TIME_WARNING_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeWarningMsIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeWarningMs is less than or equal to
+        defaultHttpMonitorFiltering(
+            "responseTimeWarningMs.lessThanOrEqual=" + DEFAULT_RESPONSE_TIME_WARNING_MS,
+            "responseTimeWarningMs.lessThanOrEqual=" + SMALLER_RESPONSE_TIME_WARNING_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeWarningMsIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeWarningMs is less than
+        defaultHttpMonitorFiltering(
+            "responseTimeWarningMs.lessThan=" + UPDATED_RESPONSE_TIME_WARNING_MS,
+            "responseTimeWarningMs.lessThan=" + DEFAULT_RESPONSE_TIME_WARNING_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeWarningMsIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeWarningMs is greater than
+        defaultHttpMonitorFiltering(
+            "responseTimeWarningMs.greaterThan=" + SMALLER_RESPONSE_TIME_WARNING_MS,
+            "responseTimeWarningMs.greaterThan=" + DEFAULT_RESPONSE_TIME_WARNING_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeCriticalMsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeCriticalMs equals to
+        defaultHttpMonitorFiltering(
+            "responseTimeCriticalMs.equals=" + DEFAULT_RESPONSE_TIME_CRITICAL_MS,
+            "responseTimeCriticalMs.equals=" + UPDATED_RESPONSE_TIME_CRITICAL_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeCriticalMsIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeCriticalMs in
+        defaultHttpMonitorFiltering(
+            "responseTimeCriticalMs.in=" + DEFAULT_RESPONSE_TIME_CRITICAL_MS + "," + UPDATED_RESPONSE_TIME_CRITICAL_MS,
+            "responseTimeCriticalMs.in=" + UPDATED_RESPONSE_TIME_CRITICAL_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeCriticalMsIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeCriticalMs is not null
+        defaultHttpMonitorFiltering("responseTimeCriticalMs.specified=true", "responseTimeCriticalMs.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeCriticalMsIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeCriticalMs is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "responseTimeCriticalMs.greaterThanOrEqual=" + DEFAULT_RESPONSE_TIME_CRITICAL_MS,
+            "responseTimeCriticalMs.greaterThanOrEqual=" + UPDATED_RESPONSE_TIME_CRITICAL_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeCriticalMsIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeCriticalMs is less than or equal to
+        defaultHttpMonitorFiltering(
+            "responseTimeCriticalMs.lessThanOrEqual=" + DEFAULT_RESPONSE_TIME_CRITICAL_MS,
+            "responseTimeCriticalMs.lessThanOrEqual=" + SMALLER_RESPONSE_TIME_CRITICAL_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeCriticalMsIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeCriticalMs is less than
+        defaultHttpMonitorFiltering(
+            "responseTimeCriticalMs.lessThan=" + UPDATED_RESPONSE_TIME_CRITICAL_MS,
+            "responseTimeCriticalMs.lessThan=" + DEFAULT_RESPONSE_TIME_CRITICAL_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResponseTimeCriticalMsIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where responseTimeCriticalMs is greater than
+        defaultHttpMonitorFiltering(
+            "responseTimeCriticalMs.greaterThan=" + SMALLER_RESPONSE_TIME_CRITICAL_MS,
+            "responseTimeCriticalMs.greaterThan=" + DEFAULT_RESPONSE_TIME_CRITICAL_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeWarningPercentIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeWarningPercent equals to
+        defaultHttpMonitorFiltering(
+            "uptimeWarningPercent.equals=" + DEFAULT_UPTIME_WARNING_PERCENT,
+            "uptimeWarningPercent.equals=" + UPDATED_UPTIME_WARNING_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeWarningPercentIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeWarningPercent in
+        defaultHttpMonitorFiltering(
+            "uptimeWarningPercent.in=" + DEFAULT_UPTIME_WARNING_PERCENT + "," + UPDATED_UPTIME_WARNING_PERCENT,
+            "uptimeWarningPercent.in=" + UPDATED_UPTIME_WARNING_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeWarningPercentIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeWarningPercent is not null
+        defaultHttpMonitorFiltering("uptimeWarningPercent.specified=true", "uptimeWarningPercent.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeWarningPercentIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeWarningPercent is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "uptimeWarningPercent.greaterThanOrEqual=" + DEFAULT_UPTIME_WARNING_PERCENT,
+            "uptimeWarningPercent.greaterThanOrEqual=" + UPDATED_UPTIME_WARNING_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeWarningPercentIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeWarningPercent is less than or equal to
+        defaultHttpMonitorFiltering(
+            "uptimeWarningPercent.lessThanOrEqual=" + DEFAULT_UPTIME_WARNING_PERCENT,
+            "uptimeWarningPercent.lessThanOrEqual=" + SMALLER_UPTIME_WARNING_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeWarningPercentIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeWarningPercent is less than
+        defaultHttpMonitorFiltering(
+            "uptimeWarningPercent.lessThan=" + UPDATED_UPTIME_WARNING_PERCENT,
+            "uptimeWarningPercent.lessThan=" + DEFAULT_UPTIME_WARNING_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeWarningPercentIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeWarningPercent is greater than
+        defaultHttpMonitorFiltering(
+            "uptimeWarningPercent.greaterThan=" + SMALLER_UPTIME_WARNING_PERCENT,
+            "uptimeWarningPercent.greaterThan=" + DEFAULT_UPTIME_WARNING_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeCriticalPercentIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeCriticalPercent equals to
+        defaultHttpMonitorFiltering(
+            "uptimeCriticalPercent.equals=" + DEFAULT_UPTIME_CRITICAL_PERCENT,
+            "uptimeCriticalPercent.equals=" + UPDATED_UPTIME_CRITICAL_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeCriticalPercentIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeCriticalPercent in
+        defaultHttpMonitorFiltering(
+            "uptimeCriticalPercent.in=" + DEFAULT_UPTIME_CRITICAL_PERCENT + "," + UPDATED_UPTIME_CRITICAL_PERCENT,
+            "uptimeCriticalPercent.in=" + UPDATED_UPTIME_CRITICAL_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeCriticalPercentIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeCriticalPercent is not null
+        defaultHttpMonitorFiltering("uptimeCriticalPercent.specified=true", "uptimeCriticalPercent.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeCriticalPercentIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeCriticalPercent is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "uptimeCriticalPercent.greaterThanOrEqual=" + DEFAULT_UPTIME_CRITICAL_PERCENT,
+            "uptimeCriticalPercent.greaterThanOrEqual=" + UPDATED_UPTIME_CRITICAL_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeCriticalPercentIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeCriticalPercent is less than or equal to
+        defaultHttpMonitorFiltering(
+            "uptimeCriticalPercent.lessThanOrEqual=" + DEFAULT_UPTIME_CRITICAL_PERCENT,
+            "uptimeCriticalPercent.lessThanOrEqual=" + SMALLER_UPTIME_CRITICAL_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeCriticalPercentIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeCriticalPercent is less than
+        defaultHttpMonitorFiltering(
+            "uptimeCriticalPercent.lessThan=" + UPDATED_UPTIME_CRITICAL_PERCENT,
+            "uptimeCriticalPercent.lessThan=" + DEFAULT_UPTIME_CRITICAL_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUptimeCriticalPercentIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where uptimeCriticalPercent is greater than
+        defaultHttpMonitorFiltering(
+            "uptimeCriticalPercent.greaterThan=" + SMALLER_UPTIME_CRITICAL_PERCENT,
+            "uptimeCriticalPercent.greaterThan=" + DEFAULT_UPTIME_CRITICAL_PERCENT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIncludeResponseBodyIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where includeResponseBody equals to
+        defaultHttpMonitorFiltering(
+            "includeResponseBody.equals=" + DEFAULT_INCLUDE_RESPONSE_BODY,
+            "includeResponseBody.equals=" + UPDATED_INCLUDE_RESPONSE_BODY
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIncludeResponseBodyIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where includeResponseBody in
+        defaultHttpMonitorFiltering(
+            "includeResponseBody.in=" + DEFAULT_INCLUDE_RESPONSE_BODY + "," + UPDATED_INCLUDE_RESPONSE_BODY,
+            "includeResponseBody.in=" + UPDATED_INCLUDE_RESPONSE_BODY
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIncludeResponseBodyIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where includeResponseBody is not null
+        defaultHttpMonitorFiltering("includeResponseBody.specified=true", "includeResponseBody.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResendNotificationCountIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where resendNotificationCount equals to
+        defaultHttpMonitorFiltering(
+            "resendNotificationCount.equals=" + DEFAULT_RESEND_NOTIFICATION_COUNT,
+            "resendNotificationCount.equals=" + UPDATED_RESEND_NOTIFICATION_COUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResendNotificationCountIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where resendNotificationCount in
+        defaultHttpMonitorFiltering(
+            "resendNotificationCount.in=" + DEFAULT_RESEND_NOTIFICATION_COUNT + "," + UPDATED_RESEND_NOTIFICATION_COUNT,
+            "resendNotificationCount.in=" + UPDATED_RESEND_NOTIFICATION_COUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResendNotificationCountIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where resendNotificationCount is not null
+        defaultHttpMonitorFiltering("resendNotificationCount.specified=true", "resendNotificationCount.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResendNotificationCountIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where resendNotificationCount is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "resendNotificationCount.greaterThanOrEqual=" + DEFAULT_RESEND_NOTIFICATION_COUNT,
+            "resendNotificationCount.greaterThanOrEqual=" + UPDATED_RESEND_NOTIFICATION_COUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResendNotificationCountIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where resendNotificationCount is less than or equal to
+        defaultHttpMonitorFiltering(
+            "resendNotificationCount.lessThanOrEqual=" + DEFAULT_RESEND_NOTIFICATION_COUNT,
+            "resendNotificationCount.lessThanOrEqual=" + SMALLER_RESEND_NOTIFICATION_COUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResendNotificationCountIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where resendNotificationCount is less than
+        defaultHttpMonitorFiltering(
+            "resendNotificationCount.lessThan=" + UPDATED_RESEND_NOTIFICATION_COUNT,
+            "resendNotificationCount.lessThan=" + DEFAULT_RESEND_NOTIFICATION_COUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByResendNotificationCountIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where resendNotificationCount is greater than
+        defaultHttpMonitorFiltering(
+            "resendNotificationCount.greaterThan=" + SMALLER_RESEND_NOTIFICATION_COUNT,
+            "resendNotificationCount.greaterThan=" + DEFAULT_RESEND_NOTIFICATION_COUNT
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCertificateExpiryDaysIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where certificateExpiryDays equals to
+        defaultHttpMonitorFiltering(
+            "certificateExpiryDays.equals=" + DEFAULT_CERTIFICATE_EXPIRY_DAYS,
+            "certificateExpiryDays.equals=" + UPDATED_CERTIFICATE_EXPIRY_DAYS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCertificateExpiryDaysIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where certificateExpiryDays in
+        defaultHttpMonitorFiltering(
+            "certificateExpiryDays.in=" + DEFAULT_CERTIFICATE_EXPIRY_DAYS + "," + UPDATED_CERTIFICATE_EXPIRY_DAYS,
+            "certificateExpiryDays.in=" + UPDATED_CERTIFICATE_EXPIRY_DAYS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCertificateExpiryDaysIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where certificateExpiryDays is not null
+        defaultHttpMonitorFiltering("certificateExpiryDays.specified=true", "certificateExpiryDays.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCertificateExpiryDaysIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where certificateExpiryDays is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "certificateExpiryDays.greaterThanOrEqual=" + DEFAULT_CERTIFICATE_EXPIRY_DAYS,
+            "certificateExpiryDays.greaterThanOrEqual=" + UPDATED_CERTIFICATE_EXPIRY_DAYS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCertificateExpiryDaysIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where certificateExpiryDays is less than or equal to
+        defaultHttpMonitorFiltering(
+            "certificateExpiryDays.lessThanOrEqual=" + DEFAULT_CERTIFICATE_EXPIRY_DAYS,
+            "certificateExpiryDays.lessThanOrEqual=" + SMALLER_CERTIFICATE_EXPIRY_DAYS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCertificateExpiryDaysIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where certificateExpiryDays is less than
+        defaultHttpMonitorFiltering(
+            "certificateExpiryDays.lessThan=" + UPDATED_CERTIFICATE_EXPIRY_DAYS,
+            "certificateExpiryDays.lessThan=" + DEFAULT_CERTIFICATE_EXPIRY_DAYS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCertificateExpiryDaysIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where certificateExpiryDays is greater than
+        defaultHttpMonitorFiltering(
+            "certificateExpiryDays.greaterThan=" + SMALLER_CERTIFICATE_EXPIRY_DAYS,
+            "certificateExpiryDays.greaterThan=" + DEFAULT_CERTIFICATE_EXPIRY_DAYS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIgnoreTlsErrorIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where ignoreTlsError equals to
+        defaultHttpMonitorFiltering(
+            "ignoreTlsError.equals=" + DEFAULT_IGNORE_TLS_ERROR,
+            "ignoreTlsError.equals=" + UPDATED_IGNORE_TLS_ERROR
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIgnoreTlsErrorIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where ignoreTlsError in
+        defaultHttpMonitorFiltering(
+            "ignoreTlsError.in=" + DEFAULT_IGNORE_TLS_ERROR + "," + UPDATED_IGNORE_TLS_ERROR,
+            "ignoreTlsError.in=" + UPDATED_IGNORE_TLS_ERROR
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByIgnoreTlsErrorIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where ignoreTlsError is not null
+        defaultHttpMonitorFiltering("ignoreTlsError.specified=true", "ignoreTlsError.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCheckSslCertificateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where checkSslCertificate equals to
+        defaultHttpMonitorFiltering(
+            "checkSslCertificate.equals=" + DEFAULT_CHECK_SSL_CERTIFICATE,
+            "checkSslCertificate.equals=" + UPDATED_CHECK_SSL_CERTIFICATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCheckSslCertificateIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where checkSslCertificate in
+        defaultHttpMonitorFiltering(
+            "checkSslCertificate.in=" + DEFAULT_CHECK_SSL_CERTIFICATE + "," + UPDATED_CHECK_SSL_CERTIFICATE,
+            "checkSslCertificate.in=" + UPDATED_CHECK_SSL_CERTIFICATE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCheckSslCertificateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where checkSslCertificate is not null
+        defaultHttpMonitorFiltering("checkSslCertificate.specified=true", "checkSslCertificate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCheckDnsResolutionIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where checkDnsResolution equals to
+        defaultHttpMonitorFiltering(
+            "checkDnsResolution.equals=" + DEFAULT_CHECK_DNS_RESOLUTION,
+            "checkDnsResolution.equals=" + UPDATED_CHECK_DNS_RESOLUTION
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCheckDnsResolutionIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where checkDnsResolution in
+        defaultHttpMonitorFiltering(
+            "checkDnsResolution.in=" + DEFAULT_CHECK_DNS_RESOLUTION + "," + UPDATED_CHECK_DNS_RESOLUTION,
+            "checkDnsResolution.in=" + UPDATED_CHECK_DNS_RESOLUTION
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByCheckDnsResolutionIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where checkDnsResolution is not null
+        defaultHttpMonitorFiltering("checkDnsResolution.specified=true", "checkDnsResolution.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUpsideDownModeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where upsideDownMode equals to
+        defaultHttpMonitorFiltering(
+            "upsideDownMode.equals=" + DEFAULT_UPSIDE_DOWN_MODE,
+            "upsideDownMode.equals=" + UPDATED_UPSIDE_DOWN_MODE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUpsideDownModeIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where upsideDownMode in
+        defaultHttpMonitorFiltering(
+            "upsideDownMode.in=" + DEFAULT_UPSIDE_DOWN_MODE + "," + UPDATED_UPSIDE_DOWN_MODE,
+            "upsideDownMode.in=" + UPDATED_UPSIDE_DOWN_MODE
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByUpsideDownModeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where upsideDownMode is not null
+        defaultHttpMonitorFiltering("upsideDownMode.specified=true", "upsideDownMode.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByMaxRedirectsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where maxRedirects equals to
+        defaultHttpMonitorFiltering("maxRedirects.equals=" + DEFAULT_MAX_REDIRECTS, "maxRedirects.equals=" + UPDATED_MAX_REDIRECTS);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByMaxRedirectsIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where maxRedirects in
+        defaultHttpMonitorFiltering(
+            "maxRedirects.in=" + DEFAULT_MAX_REDIRECTS + "," + UPDATED_MAX_REDIRECTS,
+            "maxRedirects.in=" + UPDATED_MAX_REDIRECTS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByMaxRedirectsIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where maxRedirects is not null
+        defaultHttpMonitorFiltering("maxRedirects.specified=true", "maxRedirects.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByMaxRedirectsIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where maxRedirects is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "maxRedirects.greaterThanOrEqual=" + DEFAULT_MAX_REDIRECTS,
+            "maxRedirects.greaterThanOrEqual=" + UPDATED_MAX_REDIRECTS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByMaxRedirectsIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where maxRedirects is less than or equal to
+        defaultHttpMonitorFiltering(
+            "maxRedirects.lessThanOrEqual=" + DEFAULT_MAX_REDIRECTS,
+            "maxRedirects.lessThanOrEqual=" + SMALLER_MAX_REDIRECTS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByMaxRedirectsIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where maxRedirects is less than
+        defaultHttpMonitorFiltering("maxRedirects.lessThan=" + UPDATED_MAX_REDIRECTS, "maxRedirects.lessThan=" + DEFAULT_MAX_REDIRECTS);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByMaxRedirectsIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where maxRedirects is greater than
+        defaultHttpMonitorFiltering(
+            "maxRedirects.greaterThan=" + SMALLER_MAX_REDIRECTS,
+            "maxRedirects.greaterThan=" + DEFAULT_MAX_REDIRECTS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTagsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where tags equals to
+        defaultHttpMonitorFiltering("tags.equals=" + DEFAULT_TAGS, "tags.equals=" + UPDATED_TAGS);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTagsIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where tags in
+        defaultHttpMonitorFiltering("tags.in=" + DEFAULT_TAGS + "," + UPDATED_TAGS, "tags.in=" + UPDATED_TAGS);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTagsIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where tags is not null
+        defaultHttpMonitorFiltering("tags.specified=true", "tags.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTagsContainsSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where tags contains
+        defaultHttpMonitorFiltering("tags.contains=" + DEFAULT_TAGS, "tags.contains=" + UPDATED_TAGS);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByTagsNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where tags does not contain
+        defaultHttpMonitorFiltering("tags.doesNotContain=" + UPDATED_TAGS, "tags.doesNotContain=" + DEFAULT_TAGS);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByEnabledIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where enabled equals to
+        defaultHttpMonitorFiltering("enabled.equals=" + DEFAULT_ENABLED, "enabled.equals=" + UPDATED_ENABLED);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByEnabledIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where enabled in
+        defaultHttpMonitorFiltering("enabled.in=" + DEFAULT_ENABLED + "," + UPDATED_ENABLED, "enabled.in=" + UPDATED_ENABLED);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByEnabledIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where enabled is not null
+        defaultHttpMonitorFiltering("enabled.specified=true", "enabled.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByExpectedStatusCodesIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where expectedStatusCodes equals to
+        defaultHttpMonitorFiltering(
+            "expectedStatusCodes.equals=" + DEFAULT_EXPECTED_STATUS_CODES,
+            "expectedStatusCodes.equals=" + UPDATED_EXPECTED_STATUS_CODES
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByExpectedStatusCodesIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where expectedStatusCodes in
+        defaultHttpMonitorFiltering(
+            "expectedStatusCodes.in=" + DEFAULT_EXPECTED_STATUS_CODES + "," + UPDATED_EXPECTED_STATUS_CODES,
+            "expectedStatusCodes.in=" + UPDATED_EXPECTED_STATUS_CODES
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByExpectedStatusCodesIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where expectedStatusCodes is not null
+        defaultHttpMonitorFiltering("expectedStatusCodes.specified=true", "expectedStatusCodes.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByExpectedStatusCodesContainsSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where expectedStatusCodes contains
+        defaultHttpMonitorFiltering(
+            "expectedStatusCodes.contains=" + DEFAULT_EXPECTED_STATUS_CODES,
+            "expectedStatusCodes.contains=" + UPDATED_EXPECTED_STATUS_CODES
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByExpectedStatusCodesNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where expectedStatusCodes does not contain
+        defaultHttpMonitorFiltering(
+            "expectedStatusCodes.doesNotContain=" + UPDATED_EXPECTED_STATUS_CODES,
+            "expectedStatusCodes.doesNotContain=" + DEFAULT_EXPECTED_STATUS_CODES
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByPerformanceBudgetMsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where performanceBudgetMs equals to
+        defaultHttpMonitorFiltering(
+            "performanceBudgetMs.equals=" + DEFAULT_PERFORMANCE_BUDGET_MS,
+            "performanceBudgetMs.equals=" + UPDATED_PERFORMANCE_BUDGET_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByPerformanceBudgetMsIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where performanceBudgetMs in
+        defaultHttpMonitorFiltering(
+            "performanceBudgetMs.in=" + DEFAULT_PERFORMANCE_BUDGET_MS + "," + UPDATED_PERFORMANCE_BUDGET_MS,
+            "performanceBudgetMs.in=" + UPDATED_PERFORMANCE_BUDGET_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByPerformanceBudgetMsIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where performanceBudgetMs is not null
+        defaultHttpMonitorFiltering("performanceBudgetMs.specified=true", "performanceBudgetMs.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByPerformanceBudgetMsIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where performanceBudgetMs is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "performanceBudgetMs.greaterThanOrEqual=" + DEFAULT_PERFORMANCE_BUDGET_MS,
+            "performanceBudgetMs.greaterThanOrEqual=" + UPDATED_PERFORMANCE_BUDGET_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByPerformanceBudgetMsIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where performanceBudgetMs is less than or equal to
+        defaultHttpMonitorFiltering(
+            "performanceBudgetMs.lessThanOrEqual=" + DEFAULT_PERFORMANCE_BUDGET_MS,
+            "performanceBudgetMs.lessThanOrEqual=" + SMALLER_PERFORMANCE_BUDGET_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByPerformanceBudgetMsIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where performanceBudgetMs is less than
+        defaultHttpMonitorFiltering(
+            "performanceBudgetMs.lessThan=" + UPDATED_PERFORMANCE_BUDGET_MS,
+            "performanceBudgetMs.lessThan=" + DEFAULT_PERFORMANCE_BUDGET_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByPerformanceBudgetMsIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where performanceBudgetMs is greater than
+        defaultHttpMonitorFiltering(
+            "performanceBudgetMs.greaterThan=" + SMALLER_PERFORMANCE_BUDGET_MS,
+            "performanceBudgetMs.greaterThan=" + DEFAULT_PERFORMANCE_BUDGET_MS
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsBySizeBudgetKbIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where sizeBudgetKb equals to
+        defaultHttpMonitorFiltering("sizeBudgetKb.equals=" + DEFAULT_SIZE_BUDGET_KB, "sizeBudgetKb.equals=" + UPDATED_SIZE_BUDGET_KB);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsBySizeBudgetKbIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where sizeBudgetKb in
+        defaultHttpMonitorFiltering(
+            "sizeBudgetKb.in=" + DEFAULT_SIZE_BUDGET_KB + "," + UPDATED_SIZE_BUDGET_KB,
+            "sizeBudgetKb.in=" + UPDATED_SIZE_BUDGET_KB
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsBySizeBudgetKbIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where sizeBudgetKb is not null
+        defaultHttpMonitorFiltering("sizeBudgetKb.specified=true", "sizeBudgetKb.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsBySizeBudgetKbIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where sizeBudgetKb is greater than or equal to
+        defaultHttpMonitorFiltering(
+            "sizeBudgetKb.greaterThanOrEqual=" + DEFAULT_SIZE_BUDGET_KB,
+            "sizeBudgetKb.greaterThanOrEqual=" + UPDATED_SIZE_BUDGET_KB
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsBySizeBudgetKbIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where sizeBudgetKb is less than or equal to
+        defaultHttpMonitorFiltering(
+            "sizeBudgetKb.lessThanOrEqual=" + DEFAULT_SIZE_BUDGET_KB,
+            "sizeBudgetKb.lessThanOrEqual=" + SMALLER_SIZE_BUDGET_KB
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsBySizeBudgetKbIsLessThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where sizeBudgetKb is less than
+        defaultHttpMonitorFiltering("sizeBudgetKb.lessThan=" + UPDATED_SIZE_BUDGET_KB, "sizeBudgetKb.lessThan=" + DEFAULT_SIZE_BUDGET_KB);
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsBySizeBudgetKbIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+
+        // Get all the httpMonitorList where sizeBudgetKb is greater than
+        defaultHttpMonitorFiltering(
+            "sizeBudgetKb.greaterThan=" + SMALLER_SIZE_BUDGET_KB,
+            "sizeBudgetKb.greaterThan=" + DEFAULT_SIZE_BUDGET_KB
+        );
+    }
+
+    @Test
+    @Transactional
+    void getAllHttpMonitorsByParentIsEqualToSomething() throws Exception {
+        HttpMonitor parent;
+        if (TestUtil.findAll(em, HttpMonitor.class).isEmpty()) {
+            httpMonitorRepository.saveAndFlush(httpMonitor);
+            parent = HttpMonitorResourceIT.createEntity();
+        } else {
+            parent = TestUtil.findAll(em, HttpMonitor.class).get(0);
+        }
+        em.persist(parent);
+        em.flush();
+        httpMonitor.setParent(parent);
+        httpMonitorRepository.saveAndFlush(httpMonitor);
+        Long parentId = parent.getId();
+        // Get all the httpMonitorList where parent equals to parentId
+        defaultHttpMonitorShouldBeFound("parentId.equals=" + parentId);
+
+        // Get all the httpMonitorList where parent equals to (parentId + 1)
+        defaultHttpMonitorShouldNotBeFound("parentId.equals=" + (parentId + 1));
     }
 
     private void defaultHttpMonitorFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
@@ -508,7 +2209,29 @@ class HttpMonitorResourceIT {
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)))
             .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL)))
             .andExpect(jsonPath("$.[*].headers").value(hasItem(DEFAULT_HEADERS)))
-            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY)));
+            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY)))
+            .andExpect(jsonPath("$.[*].intervalSeconds").value(hasItem(DEFAULT_INTERVAL_SECONDS)))
+            .andExpect(jsonPath("$.[*].timeoutSeconds").value(hasItem(DEFAULT_TIMEOUT_SECONDS)))
+            .andExpect(jsonPath("$.[*].retryCount").value(hasItem(DEFAULT_RETRY_COUNT)))
+            .andExpect(jsonPath("$.[*].retryDelaySeconds").value(hasItem(DEFAULT_RETRY_DELAY_SECONDS)))
+            .andExpect(jsonPath("$.[*].responseTimeWarningMs").value(hasItem(DEFAULT_RESPONSE_TIME_WARNING_MS)))
+            .andExpect(jsonPath("$.[*].responseTimeCriticalMs").value(hasItem(DEFAULT_RESPONSE_TIME_CRITICAL_MS)))
+            .andExpect(jsonPath("$.[*].uptimeWarningPercent").value(hasItem(DEFAULT_UPTIME_WARNING_PERCENT.doubleValue())))
+            .andExpect(jsonPath("$.[*].uptimeCriticalPercent").value(hasItem(DEFAULT_UPTIME_CRITICAL_PERCENT.doubleValue())))
+            .andExpect(jsonPath("$.[*].includeResponseBody").value(hasItem(DEFAULT_INCLUDE_RESPONSE_BODY)))
+            .andExpect(jsonPath("$.[*].resendNotificationCount").value(hasItem(DEFAULT_RESEND_NOTIFICATION_COUNT)))
+            .andExpect(jsonPath("$.[*].certificateExpiryDays").value(hasItem(DEFAULT_CERTIFICATE_EXPIRY_DAYS)))
+            .andExpect(jsonPath("$.[*].ignoreTlsError").value(hasItem(DEFAULT_IGNORE_TLS_ERROR)))
+            .andExpect(jsonPath("$.[*].checkSslCertificate").value(hasItem(DEFAULT_CHECK_SSL_CERTIFICATE)))
+            .andExpect(jsonPath("$.[*].checkDnsResolution").value(hasItem(DEFAULT_CHECK_DNS_RESOLUTION)))
+            .andExpect(jsonPath("$.[*].upsideDownMode").value(hasItem(DEFAULT_UPSIDE_DOWN_MODE)))
+            .andExpect(jsonPath("$.[*].maxRedirects").value(hasItem(DEFAULT_MAX_REDIRECTS)))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
+            .andExpect(jsonPath("$.[*].tags").value(hasItem(DEFAULT_TAGS)))
+            .andExpect(jsonPath("$.[*].enabled").value(hasItem(DEFAULT_ENABLED)))
+            .andExpect(jsonPath("$.[*].expectedStatusCodes").value(hasItem(DEFAULT_EXPECTED_STATUS_CODES)))
+            .andExpect(jsonPath("$.[*].performanceBudgetMs").value(hasItem(DEFAULT_PERFORMANCE_BUDGET_MS)))
+            .andExpect(jsonPath("$.[*].sizeBudgetKb").value(hasItem(DEFAULT_SIZE_BUDGET_KB)));
 
         // Check, that the count call also returns 1
         restHttpMonitorMockMvc
@@ -564,7 +2287,29 @@ class HttpMonitorResourceIT {
             .type(UPDATED_TYPE)
             .url(UPDATED_URL)
             .headers(UPDATED_HEADERS)
-            .body(UPDATED_BODY);
+            .body(UPDATED_BODY)
+            .intervalSeconds(UPDATED_INTERVAL_SECONDS)
+            .timeoutSeconds(UPDATED_TIMEOUT_SECONDS)
+            .retryCount(UPDATED_RETRY_COUNT)
+            .retryDelaySeconds(UPDATED_RETRY_DELAY_SECONDS)
+            .responseTimeWarningMs(UPDATED_RESPONSE_TIME_WARNING_MS)
+            .responseTimeCriticalMs(UPDATED_RESPONSE_TIME_CRITICAL_MS)
+            .uptimeWarningPercent(UPDATED_UPTIME_WARNING_PERCENT)
+            .uptimeCriticalPercent(UPDATED_UPTIME_CRITICAL_PERCENT)
+            .includeResponseBody(UPDATED_INCLUDE_RESPONSE_BODY)
+            .resendNotificationCount(UPDATED_RESEND_NOTIFICATION_COUNT)
+            .certificateExpiryDays(UPDATED_CERTIFICATE_EXPIRY_DAYS)
+            .ignoreTlsError(UPDATED_IGNORE_TLS_ERROR)
+            .checkSslCertificate(UPDATED_CHECK_SSL_CERTIFICATE)
+            .checkDnsResolution(UPDATED_CHECK_DNS_RESOLUTION)
+            .upsideDownMode(UPDATED_UPSIDE_DOWN_MODE)
+            .maxRedirects(UPDATED_MAX_REDIRECTS)
+            .description(UPDATED_DESCRIPTION)
+            .tags(UPDATED_TAGS)
+            .enabled(UPDATED_ENABLED)
+            .expectedStatusCodes(UPDATED_EXPECTED_STATUS_CODES)
+            .performanceBudgetMs(UPDATED_PERFORMANCE_BUDGET_MS)
+            .sizeBudgetKb(UPDATED_SIZE_BUDGET_KB);
         HttpMonitorDTO httpMonitorDTO = httpMonitorMapper.toDto(updatedHttpMonitor);
 
         restHttpMonitorMockMvc
@@ -677,7 +2422,19 @@ class HttpMonitorResourceIT {
         HttpMonitor partialUpdatedHttpMonitor = new HttpMonitor();
         partialUpdatedHttpMonitor.setId(httpMonitor.getId());
 
-        partialUpdatedHttpMonitor.type(UPDATED_TYPE).headers(UPDATED_HEADERS).body(UPDATED_BODY);
+        partialUpdatedHttpMonitor
+            .name(UPDATED_NAME)
+            .url(UPDATED_URL)
+            .headers(UPDATED_HEADERS)
+            .retryDelaySeconds(UPDATED_RETRY_DELAY_SECONDS)
+            .responseTimeWarningMs(UPDATED_RESPONSE_TIME_WARNING_MS)
+            .responseTimeCriticalMs(UPDATED_RESPONSE_TIME_CRITICAL_MS)
+            .includeResponseBody(UPDATED_INCLUDE_RESPONSE_BODY)
+            .certificateExpiryDays(UPDATED_CERTIFICATE_EXPIRY_DAYS)
+            .checkSslCertificate(UPDATED_CHECK_SSL_CERTIFICATE)
+            .checkDnsResolution(UPDATED_CHECK_DNS_RESOLUTION)
+            .maxRedirects(UPDATED_MAX_REDIRECTS)
+            .expectedStatusCodes(UPDATED_EXPECTED_STATUS_CODES);
 
         restHttpMonitorMockMvc
             .perform(
@@ -715,7 +2472,29 @@ class HttpMonitorResourceIT {
             .type(UPDATED_TYPE)
             .url(UPDATED_URL)
             .headers(UPDATED_HEADERS)
-            .body(UPDATED_BODY);
+            .body(UPDATED_BODY)
+            .intervalSeconds(UPDATED_INTERVAL_SECONDS)
+            .timeoutSeconds(UPDATED_TIMEOUT_SECONDS)
+            .retryCount(UPDATED_RETRY_COUNT)
+            .retryDelaySeconds(UPDATED_RETRY_DELAY_SECONDS)
+            .responseTimeWarningMs(UPDATED_RESPONSE_TIME_WARNING_MS)
+            .responseTimeCriticalMs(UPDATED_RESPONSE_TIME_CRITICAL_MS)
+            .uptimeWarningPercent(UPDATED_UPTIME_WARNING_PERCENT)
+            .uptimeCriticalPercent(UPDATED_UPTIME_CRITICAL_PERCENT)
+            .includeResponseBody(UPDATED_INCLUDE_RESPONSE_BODY)
+            .resendNotificationCount(UPDATED_RESEND_NOTIFICATION_COUNT)
+            .certificateExpiryDays(UPDATED_CERTIFICATE_EXPIRY_DAYS)
+            .ignoreTlsError(UPDATED_IGNORE_TLS_ERROR)
+            .checkSslCertificate(UPDATED_CHECK_SSL_CERTIFICATE)
+            .checkDnsResolution(UPDATED_CHECK_DNS_RESOLUTION)
+            .upsideDownMode(UPDATED_UPSIDE_DOWN_MODE)
+            .maxRedirects(UPDATED_MAX_REDIRECTS)
+            .description(UPDATED_DESCRIPTION)
+            .tags(UPDATED_TAGS)
+            .enabled(UPDATED_ENABLED)
+            .expectedStatusCodes(UPDATED_EXPECTED_STATUS_CODES)
+            .performanceBudgetMs(UPDATED_PERFORMANCE_BUDGET_MS)
+            .sizeBudgetKb(UPDATED_SIZE_BUDGET_KB);
 
         restHttpMonitorMockMvc
             .perform(
@@ -848,7 +2627,29 @@ class HttpMonitorResourceIT {
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)))
             .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL.toString())))
             .andExpect(jsonPath("$.[*].headers").value(hasItem(DEFAULT_HEADERS.toString())))
-            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY.toString())));
+            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY.toString())))
+            .andExpect(jsonPath("$.[*].intervalSeconds").value(hasItem(DEFAULT_INTERVAL_SECONDS)))
+            .andExpect(jsonPath("$.[*].timeoutSeconds").value(hasItem(DEFAULT_TIMEOUT_SECONDS)))
+            .andExpect(jsonPath("$.[*].retryCount").value(hasItem(DEFAULT_RETRY_COUNT)))
+            .andExpect(jsonPath("$.[*].retryDelaySeconds").value(hasItem(DEFAULT_RETRY_DELAY_SECONDS)))
+            .andExpect(jsonPath("$.[*].responseTimeWarningMs").value(hasItem(DEFAULT_RESPONSE_TIME_WARNING_MS)))
+            .andExpect(jsonPath("$.[*].responseTimeCriticalMs").value(hasItem(DEFAULT_RESPONSE_TIME_CRITICAL_MS)))
+            .andExpect(jsonPath("$.[*].uptimeWarningPercent").value(hasItem(DEFAULT_UPTIME_WARNING_PERCENT.doubleValue())))
+            .andExpect(jsonPath("$.[*].uptimeCriticalPercent").value(hasItem(DEFAULT_UPTIME_CRITICAL_PERCENT.doubleValue())))
+            .andExpect(jsonPath("$.[*].includeResponseBody").value(hasItem(DEFAULT_INCLUDE_RESPONSE_BODY)))
+            .andExpect(jsonPath("$.[*].resendNotificationCount").value(hasItem(DEFAULT_RESEND_NOTIFICATION_COUNT)))
+            .andExpect(jsonPath("$.[*].certificateExpiryDays").value(hasItem(DEFAULT_CERTIFICATE_EXPIRY_DAYS)))
+            .andExpect(jsonPath("$.[*].ignoreTlsError").value(hasItem(DEFAULT_IGNORE_TLS_ERROR)))
+            .andExpect(jsonPath("$.[*].checkSslCertificate").value(hasItem(DEFAULT_CHECK_SSL_CERTIFICATE)))
+            .andExpect(jsonPath("$.[*].checkDnsResolution").value(hasItem(DEFAULT_CHECK_DNS_RESOLUTION)))
+            .andExpect(jsonPath("$.[*].upsideDownMode").value(hasItem(DEFAULT_UPSIDE_DOWN_MODE)))
+            .andExpect(jsonPath("$.[*].maxRedirects").value(hasItem(DEFAULT_MAX_REDIRECTS)))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
+            .andExpect(jsonPath("$.[*].tags").value(hasItem(DEFAULT_TAGS)))
+            .andExpect(jsonPath("$.[*].enabled").value(hasItem(DEFAULT_ENABLED)))
+            .andExpect(jsonPath("$.[*].expectedStatusCodes").value(hasItem(DEFAULT_EXPECTED_STATUS_CODES)))
+            .andExpect(jsonPath("$.[*].performanceBudgetMs").value(hasItem(DEFAULT_PERFORMANCE_BUDGET_MS)))
+            .andExpect(jsonPath("$.[*].sizeBudgetKb").value(hasItem(DEFAULT_SIZE_BUDGET_KB)));
     }
 
     protected long getRepositoryCount() {

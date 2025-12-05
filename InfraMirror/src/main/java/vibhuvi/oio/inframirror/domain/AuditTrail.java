@@ -6,11 +6,7 @@ import java.io.Serializable;
 import java.time.Instant;
 
 /**
- * AuditTrail - Comprehensive audit logging for all system changes
- * Table: audit_logs
- * Note: Renamed from AuditLog to AuditTrail as requested
- *
- * Links to JHipster User entity for tracking who made changes
+ * A AuditTrail.
  */
 @Entity
 @Table(name = "audit_trail")
@@ -20,10 +16,11 @@ public class AuditTrail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
@@ -65,9 +62,6 @@ public class AuditTrail implements Serializable {
     @Column(name = "user_agent")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String userAgent;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -186,19 +180,6 @@ public class AuditTrail implements Serializable {
 
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
-    }
-
-    public User getUser() {
-        return this.user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public AuditTrail user(User user) {
-        this.setUser(user);
-        return this;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

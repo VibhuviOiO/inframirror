@@ -74,7 +74,9 @@ public class InstanceCriteria implements Serializable, Criteria {
 
     private InstantFilter lastHardwareCheckAt;
 
-    private LongFilter pingHeartbeatsId;
+    private LongFilter heartbeatId;
+
+    private LongFilter serviceInstanceId;
 
     private LongFilter datacenterId;
 
@@ -111,7 +113,8 @@ public class InstanceCriteria implements Serializable, Criteria {
         this.updatedAt = other.optionalUpdatedAt().map(InstantFilter::copy).orElse(null);
         this.lastPingAt = other.optionalLastPingAt().map(InstantFilter::copy).orElse(null);
         this.lastHardwareCheckAt = other.optionalLastHardwareCheckAt().map(InstantFilter::copy).orElse(null);
-        this.pingHeartbeatsId = other.optionalPingHeartbeatsId().map(LongFilter::copy).orElse(null);
+        this.heartbeatId = other.optionalHeartbeatId().map(LongFilter::copy).orElse(null);
+        this.serviceInstanceId = other.optionalServiceInstanceId().map(LongFilter::copy).orElse(null);
         this.datacenterId = other.optionalDatacenterId().map(LongFilter::copy).orElse(null);
         this.agentId = other.optionalAgentId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
@@ -616,23 +619,42 @@ public class InstanceCriteria implements Serializable, Criteria {
         this.lastHardwareCheckAt = lastHardwareCheckAt;
     }
 
-    public LongFilter getPingHeartbeatsId() {
-        return pingHeartbeatsId;
+    public LongFilter getHeartbeatId() {
+        return heartbeatId;
     }
 
-    public Optional<LongFilter> optionalPingHeartbeatsId() {
-        return Optional.ofNullable(pingHeartbeatsId);
+    public Optional<LongFilter> optionalHeartbeatId() {
+        return Optional.ofNullable(heartbeatId);
     }
 
-    public LongFilter pingHeartbeatsId() {
-        if (pingHeartbeatsId == null) {
-            setPingHeartbeatsId(new LongFilter());
+    public LongFilter heartbeatId() {
+        if (heartbeatId == null) {
+            setHeartbeatId(new LongFilter());
         }
-        return pingHeartbeatsId;
+        return heartbeatId;
     }
 
-    public void setPingHeartbeatsId(LongFilter pingHeartbeatsId) {
-        this.pingHeartbeatsId = pingHeartbeatsId;
+    public void setHeartbeatId(LongFilter heartbeatId) {
+        this.heartbeatId = heartbeatId;
+    }
+
+    public LongFilter getServiceInstanceId() {
+        return serviceInstanceId;
+    }
+
+    public Optional<LongFilter> optionalServiceInstanceId() {
+        return Optional.ofNullable(serviceInstanceId);
+    }
+
+    public LongFilter serviceInstanceId() {
+        if (serviceInstanceId == null) {
+            setServiceInstanceId(new LongFilter());
+        }
+        return serviceInstanceId;
+    }
+
+    public void setServiceInstanceId(LongFilter serviceInstanceId) {
+        this.serviceInstanceId = serviceInstanceId;
     }
 
     public LongFilter getDatacenterId() {
@@ -728,7 +750,8 @@ public class InstanceCriteria implements Serializable, Criteria {
             Objects.equals(updatedAt, that.updatedAt) &&
             Objects.equals(lastPingAt, that.lastPingAt) &&
             Objects.equals(lastHardwareCheckAt, that.lastHardwareCheckAt) &&
-            Objects.equals(pingHeartbeatsId, that.pingHeartbeatsId) &&
+            Objects.equals(heartbeatId, that.heartbeatId) &&
+            Objects.equals(serviceInstanceId, that.serviceInstanceId) &&
             Objects.equals(datacenterId, that.datacenterId) &&
             Objects.equals(agentId, that.agentId) &&
             Objects.equals(distinct, that.distinct)
@@ -764,7 +787,8 @@ public class InstanceCriteria implements Serializable, Criteria {
             updatedAt,
             lastPingAt,
             lastHardwareCheckAt,
-            pingHeartbeatsId,
+            heartbeatId,
+            serviceInstanceId,
             datacenterId,
             agentId,
             distinct
@@ -801,7 +825,8 @@ public class InstanceCriteria implements Serializable, Criteria {
             optionalUpdatedAt().map(f -> "updatedAt=" + f + ", ").orElse("") +
             optionalLastPingAt().map(f -> "lastPingAt=" + f + ", ").orElse("") +
             optionalLastHardwareCheckAt().map(f -> "lastHardwareCheckAt=" + f + ", ").orElse("") +
-            optionalPingHeartbeatsId().map(f -> "pingHeartbeatsId=" + f + ", ").orElse("") +
+            optionalHeartbeatId().map(f -> "heartbeatId=" + f + ", ").orElse("") +
+            optionalServiceInstanceId().map(f -> "serviceInstanceId=" + f + ", ").orElse("") +
             optionalDatacenterId().map(f -> "datacenterId=" + f + ", ").orElse("") +
             optionalAgentId().map(f -> "agentId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +

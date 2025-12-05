@@ -1,6 +1,5 @@
 package vibhuvi.oio.inframirror.service.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -8,10 +7,10 @@ import java.util.Objects;
 /**
  * A DTO for the {@link vibhuvi.oio.inframirror.domain.Region} entity.
  */
-@Schema(description = "Region - Represents geographical regions containing multiple datacenters\nTable: regions")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class RegionDTO implements Serializable {
 
+    @NotNull
     private Long id;
 
     @NotNull

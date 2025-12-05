@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Status Page Item جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Status Page Item",
+        "search": "البحث عن Status Page Item",
+        "notFound": "لم يتم العثور على Status Page Items"
+      },
+      "created": "Status Page Item جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Status Page Item تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Status Page Item تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Status Page Item {{ id }}؟"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

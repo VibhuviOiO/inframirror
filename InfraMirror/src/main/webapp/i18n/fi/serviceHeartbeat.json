@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Luo Service Heartbeat",
+        "createOrEditLabel": "Luo tai muokkaa Service Heartbeat",
+        "search": "Etsi Service Heartbeat",
+        "notFound": "Service Heartbeat ei löytynyt"
+      },
+      "created": "Uusi Service Heartbeat on luotu, id: {{ param }}",
+      "updated": "Service Heartbeat on päivitetty, id: {{ param }}",
+      "deleted": "Service Heartbeat on päivitetty, id: {{ param }}",
+      "delete": {
+        "question": "Haluatko varmasti poistaa Service Heartbeat {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

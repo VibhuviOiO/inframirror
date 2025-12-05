@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Създайте нов Service Instance",
+        "createOrEditLabel": "Създайте или редактирайте Service Instance",
+        "search": "Търси Service Instance",
+        "notFound": "Service Instances не са намерени"
+      },
+      "created": "Създаден е нов Service Instance с идентификатор {{ param }}",
+      "updated": "Service Instance с идентификатор {{ param }} e oбновен",
+      "deleted": "Service Instance с идентификатор {{ param }} е изтрит",
+      "delete": {
+        "question": "Наистина ли искате да изтриете Service Instance {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

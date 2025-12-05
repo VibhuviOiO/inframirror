@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { createAsyncThunk, isFulfilled, isPending } from '@reduxjs/toolkit';
-import { ASC } from 'app/shared/util/pagination.constants';
 import { cleanEntity } from 'app/shared/util/entity-utils';
 import { EntityState, IQueryParams, createEntitySlice, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
 import { IApiKey, defaultValue } from 'app/shared/model/api-key.model';
@@ -11,6 +10,7 @@ const initialState: EntityState<IApiKey> = {
   entities: [],
   entity: defaultValue,
   updating: false,
+  totalItems: 0,
   updateSuccess: false,
 };
 
@@ -22,7 +22,7 @@ const apiSearchUrl = 'api/api-keys/_search';
 export const searchEntities = createAsyncThunk(
   'apiKey/search_entity',
   async ({ query, page, size, sort }: IQueryParams) => {
-    const requestUrl = `${apiSearchUrl}?query=${query}`;
+    const requestUrl = `${apiSearchUrl}?query=${query}${sort ? `&page=${page}&size=${size}&sort=${sort}` : ''}`;
     return axios.get<IApiKey[]>(requestUrl);
   },
   { serializeError: serializeAxiosError },
@@ -30,8 +30,8 @@ export const searchEntities = createAsyncThunk(
 
 export const getEntities = createAsyncThunk(
   'apiKey/fetch_entity_list',
-  async ({ sort }: IQueryParams) => {
-    const requestUrl = `${apiUrl}?${sort ? `sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
+  async ({ page, size, sort }: IQueryParams) => {
+    const requestUrl = `${apiUrl}?${sort ? `page=${page}&size=${size}&sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
     return axios.get<IApiKey[]>(requestUrl);
   },
   { serializeError: serializeAxiosError },
@@ -104,19 +104,13 @@ export const ApiKeySlice = createEntitySlice({
         state.entity = {};
       })
       .addMatcher(isFulfilled(getEntities, searchEntities), (state, action) => {
-        const { data } = action.payload;
+        const { data, headers } = action.payload;
 
         return {
           ...state,
           loading: false,
-          entities: data.sort((a, b) => {
-            if (!action.meta?.arg?.sort) {
-              return 1;
-            }
-            const order = action.meta.arg.sort.split(',')[1];
-            const predicate = action.meta.arg.sort.split(',')[0];
-            return order === ASC ? (a[predicate] < b[predicate] ? -1 : 1) : b[predicate] < a[predicate] ? -1 : 1;
-          }),
+          entities: data,
+          totalItems: parseInt(headers['x-total-count'], 10),
         };
       })
       .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {

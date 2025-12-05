@@ -1,0 +1,114 @@
+{
+  "annotations": {
+    "changelogDate": "20251205053332"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "executedAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "heartbeatType",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "20"
+    },
+    {
+      "fieldName": "success",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "responseTimeMs",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "packetLoss",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "jitterMs",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "cpuUsage",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "memoryUsage",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "diskUsage",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "loadAverage",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "processCount",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "networkRxBytes",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "networkTxBytes",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "uptimeSeconds",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "20"
+    },
+    {
+      "fieldName": "errorMessage",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "errorType",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "100"
+    },
+    {
+      "fieldName": "metadata",
+      "fieldType": "TextBlob"
+    }
+  ],
+  "name": "InstanceHeartbeat",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "agent",
+      "otherEntityRelationshipName": "instanceHeartbeat",
+      "relationshipName": "agent",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "instance",
+      "otherEntityRelationshipName": "heartbeat",
+      "relationshipName": "instance",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "service": "serviceImpl"
+}

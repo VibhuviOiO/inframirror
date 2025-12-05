@@ -1,0 +1,44 @@
+{
+  "infraMirrorApp": {
+    "statusPage": {
+      "home": {
+        "title": "Status Pages",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "建立一筆新的 Status Page",
+        "createOrEditLabel": "建立或編輯 Status Page",
+        "search": "搜尋 Status Page",
+        "notFound": "No Status Pages found"
+      },
+      "created": "新的 Status Page 建立成功，識別碼為 {{ param }}",
+      "updated": "識別碼為 {{ param }} 的 Status Page 更新成功",
+      "deleted": "識別碼為 {{ param }} 的 Status Page 刪除成功",
+      "delete": {
+        "question": "您確定要刪除 Status Page {{ id }} 嗎?"
+      },
+      "detail": {
+        "title": "Status Page"
+      },
+      "id": "Id",
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "isPublic": "Is Public",
+      "customDomain": "Custom Domain",
+      "logoUrl": "Logo Url",
+      "themeColor": "Theme Color",
+      "headerText": "Header Text",
+      "footerText": "Footer Text",
+      "showResponseTimes": "Show Response Times",
+      "showUptimePercentage": "Show Uptime Percentage",
+      "autoRefreshSeconds": "Auto Refresh Seconds",
+      "monitorSelection": "Monitor Selection",
+      "isActive": "Is Active",
+      "isHomePage": "Is Home Page",
+      "allowedRoles": "Allowed Roles",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "item": "Item",
+      "statusDependency": "Status Dependency"
+    }
+  }
+}

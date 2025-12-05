@@ -1,0 +1,44 @@
+{
+  "infraMirrorApp": {
+    "statusPage": {
+      "home": {
+        "title": "Status Pages",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni Status Page ekle",
+        "createOrEditLabel": "Yeni Status Page ekle veya guncelle",
+        "search": "Status Page ara",
+        "notFound": "Status Pages kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir Status Page eklendi",
+      "updated": "{{ param }} nolu Status Page guncellendi",
+      "deleted": "{{ param }} nolu Status Page silindi",
+      "delete": {
+        "question": "{{ id }} nolu Status Page silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "Status Page"
+      },
+      "id": "Id",
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "isPublic": "Is Public",
+      "customDomain": "Custom Domain",
+      "logoUrl": "Logo Url",
+      "themeColor": "Theme Color",
+      "headerText": "Header Text",
+      "footerText": "Footer Text",
+      "showResponseTimes": "Show Response Times",
+      "showUptimePercentage": "Show Uptime Percentage",
+      "autoRefreshSeconds": "Auto Refresh Seconds",
+      "monitorSelection": "Monitor Selection",
+      "isActive": "Is Active",
+      "isHomePage": "Is Home Page",
+      "allowedRoles": "Allowed Roles",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "item": "Item",
+      "statusDependency": "Status Dependency"
+    }
+  }
+}

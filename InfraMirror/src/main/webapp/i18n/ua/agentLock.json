@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Створити новий Agent Lock",
+        "createOrEditLabel": "Створити чи редагувати Agent Lock",
+        "search": "Знайти Agent Lock",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "Новий Agent Lock створений з ідентифікатором {{ param }}",
+      "updated": "Agent Lock оновлений з ідентифікатором {{ param }}",
+      "deleted": "Agent Lock видалений з ідентифікатором {{ param }}",
+      "delete": {
+        "question": "Ви впевнені, що хочете видалити Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

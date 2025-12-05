@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Pridať Status Page Item",
+        "createOrEditLabel": "Pridať alebo upraviť Status Page Item",
+        "search": "Vyhľadať Status Page Item",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "Bol vytvorený potomok entity Status Page Item s identifikátorom {{ param }}",
+      "updated": "Potomok entity Status Page Item s identifikátorom {{ param }} bol upravený.",
+      "deleted": "Potomok entity Status Page Item s identifikátorom {{ param }} bol vymazaný.",
+      "delete": {
+        "question": "Ste si istý, že chcete vymazať Status Page Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

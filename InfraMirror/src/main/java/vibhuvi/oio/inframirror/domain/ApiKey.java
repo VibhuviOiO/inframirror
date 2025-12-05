@@ -6,8 +6,7 @@ import java.io.Serializable;
 import java.time.Instant;
 
 /**
- * ApiKey - API keys for external system authentication
- * Table: api_key
+ * A ApiKey.
  */
 @Entity
 @Table(name = "api_key")
@@ -17,10 +16,11 @@ public class ApiKey implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull

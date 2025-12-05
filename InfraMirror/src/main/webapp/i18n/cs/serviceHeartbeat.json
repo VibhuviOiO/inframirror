@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Vytvořit Service Heartbeat",
+        "createOrEditLabel": "Vytvořit nebo upravit Service Heartbeat",
+        "search": "Vyhledat Service Heartbeat",
+        "notFound": "No Service Heartbeats found"
+      },
+      "created": "Byl vytvořen potomek entity Service Heartbeat s identifikátorem {{ param }}",
+      "updated": "Potomek entity Service Heartbeat s identifikátorem {{ param }} byl upravený.",
+      "deleted": "Potomek entity Service Heartbeat s identifikátorem {{ param }} bol smazaný.",
+      "delete": {
+        "question": "Jste si jisti, že chcete smazat Service Heartbeat {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

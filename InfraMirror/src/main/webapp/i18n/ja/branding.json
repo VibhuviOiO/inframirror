@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Branding の作成",
+        "createOrEditLabel": "Brandingの作成または編集",
+        "search": "Branding の検索",
+        "notFound": "Brandings が見つかりません。"
+      },
+      "created": "新しい Branding がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Branding が更新されました。",
+      "deleted": "ID {{ param }} の Branding が削除されました。",
+      "delete": {
+        "question": "Branding {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

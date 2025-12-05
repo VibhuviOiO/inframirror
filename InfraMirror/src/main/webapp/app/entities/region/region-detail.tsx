@@ -27,7 +27,7 @@ export const RegionDetail = () => {
         <dl className="jh-entity-details">
           <dt>
             <span id="id">
-              <Translate contentKey="global.field.id">ID</Translate>
+              <Translate contentKey="infraMirrorApp.region.id">Id</Translate>
             </span>
           </dt>
           <dd>{regionEntity.id}</dd>

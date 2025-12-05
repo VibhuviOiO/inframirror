@@ -1,6 +1,5 @@
 package vibhuvi.oio.inframirror.service.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
@@ -9,10 +8,10 @@ import java.util.Objects;
 /**
  * A DTO for the {@link vibhuvi.oio.inframirror.domain.ApiKey} entity.
  */
-@Schema(description = "ApiKey - API keys for external system authentication\nTable: api_key")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ApiKeyDTO implements Serializable {
 
+    @NotNull
     private Long id;
 
     @NotNull

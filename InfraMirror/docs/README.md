@@ -137,7 +137,7 @@ An enterprise infrastructure management platform for organizations with:
 - ✅ HttpHeartbeat
 - ✅ PingHeartbeat
 - ✅ ApiKey
-- ✅ AuditLog
+- ✅ AuditTrail
 
 ### Entities to Add (From Documentation)
 - 🔲 Rack
@@ -149,6 +149,8 @@ An enterprise infrastructure management platform for organizations with:
 - 🔲 RemoteSession
 - 🔲 SessionCommand
 - 🔲 RolePermission
+  
+Note: Fine-grained IAM via a custom `RolePermission` entity is not used. The project uses JHipster's default static roles (for example: `ROLE_ADMIN`, `ROLE_USER`, `ROLE_ANONYMOUS`) and Keycloak / OAuth integration for authentication. If you need resource-level permissions later, we can add a dedicated RBAC extension.
 - 🔲 SecurityEvent
 - 🔲 LogSource
 - 🔲 Plugin

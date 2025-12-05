@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Skapa en ny Agent Lock",
+        "createOrEditLabel": "Skapa eller ändra en Agent Lock",
+        "search": "Sök efter Agent Lock",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "En ny Agent Lock är skapad med id {{ param }}",
+      "updated": "En Agent Lock är uppdaterad med id  {{ param }}",
+      "deleted": "En Agent Lock är borttagen med id  {{ param }}",
+      "delete": {
+        "question": "Är du säker på att du vill ta bort Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

@@ -7,6 +7,9 @@ const EntitiesMenu = () => {
   return (
     <>
       {/* prettier-ignore */}
+      <MenuItem icon="asterisk" to="/branding">
+        <Translate contentKey="global.menu.entities.branding" />
+      </MenuItem>
       <MenuItem icon="asterisk" to="/region">
         <Translate contentKey="global.menu.entities.region" />
       </MenuItem>
@@ -16,11 +19,11 @@ const EntitiesMenu = () => {
       <MenuItem icon="asterisk" to="/agent">
         <Translate contentKey="global.menu.entities.agent" />
       </MenuItem>
-      <MenuItem icon="asterisk" to="/instance">
-        <Translate contentKey="global.menu.entities.instance" />
+      <MenuItem icon="asterisk" to="/audit-trail">
+        <Translate contentKey="global.menu.entities.auditTrail" />
       </MenuItem>
-      <MenuItem icon="asterisk" to="/schedule">
-        <Translate contentKey="global.menu.entities.schedule" />
+      <MenuItem icon="asterisk" to="/api-key">
+        <Translate contentKey="global.menu.entities.apiKey" />
       </MenuItem>
       <MenuItem icon="asterisk" to="/http-monitor">
         <Translate contentKey="global.menu.entities.httpMonitor" />
@@ -28,20 +31,35 @@ const EntitiesMenu = () => {
       <MenuItem icon="asterisk" to="/http-heartbeat">
         <Translate contentKey="global.menu.entities.httpHeartbeat" />
       </MenuItem>
-      <MenuItem icon="asterisk" to="/ping-heartbeat">
-        <Translate contentKey="global.menu.entities.pingHeartbeat" />
+      <MenuItem icon="asterisk" to="/agent-monitor">
+        <Translate contentKey="global.menu.entities.agentMonitor" />
       </MenuItem>
-      <MenuItem icon="asterisk" to="/api-key">
-        <Translate contentKey="global.menu.entities.apiKey" />
+      <MenuItem icon="asterisk" to="/agent-lock">
+        <Translate contentKey="global.menu.entities.agentLock" />
       </MenuItem>
-      <MenuItem icon="asterisk" to="/audit-trail">
-        <Translate contentKey="global.menu.entities.auditTrail" />
+      <MenuItem icon="asterisk" to="/instance">
+        <Translate contentKey="global.menu.entities.instance" />
       </MenuItem>
-      <MenuItem icon="asterisk" to="/tag">
-        <Translate contentKey="global.menu.entities.tag" />
+      <MenuItem icon="asterisk" to="/instance-heartbeat">
+        <Translate contentKey="global.menu.entities.instanceHeartbeat" />
       </MenuItem>
-      <MenuItem icon="asterisk" to="/session-log">
-        <Translate contentKey="global.menu.entities.sessionLog" />
+      <MenuItem icon="asterisk" to="/service">
+        <Translate contentKey="global.menu.entities.service" />
+      </MenuItem>
+      <MenuItem icon="asterisk" to="/service-instance">
+        <Translate contentKey="global.menu.entities.serviceInstance" />
+      </MenuItem>
+      <MenuItem icon="asterisk" to="/service-heartbeat">
+        <Translate contentKey="global.menu.entities.serviceHeartbeat" />
+      </MenuItem>
+      <MenuItem icon="asterisk" to="/status-page">
+        <Translate contentKey="global.menu.entities.statusPage" />
+      </MenuItem>
+      <MenuItem icon="asterisk" to="/status-page-item">
+        <Translate contentKey="global.menu.entities.statusPageItem" />
+      </MenuItem>
+      <MenuItem icon="asterisk" to="/status-dependency">
+        <Translate contentKey="global.menu.entities.statusDependency" />
       </MenuItem>
       {/* jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here */}
     </>

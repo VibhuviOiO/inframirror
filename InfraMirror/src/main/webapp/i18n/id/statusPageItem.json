@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Status Page Item baru",
+        "createOrEditLabel": "Buat atau edit Status Page Item",
+        "search": "Cari Status Page Item",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "Status Page Item dengan id {{ param }} telah dibuat",
+      "updated": "Status Page Item dengan id {{ param }} telah diperbaharui",
+      "deleted": "Status Page Item dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Status Page Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

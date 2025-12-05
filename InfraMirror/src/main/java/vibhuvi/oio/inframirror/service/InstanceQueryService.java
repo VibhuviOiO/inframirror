@@ -107,8 +107,11 @@ public class InstanceQueryService extends QueryService<Instance> {
                 buildRangeSpecification(criteria.getUpdatedAt(), Instance_.updatedAt),
                 buildRangeSpecification(criteria.getLastPingAt(), Instance_.lastPingAt),
                 buildRangeSpecification(criteria.getLastHardwareCheckAt(), Instance_.lastHardwareCheckAt),
-                buildSpecification(criteria.getPingHeartbeatsId(), root ->
-                    root.join(Instance_.pingHeartbeats, JoinType.LEFT).get(PingHeartbeat_.id)
+                buildSpecification(criteria.getHeartbeatId(), root ->
+                    root.join(Instance_.heartbeats, JoinType.LEFT).get(InstanceHeartbeat_.id)
+                ),
+                buildSpecification(criteria.getServiceInstanceId(), root ->
+                    root.join(Instance_.serviceInstances, JoinType.LEFT).get(ServiceInstance_.id)
                 ),
                 buildSpecification(criteria.getDatacenterId(), root -> root.join(Instance_.datacenter, JoinType.LEFT).get(Datacenter_.id)),
                 buildSpecification(criteria.getAgentId(), root -> root.join(Instance_.agent, JoinType.LEFT).get(Agent_.id))

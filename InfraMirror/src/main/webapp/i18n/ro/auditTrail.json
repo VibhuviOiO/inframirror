@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Audit Trail",
+        "createOrEditLabel": "Creeare sau editare Audit Trail",
         "search": "Căutare după Audit Trail",
         "notFound": "No Audit Trails found"
+      },
+      "created": "A fost creată o nouă entitate Audit Trail cu identificatorul {{ param }}",
+      "updated": "Audit Trail cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Audit Trail cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

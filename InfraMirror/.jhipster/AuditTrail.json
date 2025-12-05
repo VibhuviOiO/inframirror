@@ -1,11 +1,15 @@
 {
   "annotations": {
-    "changelogDate": "20251203083834"
+    "changelogDate": "20251205053325"
   },
   "applications": "*",
-  "documentation": "AuditTrail - Comprehensive audit logging for all system changes\\nTable: audit_logs\\nNote: Renamed from AuditLog to AuditTrail as requested\\n\\nLinks to JHipster User entity for tracking who made changes",
   "dto": "mapstruct",
   "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
     {
       "fieldName": "action",
       "fieldType": "String",
@@ -47,19 +51,8 @@
       "fieldType": "TextBlob"
     }
   ],
-  "jpaMetamodelFiltering": true,
   "name": "AuditTrail",
-  "pagination": "infinite-scroll",
-  "readOnly": true,
-  "relationships": [
-    {
-      "otherEntityName": "user",
-      "relationshipName": "user",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
-    }
-  ],
-  "searchEngine": "elasticsearch",
+  "pagination": "pagination",
+  "relationships": [],
   "service": "serviceImpl"
 }

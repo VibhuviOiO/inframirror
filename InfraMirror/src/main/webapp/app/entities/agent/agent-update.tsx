@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { getEntities as getDatacenters } from 'app/entities/datacenter/datacenter.reducer';
+import { getEntities as getRegions } from 'app/entities/region/region.reducer';
 import { createEntity, getEntity, reset, updateEntity } from './agent.reducer';
 
 export const AgentUpdate = () => {
@@ -17,7 +17,7 @@ export const AgentUpdate = () => {
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
 
-  const datacenters = useAppSelector(state => state.datacenter.entities);
+  const regions = useAppSelector(state => state.region.entities);
   const agentEntity = useAppSelector(state => state.agent.entity);
   const loading = useAppSelector(state => state.agent.loading);
   const updating = useAppSelector(state => state.agent.updating);
@@ -34,7 +34,7 @@ export const AgentUpdate = () => {
       dispatch(getEntity(id));
     }
 
-    dispatch(getDatacenters({}));
+    dispatch(getRegions({}));
   }, []);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export const AgentUpdate = () => {
     const entity = {
       ...agentEntity,
       ...values,
-      datacenter: datacenters.find(it => it.id.toString() === values.datacenter?.toString()),
+      region: regions.find(it => it.id.toString() === values.region?.toString()),
     };
 
     if (isNew) {
@@ -66,7 +66,7 @@ export const AgentUpdate = () => {
       ? {}
       : {
           ...agentEntity,
-          datacenter: agentEntity?.datacenter?.id,
+          region: agentEntity?.region?.id,
         };
 
   return (
@@ -90,7 +90,7 @@ export const AgentUpdate = () => {
                   required
                   readOnly
                   id="agent-id"
-                  label={translate('global.field.id')}
+                  label={translate('infraMirrorApp.agent.id')}
                   validate={{ required: true }}
                 />
               ) : null}
@@ -106,15 +106,15 @@ export const AgentUpdate = () => {
                 }}
               />
               <ValidatedField
-                id="agent-datacenter"
-                name="datacenter"
-                data-cy="datacenter"
-                label={translate('infraMirrorApp.agent.datacenter')}
+                id="agent-region"
+                name="region"
+                data-cy="region"
+                label={translate('infraMirrorApp.agent.region')}
                 type="select"
               >
                 <option value="" key="0" />
-                {datacenters
-                  ? datacenters.map(otherEntity => (
+                {regions
+                  ? regions.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
                         {otherEntity.id}
                       </option>

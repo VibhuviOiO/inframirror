@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Service Instance baru",
+        "createOrEditLabel": "Buat atau edit Service Instance",
+        "search": "Cari Service Instance",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Service Instance dengan id {{ param }} telah dibuat",
+      "updated": "Service Instance dengan id {{ param }} telah diperbaharui",
+      "deleted": "Service Instance dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Service Instance {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

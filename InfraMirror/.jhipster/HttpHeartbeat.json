@@ -1,11 +1,15 @@
 {
   "annotations": {
-    "changelogDate": "20251203083830"
+    "changelogDate": "20251205053328"
   },
   "applications": "*",
-  "documentation": "HttpHeartbeat - Results from HTTP endpoint health checks\\nTable: api_heartbeats\\nNote: Table is named api_heartbeats in database, entity name is HttpHeartbeat",
   "dto": "mapstruct",
   "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
     {
       "fieldName": "executedAt",
       "fieldType": "Instant",
@@ -50,11 +54,35 @@
       "fieldType": "Integer"
     },
     {
+      "fieldName": "dnsResolvedIp",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "100"
+    },
+    {
       "fieldName": "tcpConnectMs",
       "fieldType": "Integer"
     },
     {
       "fieldName": "tlsHandshakeMs",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "sslCertificateValid",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "sslCertificateExpiry",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "sslCertificateIssuer",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "500"
+    },
+    {
+      "fieldName": "sslDaysUntilExpiry",
       "fieldType": "Integer"
     },
     {
@@ -90,28 +118,121 @@
     {
       "fieldName": "rawResponseBody",
       "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "dnsDetails",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "tlsDetails",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "httpVersion",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "10"
+    },
+    {
+      "fieldName": "contentEncoding",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "20"
+    },
+    {
+      "fieldName": "compressionRatio",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "transferEncoding",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "20"
+    },
+    {
+      "fieldName": "responseBodyHash",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "64"
+    },
+    {
+      "fieldName": "responseBodySample",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "responseBodyValid",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "responseBodyUncompressedBytes",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "redirectDetails",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "cacheControl",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "255"
+    },
+    {
+      "fieldName": "etag",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "255"
+    },
+    {
+      "fieldName": "cacheAge",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "cdnProvider",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "50"
+    },
+    {
+      "fieldName": "cdnPop",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "10"
+    },
+    {
+      "fieldName": "rateLimitDetails",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "networkPath",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "agentMetrics",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "phaseLatencies",
+      "fieldType": "TextBlob"
     }
   ],
-  "jpaMetamodelFiltering": true,
   "name": "HttpHeartbeat",
-  "pagination": "infinite-scroll",
-  "readOnly": true,
+  "pagination": "pagination",
   "relationships": [
     {
-      "otherEntityName": "httpMonitor",
-      "otherEntityRelationshipName": "heartbeats",
-      "relationshipName": "monitor",
+      "otherEntityName": "agent",
+      "otherEntityRelationshipName": "httpHeartbeat",
+      "relationshipName": "agent",
       "relationshipSide": "right",
       "relationshipType": "many-to-one"
     },
     {
-      "otherEntityName": "agent",
-      "otherEntityRelationshipName": "httpHeartbeats",
-      "relationshipName": "agent",
+      "otherEntityName": "httpMonitor",
+      "otherEntityRelationshipName": "heartbeat",
+      "relationshipName": "monitor",
       "relationshipSide": "right",
       "relationshipType": "many-to-one"
     }
   ],
-  "searchEngine": "elasticsearch",
   "service": "serviceImpl"
 }

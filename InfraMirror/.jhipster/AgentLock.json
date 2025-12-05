@@ -1,0 +1,28 @@
+{
+  "annotations": {
+    "changelogDate": "20251205053330"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "agentId",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "acquiredAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "expiresAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "AgentLock",
+  "pagination": "pagination",
+  "relationships": [],
+  "service": "serviceImpl"
+}

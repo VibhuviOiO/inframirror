@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Vytvořit Audit Trail",
+        "createOrEditLabel": "Vytvořit nebo upravit Audit Trail",
         "search": "Vyhledat Audit Trail",
         "notFound": "No Audit Trails found"
+      },
+      "created": "Byl vytvořen potomek entity Audit Trail s identifikátorem {{ param }}",
+      "updated": "Potomek entity Audit Trail s identifikátorem {{ param }} byl upravený.",
+      "deleted": "Potomek entity Audit Trail s identifikátorem {{ param }} bol smazaný.",
+      "delete": {
+        "question": "Jste si jisti, že chcete smazat Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

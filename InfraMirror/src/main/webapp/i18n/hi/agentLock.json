@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "AgentLocks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नया Agent Lock बनाएँ",
+        "createOrEditLabel": "Agent Lock बनाएँ या संपादित करें",
+        "search": "Agent Lock खोजें",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "एक नया Agent Lock [identifier: {{ param }}] तैयार है",
+      "updated": "एक Agent Lock [identifier: {{ param }}] का अद्यतन हुआ है",
+      "deleted": "Agent Lock [identifier: {{ param }}] हटा दिया है",
+      "delete": {
+        "question": "Agent Lock [id: {{ id }}] हटाने की पुष्टि करें"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

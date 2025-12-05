@@ -1,31 +1,39 @@
 package vibhuvi.oio.inframirror.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static vibhuvi.oio.inframirror.domain.HttpHeartbeatAsserts.*;
+import static vibhuvi.oio.inframirror.web.rest.TestUtil.createUpdateProxyForBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
-import vibhuvi.oio.inframirror.domain.Agent;
 import vibhuvi.oio.inframirror.domain.HttpHeartbeat;
-import vibhuvi.oio.inframirror.domain.HttpMonitor;
 import vibhuvi.oio.inframirror.repository.HttpHeartbeatRepository;
 import vibhuvi.oio.inframirror.repository.search.HttpHeartbeatSearchRepository;
+import vibhuvi.oio.inframirror.service.dto.HttpHeartbeatDTO;
 import vibhuvi.oio.inframirror.service.mapper.HttpHeartbeatMapper;
 
 /**
@@ -44,15 +52,12 @@ class HttpHeartbeatResourceIT {
 
     private static final Integer DEFAULT_RESPONSE_TIME_MS = 1;
     private static final Integer UPDATED_RESPONSE_TIME_MS = 2;
-    private static final Integer SMALLER_RESPONSE_TIME_MS = 1 - 1;
 
     private static final Integer DEFAULT_RESPONSE_SIZE_BYTES = 1;
     private static final Integer UPDATED_RESPONSE_SIZE_BYTES = 2;
-    private static final Integer SMALLER_RESPONSE_SIZE_BYTES = 1 - 1;
 
     private static final Integer DEFAULT_RESPONSE_STATUS_CODE = 1;
     private static final Integer UPDATED_RESPONSE_STATUS_CODE = 2;
-    private static final Integer SMALLER_RESPONSE_STATUS_CODE = 1 - 1;
 
     private static final String DEFAULT_RESPONSE_CONTENT_TYPE = "AAAAAAAAAA";
     private static final String UPDATED_RESPONSE_CONTENT_TYPE = "BBBBBBBBBB";
@@ -65,27 +70,36 @@ class HttpHeartbeatResourceIT {
 
     private static final Integer DEFAULT_DNS_LOOKUP_MS = 1;
     private static final Integer UPDATED_DNS_LOOKUP_MS = 2;
-    private static final Integer SMALLER_DNS_LOOKUP_MS = 1 - 1;
+
+    private static final String DEFAULT_DNS_RESOLVED_IP = "AAAAAAAAAA";
+    private static final String UPDATED_DNS_RESOLVED_IP = "BBBBBBBBBB";
 
     private static final Integer DEFAULT_TCP_CONNECT_MS = 1;
     private static final Integer UPDATED_TCP_CONNECT_MS = 2;
-    private static final Integer SMALLER_TCP_CONNECT_MS = 1 - 1;
 
     private static final Integer DEFAULT_TLS_HANDSHAKE_MS = 1;
     private static final Integer UPDATED_TLS_HANDSHAKE_MS = 2;
-    private static final Integer SMALLER_TLS_HANDSHAKE_MS = 1 - 1;
+
+    private static final Boolean DEFAULT_SSL_CERTIFICATE_VALID = false;
+    private static final Boolean UPDATED_SSL_CERTIFICATE_VALID = true;
+
+    private static final Instant DEFAULT_SSL_CERTIFICATE_EXPIRY = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_SSL_CERTIFICATE_EXPIRY = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final String DEFAULT_SSL_CERTIFICATE_ISSUER = "AAAAAAAAAA";
+    private static final String UPDATED_SSL_CERTIFICATE_ISSUER = "BBBBBBBBBB";
+
+    private static final Integer DEFAULT_SSL_DAYS_UNTIL_EXPIRY = 1;
+    private static final Integer UPDATED_SSL_DAYS_UNTIL_EXPIRY = 2;
 
     private static final Integer DEFAULT_TIME_TO_FIRST_BYTE_MS = 1;
     private static final Integer UPDATED_TIME_TO_FIRST_BYTE_MS = 2;
-    private static final Integer SMALLER_TIME_TO_FIRST_BYTE_MS = 1 - 1;
 
     private static final Integer DEFAULT_WARNING_THRESHOLD_MS = 1;
     private static final Integer UPDATED_WARNING_THRESHOLD_MS = 2;
-    private static final Integer SMALLER_WARNING_THRESHOLD_MS = 1 - 1;
 
     private static final Integer DEFAULT_CRITICAL_THRESHOLD_MS = 1;
     private static final Integer UPDATED_CRITICAL_THRESHOLD_MS = 2;
-    private static final Integer SMALLER_CRITICAL_THRESHOLD_MS = 1 - 1;
 
     private static final String DEFAULT_ERROR_TYPE = "AAAAAAAAAA";
     private static final String UPDATED_ERROR_TYPE = "BBBBBBBBBB";
@@ -102,9 +116,72 @@ class HttpHeartbeatResourceIT {
     private static final String DEFAULT_RAW_RESPONSE_BODY = "AAAAAAAAAA";
     private static final String UPDATED_RAW_RESPONSE_BODY = "BBBBBBBBBB";
 
+    private static final String DEFAULT_DNS_DETAILS = "AAAAAAAAAA";
+    private static final String UPDATED_DNS_DETAILS = "BBBBBBBBBB";
+
+    private static final String DEFAULT_TLS_DETAILS = "AAAAAAAAAA";
+    private static final String UPDATED_TLS_DETAILS = "BBBBBBBBBB";
+
+    private static final String DEFAULT_HTTP_VERSION = "AAAAAAAAAA";
+    private static final String UPDATED_HTTP_VERSION = "BBBBBBBBBB";
+
+    private static final String DEFAULT_CONTENT_ENCODING = "AAAAAAAAAA";
+    private static final String UPDATED_CONTENT_ENCODING = "BBBBBBBBBB";
+
+    private static final Float DEFAULT_COMPRESSION_RATIO = 1F;
+    private static final Float UPDATED_COMPRESSION_RATIO = 2F;
+
+    private static final String DEFAULT_TRANSFER_ENCODING = "AAAAAAAAAA";
+    private static final String UPDATED_TRANSFER_ENCODING = "BBBBBBBBBB";
+
+    private static final String DEFAULT_RESPONSE_BODY_HASH = "AAAAAAAAAA";
+    private static final String UPDATED_RESPONSE_BODY_HASH = "BBBBBBBBBB";
+
+    private static final String DEFAULT_RESPONSE_BODY_SAMPLE = "AAAAAAAAAA";
+    private static final String UPDATED_RESPONSE_BODY_SAMPLE = "BBBBBBBBBB";
+
+    private static final Boolean DEFAULT_RESPONSE_BODY_VALID = false;
+    private static final Boolean UPDATED_RESPONSE_BODY_VALID = true;
+
+    private static final Integer DEFAULT_RESPONSE_BODY_UNCOMPRESSED_BYTES = 1;
+    private static final Integer UPDATED_RESPONSE_BODY_UNCOMPRESSED_BYTES = 2;
+
+    private static final String DEFAULT_REDIRECT_DETAILS = "AAAAAAAAAA";
+    private static final String UPDATED_REDIRECT_DETAILS = "BBBBBBBBBB";
+
+    private static final String DEFAULT_CACHE_CONTROL = "AAAAAAAAAA";
+    private static final String UPDATED_CACHE_CONTROL = "BBBBBBBBBB";
+
+    private static final String DEFAULT_ETAG = "AAAAAAAAAA";
+    private static final String UPDATED_ETAG = "BBBBBBBBBB";
+
+    private static final Integer DEFAULT_CACHE_AGE = 1;
+    private static final Integer UPDATED_CACHE_AGE = 2;
+
+    private static final String DEFAULT_CDN_PROVIDER = "AAAAAAAAAA";
+    private static final String UPDATED_CDN_PROVIDER = "BBBBBBBBBB";
+
+    private static final String DEFAULT_CDN_POP = "AAAAAAAAAA";
+    private static final String UPDATED_CDN_POP = "BBBBBBBBBB";
+
+    private static final String DEFAULT_RATE_LIMIT_DETAILS = "AAAAAAAAAA";
+    private static final String UPDATED_RATE_LIMIT_DETAILS = "BBBBBBBBBB";
+
+    private static final String DEFAULT_NETWORK_PATH = "AAAAAAAAAA";
+    private static final String UPDATED_NETWORK_PATH = "BBBBBBBBBB";
+
+    private static final String DEFAULT_AGENT_METRICS = "AAAAAAAAAA";
+    private static final String UPDATED_AGENT_METRICS = "BBBBBBBBBB";
+
+    private static final String DEFAULT_PHASE_LATENCIES = "AAAAAAAAAA";
+    private static final String UPDATED_PHASE_LATENCIES = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/http-heartbeats";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/http-heartbeats/_search";
+
+    private static Random random = new Random();
+    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private ObjectMapper om;
@@ -145,8 +222,13 @@ class HttpHeartbeatResourceIT {
             .responseServer(DEFAULT_RESPONSE_SERVER)
             .responseCacheStatus(DEFAULT_RESPONSE_CACHE_STATUS)
             .dnsLookupMs(DEFAULT_DNS_LOOKUP_MS)
+            .dnsResolvedIp(DEFAULT_DNS_RESOLVED_IP)
             .tcpConnectMs(DEFAULT_TCP_CONNECT_MS)
             .tlsHandshakeMs(DEFAULT_TLS_HANDSHAKE_MS)
+            .sslCertificateValid(DEFAULT_SSL_CERTIFICATE_VALID)
+            .sslCertificateExpiry(DEFAULT_SSL_CERTIFICATE_EXPIRY)
+            .sslCertificateIssuer(DEFAULT_SSL_CERTIFICATE_ISSUER)
+            .sslDaysUntilExpiry(DEFAULT_SSL_DAYS_UNTIL_EXPIRY)
             .timeToFirstByteMs(DEFAULT_TIME_TO_FIRST_BYTE_MS)
             .warningThresholdMs(DEFAULT_WARNING_THRESHOLD_MS)
             .criticalThresholdMs(DEFAULT_CRITICAL_THRESHOLD_MS)
@@ -154,7 +236,27 @@ class HttpHeartbeatResourceIT {
             .errorMessage(DEFAULT_ERROR_MESSAGE)
             .rawRequestHeaders(DEFAULT_RAW_REQUEST_HEADERS)
             .rawResponseHeaders(DEFAULT_RAW_RESPONSE_HEADERS)
-            .rawResponseBody(DEFAULT_RAW_RESPONSE_BODY);
+            .rawResponseBody(DEFAULT_RAW_RESPONSE_BODY)
+            .dnsDetails(DEFAULT_DNS_DETAILS)
+            .tlsDetails(DEFAULT_TLS_DETAILS)
+            .httpVersion(DEFAULT_HTTP_VERSION)
+            .contentEncoding(DEFAULT_CONTENT_ENCODING)
+            .compressionRatio(DEFAULT_COMPRESSION_RATIO)
+            .transferEncoding(DEFAULT_TRANSFER_ENCODING)
+            .responseBodyHash(DEFAULT_RESPONSE_BODY_HASH)
+            .responseBodySample(DEFAULT_RESPONSE_BODY_SAMPLE)
+            .responseBodyValid(DEFAULT_RESPONSE_BODY_VALID)
+            .responseBodyUncompressedBytes(DEFAULT_RESPONSE_BODY_UNCOMPRESSED_BYTES)
+            .redirectDetails(DEFAULT_REDIRECT_DETAILS)
+            .cacheControl(DEFAULT_CACHE_CONTROL)
+            .etag(DEFAULT_ETAG)
+            .cacheAge(DEFAULT_CACHE_AGE)
+            .cdnProvider(DEFAULT_CDN_PROVIDER)
+            .cdnPop(DEFAULT_CDN_POP)
+            .rateLimitDetails(DEFAULT_RATE_LIMIT_DETAILS)
+            .networkPath(DEFAULT_NETWORK_PATH)
+            .agentMetrics(DEFAULT_AGENT_METRICS)
+            .phaseLatencies(DEFAULT_PHASE_LATENCIES);
     }
 
     /**
@@ -174,8 +276,13 @@ class HttpHeartbeatResourceIT {
             .responseServer(UPDATED_RESPONSE_SERVER)
             .responseCacheStatus(UPDATED_RESPONSE_CACHE_STATUS)
             .dnsLookupMs(UPDATED_DNS_LOOKUP_MS)
+            .dnsResolvedIp(UPDATED_DNS_RESOLVED_IP)
             .tcpConnectMs(UPDATED_TCP_CONNECT_MS)
             .tlsHandshakeMs(UPDATED_TLS_HANDSHAKE_MS)
+            .sslCertificateValid(UPDATED_SSL_CERTIFICATE_VALID)
+            .sslCertificateExpiry(UPDATED_SSL_CERTIFICATE_EXPIRY)
+            .sslCertificateIssuer(UPDATED_SSL_CERTIFICATE_ISSUER)
+            .sslDaysUntilExpiry(UPDATED_SSL_DAYS_UNTIL_EXPIRY)
             .timeToFirstByteMs(UPDATED_TIME_TO_FIRST_BYTE_MS)
             .warningThresholdMs(UPDATED_WARNING_THRESHOLD_MS)
             .criticalThresholdMs(UPDATED_CRITICAL_THRESHOLD_MS)
@@ -183,7 +290,27 @@ class HttpHeartbeatResourceIT {
             .errorMessage(UPDATED_ERROR_MESSAGE)
             .rawRequestHeaders(UPDATED_RAW_REQUEST_HEADERS)
             .rawResponseHeaders(UPDATED_RAW_RESPONSE_HEADERS)
-            .rawResponseBody(UPDATED_RAW_RESPONSE_BODY);
+            .rawResponseBody(UPDATED_RAW_RESPONSE_BODY)
+            .dnsDetails(UPDATED_DNS_DETAILS)
+            .tlsDetails(UPDATED_TLS_DETAILS)
+            .httpVersion(UPDATED_HTTP_VERSION)
+            .contentEncoding(UPDATED_CONTENT_ENCODING)
+            .compressionRatio(UPDATED_COMPRESSION_RATIO)
+            .transferEncoding(UPDATED_TRANSFER_ENCODING)
+            .responseBodyHash(UPDATED_RESPONSE_BODY_HASH)
+            .responseBodySample(UPDATED_RESPONSE_BODY_SAMPLE)
+            .responseBodyValid(UPDATED_RESPONSE_BODY_VALID)
+            .responseBodyUncompressedBytes(UPDATED_RESPONSE_BODY_UNCOMPRESSED_BYTES)
+            .redirectDetails(UPDATED_REDIRECT_DETAILS)
+            .cacheControl(UPDATED_CACHE_CONTROL)
+            .etag(UPDATED_ETAG)
+            .cacheAge(UPDATED_CACHE_AGE)
+            .cdnProvider(UPDATED_CDN_PROVIDER)
+            .cdnPop(UPDATED_CDN_POP)
+            .rateLimitDetails(UPDATED_RATE_LIMIT_DETAILS)
+            .networkPath(UPDATED_NETWORK_PATH)
+            .agentMetrics(UPDATED_AGENT_METRICS)
+            .phaseLatencies(UPDATED_PHASE_LATENCIES);
     }
 
     @BeforeEach
@@ -198,6 +325,89 @@ class HttpHeartbeatResourceIT {
             httpHeartbeatSearchRepository.delete(insertedHttpHeartbeat);
             insertedHttpHeartbeat = null;
         }
+    }
+
+    @Test
+    @Transactional
+    void createHttpHeartbeat() throws Exception {
+        long databaseSizeBeforeCreate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        // Create the HttpHeartbeat
+        HttpHeartbeatDTO httpHeartbeatDTO = httpHeartbeatMapper.toDto(httpHeartbeat);
+        var returnedHttpHeartbeatDTO = om.readValue(
+            restHttpHeartbeatMockMvc
+                .perform(
+                    post(ENTITY_API_URL)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsBytes(httpHeartbeatDTO))
+                )
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(),
+            HttpHeartbeatDTO.class
+        );
+
+        // Validate the HttpHeartbeat in the database
+        assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
+        var returnedHttpHeartbeat = httpHeartbeatMapper.toEntity(returnedHttpHeartbeatDTO);
+        assertHttpHeartbeatUpdatableFieldsEquals(returnedHttpHeartbeat, getPersistedHttpHeartbeat(returnedHttpHeartbeat));
+
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
+            });
+
+        insertedHttpHeartbeat = returnedHttpHeartbeat;
+    }
+
+    @Test
+    @Transactional
+    void createHttpHeartbeatWithExistingId() throws Exception {
+        // Create the HttpHeartbeat with an existing ID
+        httpHeartbeat.setId(1L);
+        HttpHeartbeatDTO httpHeartbeatDTO = httpHeartbeatMapper.toDto(httpHeartbeat);
+
+        long databaseSizeBeforeCreate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+
+        // An entity with an existing ID cannot be created, so this API call must fail
+        restHttpHeartbeatMockMvc
+            .perform(
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(httpHeartbeatDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the HttpHeartbeat in the database
+        assertSameRepositoryCount(databaseSizeBeforeCreate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void checkExecutedAtIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        // set the field null
+        httpHeartbeat.setExecutedAt(null);
+
+        // Create the HttpHeartbeat, which fails.
+        HttpHeartbeatDTO httpHeartbeatDTO = httpHeartbeatMapper.toDto(httpHeartbeat);
+
+        restHttpHeartbeatMockMvc
+            .perform(
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(httpHeartbeatDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -221,8 +431,13 @@ class HttpHeartbeatResourceIT {
             .andExpect(jsonPath("$.[*].responseServer").value(hasItem(DEFAULT_RESPONSE_SERVER)))
             .andExpect(jsonPath("$.[*].responseCacheStatus").value(hasItem(DEFAULT_RESPONSE_CACHE_STATUS)))
             .andExpect(jsonPath("$.[*].dnsLookupMs").value(hasItem(DEFAULT_DNS_LOOKUP_MS)))
+            .andExpect(jsonPath("$.[*].dnsResolvedIp").value(hasItem(DEFAULT_DNS_RESOLVED_IP)))
             .andExpect(jsonPath("$.[*].tcpConnectMs").value(hasItem(DEFAULT_TCP_CONNECT_MS)))
             .andExpect(jsonPath("$.[*].tlsHandshakeMs").value(hasItem(DEFAULT_TLS_HANDSHAKE_MS)))
+            .andExpect(jsonPath("$.[*].sslCertificateValid").value(hasItem(DEFAULT_SSL_CERTIFICATE_VALID)))
+            .andExpect(jsonPath("$.[*].sslCertificateExpiry").value(hasItem(DEFAULT_SSL_CERTIFICATE_EXPIRY.toString())))
+            .andExpect(jsonPath("$.[*].sslCertificateIssuer").value(hasItem(DEFAULT_SSL_CERTIFICATE_ISSUER)))
+            .andExpect(jsonPath("$.[*].sslDaysUntilExpiry").value(hasItem(DEFAULT_SSL_DAYS_UNTIL_EXPIRY)))
             .andExpect(jsonPath("$.[*].timeToFirstByteMs").value(hasItem(DEFAULT_TIME_TO_FIRST_BYTE_MS)))
             .andExpect(jsonPath("$.[*].warningThresholdMs").value(hasItem(DEFAULT_WARNING_THRESHOLD_MS)))
             .andExpect(jsonPath("$.[*].criticalThresholdMs").value(hasItem(DEFAULT_CRITICAL_THRESHOLD_MS)))
@@ -230,7 +445,27 @@ class HttpHeartbeatResourceIT {
             .andExpect(jsonPath("$.[*].errorMessage").value(hasItem(DEFAULT_ERROR_MESSAGE)))
             .andExpect(jsonPath("$.[*].rawRequestHeaders").value(hasItem(DEFAULT_RAW_REQUEST_HEADERS)))
             .andExpect(jsonPath("$.[*].rawResponseHeaders").value(hasItem(DEFAULT_RAW_RESPONSE_HEADERS)))
-            .andExpect(jsonPath("$.[*].rawResponseBody").value(hasItem(DEFAULT_RAW_RESPONSE_BODY)));
+            .andExpect(jsonPath("$.[*].rawResponseBody").value(hasItem(DEFAULT_RAW_RESPONSE_BODY)))
+            .andExpect(jsonPath("$.[*].dnsDetails").value(hasItem(DEFAULT_DNS_DETAILS)))
+            .andExpect(jsonPath("$.[*].tlsDetails").value(hasItem(DEFAULT_TLS_DETAILS)))
+            .andExpect(jsonPath("$.[*].httpVersion").value(hasItem(DEFAULT_HTTP_VERSION)))
+            .andExpect(jsonPath("$.[*].contentEncoding").value(hasItem(DEFAULT_CONTENT_ENCODING)))
+            .andExpect(jsonPath("$.[*].compressionRatio").value(hasItem(DEFAULT_COMPRESSION_RATIO.doubleValue())))
+            .andExpect(jsonPath("$.[*].transferEncoding").value(hasItem(DEFAULT_TRANSFER_ENCODING)))
+            .andExpect(jsonPath("$.[*].responseBodyHash").value(hasItem(DEFAULT_RESPONSE_BODY_HASH)))
+            .andExpect(jsonPath("$.[*].responseBodySample").value(hasItem(DEFAULT_RESPONSE_BODY_SAMPLE)))
+            .andExpect(jsonPath("$.[*].responseBodyValid").value(hasItem(DEFAULT_RESPONSE_BODY_VALID)))
+            .andExpect(jsonPath("$.[*].responseBodyUncompressedBytes").value(hasItem(DEFAULT_RESPONSE_BODY_UNCOMPRESSED_BYTES)))
+            .andExpect(jsonPath("$.[*].redirectDetails").value(hasItem(DEFAULT_REDIRECT_DETAILS)))
+            .andExpect(jsonPath("$.[*].cacheControl").value(hasItem(DEFAULT_CACHE_CONTROL)))
+            .andExpect(jsonPath("$.[*].etag").value(hasItem(DEFAULT_ETAG)))
+            .andExpect(jsonPath("$.[*].cacheAge").value(hasItem(DEFAULT_CACHE_AGE)))
+            .andExpect(jsonPath("$.[*].cdnProvider").value(hasItem(DEFAULT_CDN_PROVIDER)))
+            .andExpect(jsonPath("$.[*].cdnPop").value(hasItem(DEFAULT_CDN_POP)))
+            .andExpect(jsonPath("$.[*].rateLimitDetails").value(hasItem(DEFAULT_RATE_LIMIT_DETAILS)))
+            .andExpect(jsonPath("$.[*].networkPath").value(hasItem(DEFAULT_NETWORK_PATH)))
+            .andExpect(jsonPath("$.[*].agentMetrics").value(hasItem(DEFAULT_AGENT_METRICS)))
+            .andExpect(jsonPath("$.[*].phaseLatencies").value(hasItem(DEFAULT_PHASE_LATENCIES)));
     }
 
     @Test
@@ -254,8 +489,13 @@ class HttpHeartbeatResourceIT {
             .andExpect(jsonPath("$.responseServer").value(DEFAULT_RESPONSE_SERVER))
             .andExpect(jsonPath("$.responseCacheStatus").value(DEFAULT_RESPONSE_CACHE_STATUS))
             .andExpect(jsonPath("$.dnsLookupMs").value(DEFAULT_DNS_LOOKUP_MS))
+            .andExpect(jsonPath("$.dnsResolvedIp").value(DEFAULT_DNS_RESOLVED_IP))
             .andExpect(jsonPath("$.tcpConnectMs").value(DEFAULT_TCP_CONNECT_MS))
             .andExpect(jsonPath("$.tlsHandshakeMs").value(DEFAULT_TLS_HANDSHAKE_MS))
+            .andExpect(jsonPath("$.sslCertificateValid").value(DEFAULT_SSL_CERTIFICATE_VALID))
+            .andExpect(jsonPath("$.sslCertificateExpiry").value(DEFAULT_SSL_CERTIFICATE_EXPIRY.toString()))
+            .andExpect(jsonPath("$.sslCertificateIssuer").value(DEFAULT_SSL_CERTIFICATE_ISSUER))
+            .andExpect(jsonPath("$.sslDaysUntilExpiry").value(DEFAULT_SSL_DAYS_UNTIL_EXPIRY))
             .andExpect(jsonPath("$.timeToFirstByteMs").value(DEFAULT_TIME_TO_FIRST_BYTE_MS))
             .andExpect(jsonPath("$.warningThresholdMs").value(DEFAULT_WARNING_THRESHOLD_MS))
             .andExpect(jsonPath("$.criticalThresholdMs").value(DEFAULT_CRITICAL_THRESHOLD_MS))
@@ -263,1209 +503,27 @@ class HttpHeartbeatResourceIT {
             .andExpect(jsonPath("$.errorMessage").value(DEFAULT_ERROR_MESSAGE))
             .andExpect(jsonPath("$.rawRequestHeaders").value(DEFAULT_RAW_REQUEST_HEADERS))
             .andExpect(jsonPath("$.rawResponseHeaders").value(DEFAULT_RAW_RESPONSE_HEADERS))
-            .andExpect(jsonPath("$.rawResponseBody").value(DEFAULT_RAW_RESPONSE_BODY));
-    }
-
-    @Test
-    @Transactional
-    void getHttpHeartbeatsByIdFiltering() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        Long id = httpHeartbeat.getId();
-
-        defaultHttpHeartbeatFiltering("id.equals=" + id, "id.notEquals=" + id);
-
-        defaultHttpHeartbeatFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
-
-        defaultHttpHeartbeatFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByExecutedAtIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where executedAt equals to
-        defaultHttpHeartbeatFiltering("executedAt.equals=" + DEFAULT_EXECUTED_AT, "executedAt.equals=" + UPDATED_EXECUTED_AT);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByExecutedAtIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where executedAt in
-        defaultHttpHeartbeatFiltering(
-            "executedAt.in=" + DEFAULT_EXECUTED_AT + "," + UPDATED_EXECUTED_AT,
-            "executedAt.in=" + UPDATED_EXECUTED_AT
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByExecutedAtIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where executedAt is not null
-        defaultHttpHeartbeatFiltering("executedAt.specified=true", "executedAt.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsBySuccessIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where success equals to
-        defaultHttpHeartbeatFiltering("success.equals=" + DEFAULT_SUCCESS, "success.equals=" + UPDATED_SUCCESS);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsBySuccessIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where success in
-        defaultHttpHeartbeatFiltering("success.in=" + DEFAULT_SUCCESS + "," + UPDATED_SUCCESS, "success.in=" + UPDATED_SUCCESS);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsBySuccessIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where success is not null
-        defaultHttpHeartbeatFiltering("success.specified=true", "success.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseTimeMsIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseTimeMs equals to
-        defaultHttpHeartbeatFiltering(
-            "responseTimeMs.equals=" + DEFAULT_RESPONSE_TIME_MS,
-            "responseTimeMs.equals=" + UPDATED_RESPONSE_TIME_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseTimeMsIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseTimeMs in
-        defaultHttpHeartbeatFiltering(
-            "responseTimeMs.in=" + DEFAULT_RESPONSE_TIME_MS + "," + UPDATED_RESPONSE_TIME_MS,
-            "responseTimeMs.in=" + UPDATED_RESPONSE_TIME_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseTimeMsIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseTimeMs is not null
-        defaultHttpHeartbeatFiltering("responseTimeMs.specified=true", "responseTimeMs.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseTimeMsIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseTimeMs is greater than or equal to
-        defaultHttpHeartbeatFiltering(
-            "responseTimeMs.greaterThanOrEqual=" + DEFAULT_RESPONSE_TIME_MS,
-            "responseTimeMs.greaterThanOrEqual=" + UPDATED_RESPONSE_TIME_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseTimeMsIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseTimeMs is less than or equal to
-        defaultHttpHeartbeatFiltering(
-            "responseTimeMs.lessThanOrEqual=" + DEFAULT_RESPONSE_TIME_MS,
-            "responseTimeMs.lessThanOrEqual=" + SMALLER_RESPONSE_TIME_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseTimeMsIsLessThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseTimeMs is less than
-        defaultHttpHeartbeatFiltering(
-            "responseTimeMs.lessThan=" + UPDATED_RESPONSE_TIME_MS,
-            "responseTimeMs.lessThan=" + DEFAULT_RESPONSE_TIME_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseTimeMsIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseTimeMs is greater than
-        defaultHttpHeartbeatFiltering(
-            "responseTimeMs.greaterThan=" + SMALLER_RESPONSE_TIME_MS,
-            "responseTimeMs.greaterThan=" + DEFAULT_RESPONSE_TIME_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseSizeBytesIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseSizeBytes equals to
-        defaultHttpHeartbeatFiltering(
-            "responseSizeBytes.equals=" + DEFAULT_RESPONSE_SIZE_BYTES,
-            "responseSizeBytes.equals=" + UPDATED_RESPONSE_SIZE_BYTES
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseSizeBytesIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseSizeBytes in
-        defaultHttpHeartbeatFiltering(
-            "responseSizeBytes.in=" + DEFAULT_RESPONSE_SIZE_BYTES + "," + UPDATED_RESPONSE_SIZE_BYTES,
-            "responseSizeBytes.in=" + UPDATED_RESPONSE_SIZE_BYTES
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseSizeBytesIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseSizeBytes is not null
-        defaultHttpHeartbeatFiltering("responseSizeBytes.specified=true", "responseSizeBytes.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseSizeBytesIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseSizeBytes is greater than or equal to
-        defaultHttpHeartbeatFiltering(
-            "responseSizeBytes.greaterThanOrEqual=" + DEFAULT_RESPONSE_SIZE_BYTES,
-            "responseSizeBytes.greaterThanOrEqual=" + UPDATED_RESPONSE_SIZE_BYTES
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseSizeBytesIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseSizeBytes is less than or equal to
-        defaultHttpHeartbeatFiltering(
-            "responseSizeBytes.lessThanOrEqual=" + DEFAULT_RESPONSE_SIZE_BYTES,
-            "responseSizeBytes.lessThanOrEqual=" + SMALLER_RESPONSE_SIZE_BYTES
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseSizeBytesIsLessThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseSizeBytes is less than
-        defaultHttpHeartbeatFiltering(
-            "responseSizeBytes.lessThan=" + UPDATED_RESPONSE_SIZE_BYTES,
-            "responseSizeBytes.lessThan=" + DEFAULT_RESPONSE_SIZE_BYTES
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseSizeBytesIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseSizeBytes is greater than
-        defaultHttpHeartbeatFiltering(
-            "responseSizeBytes.greaterThan=" + SMALLER_RESPONSE_SIZE_BYTES,
-            "responseSizeBytes.greaterThan=" + DEFAULT_RESPONSE_SIZE_BYTES
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseStatusCodeIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseStatusCode equals to
-        defaultHttpHeartbeatFiltering(
-            "responseStatusCode.equals=" + DEFAULT_RESPONSE_STATUS_CODE,
-            "responseStatusCode.equals=" + UPDATED_RESPONSE_STATUS_CODE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseStatusCodeIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseStatusCode in
-        defaultHttpHeartbeatFiltering(
-            "responseStatusCode.in=" + DEFAULT_RESPONSE_STATUS_CODE + "," + UPDATED_RESPONSE_STATUS_CODE,
-            "responseStatusCode.in=" + UPDATED_RESPONSE_STATUS_CODE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseStatusCodeIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseStatusCode is not null
-        defaultHttpHeartbeatFiltering("responseStatusCode.specified=true", "responseStatusCode.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseStatusCodeIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseStatusCode is greater than or equal to
-        defaultHttpHeartbeatFiltering(
-            "responseStatusCode.greaterThanOrEqual=" + DEFAULT_RESPONSE_STATUS_CODE,
-            "responseStatusCode.greaterThanOrEqual=" + UPDATED_RESPONSE_STATUS_CODE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseStatusCodeIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseStatusCode is less than or equal to
-        defaultHttpHeartbeatFiltering(
-            "responseStatusCode.lessThanOrEqual=" + DEFAULT_RESPONSE_STATUS_CODE,
-            "responseStatusCode.lessThanOrEqual=" + SMALLER_RESPONSE_STATUS_CODE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseStatusCodeIsLessThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseStatusCode is less than
-        defaultHttpHeartbeatFiltering(
-            "responseStatusCode.lessThan=" + UPDATED_RESPONSE_STATUS_CODE,
-            "responseStatusCode.lessThan=" + DEFAULT_RESPONSE_STATUS_CODE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseStatusCodeIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseStatusCode is greater than
-        defaultHttpHeartbeatFiltering(
-            "responseStatusCode.greaterThan=" + SMALLER_RESPONSE_STATUS_CODE,
-            "responseStatusCode.greaterThan=" + DEFAULT_RESPONSE_STATUS_CODE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseContentTypeIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseContentType equals to
-        defaultHttpHeartbeatFiltering(
-            "responseContentType.equals=" + DEFAULT_RESPONSE_CONTENT_TYPE,
-            "responseContentType.equals=" + UPDATED_RESPONSE_CONTENT_TYPE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseContentTypeIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseContentType in
-        defaultHttpHeartbeatFiltering(
-            "responseContentType.in=" + DEFAULT_RESPONSE_CONTENT_TYPE + "," + UPDATED_RESPONSE_CONTENT_TYPE,
-            "responseContentType.in=" + UPDATED_RESPONSE_CONTENT_TYPE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseContentTypeIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseContentType is not null
-        defaultHttpHeartbeatFiltering("responseContentType.specified=true", "responseContentType.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseContentTypeContainsSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseContentType contains
-        defaultHttpHeartbeatFiltering(
-            "responseContentType.contains=" + DEFAULT_RESPONSE_CONTENT_TYPE,
-            "responseContentType.contains=" + UPDATED_RESPONSE_CONTENT_TYPE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseContentTypeNotContainsSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseContentType does not contain
-        defaultHttpHeartbeatFiltering(
-            "responseContentType.doesNotContain=" + UPDATED_RESPONSE_CONTENT_TYPE,
-            "responseContentType.doesNotContain=" + DEFAULT_RESPONSE_CONTENT_TYPE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseServerIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseServer equals to
-        defaultHttpHeartbeatFiltering(
-            "responseServer.equals=" + DEFAULT_RESPONSE_SERVER,
-            "responseServer.equals=" + UPDATED_RESPONSE_SERVER
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseServerIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseServer in
-        defaultHttpHeartbeatFiltering(
-            "responseServer.in=" + DEFAULT_RESPONSE_SERVER + "," + UPDATED_RESPONSE_SERVER,
-            "responseServer.in=" + UPDATED_RESPONSE_SERVER
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseServerIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseServer is not null
-        defaultHttpHeartbeatFiltering("responseServer.specified=true", "responseServer.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseServerContainsSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseServer contains
-        defaultHttpHeartbeatFiltering(
-            "responseServer.contains=" + DEFAULT_RESPONSE_SERVER,
-            "responseServer.contains=" + UPDATED_RESPONSE_SERVER
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseServerNotContainsSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseServer does not contain
-        defaultHttpHeartbeatFiltering(
-            "responseServer.doesNotContain=" + UPDATED_RESPONSE_SERVER,
-            "responseServer.doesNotContain=" + DEFAULT_RESPONSE_SERVER
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseCacheStatusIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseCacheStatus equals to
-        defaultHttpHeartbeatFiltering(
-            "responseCacheStatus.equals=" + DEFAULT_RESPONSE_CACHE_STATUS,
-            "responseCacheStatus.equals=" + UPDATED_RESPONSE_CACHE_STATUS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseCacheStatusIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseCacheStatus in
-        defaultHttpHeartbeatFiltering(
-            "responseCacheStatus.in=" + DEFAULT_RESPONSE_CACHE_STATUS + "," + UPDATED_RESPONSE_CACHE_STATUS,
-            "responseCacheStatus.in=" + UPDATED_RESPONSE_CACHE_STATUS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseCacheStatusIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseCacheStatus is not null
-        defaultHttpHeartbeatFiltering("responseCacheStatus.specified=true", "responseCacheStatus.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseCacheStatusContainsSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseCacheStatus contains
-        defaultHttpHeartbeatFiltering(
-            "responseCacheStatus.contains=" + DEFAULT_RESPONSE_CACHE_STATUS,
-            "responseCacheStatus.contains=" + UPDATED_RESPONSE_CACHE_STATUS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByResponseCacheStatusNotContainsSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where responseCacheStatus does not contain
-        defaultHttpHeartbeatFiltering(
-            "responseCacheStatus.doesNotContain=" + UPDATED_RESPONSE_CACHE_STATUS,
-            "responseCacheStatus.doesNotContain=" + DEFAULT_RESPONSE_CACHE_STATUS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByDnsLookupMsIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where dnsLookupMs equals to
-        defaultHttpHeartbeatFiltering("dnsLookupMs.equals=" + DEFAULT_DNS_LOOKUP_MS, "dnsLookupMs.equals=" + UPDATED_DNS_LOOKUP_MS);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByDnsLookupMsIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where dnsLookupMs in
-        defaultHttpHeartbeatFiltering(
-            "dnsLookupMs.in=" + DEFAULT_DNS_LOOKUP_MS + "," + UPDATED_DNS_LOOKUP_MS,
-            "dnsLookupMs.in=" + UPDATED_DNS_LOOKUP_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByDnsLookupMsIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where dnsLookupMs is not null
-        defaultHttpHeartbeatFiltering("dnsLookupMs.specified=true", "dnsLookupMs.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByDnsLookupMsIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where dnsLookupMs is greater than or equal to
-        defaultHttpHeartbeatFiltering(
-            "dnsLookupMs.greaterThanOrEqual=" + DEFAULT_DNS_LOOKUP_MS,
-            "dnsLookupMs.greaterThanOrEqual=" + UPDATED_DNS_LOOKUP_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByDnsLookupMsIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where dnsLookupMs is less than or equal to
-        defaultHttpHeartbeatFiltering(
-            "dnsLookupMs.lessThanOrEqual=" + DEFAULT_DNS_LOOKUP_MS,
-            "dnsLookupMs.lessThanOrEqual=" + SMALLER_DNS_LOOKUP_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByDnsLookupMsIsLessThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where dnsLookupMs is less than
-        defaultHttpHeartbeatFiltering("dnsLookupMs.lessThan=" + UPDATED_DNS_LOOKUP_MS, "dnsLookupMs.lessThan=" + DEFAULT_DNS_LOOKUP_MS);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByDnsLookupMsIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where dnsLookupMs is greater than
-        defaultHttpHeartbeatFiltering(
-            "dnsLookupMs.greaterThan=" + SMALLER_DNS_LOOKUP_MS,
-            "dnsLookupMs.greaterThan=" + DEFAULT_DNS_LOOKUP_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTcpConnectMsIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tcpConnectMs equals to
-        defaultHttpHeartbeatFiltering("tcpConnectMs.equals=" + DEFAULT_TCP_CONNECT_MS, "tcpConnectMs.equals=" + UPDATED_TCP_CONNECT_MS);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTcpConnectMsIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tcpConnectMs in
-        defaultHttpHeartbeatFiltering(
-            "tcpConnectMs.in=" + DEFAULT_TCP_CONNECT_MS + "," + UPDATED_TCP_CONNECT_MS,
-            "tcpConnectMs.in=" + UPDATED_TCP_CONNECT_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTcpConnectMsIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tcpConnectMs is not null
-        defaultHttpHeartbeatFiltering("tcpConnectMs.specified=true", "tcpConnectMs.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTcpConnectMsIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tcpConnectMs is greater than or equal to
-        defaultHttpHeartbeatFiltering(
-            "tcpConnectMs.greaterThanOrEqual=" + DEFAULT_TCP_CONNECT_MS,
-            "tcpConnectMs.greaterThanOrEqual=" + UPDATED_TCP_CONNECT_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTcpConnectMsIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tcpConnectMs is less than or equal to
-        defaultHttpHeartbeatFiltering(
-            "tcpConnectMs.lessThanOrEqual=" + DEFAULT_TCP_CONNECT_MS,
-            "tcpConnectMs.lessThanOrEqual=" + SMALLER_TCP_CONNECT_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTcpConnectMsIsLessThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tcpConnectMs is less than
-        defaultHttpHeartbeatFiltering("tcpConnectMs.lessThan=" + UPDATED_TCP_CONNECT_MS, "tcpConnectMs.lessThan=" + DEFAULT_TCP_CONNECT_MS);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTcpConnectMsIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tcpConnectMs is greater than
-        defaultHttpHeartbeatFiltering(
-            "tcpConnectMs.greaterThan=" + SMALLER_TCP_CONNECT_MS,
-            "tcpConnectMs.greaterThan=" + DEFAULT_TCP_CONNECT_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTlsHandshakeMsIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tlsHandshakeMs equals to
-        defaultHttpHeartbeatFiltering(
-            "tlsHandshakeMs.equals=" + DEFAULT_TLS_HANDSHAKE_MS,
-            "tlsHandshakeMs.equals=" + UPDATED_TLS_HANDSHAKE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTlsHandshakeMsIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tlsHandshakeMs in
-        defaultHttpHeartbeatFiltering(
-            "tlsHandshakeMs.in=" + DEFAULT_TLS_HANDSHAKE_MS + "," + UPDATED_TLS_HANDSHAKE_MS,
-            "tlsHandshakeMs.in=" + UPDATED_TLS_HANDSHAKE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTlsHandshakeMsIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tlsHandshakeMs is not null
-        defaultHttpHeartbeatFiltering("tlsHandshakeMs.specified=true", "tlsHandshakeMs.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTlsHandshakeMsIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tlsHandshakeMs is greater than or equal to
-        defaultHttpHeartbeatFiltering(
-            "tlsHandshakeMs.greaterThanOrEqual=" + DEFAULT_TLS_HANDSHAKE_MS,
-            "tlsHandshakeMs.greaterThanOrEqual=" + UPDATED_TLS_HANDSHAKE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTlsHandshakeMsIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tlsHandshakeMs is less than or equal to
-        defaultHttpHeartbeatFiltering(
-            "tlsHandshakeMs.lessThanOrEqual=" + DEFAULT_TLS_HANDSHAKE_MS,
-            "tlsHandshakeMs.lessThanOrEqual=" + SMALLER_TLS_HANDSHAKE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTlsHandshakeMsIsLessThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tlsHandshakeMs is less than
-        defaultHttpHeartbeatFiltering(
-            "tlsHandshakeMs.lessThan=" + UPDATED_TLS_HANDSHAKE_MS,
-            "tlsHandshakeMs.lessThan=" + DEFAULT_TLS_HANDSHAKE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTlsHandshakeMsIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where tlsHandshakeMs is greater than
-        defaultHttpHeartbeatFiltering(
-            "tlsHandshakeMs.greaterThan=" + SMALLER_TLS_HANDSHAKE_MS,
-            "tlsHandshakeMs.greaterThan=" + DEFAULT_TLS_HANDSHAKE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTimeToFirstByteMsIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where timeToFirstByteMs equals to
-        defaultHttpHeartbeatFiltering(
-            "timeToFirstByteMs.equals=" + DEFAULT_TIME_TO_FIRST_BYTE_MS,
-            "timeToFirstByteMs.equals=" + UPDATED_TIME_TO_FIRST_BYTE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTimeToFirstByteMsIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where timeToFirstByteMs in
-        defaultHttpHeartbeatFiltering(
-            "timeToFirstByteMs.in=" + DEFAULT_TIME_TO_FIRST_BYTE_MS + "," + UPDATED_TIME_TO_FIRST_BYTE_MS,
-            "timeToFirstByteMs.in=" + UPDATED_TIME_TO_FIRST_BYTE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTimeToFirstByteMsIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where timeToFirstByteMs is not null
-        defaultHttpHeartbeatFiltering("timeToFirstByteMs.specified=true", "timeToFirstByteMs.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTimeToFirstByteMsIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where timeToFirstByteMs is greater than or equal to
-        defaultHttpHeartbeatFiltering(
-            "timeToFirstByteMs.greaterThanOrEqual=" + DEFAULT_TIME_TO_FIRST_BYTE_MS,
-            "timeToFirstByteMs.greaterThanOrEqual=" + UPDATED_TIME_TO_FIRST_BYTE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTimeToFirstByteMsIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where timeToFirstByteMs is less than or equal to
-        defaultHttpHeartbeatFiltering(
-            "timeToFirstByteMs.lessThanOrEqual=" + DEFAULT_TIME_TO_FIRST_BYTE_MS,
-            "timeToFirstByteMs.lessThanOrEqual=" + SMALLER_TIME_TO_FIRST_BYTE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTimeToFirstByteMsIsLessThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where timeToFirstByteMs is less than
-        defaultHttpHeartbeatFiltering(
-            "timeToFirstByteMs.lessThan=" + UPDATED_TIME_TO_FIRST_BYTE_MS,
-            "timeToFirstByteMs.lessThan=" + DEFAULT_TIME_TO_FIRST_BYTE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByTimeToFirstByteMsIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where timeToFirstByteMs is greater than
-        defaultHttpHeartbeatFiltering(
-            "timeToFirstByteMs.greaterThan=" + SMALLER_TIME_TO_FIRST_BYTE_MS,
-            "timeToFirstByteMs.greaterThan=" + DEFAULT_TIME_TO_FIRST_BYTE_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByWarningThresholdMsIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where warningThresholdMs equals to
-        defaultHttpHeartbeatFiltering(
-            "warningThresholdMs.equals=" + DEFAULT_WARNING_THRESHOLD_MS,
-            "warningThresholdMs.equals=" + UPDATED_WARNING_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByWarningThresholdMsIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where warningThresholdMs in
-        defaultHttpHeartbeatFiltering(
-            "warningThresholdMs.in=" + DEFAULT_WARNING_THRESHOLD_MS + "," + UPDATED_WARNING_THRESHOLD_MS,
-            "warningThresholdMs.in=" + UPDATED_WARNING_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByWarningThresholdMsIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where warningThresholdMs is not null
-        defaultHttpHeartbeatFiltering("warningThresholdMs.specified=true", "warningThresholdMs.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByWarningThresholdMsIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where warningThresholdMs is greater than or equal to
-        defaultHttpHeartbeatFiltering(
-            "warningThresholdMs.greaterThanOrEqual=" + DEFAULT_WARNING_THRESHOLD_MS,
-            "warningThresholdMs.greaterThanOrEqual=" + UPDATED_WARNING_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByWarningThresholdMsIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where warningThresholdMs is less than or equal to
-        defaultHttpHeartbeatFiltering(
-            "warningThresholdMs.lessThanOrEqual=" + DEFAULT_WARNING_THRESHOLD_MS,
-            "warningThresholdMs.lessThanOrEqual=" + SMALLER_WARNING_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByWarningThresholdMsIsLessThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where warningThresholdMs is less than
-        defaultHttpHeartbeatFiltering(
-            "warningThresholdMs.lessThan=" + UPDATED_WARNING_THRESHOLD_MS,
-            "warningThresholdMs.lessThan=" + DEFAULT_WARNING_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByWarningThresholdMsIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where warningThresholdMs is greater than
-        defaultHttpHeartbeatFiltering(
-            "warningThresholdMs.greaterThan=" + SMALLER_WARNING_THRESHOLD_MS,
-            "warningThresholdMs.greaterThan=" + DEFAULT_WARNING_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByCriticalThresholdMsIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where criticalThresholdMs equals to
-        defaultHttpHeartbeatFiltering(
-            "criticalThresholdMs.equals=" + DEFAULT_CRITICAL_THRESHOLD_MS,
-            "criticalThresholdMs.equals=" + UPDATED_CRITICAL_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByCriticalThresholdMsIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where criticalThresholdMs in
-        defaultHttpHeartbeatFiltering(
-            "criticalThresholdMs.in=" + DEFAULT_CRITICAL_THRESHOLD_MS + "," + UPDATED_CRITICAL_THRESHOLD_MS,
-            "criticalThresholdMs.in=" + UPDATED_CRITICAL_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByCriticalThresholdMsIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where criticalThresholdMs is not null
-        defaultHttpHeartbeatFiltering("criticalThresholdMs.specified=true", "criticalThresholdMs.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByCriticalThresholdMsIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where criticalThresholdMs is greater than or equal to
-        defaultHttpHeartbeatFiltering(
-            "criticalThresholdMs.greaterThanOrEqual=" + DEFAULT_CRITICAL_THRESHOLD_MS,
-            "criticalThresholdMs.greaterThanOrEqual=" + UPDATED_CRITICAL_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByCriticalThresholdMsIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where criticalThresholdMs is less than or equal to
-        defaultHttpHeartbeatFiltering(
-            "criticalThresholdMs.lessThanOrEqual=" + DEFAULT_CRITICAL_THRESHOLD_MS,
-            "criticalThresholdMs.lessThanOrEqual=" + SMALLER_CRITICAL_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByCriticalThresholdMsIsLessThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where criticalThresholdMs is less than
-        defaultHttpHeartbeatFiltering(
-            "criticalThresholdMs.lessThan=" + UPDATED_CRITICAL_THRESHOLD_MS,
-            "criticalThresholdMs.lessThan=" + DEFAULT_CRITICAL_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByCriticalThresholdMsIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where criticalThresholdMs is greater than
-        defaultHttpHeartbeatFiltering(
-            "criticalThresholdMs.greaterThan=" + SMALLER_CRITICAL_THRESHOLD_MS,
-            "criticalThresholdMs.greaterThan=" + DEFAULT_CRITICAL_THRESHOLD_MS
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByErrorTypeIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where errorType equals to
-        defaultHttpHeartbeatFiltering("errorType.equals=" + DEFAULT_ERROR_TYPE, "errorType.equals=" + UPDATED_ERROR_TYPE);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByErrorTypeIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where errorType in
-        defaultHttpHeartbeatFiltering(
-            "errorType.in=" + DEFAULT_ERROR_TYPE + "," + UPDATED_ERROR_TYPE,
-            "errorType.in=" + UPDATED_ERROR_TYPE
-        );
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByErrorTypeIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where errorType is not null
-        defaultHttpHeartbeatFiltering("errorType.specified=true", "errorType.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByErrorTypeContainsSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where errorType contains
-        defaultHttpHeartbeatFiltering("errorType.contains=" + DEFAULT_ERROR_TYPE, "errorType.contains=" + UPDATED_ERROR_TYPE);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByErrorTypeNotContainsSomething() throws Exception {
-        // Initialize the database
-        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-
-        // Get all the httpHeartbeatList where errorType does not contain
-        defaultHttpHeartbeatFiltering("errorType.doesNotContain=" + UPDATED_ERROR_TYPE, "errorType.doesNotContain=" + DEFAULT_ERROR_TYPE);
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByMonitorIsEqualToSomething() throws Exception {
-        HttpMonitor monitor;
-        if (TestUtil.findAll(em, HttpMonitor.class).isEmpty()) {
-            httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-            monitor = HttpMonitorResourceIT.createEntity();
-        } else {
-            monitor = TestUtil.findAll(em, HttpMonitor.class).get(0);
-        }
-        em.persist(monitor);
-        em.flush();
-        httpHeartbeat.setMonitor(monitor);
-        httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-        Long monitorId = monitor.getId();
-        // Get all the httpHeartbeatList where monitor equals to monitorId
-        defaultHttpHeartbeatShouldBeFound("monitorId.equals=" + monitorId);
-
-        // Get all the httpHeartbeatList where monitor equals to (monitorId + 1)
-        defaultHttpHeartbeatShouldNotBeFound("monitorId.equals=" + (monitorId + 1));
-    }
-
-    @Test
-    @Transactional
-    void getAllHttpHeartbeatsByAgentIsEqualToSomething() throws Exception {
-        Agent agent;
-        if (TestUtil.findAll(em, Agent.class).isEmpty()) {
-            httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-            agent = AgentResourceIT.createEntity();
-        } else {
-            agent = TestUtil.findAll(em, Agent.class).get(0);
-        }
-        em.persist(agent);
-        em.flush();
-        httpHeartbeat.setAgent(agent);
-        httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
-        Long agentId = agent.getId();
-        // Get all the httpHeartbeatList where agent equals to agentId
-        defaultHttpHeartbeatShouldBeFound("agentId.equals=" + agentId);
-
-        // Get all the httpHeartbeatList where agent equals to (agentId + 1)
-        defaultHttpHeartbeatShouldNotBeFound("agentId.equals=" + (agentId + 1));
-    }
-
-    private void defaultHttpHeartbeatFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
-        defaultHttpHeartbeatShouldBeFound(shouldBeFound);
-        defaultHttpHeartbeatShouldNotBeFound(shouldNotBeFound);
-    }
-
-    /**
-     * Executes the search, and checks that the default entity is returned.
-     */
-    private void defaultHttpHeartbeatShouldBeFound(String filter) throws Exception {
-        restHttpHeartbeatMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(httpHeartbeat.getId().intValue())))
-            .andExpect(jsonPath("$.[*].executedAt").value(hasItem(DEFAULT_EXECUTED_AT.toString())))
-            .andExpect(jsonPath("$.[*].success").value(hasItem(DEFAULT_SUCCESS)))
-            .andExpect(jsonPath("$.[*].responseTimeMs").value(hasItem(DEFAULT_RESPONSE_TIME_MS)))
-            .andExpect(jsonPath("$.[*].responseSizeBytes").value(hasItem(DEFAULT_RESPONSE_SIZE_BYTES)))
-            .andExpect(jsonPath("$.[*].responseStatusCode").value(hasItem(DEFAULT_RESPONSE_STATUS_CODE)))
-            .andExpect(jsonPath("$.[*].responseContentType").value(hasItem(DEFAULT_RESPONSE_CONTENT_TYPE)))
-            .andExpect(jsonPath("$.[*].responseServer").value(hasItem(DEFAULT_RESPONSE_SERVER)))
-            .andExpect(jsonPath("$.[*].responseCacheStatus").value(hasItem(DEFAULT_RESPONSE_CACHE_STATUS)))
-            .andExpect(jsonPath("$.[*].dnsLookupMs").value(hasItem(DEFAULT_DNS_LOOKUP_MS)))
-            .andExpect(jsonPath("$.[*].tcpConnectMs").value(hasItem(DEFAULT_TCP_CONNECT_MS)))
-            .andExpect(jsonPath("$.[*].tlsHandshakeMs").value(hasItem(DEFAULT_TLS_HANDSHAKE_MS)))
-            .andExpect(jsonPath("$.[*].timeToFirstByteMs").value(hasItem(DEFAULT_TIME_TO_FIRST_BYTE_MS)))
-            .andExpect(jsonPath("$.[*].warningThresholdMs").value(hasItem(DEFAULT_WARNING_THRESHOLD_MS)))
-            .andExpect(jsonPath("$.[*].criticalThresholdMs").value(hasItem(DEFAULT_CRITICAL_THRESHOLD_MS)))
-            .andExpect(jsonPath("$.[*].errorType").value(hasItem(DEFAULT_ERROR_TYPE)))
-            .andExpect(jsonPath("$.[*].errorMessage").value(hasItem(DEFAULT_ERROR_MESSAGE)))
-            .andExpect(jsonPath("$.[*].rawRequestHeaders").value(hasItem(DEFAULT_RAW_REQUEST_HEADERS)))
-            .andExpect(jsonPath("$.[*].rawResponseHeaders").value(hasItem(DEFAULT_RAW_RESPONSE_HEADERS)))
-            .andExpect(jsonPath("$.[*].rawResponseBody").value(hasItem(DEFAULT_RAW_RESPONSE_BODY)));
-
-        // Check, that the count call also returns 1
-        restHttpHeartbeatMockMvc
-            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().string("1"));
-    }
-
-    /**
-     * Executes the search, and checks that the default entity is not returned.
-     */
-    private void defaultHttpHeartbeatShouldNotBeFound(String filter) throws Exception {
-        restHttpHeartbeatMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$").isArray())
-            .andExpect(jsonPath("$").isEmpty());
-
-        // Check, that the count call also returns 0
-        restHttpHeartbeatMockMvc
-            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().string("0"));
+            .andExpect(jsonPath("$.rawResponseBody").value(DEFAULT_RAW_RESPONSE_BODY))
+            .andExpect(jsonPath("$.dnsDetails").value(DEFAULT_DNS_DETAILS))
+            .andExpect(jsonPath("$.tlsDetails").value(DEFAULT_TLS_DETAILS))
+            .andExpect(jsonPath("$.httpVersion").value(DEFAULT_HTTP_VERSION))
+            .andExpect(jsonPath("$.contentEncoding").value(DEFAULT_CONTENT_ENCODING))
+            .andExpect(jsonPath("$.compressionRatio").value(DEFAULT_COMPRESSION_RATIO.doubleValue()))
+            .andExpect(jsonPath("$.transferEncoding").value(DEFAULT_TRANSFER_ENCODING))
+            .andExpect(jsonPath("$.responseBodyHash").value(DEFAULT_RESPONSE_BODY_HASH))
+            .andExpect(jsonPath("$.responseBodySample").value(DEFAULT_RESPONSE_BODY_SAMPLE))
+            .andExpect(jsonPath("$.responseBodyValid").value(DEFAULT_RESPONSE_BODY_VALID))
+            .andExpect(jsonPath("$.responseBodyUncompressedBytes").value(DEFAULT_RESPONSE_BODY_UNCOMPRESSED_BYTES))
+            .andExpect(jsonPath("$.redirectDetails").value(DEFAULT_REDIRECT_DETAILS))
+            .andExpect(jsonPath("$.cacheControl").value(DEFAULT_CACHE_CONTROL))
+            .andExpect(jsonPath("$.etag").value(DEFAULT_ETAG))
+            .andExpect(jsonPath("$.cacheAge").value(DEFAULT_CACHE_AGE))
+            .andExpect(jsonPath("$.cdnProvider").value(DEFAULT_CDN_PROVIDER))
+            .andExpect(jsonPath("$.cdnPop").value(DEFAULT_CDN_POP))
+            .andExpect(jsonPath("$.rateLimitDetails").value(DEFAULT_RATE_LIMIT_DETAILS))
+            .andExpect(jsonPath("$.networkPath").value(DEFAULT_NETWORK_PATH))
+            .andExpect(jsonPath("$.agentMetrics").value(DEFAULT_AGENT_METRICS))
+            .andExpect(jsonPath("$.phaseLatencies").value(DEFAULT_PHASE_LATENCIES));
     }
 
     @Test
@@ -1473,6 +531,391 @@ class HttpHeartbeatResourceIT {
     void getNonExistingHttpHeartbeat() throws Exception {
         // Get the httpHeartbeat
         restHttpHeartbeatMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Transactional
+    void putExistingHttpHeartbeat() throws Exception {
+        // Initialize the database
+        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
+
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        httpHeartbeatSearchRepository.save(httpHeartbeat);
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+
+        // Update the httpHeartbeat
+        HttpHeartbeat updatedHttpHeartbeat = httpHeartbeatRepository.findById(httpHeartbeat.getId()).orElseThrow();
+        // Disconnect from session so that the updates on updatedHttpHeartbeat are not directly saved in db
+        em.detach(updatedHttpHeartbeat);
+        updatedHttpHeartbeat
+            .executedAt(UPDATED_EXECUTED_AT)
+            .success(UPDATED_SUCCESS)
+            .responseTimeMs(UPDATED_RESPONSE_TIME_MS)
+            .responseSizeBytes(UPDATED_RESPONSE_SIZE_BYTES)
+            .responseStatusCode(UPDATED_RESPONSE_STATUS_CODE)
+            .responseContentType(UPDATED_RESPONSE_CONTENT_TYPE)
+            .responseServer(UPDATED_RESPONSE_SERVER)
+            .responseCacheStatus(UPDATED_RESPONSE_CACHE_STATUS)
+            .dnsLookupMs(UPDATED_DNS_LOOKUP_MS)
+            .dnsResolvedIp(UPDATED_DNS_RESOLVED_IP)
+            .tcpConnectMs(UPDATED_TCP_CONNECT_MS)
+            .tlsHandshakeMs(UPDATED_TLS_HANDSHAKE_MS)
+            .sslCertificateValid(UPDATED_SSL_CERTIFICATE_VALID)
+            .sslCertificateExpiry(UPDATED_SSL_CERTIFICATE_EXPIRY)
+            .sslCertificateIssuer(UPDATED_SSL_CERTIFICATE_ISSUER)
+            .sslDaysUntilExpiry(UPDATED_SSL_DAYS_UNTIL_EXPIRY)
+            .timeToFirstByteMs(UPDATED_TIME_TO_FIRST_BYTE_MS)
+            .warningThresholdMs(UPDATED_WARNING_THRESHOLD_MS)
+            .criticalThresholdMs(UPDATED_CRITICAL_THRESHOLD_MS)
+            .errorType(UPDATED_ERROR_TYPE)
+            .errorMessage(UPDATED_ERROR_MESSAGE)
+            .rawRequestHeaders(UPDATED_RAW_REQUEST_HEADERS)
+            .rawResponseHeaders(UPDATED_RAW_RESPONSE_HEADERS)
+            .rawResponseBody(UPDATED_RAW_RESPONSE_BODY)
+            .dnsDetails(UPDATED_DNS_DETAILS)
+            .tlsDetails(UPDATED_TLS_DETAILS)
+            .httpVersion(UPDATED_HTTP_VERSION)
+            .contentEncoding(UPDATED_CONTENT_ENCODING)
+            .compressionRatio(UPDATED_COMPRESSION_RATIO)
+            .transferEncoding(UPDATED_TRANSFER_ENCODING)
+            .responseBodyHash(UPDATED_RESPONSE_BODY_HASH)
+            .responseBodySample(UPDATED_RESPONSE_BODY_SAMPLE)
+            .responseBodyValid(UPDATED_RESPONSE_BODY_VALID)
+            .responseBodyUncompressedBytes(UPDATED_RESPONSE_BODY_UNCOMPRESSED_BYTES)
+            .redirectDetails(UPDATED_REDIRECT_DETAILS)
+            .cacheControl(UPDATED_CACHE_CONTROL)
+            .etag(UPDATED_ETAG)
+            .cacheAge(UPDATED_CACHE_AGE)
+            .cdnProvider(UPDATED_CDN_PROVIDER)
+            .cdnPop(UPDATED_CDN_POP)
+            .rateLimitDetails(UPDATED_RATE_LIMIT_DETAILS)
+            .networkPath(UPDATED_NETWORK_PATH)
+            .agentMetrics(UPDATED_AGENT_METRICS)
+            .phaseLatencies(UPDATED_PHASE_LATENCIES);
+        HttpHeartbeatDTO httpHeartbeatDTO = httpHeartbeatMapper.toDto(updatedHttpHeartbeat);
+
+        restHttpHeartbeatMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, httpHeartbeatDTO.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(httpHeartbeatDTO))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the HttpHeartbeat in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertPersistedHttpHeartbeatToMatchAllProperties(updatedHttpHeartbeat);
+
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+                List<HttpHeartbeat> httpHeartbeatSearchList = Streamable.of(httpHeartbeatSearchRepository.findAll()).toList();
+                HttpHeartbeat testHttpHeartbeatSearch = httpHeartbeatSearchList.get(searchDatabaseSizeAfter - 1);
+
+                assertHttpHeartbeatAllPropertiesEquals(testHttpHeartbeatSearch, updatedHttpHeartbeat);
+            });
+    }
+
+    @Test
+    @Transactional
+    void putNonExistingHttpHeartbeat() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        httpHeartbeat.setId(longCount.incrementAndGet());
+
+        // Create the HttpHeartbeat
+        HttpHeartbeatDTO httpHeartbeatDTO = httpHeartbeatMapper.toDto(httpHeartbeat);
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restHttpHeartbeatMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, httpHeartbeatDTO.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(httpHeartbeatDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the HttpHeartbeat in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void putWithIdMismatchHttpHeartbeat() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        httpHeartbeat.setId(longCount.incrementAndGet());
+
+        // Create the HttpHeartbeat
+        HttpHeartbeatDTO httpHeartbeatDTO = httpHeartbeatMapper.toDto(httpHeartbeat);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restHttpHeartbeatMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(httpHeartbeatDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the HttpHeartbeat in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamHttpHeartbeat() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        httpHeartbeat.setId(longCount.incrementAndGet());
+
+        // Create the HttpHeartbeat
+        HttpHeartbeatDTO httpHeartbeatDTO = httpHeartbeatMapper.toDto(httpHeartbeat);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restHttpHeartbeatMockMvc
+            .perform(
+                put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(httpHeartbeatDTO))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the HttpHeartbeat in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateHttpHeartbeatWithPatch() throws Exception {
+        // Initialize the database
+        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
+
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+
+        // Update the httpHeartbeat using partial update
+        HttpHeartbeat partialUpdatedHttpHeartbeat = new HttpHeartbeat();
+        partialUpdatedHttpHeartbeat.setId(httpHeartbeat.getId());
+
+        partialUpdatedHttpHeartbeat
+            .executedAt(UPDATED_EXECUTED_AT)
+            .success(UPDATED_SUCCESS)
+            .responseTimeMs(UPDATED_RESPONSE_TIME_MS)
+            .responseSizeBytes(UPDATED_RESPONSE_SIZE_BYTES)
+            .dnsResolvedIp(UPDATED_DNS_RESOLVED_IP)
+            .tcpConnectMs(UPDATED_TCP_CONNECT_MS)
+            .sslCertificateValid(UPDATED_SSL_CERTIFICATE_VALID)
+            .sslCertificateIssuer(UPDATED_SSL_CERTIFICATE_ISSUER)
+            .rawResponseHeaders(UPDATED_RAW_RESPONSE_HEADERS)
+            .rawResponseBody(UPDATED_RAW_RESPONSE_BODY)
+            .httpVersion(UPDATED_HTTP_VERSION)
+            .contentEncoding(UPDATED_CONTENT_ENCODING)
+            .responseBodyHash(UPDATED_RESPONSE_BODY_HASH)
+            .responseBodyUncompressedBytes(UPDATED_RESPONSE_BODY_UNCOMPRESSED_BYTES)
+            .cacheControl(UPDATED_CACHE_CONTROL)
+            .cdnProvider(UPDATED_CDN_PROVIDER)
+            .cdnPop(UPDATED_CDN_POP)
+            .phaseLatencies(UPDATED_PHASE_LATENCIES);
+
+        restHttpHeartbeatMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedHttpHeartbeat.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(partialUpdatedHttpHeartbeat))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the HttpHeartbeat in the database
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertHttpHeartbeatUpdatableFieldsEquals(
+            createUpdateProxyForBean(partialUpdatedHttpHeartbeat, httpHeartbeat),
+            getPersistedHttpHeartbeat(httpHeartbeat)
+        );
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateHttpHeartbeatWithPatch() throws Exception {
+        // Initialize the database
+        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
+
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+
+        // Update the httpHeartbeat using partial update
+        HttpHeartbeat partialUpdatedHttpHeartbeat = new HttpHeartbeat();
+        partialUpdatedHttpHeartbeat.setId(httpHeartbeat.getId());
+
+        partialUpdatedHttpHeartbeat
+            .executedAt(UPDATED_EXECUTED_AT)
+            .success(UPDATED_SUCCESS)
+            .responseTimeMs(UPDATED_RESPONSE_TIME_MS)
+            .responseSizeBytes(UPDATED_RESPONSE_SIZE_BYTES)
+            .responseStatusCode(UPDATED_RESPONSE_STATUS_CODE)
+            .responseContentType(UPDATED_RESPONSE_CONTENT_TYPE)
+            .responseServer(UPDATED_RESPONSE_SERVER)
+            .responseCacheStatus(UPDATED_RESPONSE_CACHE_STATUS)
+            .dnsLookupMs(UPDATED_DNS_LOOKUP_MS)
+            .dnsResolvedIp(UPDATED_DNS_RESOLVED_IP)
+            .tcpConnectMs(UPDATED_TCP_CONNECT_MS)
+            .tlsHandshakeMs(UPDATED_TLS_HANDSHAKE_MS)
+            .sslCertificateValid(UPDATED_SSL_CERTIFICATE_VALID)
+            .sslCertificateExpiry(UPDATED_SSL_CERTIFICATE_EXPIRY)
+            .sslCertificateIssuer(UPDATED_SSL_CERTIFICATE_ISSUER)
+            .sslDaysUntilExpiry(UPDATED_SSL_DAYS_UNTIL_EXPIRY)
+            .timeToFirstByteMs(UPDATED_TIME_TO_FIRST_BYTE_MS)
+            .warningThresholdMs(UPDATED_WARNING_THRESHOLD_MS)
+            .criticalThresholdMs(UPDATED_CRITICAL_THRESHOLD_MS)
+            .errorType(UPDATED_ERROR_TYPE)
+            .errorMessage(UPDATED_ERROR_MESSAGE)
+            .rawRequestHeaders(UPDATED_RAW_REQUEST_HEADERS)
+            .rawResponseHeaders(UPDATED_RAW_RESPONSE_HEADERS)
+            .rawResponseBody(UPDATED_RAW_RESPONSE_BODY)
+            .dnsDetails(UPDATED_DNS_DETAILS)
+            .tlsDetails(UPDATED_TLS_DETAILS)
+            .httpVersion(UPDATED_HTTP_VERSION)
+            .contentEncoding(UPDATED_CONTENT_ENCODING)
+            .compressionRatio(UPDATED_COMPRESSION_RATIO)
+            .transferEncoding(UPDATED_TRANSFER_ENCODING)
+            .responseBodyHash(UPDATED_RESPONSE_BODY_HASH)
+            .responseBodySample(UPDATED_RESPONSE_BODY_SAMPLE)
+            .responseBodyValid(UPDATED_RESPONSE_BODY_VALID)
+            .responseBodyUncompressedBytes(UPDATED_RESPONSE_BODY_UNCOMPRESSED_BYTES)
+            .redirectDetails(UPDATED_REDIRECT_DETAILS)
+            .cacheControl(UPDATED_CACHE_CONTROL)
+            .etag(UPDATED_ETAG)
+            .cacheAge(UPDATED_CACHE_AGE)
+            .cdnProvider(UPDATED_CDN_PROVIDER)
+            .cdnPop(UPDATED_CDN_POP)
+            .rateLimitDetails(UPDATED_RATE_LIMIT_DETAILS)
+            .networkPath(UPDATED_NETWORK_PATH)
+            .agentMetrics(UPDATED_AGENT_METRICS)
+            .phaseLatencies(UPDATED_PHASE_LATENCIES);
+
+        restHttpHeartbeatMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedHttpHeartbeat.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(partialUpdatedHttpHeartbeat))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the HttpHeartbeat in the database
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertHttpHeartbeatUpdatableFieldsEquals(partialUpdatedHttpHeartbeat, getPersistedHttpHeartbeat(partialUpdatedHttpHeartbeat));
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingHttpHeartbeat() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        httpHeartbeat.setId(longCount.incrementAndGet());
+
+        // Create the HttpHeartbeat
+        HttpHeartbeatDTO httpHeartbeatDTO = httpHeartbeatMapper.toDto(httpHeartbeat);
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restHttpHeartbeatMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, httpHeartbeatDTO.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(httpHeartbeatDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the HttpHeartbeat in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchHttpHeartbeat() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        httpHeartbeat.setId(longCount.incrementAndGet());
+
+        // Create the HttpHeartbeat
+        HttpHeartbeatDTO httpHeartbeatDTO = httpHeartbeatMapper.toDto(httpHeartbeat);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restHttpHeartbeatMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(httpHeartbeatDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the HttpHeartbeat in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamHttpHeartbeat() throws Exception {
+        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        httpHeartbeat.setId(longCount.incrementAndGet());
+
+        // Create the HttpHeartbeat
+        HttpHeartbeatDTO httpHeartbeatDTO = httpHeartbeatMapper.toDto(httpHeartbeat);
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restHttpHeartbeatMockMvc
+            .perform(
+                patch(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(httpHeartbeatDTO))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the HttpHeartbeat in the database
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
+    }
+
+    @Test
+    @Transactional
+    void deleteHttpHeartbeat() throws Exception {
+        // Initialize the database
+        insertedHttpHeartbeat = httpHeartbeatRepository.saveAndFlush(httpHeartbeat);
+        httpHeartbeatRepository.save(httpHeartbeat);
+        httpHeartbeatSearchRepository.save(httpHeartbeat);
+
+        long databaseSizeBeforeDelete = getRepositoryCount();
+        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
+
+        // Delete the httpHeartbeat
+        restHttpHeartbeatMockMvc
+            .perform(delete(ENTITY_API_URL_ID, httpHeartbeat.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNoContent());
+
+        // Validate the database contains one less item
+        assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
+        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpHeartbeatSearchRepository.findAll());
+        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -1497,8 +940,13 @@ class HttpHeartbeatResourceIT {
             .andExpect(jsonPath("$.[*].responseServer").value(hasItem(DEFAULT_RESPONSE_SERVER)))
             .andExpect(jsonPath("$.[*].responseCacheStatus").value(hasItem(DEFAULT_RESPONSE_CACHE_STATUS)))
             .andExpect(jsonPath("$.[*].dnsLookupMs").value(hasItem(DEFAULT_DNS_LOOKUP_MS)))
+            .andExpect(jsonPath("$.[*].dnsResolvedIp").value(hasItem(DEFAULT_DNS_RESOLVED_IP)))
             .andExpect(jsonPath("$.[*].tcpConnectMs").value(hasItem(DEFAULT_TCP_CONNECT_MS)))
             .andExpect(jsonPath("$.[*].tlsHandshakeMs").value(hasItem(DEFAULT_TLS_HANDSHAKE_MS)))
+            .andExpect(jsonPath("$.[*].sslCertificateValid").value(hasItem(DEFAULT_SSL_CERTIFICATE_VALID)))
+            .andExpect(jsonPath("$.[*].sslCertificateExpiry").value(hasItem(DEFAULT_SSL_CERTIFICATE_EXPIRY.toString())))
+            .andExpect(jsonPath("$.[*].sslCertificateIssuer").value(hasItem(DEFAULT_SSL_CERTIFICATE_ISSUER)))
+            .andExpect(jsonPath("$.[*].sslDaysUntilExpiry").value(hasItem(DEFAULT_SSL_DAYS_UNTIL_EXPIRY)))
             .andExpect(jsonPath("$.[*].timeToFirstByteMs").value(hasItem(DEFAULT_TIME_TO_FIRST_BYTE_MS)))
             .andExpect(jsonPath("$.[*].warningThresholdMs").value(hasItem(DEFAULT_WARNING_THRESHOLD_MS)))
             .andExpect(jsonPath("$.[*].criticalThresholdMs").value(hasItem(DEFAULT_CRITICAL_THRESHOLD_MS)))
@@ -1506,7 +954,27 @@ class HttpHeartbeatResourceIT {
             .andExpect(jsonPath("$.[*].errorMessage").value(hasItem(DEFAULT_ERROR_MESSAGE.toString())))
             .andExpect(jsonPath("$.[*].rawRequestHeaders").value(hasItem(DEFAULT_RAW_REQUEST_HEADERS.toString())))
             .andExpect(jsonPath("$.[*].rawResponseHeaders").value(hasItem(DEFAULT_RAW_RESPONSE_HEADERS.toString())))
-            .andExpect(jsonPath("$.[*].rawResponseBody").value(hasItem(DEFAULT_RAW_RESPONSE_BODY.toString())));
+            .andExpect(jsonPath("$.[*].rawResponseBody").value(hasItem(DEFAULT_RAW_RESPONSE_BODY.toString())))
+            .andExpect(jsonPath("$.[*].dnsDetails").value(hasItem(DEFAULT_DNS_DETAILS.toString())))
+            .andExpect(jsonPath("$.[*].tlsDetails").value(hasItem(DEFAULT_TLS_DETAILS.toString())))
+            .andExpect(jsonPath("$.[*].httpVersion").value(hasItem(DEFAULT_HTTP_VERSION)))
+            .andExpect(jsonPath("$.[*].contentEncoding").value(hasItem(DEFAULT_CONTENT_ENCODING)))
+            .andExpect(jsonPath("$.[*].compressionRatio").value(hasItem(DEFAULT_COMPRESSION_RATIO.doubleValue())))
+            .andExpect(jsonPath("$.[*].transferEncoding").value(hasItem(DEFAULT_TRANSFER_ENCODING)))
+            .andExpect(jsonPath("$.[*].responseBodyHash").value(hasItem(DEFAULT_RESPONSE_BODY_HASH)))
+            .andExpect(jsonPath("$.[*].responseBodySample").value(hasItem(DEFAULT_RESPONSE_BODY_SAMPLE.toString())))
+            .andExpect(jsonPath("$.[*].responseBodyValid").value(hasItem(DEFAULT_RESPONSE_BODY_VALID)))
+            .andExpect(jsonPath("$.[*].responseBodyUncompressedBytes").value(hasItem(DEFAULT_RESPONSE_BODY_UNCOMPRESSED_BYTES)))
+            .andExpect(jsonPath("$.[*].redirectDetails").value(hasItem(DEFAULT_REDIRECT_DETAILS.toString())))
+            .andExpect(jsonPath("$.[*].cacheControl").value(hasItem(DEFAULT_CACHE_CONTROL)))
+            .andExpect(jsonPath("$.[*].etag").value(hasItem(DEFAULT_ETAG)))
+            .andExpect(jsonPath("$.[*].cacheAge").value(hasItem(DEFAULT_CACHE_AGE)))
+            .andExpect(jsonPath("$.[*].cdnProvider").value(hasItem(DEFAULT_CDN_PROVIDER)))
+            .andExpect(jsonPath("$.[*].cdnPop").value(hasItem(DEFAULT_CDN_POP)))
+            .andExpect(jsonPath("$.[*].rateLimitDetails").value(hasItem(DEFAULT_RATE_LIMIT_DETAILS.toString())))
+            .andExpect(jsonPath("$.[*].networkPath").value(hasItem(DEFAULT_NETWORK_PATH.toString())))
+            .andExpect(jsonPath("$.[*].agentMetrics").value(hasItem(DEFAULT_AGENT_METRICS.toString())))
+            .andExpect(jsonPath("$.[*].phaseLatencies").value(hasItem(DEFAULT_PHASE_LATENCIES.toString())));
     }
 
     protected long getRepositoryCount() {

@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Agent Lock جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Agent Lock",
+        "search": "البحث عن Agent Lock",
+        "notFound": "لم يتم العثور على Agent Locks"
+      },
+      "created": "Agent Lock جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Agent Lock تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Agent Lock تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Agent Lock {{ id }}؟"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "StatusPageItems",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Status Page Item",
+        "createOrEditLabel": "Créer ou éditer un Status Page Item",
+        "search": "Recherche pour Status Page Item",
+        "notFound": "Aucun Status Page Item trouvé"
+      },
+      "created": "Un nouveau Status Page Item a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Status Page Item avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Status Page Item avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Status Page Item {{ id }} ?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

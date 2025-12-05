@@ -1,10 +1,14 @@
 package vibhuvi.oio.inframirror.repository.search;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
-import java.util.stream.Stream;
+import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.scheduling.annotation.Async;
@@ -17,9 +21,9 @@ import vibhuvi.oio.inframirror.repository.ApiKeyRepository;
 public interface ApiKeySearchRepository extends ElasticsearchRepository<ApiKey, Long>, ApiKeySearchRepositoryInternal {}
 
 interface ApiKeySearchRepositoryInternal {
-    Stream<ApiKey> search(String query);
+    Page<ApiKey> search(String query, Pageable pageable);
 
-    Stream<ApiKey> search(Query query);
+    Page<ApiKey> search(Query query);
 
     @Async
     void index(ApiKey entity);
@@ -39,14 +43,16 @@ class ApiKeySearchRepositoryInternalImpl implements ApiKeySearchRepositoryIntern
     }
 
     @Override
-    public Stream<ApiKey> search(String query) {
+    public Page<ApiKey> search(String query, Pageable pageable) {
         NativeQuery nativeQuery = new NativeQuery(QueryStringQuery.of(qs -> qs.query(query))._toQuery());
-        return search(nativeQuery);
+        return search(nativeQuery.setPageable(pageable));
     }
 
     @Override
-    public Stream<ApiKey> search(Query query) {
-        return elasticsearchTemplate.search(query, ApiKey.class).map(SearchHit::getContent).stream();
+    public Page<ApiKey> search(Query query) {
+        SearchHits<ApiKey> searchHits = elasticsearchTemplate.search(query, ApiKey.class);
+        List<ApiKey> hits = searchHits.map(SearchHit::getContent).stream().toList();
+        return new PageImpl<>(hits, query.getPageable(), searchHits.getTotalHits());
     }
 
     @Override

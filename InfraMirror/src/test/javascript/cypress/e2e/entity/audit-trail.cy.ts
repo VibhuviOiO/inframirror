@@ -1,10 +1,26 @@
-import { entityDetailsBackButtonSelector, entityDetailsButtonSelector, entityTableSelector } from '../../support/entity';
+import {
+  entityConfirmDeleteButtonSelector,
+  entityCreateButtonSelector,
+  entityCreateCancelButtonSelector,
+  entityCreateSaveButtonSelector,
+  entityDeleteButtonSelector,
+  entityDetailsBackButtonSelector,
+  entityDetailsButtonSelector,
+  entityEditButtonSelector,
+  entityTableSelector,
+} from '../../support/entity';
 
 describe('AuditTrail e2e test', () => {
   const auditTrailPageUrl = '/audit-trail';
   const auditTrailPageUrlPattern = new RegExp('/audit-trail(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
+  const auditTrailSample = {
+    action: 'concrete clear-cut slipper',
+    entityName: 'rewarding ouch airport',
+    entityId: 4754,
+    timestamp: '2025-12-04T16:08:03.127Z',
+  };
 
   let auditTrail;
 
@@ -44,15 +60,53 @@ describe('AuditTrail e2e test', () => {
   });
 
   describe('AuditTrail page', () => {
+    describe('create button click', () => {
+      beforeEach(() => {
+        cy.visit(auditTrailPageUrl);
+        cy.wait('@entitiesRequest');
+      });
+
+      it('should load create AuditTrail page', () => {
+        cy.get(entityCreateButtonSelector).click();
+        cy.url().should('match', new RegExp('/audit-trail/new$'));
+        cy.getEntityCreateUpdateHeading('AuditTrail');
+        cy.get(entityCreateSaveButtonSelector).should('exist');
+        cy.get(entityCreateCancelButtonSelector).click();
+        cy.wait('@entitiesRequest').then(({ response }) => {
+          expect(response?.statusCode).to.equal(200);
+        });
+        cy.url().should('match', auditTrailPageUrlPattern);
+      });
+    });
+
     describe('with existing value', () => {
-      beforeEach(function () {
+      beforeEach(() => {
+        cy.authenticatedRequest({
+          method: 'POST',
+          url: '/api/audit-trails',
+          body: auditTrailSample,
+        }).then(({ body }) => {
+          auditTrail = body;
+
+          cy.intercept(
+            {
+              method: 'GET',
+              url: '/api/audit-trails+(?*|)',
+              times: 1,
+            },
+            {
+              statusCode: 200,
+              headers: {
+                link: '<http://localhost/api/audit-trails?page=0&size=20>; rel="last",<http://localhost/api/audit-trails?page=0&size=20>; rel="first"',
+              },
+              body: [auditTrail],
+            },
+          ).as('entitiesRequestInternal');
+        });
+
         cy.visit(auditTrailPageUrl);
 
-        cy.wait('@entitiesRequest').then(({ response }) => {
-          if (response?.body.length === 0) {
-            this.skip();
-          }
-        });
+        cy.wait('@entitiesRequestInternal');
       });
 
       it('detail button click should load details AuditTrail page', () => {
@@ -64,6 +118,90 @@ describe('AuditTrail e2e test', () => {
         });
         cy.url().should('match', auditTrailPageUrlPattern);
       });
+
+      it('edit button click should load edit AuditTrail page and go back', () => {
+        cy.get(entityEditButtonSelector).first().click();
+        cy.getEntityCreateUpdateHeading('AuditTrail');
+        cy.get(entityCreateSaveButtonSelector).should('exist');
+        cy.get(entityCreateCancelButtonSelector).click();
+        cy.wait('@entitiesRequest').then(({ response }) => {
+          expect(response?.statusCode).to.equal(200);
+        });
+        cy.url().should('match', auditTrailPageUrlPattern);
+      });
+
+      it('edit button click should load edit AuditTrail page and save', () => {
+        cy.get(entityEditButtonSelector).first().click();
+        cy.getEntityCreateUpdateHeading('AuditTrail');
+        cy.get(entityCreateSaveButtonSelector).click();
+        cy.wait('@entitiesRequest').then(({ response }) => {
+          expect(response?.statusCode).to.equal(200);
+        });
+        cy.url().should('match', auditTrailPageUrlPattern);
+      });
+
+      it('last delete button click should delete instance of AuditTrail', () => {
+        cy.intercept('GET', '/api/audit-trails/*').as('dialogDeleteRequest');
+        cy.get(entityDeleteButtonSelector).last().click();
+        cy.wait('@dialogDeleteRequest');
+        cy.getEntityDeleteDialogHeading('auditTrail').should('exist');
+        cy.get(entityConfirmDeleteButtonSelector).click();
+        cy.wait('@deleteEntityRequest').then(({ response }) => {
+          expect(response?.statusCode).to.equal(204);
+        });
+        cy.wait('@entitiesRequest').then(({ response }) => {
+          expect(response?.statusCode).to.equal(200);
+        });
+        cy.url().should('match', auditTrailPageUrlPattern);
+
+        auditTrail = undefined;
+      });
+    });
+  });
+
+  describe('new AuditTrail page', () => {
+    beforeEach(() => {
+      cy.visit(`${auditTrailPageUrl}`);
+      cy.get(entityCreateButtonSelector).click();
+      cy.getEntityCreateUpdateHeading('AuditTrail');
+    });
+
+    it('should create an instance of AuditTrail', () => {
+      cy.get(`[data-cy="action"]`).type('function');
+      cy.get(`[data-cy="action"]`).should('have.value', 'function');
+
+      cy.get(`[data-cy="entityName"]`).type('jealous');
+      cy.get(`[data-cy="entityName"]`).should('have.value', 'jealous');
+
+      cy.get(`[data-cy="entityId"]`).type('32478');
+      cy.get(`[data-cy="entityId"]`).should('have.value', '32478');
+
+      cy.get(`[data-cy="oldValue"]`).type('../fake-data/blob/hipster.txt');
+      cy.get(`[data-cy="oldValue"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
+
+      cy.get(`[data-cy="newValue"]`).type('../fake-data/blob/hipster.txt');
+      cy.get(`[data-cy="newValue"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
+
+      cy.get(`[data-cy="timestamp"]`).type('2025-12-04T13:16');
+      cy.get(`[data-cy="timestamp"]`).blur();
+      cy.get(`[data-cy="timestamp"]`).should('have.value', '2025-12-04T13:16');
+
+      cy.get(`[data-cy="ipAddress"]`).type('gah');
+      cy.get(`[data-cy="ipAddress"]`).should('have.value', 'gah');
+
+      cy.get(`[data-cy="userAgent"]`).type('../fake-data/blob/hipster.txt');
+      cy.get(`[data-cy="userAgent"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
+
+      cy.get(entityCreateSaveButtonSelector).click();
+
+      cy.wait('@postEntityRequest').then(({ response }) => {
+        expect(response?.statusCode).to.equal(201);
+        auditTrail = response.body;
+      });
+      cy.wait('@entitiesRequest').then(({ response }) => {
+        expect(response?.statusCode).to.equal(200);
+      });
+      cy.url().should('match', auditTrailPageUrlPattern);
     });
   });
 });

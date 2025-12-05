@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Thêm mới một Audit Trail",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Audit Trail",
         "search": "Tìm Audit Trail",
         "notFound": "No Audit Trails found"
+      },
+      "created": "Một Audit Trail mới được tạo với định danh {{ param }}",
+      "updated": "Một Audit Trail cập nhật với định danh {{ param }}",
+      "deleted": "Một Audit Trail đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

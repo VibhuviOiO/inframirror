@@ -27,7 +27,7 @@ export const HttpMonitorDetail = () => {
         <dl className="jh-entity-details">
           <dt>
             <span id="id">
-              <Translate contentKey="global.field.id">ID</Translate>
+              <Translate contentKey="infraMirrorApp.httpMonitor.id">Id</Translate>
             </span>
           </dt>
           <dd>{httpMonitorEntity.id}</dd>
@@ -68,9 +68,141 @@ export const HttpMonitorDetail = () => {
           </dt>
           <dd>{httpMonitorEntity.body}</dd>
           <dt>
-            <Translate contentKey="infraMirrorApp.httpMonitor.schedule">Schedule</Translate>
+            <span id="intervalSeconds">
+              <Translate contentKey="infraMirrorApp.httpMonitor.intervalSeconds">Interval Seconds</Translate>
+            </span>
           </dt>
-          <dd>{httpMonitorEntity.schedule ? httpMonitorEntity.schedule.id : ''}</dd>
+          <dd>{httpMonitorEntity.intervalSeconds}</dd>
+          <dt>
+            <span id="timeoutSeconds">
+              <Translate contentKey="infraMirrorApp.httpMonitor.timeoutSeconds">Timeout Seconds</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.timeoutSeconds}</dd>
+          <dt>
+            <span id="retryCount">
+              <Translate contentKey="infraMirrorApp.httpMonitor.retryCount">Retry Count</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.retryCount}</dd>
+          <dt>
+            <span id="retryDelaySeconds">
+              <Translate contentKey="infraMirrorApp.httpMonitor.retryDelaySeconds">Retry Delay Seconds</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.retryDelaySeconds}</dd>
+          <dt>
+            <span id="responseTimeWarningMs">
+              <Translate contentKey="infraMirrorApp.httpMonitor.responseTimeWarningMs">Response Time Warning Ms</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.responseTimeWarningMs}</dd>
+          <dt>
+            <span id="responseTimeCriticalMs">
+              <Translate contentKey="infraMirrorApp.httpMonitor.responseTimeCriticalMs">Response Time Critical Ms</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.responseTimeCriticalMs}</dd>
+          <dt>
+            <span id="uptimeWarningPercent">
+              <Translate contentKey="infraMirrorApp.httpMonitor.uptimeWarningPercent">Uptime Warning Percent</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.uptimeWarningPercent}</dd>
+          <dt>
+            <span id="uptimeCriticalPercent">
+              <Translate contentKey="infraMirrorApp.httpMonitor.uptimeCriticalPercent">Uptime Critical Percent</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.uptimeCriticalPercent}</dd>
+          <dt>
+            <span id="includeResponseBody">
+              <Translate contentKey="infraMirrorApp.httpMonitor.includeResponseBody">Include Response Body</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.includeResponseBody ? 'true' : 'false'}</dd>
+          <dt>
+            <span id="resendNotificationCount">
+              <Translate contentKey="infraMirrorApp.httpMonitor.resendNotificationCount">Resend Notification Count</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.resendNotificationCount}</dd>
+          <dt>
+            <span id="certificateExpiryDays">
+              <Translate contentKey="infraMirrorApp.httpMonitor.certificateExpiryDays">Certificate Expiry Days</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.certificateExpiryDays}</dd>
+          <dt>
+            <span id="ignoreTlsError">
+              <Translate contentKey="infraMirrorApp.httpMonitor.ignoreTlsError">Ignore Tls Error</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.ignoreTlsError ? 'true' : 'false'}</dd>
+          <dt>
+            <span id="checkSslCertificate">
+              <Translate contentKey="infraMirrorApp.httpMonitor.checkSslCertificate">Check Ssl Certificate</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.checkSslCertificate ? 'true' : 'false'}</dd>
+          <dt>
+            <span id="checkDnsResolution">
+              <Translate contentKey="infraMirrorApp.httpMonitor.checkDnsResolution">Check Dns Resolution</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.checkDnsResolution ? 'true' : 'false'}</dd>
+          <dt>
+            <span id="upsideDownMode">
+              <Translate contentKey="infraMirrorApp.httpMonitor.upsideDownMode">Upside Down Mode</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.upsideDownMode ? 'true' : 'false'}</dd>
+          <dt>
+            <span id="maxRedirects">
+              <Translate contentKey="infraMirrorApp.httpMonitor.maxRedirects">Max Redirects</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.maxRedirects}</dd>
+          <dt>
+            <span id="description">
+              <Translate contentKey="infraMirrorApp.httpMonitor.description">Description</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.description}</dd>
+          <dt>
+            <span id="tags">
+              <Translate contentKey="infraMirrorApp.httpMonitor.tags">Tags</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.tags}</dd>
+          <dt>
+            <span id="enabled">
+              <Translate contentKey="infraMirrorApp.httpMonitor.enabled">Enabled</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.enabled ? 'true' : 'false'}</dd>
+          <dt>
+            <span id="expectedStatusCodes">
+              <Translate contentKey="infraMirrorApp.httpMonitor.expectedStatusCodes">Expected Status Codes</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.expectedStatusCodes}</dd>
+          <dt>
+            <span id="performanceBudgetMs">
+              <Translate contentKey="infraMirrorApp.httpMonitor.performanceBudgetMs">Performance Budget Ms</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.performanceBudgetMs}</dd>
+          <dt>
+            <span id="sizeBudgetKb">
+              <Translate contentKey="infraMirrorApp.httpMonitor.sizeBudgetKb">Size Budget Kb</Translate>
+            </span>
+          </dt>
+          <dd>{httpMonitorEntity.sizeBudgetKb}</dd>
+          <dt>
+            <Translate contentKey="infraMirrorApp.httpMonitor.parent">Parent</Translate>
+          </dt>
+          <dd>{httpMonitorEntity.parent ? httpMonitorEntity.parent.id : ''}</dd>
         </dl>
         <Button tag={Link} to="/http-monitor" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}

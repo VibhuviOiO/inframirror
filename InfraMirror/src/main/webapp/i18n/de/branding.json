@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Branding erstellen",
+        "createOrEditLabel": "Branding erstellen oder bearbeiten",
+        "search": "Suche nach Branding",
+        "notFound": "Keine Brandings gefunden"
+      },
+      "created": "Branding erstellt mit ID {{ param }}",
+      "updated": "Branding aktualisiert mit ID {{ param }}",
+      "deleted": "Branding gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Branding {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Vytvořit Service Instance",
+        "createOrEditLabel": "Vytvořit nebo upravit Service Instance",
+        "search": "Vyhledat Service Instance",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Byl vytvořen potomek entity Service Instance s identifikátorem {{ param }}",
+      "updated": "Potomek entity Service Instance s identifikátorem {{ param }} byl upravený.",
+      "deleted": "Potomek entity Service Instance s identifikátorem {{ param }} bol smazaný.",
+      "delete": {
+        "question": "Jste si jisti, že chcete smazat Service Instance {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

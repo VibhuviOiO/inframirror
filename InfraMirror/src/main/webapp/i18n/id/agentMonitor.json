@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "agentMonitor": {
+      "home": {
+        "title": "Agent Monitors",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Agent Monitor baru",
+        "createOrEditLabel": "Buat atau edit Agent Monitor",
+        "search": "Cari Agent Monitor",
+        "notFound": "No Agent Monitors found"
+      },
+      "created": "Agent Monitor dengan id {{ param }} telah dibuat",
+      "updated": "Agent Monitor dengan id {{ param }} telah diperbaharui",
+      "deleted": "Agent Monitor dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Agent Monitor {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Monitor"
+      },
+      "id": "Id",
+      "active": "Active",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "agent": "Agent",
+      "monitor": "Monitor"
+    }
+  }
+}

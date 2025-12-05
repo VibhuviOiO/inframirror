@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Criar novo(a) Agent Lock",
+        "createOrEditLabel": "Criar ou editar Agent Lock",
+        "search": "Procurar por Agent Lock",
+        "notFound": "Nenhum Agent Locks encontrado"
+      },
+      "created": "Um novo Agent Lock foi criado com o identificador {{ param }}",
+      "updated": "Agent Lock com identificador {{ param }} foi actualizado",
+      "deleted": "Agent Lock com identificador {{ param }} foi eliminado",
+      "delete": {
+        "question": "Tem a certeza que pretende eliminar o(a) Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

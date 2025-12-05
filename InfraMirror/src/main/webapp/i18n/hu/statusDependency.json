@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "StatusDependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Status Dependency létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Status Dependencyt",
+        "search": "Status Dependency keresése",
+        "notFound": "No Status Dependencies found"
+      },
+      "created": "Egy új Status Dependency lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Status Dependency módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Status Dependency törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Status Dependencyt {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

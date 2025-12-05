@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Thêm mới một Service Instance",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Service Instance",
+        "search": "Tìm Service Instance",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Một Service Instance mới được tạo với định danh {{ param }}",
+      "updated": "Một Service Instance cập nhật với định danh {{ param }}",
+      "deleted": "Một Service Instance đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Service Instance {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

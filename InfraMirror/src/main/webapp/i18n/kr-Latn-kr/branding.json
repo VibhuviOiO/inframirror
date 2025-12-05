@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Jańa Branding qosıw",
+        "createOrEditLabel": "Brandingdi redaktorlaw",
+        "search": "Branding izlew",
+        "notFound": "No Brandings found"
+      },
+      "created": "Branding {{ param }} menen qosıldı",
+      "updated": "{{ param }}- Branding saqlandı",
+      "deleted": "{{ param }}- Branding óshirildi",
+      "delete": {
+        "question": "{{ id }}- Branding tı óshirejaqsizba?"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

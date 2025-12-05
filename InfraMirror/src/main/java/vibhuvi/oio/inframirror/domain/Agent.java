@@ -8,8 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Agent - Monitoring agents deployed in datacenters to collect metrics
- * Table: agents
+ * A Agent.
  */
 @Entity
 @Table(name = "agent")
@@ -19,10 +18,11 @@ public class Agent implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
@@ -33,22 +33,27 @@ public class Agent implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "agent")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "pingHeartbeats", "datacenter", "agent" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "heartbeats", "serviceInstances", "datacenter", "agent" }, allowSetters = true)
     private Set<Instance> instances = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "agent")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "monitor", "agent" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "agent", "monitor" }, allowSetters = true)
     private Set<HttpHeartbeat> httpHeartbeats = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "agent")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "instance", "agent" }, allowSetters = true)
-    private Set<PingHeartbeat> pingHeartbeats = new HashSet<>();
+    @JsonIgnoreProperties(value = { "agent", "instance" }, allowSetters = true)
+    private Set<InstanceHeartbeat> instanceHeartbeats = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "agent")
+    @org.springframework.data.annotation.Transient
+    @JsonIgnoreProperties(value = { "agent", "service", "serviceInstance" }, allowSetters = true)
+    private Set<ServiceHeartbeat> serviceHeartbeats = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "agents", "instances", "region" }, allowSetters = true)
-    private Datacenter datacenter;
+    @JsonIgnoreProperties(value = { "datacenters", "agents" }, allowSetters = true)
+    private Region region;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -97,13 +102,13 @@ public class Agent implements Serializable {
         return this;
     }
 
-    public Agent addInstances(Instance instance) {
+    public Agent addInstance(Instance instance) {
         this.instances.add(instance);
         instance.setAgent(this);
         return this;
     }
 
-    public Agent removeInstances(Instance instance) {
+    public Agent removeInstance(Instance instance) {
         this.instances.remove(instance);
         instance.setAgent(null);
         return this;
@@ -128,59 +133,90 @@ public class Agent implements Serializable {
         return this;
     }
 
-    public Agent addHttpHeartbeats(HttpHeartbeat httpHeartbeat) {
+    public Agent addHttpHeartbeat(HttpHeartbeat httpHeartbeat) {
         this.httpHeartbeats.add(httpHeartbeat);
         httpHeartbeat.setAgent(this);
         return this;
     }
 
-    public Agent removeHttpHeartbeats(HttpHeartbeat httpHeartbeat) {
+    public Agent removeHttpHeartbeat(HttpHeartbeat httpHeartbeat) {
         this.httpHeartbeats.remove(httpHeartbeat);
         httpHeartbeat.setAgent(null);
         return this;
     }
 
-    public Set<PingHeartbeat> getPingHeartbeats() {
-        return this.pingHeartbeats;
+    public Set<InstanceHeartbeat> getInstanceHeartbeats() {
+        return this.instanceHeartbeats;
     }
 
-    public void setPingHeartbeats(Set<PingHeartbeat> pingHeartbeats) {
-        if (this.pingHeartbeats != null) {
-            this.pingHeartbeats.forEach(i -> i.setAgent(null));
+    public void setInstanceHeartbeats(Set<InstanceHeartbeat> instanceHeartbeats) {
+        if (this.instanceHeartbeats != null) {
+            this.instanceHeartbeats.forEach(i -> i.setAgent(null));
         }
-        if (pingHeartbeats != null) {
-            pingHeartbeats.forEach(i -> i.setAgent(this));
+        if (instanceHeartbeats != null) {
+            instanceHeartbeats.forEach(i -> i.setAgent(this));
         }
-        this.pingHeartbeats = pingHeartbeats;
+        this.instanceHeartbeats = instanceHeartbeats;
     }
 
-    public Agent pingHeartbeats(Set<PingHeartbeat> pingHeartbeats) {
-        this.setPingHeartbeats(pingHeartbeats);
+    public Agent instanceHeartbeats(Set<InstanceHeartbeat> instanceHeartbeats) {
+        this.setInstanceHeartbeats(instanceHeartbeats);
         return this;
     }
 
-    public Agent addPingHeartbeats(PingHeartbeat pingHeartbeat) {
-        this.pingHeartbeats.add(pingHeartbeat);
-        pingHeartbeat.setAgent(this);
+    public Agent addInstanceHeartbeat(InstanceHeartbeat instanceHeartbeat) {
+        this.instanceHeartbeats.add(instanceHeartbeat);
+        instanceHeartbeat.setAgent(this);
         return this;
     }
 
-    public Agent removePingHeartbeats(PingHeartbeat pingHeartbeat) {
-        this.pingHeartbeats.remove(pingHeartbeat);
-        pingHeartbeat.setAgent(null);
+    public Agent removeInstanceHeartbeat(InstanceHeartbeat instanceHeartbeat) {
+        this.instanceHeartbeats.remove(instanceHeartbeat);
+        instanceHeartbeat.setAgent(null);
         return this;
     }
 
-    public Datacenter getDatacenter() {
-        return this.datacenter;
+    public Set<ServiceHeartbeat> getServiceHeartbeats() {
+        return this.serviceHeartbeats;
     }
 
-    public void setDatacenter(Datacenter datacenter) {
-        this.datacenter = datacenter;
+    public void setServiceHeartbeats(Set<ServiceHeartbeat> serviceHeartbeats) {
+        if (this.serviceHeartbeats != null) {
+            this.serviceHeartbeats.forEach(i -> i.setAgent(null));
+        }
+        if (serviceHeartbeats != null) {
+            serviceHeartbeats.forEach(i -> i.setAgent(this));
+        }
+        this.serviceHeartbeats = serviceHeartbeats;
     }
 
-    public Agent datacenter(Datacenter datacenter) {
-        this.setDatacenter(datacenter);
+    public Agent serviceHeartbeats(Set<ServiceHeartbeat> serviceHeartbeats) {
+        this.setServiceHeartbeats(serviceHeartbeats);
+        return this;
+    }
+
+    public Agent addServiceHeartbeat(ServiceHeartbeat serviceHeartbeat) {
+        this.serviceHeartbeats.add(serviceHeartbeat);
+        serviceHeartbeat.setAgent(this);
+        return this;
+    }
+
+    public Agent removeServiceHeartbeat(ServiceHeartbeat serviceHeartbeat) {
+        this.serviceHeartbeats.remove(serviceHeartbeat);
+        serviceHeartbeat.setAgent(null);
+        return this;
+    }
+
+    public Region getRegion() {
+        return this.region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
+    public Agent region(Region region) {
+        this.setRegion(region);
         return this;
     }
 

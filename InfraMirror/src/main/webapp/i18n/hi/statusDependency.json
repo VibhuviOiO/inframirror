@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "StatusDependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नया Status Dependency बनाएँ",
+        "createOrEditLabel": "Status Dependency बनाएँ या संपादित करें",
+        "search": "Status Dependency खोजें",
+        "notFound": "No Status Dependencies found"
+      },
+      "created": "एक नया Status Dependency [identifier: {{ param }}] तैयार है",
+      "updated": "एक Status Dependency [identifier: {{ param }}] का अद्यतन हुआ है",
+      "deleted": "Status Dependency [identifier: {{ param }}] हटा दिया है",
+      "delete": {
+        "question": "Status Dependency [id: {{ id }}] हटाने की पुष्टि करें"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

@@ -4,13 +4,21 @@
       "home": {
         "title": "Http Heartbeats",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Янги Http Heartbeat қўшиш",
+        "createOrEditLabel": "Http Heartbeatни таҳрирлаш",
         "search": "Http Heartbeatни излаш",
         "notFound": "No Http Heartbeats found"
+      },
+      "created": "Http Heartbeat {{ param }} билан қўшилди.",
+      "updated": "{{ param }}- Http Heartbeat сақланди.",
+      "deleted": "{{ param }}- Http Heartbeat ўчирилди.",
+      "delete": {
+        "question": "{{ id }}- Http Heartbeatни ўчирмоқчимисиз? "
       },
       "detail": {
         "title": "Http Heartbeat"
       },
-      "id": "ID",
+      "id": "Id",
       "executedAt": "Executed At",
       "success": "Success",
       "responseTimeMs": "Response Time Ms",
@@ -20,8 +28,13 @@
       "responseServer": "Response Server",
       "responseCacheStatus": "Response Cache Status",
       "dnsLookupMs": "Dns Lookup Ms",
+      "dnsResolvedIp": "Dns Resolved Ip",
       "tcpConnectMs": "Tcp Connect Ms",
       "tlsHandshakeMs": "Tls Handshake Ms",
+      "sslCertificateValid": "Ssl Certificate Valid",
+      "sslCertificateExpiry": "Ssl Certificate Expiry",
+      "sslCertificateIssuer": "Ssl Certificate Issuer",
+      "sslDaysUntilExpiry": "Ssl Days Until Expiry",
       "timeToFirstByteMs": "Time To First Byte Ms",
       "warningThresholdMs": "Warning Threshold Ms",
       "criticalThresholdMs": "Critical Threshold Ms",
@@ -30,8 +43,28 @@
       "rawRequestHeaders": "Raw Request Headers",
       "rawResponseHeaders": "Raw Response Headers",
       "rawResponseBody": "Raw Response Body",
-      "monitor": "Monitor",
-      "agent": "Agent"
+      "dnsDetails": "Dns Details",
+      "tlsDetails": "Tls Details",
+      "httpVersion": "Http Version",
+      "contentEncoding": "Content Encoding",
+      "compressionRatio": "Compression Ratio",
+      "transferEncoding": "Transfer Encoding",
+      "responseBodyHash": "Response Body Hash",
+      "responseBodySample": "Response Body Sample",
+      "responseBodyValid": "Response Body Valid",
+      "responseBodyUncompressedBytes": "Response Body Uncompressed Bytes",
+      "redirectDetails": "Redirect Details",
+      "cacheControl": "Cache Control",
+      "etag": "Etag",
+      "cacheAge": "Cache Age",
+      "cdnProvider": "Cdn Provider",
+      "cdnPop": "Cdn Pop",
+      "rateLimitDetails": "Rate Limit Details",
+      "networkPath": "Network Path",
+      "agentMetrics": "Agent Metrics",
+      "phaseLatencies": "Phase Latencies",
+      "agent": "Agent",
+      "monitor": "Monitor"
     }
   }
 }

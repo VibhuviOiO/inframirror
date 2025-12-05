@@ -4,13 +4,21 @@
       "home": {
         "title": "Http Heartbeats",
         "refreshListLabel": "Refresh list",
+        "createLabel": "创建新 Http Heartbeat",
+        "createOrEditLabel": "创建或编辑 Http Heartbeat",
         "search": "查找 Http Heartbeat",
         "notFound": "No Http Heartbeats found"
+      },
+      "created": "Http Heartbeat {{ param }} 创建成功",
+      "updated": "Http Heartbeat {{ param }} 更新成功",
+      "deleted": "Http Heartbeat {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Http Heartbeat {{ id }} 吗？"
       },
       "detail": {
         "title": "Http Heartbeat"
       },
-      "id": "ID",
+      "id": "Id",
       "executedAt": "Executed At",
       "success": "Success",
       "responseTimeMs": "Response Time Ms",
@@ -20,8 +28,13 @@
       "responseServer": "Response Server",
       "responseCacheStatus": "Response Cache Status",
       "dnsLookupMs": "Dns Lookup Ms",
+      "dnsResolvedIp": "Dns Resolved Ip",
       "tcpConnectMs": "Tcp Connect Ms",
       "tlsHandshakeMs": "Tls Handshake Ms",
+      "sslCertificateValid": "Ssl Certificate Valid",
+      "sslCertificateExpiry": "Ssl Certificate Expiry",
+      "sslCertificateIssuer": "Ssl Certificate Issuer",
+      "sslDaysUntilExpiry": "Ssl Days Until Expiry",
       "timeToFirstByteMs": "Time To First Byte Ms",
       "warningThresholdMs": "Warning Threshold Ms",
       "criticalThresholdMs": "Critical Threshold Ms",
@@ -30,8 +43,28 @@
       "rawRequestHeaders": "Raw Request Headers",
       "rawResponseHeaders": "Raw Response Headers",
       "rawResponseBody": "Raw Response Body",
-      "monitor": "Monitor",
-      "agent": "Agent"
+      "dnsDetails": "Dns Details",
+      "tlsDetails": "Tls Details",
+      "httpVersion": "Http Version",
+      "contentEncoding": "Content Encoding",
+      "compressionRatio": "Compression Ratio",
+      "transferEncoding": "Transfer Encoding",
+      "responseBodyHash": "Response Body Hash",
+      "responseBodySample": "Response Body Sample",
+      "responseBodyValid": "Response Body Valid",
+      "responseBodyUncompressedBytes": "Response Body Uncompressed Bytes",
+      "redirectDetails": "Redirect Details",
+      "cacheControl": "Cache Control",
+      "etag": "Etag",
+      "cacheAge": "Cache Age",
+      "cdnProvider": "Cdn Provider",
+      "cdnPop": "Cdn Pop",
+      "rateLimitDetails": "Rate Limit Details",
+      "networkPath": "Network Path",
+      "agentMetrics": "Agent Metrics",
+      "phaseLatencies": "Phase Latencies",
+      "agent": "Agent",
+      "monitor": "Monitor"
     }
   }
 }

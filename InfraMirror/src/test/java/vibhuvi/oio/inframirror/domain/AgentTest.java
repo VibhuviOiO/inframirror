@@ -2,10 +2,11 @@ package vibhuvi.oio.inframirror.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static vibhuvi.oio.inframirror.domain.AgentTestSamples.*;
-import static vibhuvi.oio.inframirror.domain.DatacenterTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.HttpHeartbeatTestSamples.*;
+import static vibhuvi.oio.inframirror.domain.InstanceHeartbeatTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.InstanceTestSamples.*;
-import static vibhuvi.oio.inframirror.domain.PingHeartbeatTestSamples.*;
+import static vibhuvi.oio.inframirror.domain.RegionTestSamples.*;
+import static vibhuvi.oio.inframirror.domain.ServiceHeartbeatTestSamples.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,15 +30,15 @@ class AgentTest {
     }
 
     @Test
-    void instancesTest() {
+    void instanceTest() {
         Agent agent = getAgentRandomSampleGenerator();
         Instance instanceBack = getInstanceRandomSampleGenerator();
 
-        agent.addInstances(instanceBack);
+        agent.addInstance(instanceBack);
         assertThat(agent.getInstances()).containsOnly(instanceBack);
         assertThat(instanceBack.getAgent()).isEqualTo(agent);
 
-        agent.removeInstances(instanceBack);
+        agent.removeInstance(instanceBack);
         assertThat(agent.getInstances()).doesNotContain(instanceBack);
         assertThat(instanceBack.getAgent()).isNull();
 
@@ -51,15 +52,15 @@ class AgentTest {
     }
 
     @Test
-    void httpHeartbeatsTest() {
+    void httpHeartbeatTest() {
         Agent agent = getAgentRandomSampleGenerator();
         HttpHeartbeat httpHeartbeatBack = getHttpHeartbeatRandomSampleGenerator();
 
-        agent.addHttpHeartbeats(httpHeartbeatBack);
+        agent.addHttpHeartbeat(httpHeartbeatBack);
         assertThat(agent.getHttpHeartbeats()).containsOnly(httpHeartbeatBack);
         assertThat(httpHeartbeatBack.getAgent()).isEqualTo(agent);
 
-        agent.removeHttpHeartbeats(httpHeartbeatBack);
+        agent.removeHttpHeartbeat(httpHeartbeatBack);
         assertThat(agent.getHttpHeartbeats()).doesNotContain(httpHeartbeatBack);
         assertThat(httpHeartbeatBack.getAgent()).isNull();
 
@@ -73,36 +74,58 @@ class AgentTest {
     }
 
     @Test
-    void pingHeartbeatsTest() {
+    void instanceHeartbeatTest() {
         Agent agent = getAgentRandomSampleGenerator();
-        PingHeartbeat pingHeartbeatBack = getPingHeartbeatRandomSampleGenerator();
+        InstanceHeartbeat instanceHeartbeatBack = getInstanceHeartbeatRandomSampleGenerator();
 
-        agent.addPingHeartbeats(pingHeartbeatBack);
-        assertThat(agent.getPingHeartbeats()).containsOnly(pingHeartbeatBack);
-        assertThat(pingHeartbeatBack.getAgent()).isEqualTo(agent);
+        agent.addInstanceHeartbeat(instanceHeartbeatBack);
+        assertThat(agent.getInstanceHeartbeats()).containsOnly(instanceHeartbeatBack);
+        assertThat(instanceHeartbeatBack.getAgent()).isEqualTo(agent);
 
-        agent.removePingHeartbeats(pingHeartbeatBack);
-        assertThat(agent.getPingHeartbeats()).doesNotContain(pingHeartbeatBack);
-        assertThat(pingHeartbeatBack.getAgent()).isNull();
+        agent.removeInstanceHeartbeat(instanceHeartbeatBack);
+        assertThat(agent.getInstanceHeartbeats()).doesNotContain(instanceHeartbeatBack);
+        assertThat(instanceHeartbeatBack.getAgent()).isNull();
 
-        agent.pingHeartbeats(new HashSet<>(Set.of(pingHeartbeatBack)));
-        assertThat(agent.getPingHeartbeats()).containsOnly(pingHeartbeatBack);
-        assertThat(pingHeartbeatBack.getAgent()).isEqualTo(agent);
+        agent.instanceHeartbeats(new HashSet<>(Set.of(instanceHeartbeatBack)));
+        assertThat(agent.getInstanceHeartbeats()).containsOnly(instanceHeartbeatBack);
+        assertThat(instanceHeartbeatBack.getAgent()).isEqualTo(agent);
 
-        agent.setPingHeartbeats(new HashSet<>());
-        assertThat(agent.getPingHeartbeats()).doesNotContain(pingHeartbeatBack);
-        assertThat(pingHeartbeatBack.getAgent()).isNull();
+        agent.setInstanceHeartbeats(new HashSet<>());
+        assertThat(agent.getInstanceHeartbeats()).doesNotContain(instanceHeartbeatBack);
+        assertThat(instanceHeartbeatBack.getAgent()).isNull();
     }
 
     @Test
-    void datacenterTest() {
+    void serviceHeartbeatTest() {
         Agent agent = getAgentRandomSampleGenerator();
-        Datacenter datacenterBack = getDatacenterRandomSampleGenerator();
+        ServiceHeartbeat serviceHeartbeatBack = getServiceHeartbeatRandomSampleGenerator();
 
-        agent.setDatacenter(datacenterBack);
-        assertThat(agent.getDatacenter()).isEqualTo(datacenterBack);
+        agent.addServiceHeartbeat(serviceHeartbeatBack);
+        assertThat(agent.getServiceHeartbeats()).containsOnly(serviceHeartbeatBack);
+        assertThat(serviceHeartbeatBack.getAgent()).isEqualTo(agent);
 
-        agent.datacenter(null);
-        assertThat(agent.getDatacenter()).isNull();
+        agent.removeServiceHeartbeat(serviceHeartbeatBack);
+        assertThat(agent.getServiceHeartbeats()).doesNotContain(serviceHeartbeatBack);
+        assertThat(serviceHeartbeatBack.getAgent()).isNull();
+
+        agent.serviceHeartbeats(new HashSet<>(Set.of(serviceHeartbeatBack)));
+        assertThat(agent.getServiceHeartbeats()).containsOnly(serviceHeartbeatBack);
+        assertThat(serviceHeartbeatBack.getAgent()).isEqualTo(agent);
+
+        agent.setServiceHeartbeats(new HashSet<>());
+        assertThat(agent.getServiceHeartbeats()).doesNotContain(serviceHeartbeatBack);
+        assertThat(serviceHeartbeatBack.getAgent()).isNull();
+    }
+
+    @Test
+    void regionTest() {
+        Agent agent = getAgentRandomSampleGenerator();
+        Region regionBack = getRegionRandomSampleGenerator();
+
+        agent.setRegion(regionBack);
+        assertThat(agent.getRegion()).isEqualTo(regionBack);
+
+        agent.region(null);
+        assertThat(agent.getRegion()).isNull();
     }
 }

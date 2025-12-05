@@ -79,7 +79,8 @@ class RegionCriteriaTest {
         regionCriteria.name();
         regionCriteria.regionCode();
         regionCriteria.groupName();
-        regionCriteria.datacentersId();
+        regionCriteria.datacenterId();
+        regionCriteria.agentId();
         regionCriteria.distinct();
     }
 
@@ -90,7 +91,8 @@ class RegionCriteriaTest {
                 condition.apply(criteria.getName()) &&
                 condition.apply(criteria.getRegionCode()) &&
                 condition.apply(criteria.getGroupName()) &&
-                condition.apply(criteria.getDatacentersId()) &&
+                condition.apply(criteria.getDatacenterId()) &&
+                condition.apply(criteria.getAgentId()) &&
                 condition.apply(criteria.getDistinct()),
             "every filter matches"
         );
@@ -103,7 +105,8 @@ class RegionCriteriaTest {
                 condition.apply(criteria.getName(), copy.getName()) &&
                 condition.apply(criteria.getRegionCode(), copy.getRegionCode()) &&
                 condition.apply(criteria.getGroupName(), copy.getGroupName()) &&
-                condition.apply(criteria.getDatacentersId(), copy.getDatacentersId()) &&
+                condition.apply(criteria.getDatacenterId(), copy.getDatacenterId()) &&
+                condition.apply(criteria.getAgentId(), copy.getAgentId()) &&
                 condition.apply(criteria.getDistinct(), copy.getDistinct()),
             "every filter matches"
         );

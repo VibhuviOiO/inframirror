@@ -1,7 +1,8 @@
 package vibhuvi.oio.inframirror.service;
 
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import vibhuvi.oio.inframirror.service.dto.ApiKeyDTO;
 
 /**
@@ -33,6 +34,14 @@ public interface ApiKeyService {
     Optional<ApiKeyDTO> partialUpdate(ApiKeyDTO apiKeyDTO);
 
     /**
+     * Get all the apiKeys.
+     *
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    Page<ApiKeyDTO> findAll(Pageable pageable);
+
+    /**
      * Get the "id" apiKey.
      *
      * @param id the id of the entity.
@@ -51,7 +60,9 @@ public interface ApiKeyService {
      * Search for the apiKey corresponding to the query.
      *
      * @param query the query of the search.
+     *
+     * @param pageable the pagination information.
      * @return the list of entities.
      */
-    List<ApiKeyDTO> search(String query);
+    Page<ApiKeyDTO> search(String query, Pageable pageable);
 }

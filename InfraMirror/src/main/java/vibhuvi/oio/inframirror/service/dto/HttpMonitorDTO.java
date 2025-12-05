@@ -1,6 +1,5 @@
 package vibhuvi.oio.inframirror.service.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -9,12 +8,10 @@ import java.util.Objects;
 /**
  * A DTO for the {@link vibhuvi.oio.inframirror.domain.HttpMonitor} entity.
  */
-@Schema(
-    description = "HttpMonitor - HTTP/HTTPS endpoint monitoring configuration\nTable: api_monitors\nNote: Table is named api_monitors in database, entity name is HttpMonitor"
-)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class HttpMonitorDTO implements Serializable {
 
+    @NotNull
     private Long id;
 
     @NotNull
@@ -38,7 +35,58 @@ public class HttpMonitorDTO implements Serializable {
     @Lob
     private String body;
 
-    private ScheduleDTO schedule;
+    @NotNull
+    private Integer intervalSeconds;
+
+    @NotNull
+    private Integer timeoutSeconds;
+
+    @NotNull
+    private Integer retryCount;
+
+    @NotNull
+    private Integer retryDelaySeconds;
+
+    private Integer responseTimeWarningMs;
+
+    private Integer responseTimeCriticalMs;
+
+    private Float uptimeWarningPercent;
+
+    private Float uptimeCriticalPercent;
+
+    private Boolean includeResponseBody;
+
+    private Integer resendNotificationCount;
+
+    private Integer certificateExpiryDays;
+
+    private Boolean ignoreTlsError;
+
+    private Boolean checkSslCertificate;
+
+    private Boolean checkDnsResolution;
+
+    private Boolean upsideDownMode;
+
+    private Integer maxRedirects;
+
+    @Lob
+    private String description;
+
+    @Size(max = 500)
+    private String tags;
+
+    private Boolean enabled;
+
+    @Size(max = 100)
+    private String expectedStatusCodes;
+
+    private Integer performanceBudgetMs;
+
+    private Integer sizeBudgetKb;
+
+    private HttpMonitorDTO parent;
 
     public Long getId() {
         return id;
@@ -96,12 +144,188 @@ public class HttpMonitorDTO implements Serializable {
         this.body = body;
     }
 
-    public ScheduleDTO getSchedule() {
-        return schedule;
+    public Integer getIntervalSeconds() {
+        return intervalSeconds;
     }
 
-    public void setSchedule(ScheduleDTO schedule) {
-        this.schedule = schedule;
+    public void setIntervalSeconds(Integer intervalSeconds) {
+        this.intervalSeconds = intervalSeconds;
+    }
+
+    public Integer getTimeoutSeconds() {
+        return timeoutSeconds;
+    }
+
+    public void setTimeoutSeconds(Integer timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
+    }
+
+    public Integer getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public Integer getRetryDelaySeconds() {
+        return retryDelaySeconds;
+    }
+
+    public void setRetryDelaySeconds(Integer retryDelaySeconds) {
+        this.retryDelaySeconds = retryDelaySeconds;
+    }
+
+    public Integer getResponseTimeWarningMs() {
+        return responseTimeWarningMs;
+    }
+
+    public void setResponseTimeWarningMs(Integer responseTimeWarningMs) {
+        this.responseTimeWarningMs = responseTimeWarningMs;
+    }
+
+    public Integer getResponseTimeCriticalMs() {
+        return responseTimeCriticalMs;
+    }
+
+    public void setResponseTimeCriticalMs(Integer responseTimeCriticalMs) {
+        this.responseTimeCriticalMs = responseTimeCriticalMs;
+    }
+
+    public Float getUptimeWarningPercent() {
+        return uptimeWarningPercent;
+    }
+
+    public void setUptimeWarningPercent(Float uptimeWarningPercent) {
+        this.uptimeWarningPercent = uptimeWarningPercent;
+    }
+
+    public Float getUptimeCriticalPercent() {
+        return uptimeCriticalPercent;
+    }
+
+    public void setUptimeCriticalPercent(Float uptimeCriticalPercent) {
+        this.uptimeCriticalPercent = uptimeCriticalPercent;
+    }
+
+    public Boolean getIncludeResponseBody() {
+        return includeResponseBody;
+    }
+
+    public void setIncludeResponseBody(Boolean includeResponseBody) {
+        this.includeResponseBody = includeResponseBody;
+    }
+
+    public Integer getResendNotificationCount() {
+        return resendNotificationCount;
+    }
+
+    public void setResendNotificationCount(Integer resendNotificationCount) {
+        this.resendNotificationCount = resendNotificationCount;
+    }
+
+    public Integer getCertificateExpiryDays() {
+        return certificateExpiryDays;
+    }
+
+    public void setCertificateExpiryDays(Integer certificateExpiryDays) {
+        this.certificateExpiryDays = certificateExpiryDays;
+    }
+
+    public Boolean getIgnoreTlsError() {
+        return ignoreTlsError;
+    }
+
+    public void setIgnoreTlsError(Boolean ignoreTlsError) {
+        this.ignoreTlsError = ignoreTlsError;
+    }
+
+    public Boolean getCheckSslCertificate() {
+        return checkSslCertificate;
+    }
+
+    public void setCheckSslCertificate(Boolean checkSslCertificate) {
+        this.checkSslCertificate = checkSslCertificate;
+    }
+
+    public Boolean getCheckDnsResolution() {
+        return checkDnsResolution;
+    }
+
+    public void setCheckDnsResolution(Boolean checkDnsResolution) {
+        this.checkDnsResolution = checkDnsResolution;
+    }
+
+    public Boolean getUpsideDownMode() {
+        return upsideDownMode;
+    }
+
+    public void setUpsideDownMode(Boolean upsideDownMode) {
+        this.upsideDownMode = upsideDownMode;
+    }
+
+    public Integer getMaxRedirects() {
+        return maxRedirects;
+    }
+
+    public void setMaxRedirects(Integer maxRedirects) {
+        this.maxRedirects = maxRedirects;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getExpectedStatusCodes() {
+        return expectedStatusCodes;
+    }
+
+    public void setExpectedStatusCodes(String expectedStatusCodes) {
+        this.expectedStatusCodes = expectedStatusCodes;
+    }
+
+    public Integer getPerformanceBudgetMs() {
+        return performanceBudgetMs;
+    }
+
+    public void setPerformanceBudgetMs(Integer performanceBudgetMs) {
+        this.performanceBudgetMs = performanceBudgetMs;
+    }
+
+    public Integer getSizeBudgetKb() {
+        return sizeBudgetKb;
+    }
+
+    public void setSizeBudgetKb(Integer sizeBudgetKb) {
+        this.sizeBudgetKb = sizeBudgetKb;
+    }
+
+    public HttpMonitorDTO getParent() {
+        return parent;
+    }
+
+    public void setParent(HttpMonitorDTO parent) {
+        this.parent = parent;
     }
 
     @Override
@@ -136,7 +360,29 @@ public class HttpMonitorDTO implements Serializable {
             ", url='" + getUrl() + "'" +
             ", headers='" + getHeaders() + "'" +
             ", body='" + getBody() + "'" +
-            ", schedule=" + getSchedule() +
+            ", intervalSeconds=" + getIntervalSeconds() +
+            ", timeoutSeconds=" + getTimeoutSeconds() +
+            ", retryCount=" + getRetryCount() +
+            ", retryDelaySeconds=" + getRetryDelaySeconds() +
+            ", responseTimeWarningMs=" + getResponseTimeWarningMs() +
+            ", responseTimeCriticalMs=" + getResponseTimeCriticalMs() +
+            ", uptimeWarningPercent=" + getUptimeWarningPercent() +
+            ", uptimeCriticalPercent=" + getUptimeCriticalPercent() +
+            ", includeResponseBody='" + getIncludeResponseBody() + "'" +
+            ", resendNotificationCount=" + getResendNotificationCount() +
+            ", certificateExpiryDays=" + getCertificateExpiryDays() +
+            ", ignoreTlsError='" + getIgnoreTlsError() + "'" +
+            ", checkSslCertificate='" + getCheckSslCertificate() + "'" +
+            ", checkDnsResolution='" + getCheckDnsResolution() + "'" +
+            ", upsideDownMode='" + getUpsideDownMode() + "'" +
+            ", maxRedirects=" + getMaxRedirects() +
+            ", description='" + getDescription() + "'" +
+            ", tags='" + getTags() + "'" +
+            ", enabled='" + getEnabled() + "'" +
+            ", expectedStatusCodes='" + getExpectedStatusCodes() + "'" +
+            ", performanceBudgetMs=" + getPerformanceBudgetMs() +
+            ", sizeBudgetKb=" + getSizeBudgetKb() +
+            ", parent=" + getParent() +
             "}";
     }
 }

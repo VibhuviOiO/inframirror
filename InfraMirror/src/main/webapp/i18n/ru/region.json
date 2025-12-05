@@ -18,11 +18,12 @@
       "detail": {
         "title": "Region"
       },
-      "id": "ID",
+      "id": "Id",
       "name": "Name",
       "regionCode": "Region Code",
       "groupName": "Group Name",
-      "datacenters": "Datacenters"
+      "datacenter": "Datacenter",
+      "agent": "Agent"
     }
   }
 }

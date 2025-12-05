@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Kreiraj novi Status Page Item",
+        "createOrEditLabel": "Kreirajte ili izmenite Status Page Item",
+        "search": "Potražite Status Page Item",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "Kreiran je novi Status Page Item pod nazivom {{ param }}",
+      "updated": "Status Page Item pod nazivom {{ param }} je ažuriran",
+      "deleted": "Status Page Item pod nazivom {{ param }} je obrisan",
+      "delete": {
+        "question": "Da li ste sigurni da želite da obrišete Status Page Item pod nazivom {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

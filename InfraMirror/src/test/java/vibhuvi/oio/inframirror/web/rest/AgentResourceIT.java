@@ -29,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.Agent;
-import vibhuvi.oio.inframirror.domain.Datacenter;
+import vibhuvi.oio.inframirror.domain.Region;
 import vibhuvi.oio.inframirror.repository.AgentRepository;
 import vibhuvi.oio.inframirror.repository.search.AgentSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.AgentDTO;
@@ -280,24 +280,24 @@ class AgentResourceIT {
 
     @Test
     @Transactional
-    void getAllAgentsByDatacenterIsEqualToSomething() throws Exception {
-        Datacenter datacenter;
-        if (TestUtil.findAll(em, Datacenter.class).isEmpty()) {
+    void getAllAgentsByRegionIsEqualToSomething() throws Exception {
+        Region region;
+        if (TestUtil.findAll(em, Region.class).isEmpty()) {
             agentRepository.saveAndFlush(agent);
-            datacenter = DatacenterResourceIT.createEntity();
+            region = RegionResourceIT.createEntity();
         } else {
-            datacenter = TestUtil.findAll(em, Datacenter.class).get(0);
+            region = TestUtil.findAll(em, Region.class).get(0);
         }
-        em.persist(datacenter);
+        em.persist(region);
         em.flush();
-        agent.setDatacenter(datacenter);
+        agent.setRegion(region);
         agentRepository.saveAndFlush(agent);
-        Long datacenterId = datacenter.getId();
-        // Get all the agentList where datacenter equals to datacenterId
-        defaultAgentShouldBeFound("datacenterId.equals=" + datacenterId);
+        Long regionId = region.getId();
+        // Get all the agentList where region equals to regionId
+        defaultAgentShouldBeFound("regionId.equals=" + regionId);
 
-        // Get all the agentList where datacenter equals to (datacenterId + 1)
-        defaultAgentShouldNotBeFound("datacenterId.equals=" + (datacenterId + 1));
+        // Get all the agentList where region equals to (regionId + 1)
+        defaultAgentShouldNotBeFound("regionId.equals=" + (regionId + 1));
     }
 
     private void defaultAgentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {

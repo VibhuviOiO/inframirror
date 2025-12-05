@@ -85,10 +85,32 @@ public class HttpMonitorQueryService extends QueryService<HttpMonitor> {
                 buildStringSpecification(criteria.getName(), HttpMonitor_.name),
                 buildStringSpecification(criteria.getMethod(), HttpMonitor_.method),
                 buildStringSpecification(criteria.getType(), HttpMonitor_.type),
-                buildSpecification(criteria.getHeartbeatsId(), root ->
+                buildRangeSpecification(criteria.getIntervalSeconds(), HttpMonitor_.intervalSeconds),
+                buildRangeSpecification(criteria.getTimeoutSeconds(), HttpMonitor_.timeoutSeconds),
+                buildRangeSpecification(criteria.getRetryCount(), HttpMonitor_.retryCount),
+                buildRangeSpecification(criteria.getRetryDelaySeconds(), HttpMonitor_.retryDelaySeconds),
+                buildRangeSpecification(criteria.getResponseTimeWarningMs(), HttpMonitor_.responseTimeWarningMs),
+                buildRangeSpecification(criteria.getResponseTimeCriticalMs(), HttpMonitor_.responseTimeCriticalMs),
+                buildRangeSpecification(criteria.getUptimeWarningPercent(), HttpMonitor_.uptimeWarningPercent),
+                buildRangeSpecification(criteria.getUptimeCriticalPercent(), HttpMonitor_.uptimeCriticalPercent),
+                buildSpecification(criteria.getIncludeResponseBody(), HttpMonitor_.includeResponseBody),
+                buildRangeSpecification(criteria.getResendNotificationCount(), HttpMonitor_.resendNotificationCount),
+                buildRangeSpecification(criteria.getCertificateExpiryDays(), HttpMonitor_.certificateExpiryDays),
+                buildSpecification(criteria.getIgnoreTlsError(), HttpMonitor_.ignoreTlsError),
+                buildSpecification(criteria.getCheckSslCertificate(), HttpMonitor_.checkSslCertificate),
+                buildSpecification(criteria.getCheckDnsResolution(), HttpMonitor_.checkDnsResolution),
+                buildSpecification(criteria.getUpsideDownMode(), HttpMonitor_.upsideDownMode),
+                buildRangeSpecification(criteria.getMaxRedirects(), HttpMonitor_.maxRedirects),
+                buildStringSpecification(criteria.getTags(), HttpMonitor_.tags),
+                buildSpecification(criteria.getEnabled(), HttpMonitor_.enabled),
+                buildStringSpecification(criteria.getExpectedStatusCodes(), HttpMonitor_.expectedStatusCodes),
+                buildRangeSpecification(criteria.getPerformanceBudgetMs(), HttpMonitor_.performanceBudgetMs),
+                buildRangeSpecification(criteria.getSizeBudgetKb(), HttpMonitor_.sizeBudgetKb),
+                buildSpecification(criteria.getChildrenId(), root -> root.join(HttpMonitor_.children, JoinType.LEFT).get(HttpMonitor_.id)),
+                buildSpecification(criteria.getHeartbeatId(), root ->
                     root.join(HttpMonitor_.heartbeats, JoinType.LEFT).get(HttpHeartbeat_.id)
                 ),
-                buildSpecification(criteria.getScheduleId(), root -> root.join(HttpMonitor_.schedule, JoinType.LEFT).get(Schedule_.id))
+                buildSpecification(criteria.getParentId(), root -> root.join(HttpMonitor_.parent, JoinType.LEFT).get(HttpMonitor_.id))
             );
         }
         return specification;

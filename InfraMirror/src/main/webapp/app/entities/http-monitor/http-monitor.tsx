@@ -174,7 +174,7 @@ export const HttpMonitor = () => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.id">ID</Translate>{' '}
+                  <Translate contentKey="infraMirrorApp.httpMonitor.id">Id</Translate>{' '}
                   <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
                 <th className="hand" onClick={sort('name')}>
@@ -201,8 +201,96 @@ export const HttpMonitor = () => {
                   <Translate contentKey="infraMirrorApp.httpMonitor.body">Body</Translate>{' '}
                   <FontAwesomeIcon icon={getSortIconByFieldName('body')} />
                 </th>
+                <th className="hand" onClick={sort('intervalSeconds')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.intervalSeconds">Interval Seconds</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('intervalSeconds')} />
+                </th>
+                <th className="hand" onClick={sort('timeoutSeconds')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.timeoutSeconds">Timeout Seconds</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('timeoutSeconds')} />
+                </th>
+                <th className="hand" onClick={sort('retryCount')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.retryCount">Retry Count</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('retryCount')} />
+                </th>
+                <th className="hand" onClick={sort('retryDelaySeconds')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.retryDelaySeconds">Retry Delay Seconds</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('retryDelaySeconds')} />
+                </th>
+                <th className="hand" onClick={sort('responseTimeWarningMs')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.responseTimeWarningMs">Response Time Warning Ms</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('responseTimeWarningMs')} />
+                </th>
+                <th className="hand" onClick={sort('responseTimeCriticalMs')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.responseTimeCriticalMs">Response Time Critical Ms</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('responseTimeCriticalMs')} />
+                </th>
+                <th className="hand" onClick={sort('uptimeWarningPercent')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.uptimeWarningPercent">Uptime Warning Percent</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('uptimeWarningPercent')} />
+                </th>
+                <th className="hand" onClick={sort('uptimeCriticalPercent')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.uptimeCriticalPercent">Uptime Critical Percent</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('uptimeCriticalPercent')} />
+                </th>
+                <th className="hand" onClick={sort('includeResponseBody')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.includeResponseBody">Include Response Body</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('includeResponseBody')} />
+                </th>
+                <th className="hand" onClick={sort('resendNotificationCount')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.resendNotificationCount">Resend Notification Count</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('resendNotificationCount')} />
+                </th>
+                <th className="hand" onClick={sort('certificateExpiryDays')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.certificateExpiryDays">Certificate Expiry Days</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('certificateExpiryDays')} />
+                </th>
+                <th className="hand" onClick={sort('ignoreTlsError')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.ignoreTlsError">Ignore Tls Error</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('ignoreTlsError')} />
+                </th>
+                <th className="hand" onClick={sort('checkSslCertificate')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.checkSslCertificate">Check Ssl Certificate</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('checkSslCertificate')} />
+                </th>
+                <th className="hand" onClick={sort('checkDnsResolution')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.checkDnsResolution">Check Dns Resolution</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('checkDnsResolution')} />
+                </th>
+                <th className="hand" onClick={sort('upsideDownMode')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.upsideDownMode">Upside Down Mode</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('upsideDownMode')} />
+                </th>
+                <th className="hand" onClick={sort('maxRedirects')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.maxRedirects">Max Redirects</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('maxRedirects')} />
+                </th>
+                <th className="hand" onClick={sort('description')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.description">Description</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
+                </th>
+                <th className="hand" onClick={sort('tags')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.tags">Tags</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('tags')} />
+                </th>
+                <th className="hand" onClick={sort('enabled')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.enabled">Enabled</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('enabled')} />
+                </th>
+                <th className="hand" onClick={sort('expectedStatusCodes')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.expectedStatusCodes">Expected Status Codes</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('expectedStatusCodes')} />
+                </th>
+                <th className="hand" onClick={sort('performanceBudgetMs')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.performanceBudgetMs">Performance Budget Ms</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('performanceBudgetMs')} />
+                </th>
+                <th className="hand" onClick={sort('sizeBudgetKb')}>
+                  <Translate contentKey="infraMirrorApp.httpMonitor.sizeBudgetKb">Size Budget Kb</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('sizeBudgetKb')} />
+                </th>
                 <th>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.schedule">Schedule</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="infraMirrorApp.httpMonitor.parent">Parent</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th />
               </tr>
@@ -221,7 +309,29 @@ export const HttpMonitor = () => {
                   <td>{httpMonitor.url}</td>
                   <td>{httpMonitor.headers}</td>
                   <td>{httpMonitor.body}</td>
-                  <td>{httpMonitor.schedule ? <Link to={`/schedule/${httpMonitor.schedule.id}`}>{httpMonitor.schedule.id}</Link> : ''}</td>
+                  <td>{httpMonitor.intervalSeconds}</td>
+                  <td>{httpMonitor.timeoutSeconds}</td>
+                  <td>{httpMonitor.retryCount}</td>
+                  <td>{httpMonitor.retryDelaySeconds}</td>
+                  <td>{httpMonitor.responseTimeWarningMs}</td>
+                  <td>{httpMonitor.responseTimeCriticalMs}</td>
+                  <td>{httpMonitor.uptimeWarningPercent}</td>
+                  <td>{httpMonitor.uptimeCriticalPercent}</td>
+                  <td>{httpMonitor.includeResponseBody ? 'true' : 'false'}</td>
+                  <td>{httpMonitor.resendNotificationCount}</td>
+                  <td>{httpMonitor.certificateExpiryDays}</td>
+                  <td>{httpMonitor.ignoreTlsError ? 'true' : 'false'}</td>
+                  <td>{httpMonitor.checkSslCertificate ? 'true' : 'false'}</td>
+                  <td>{httpMonitor.checkDnsResolution ? 'true' : 'false'}</td>
+                  <td>{httpMonitor.upsideDownMode ? 'true' : 'false'}</td>
+                  <td>{httpMonitor.maxRedirects}</td>
+                  <td>{httpMonitor.description}</td>
+                  <td>{httpMonitor.tags}</td>
+                  <td>{httpMonitor.enabled ? 'true' : 'false'}</td>
+                  <td>{httpMonitor.expectedStatusCodes}</td>
+                  <td>{httpMonitor.performanceBudgetMs}</td>
+                  <td>{httpMonitor.sizeBudgetKb}</td>
+                  <td>{httpMonitor.parent ? <Link to={`/http-monitor/${httpMonitor.parent.id}`}>{httpMonitor.parent.id}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/http-monitor/${httpMonitor.id}`} color="info" size="sm" data-cy="entityDetailsButton">

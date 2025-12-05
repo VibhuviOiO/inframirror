@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "Status Dependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Стварыць новы Status Dependency",
+        "createOrEditLabel": "Стварыць або адрэдагаваць Status Dependency",
+        "search": "Знайсці Status Dependency",
+        "notFound": "No Status Dependencies found"
+      },
+      "created": "Новы Status Dependency створан з ідэнтыфікатарам {{ param }}",
+      "updated": "Status Dependency абноўлен з ідэнтыфікатарам {{ param }}",
+      "deleted": "Status Dependency выдален з ідэнтыфікатарам {{ param }}",
+      "delete": {
+        "question": "Вы ўпэўнены, што жадаеце выдаліць Status Dependency {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

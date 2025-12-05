@@ -1,0 +1,42 @@
+{
+  "infraMirrorApp": {
+    "service": {
+      "home": {
+        "title": "Services",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni Service ekle",
+        "createOrEditLabel": "Yeni Service ekle veya guncelle",
+        "search": "Service ara",
+        "notFound": "Services kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir Service eklendi",
+      "updated": "{{ param }} nolu Service guncellendi",
+      "deleted": "{{ param }} nolu Service silindi",
+      "delete": {
+        "question": "{{ id }} nolu Service silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "Service"
+      },
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "serviceType": "Service Type",
+      "environment": "Environment",
+      "monitoringEnabled": "Monitoring Enabled",
+      "clusterMonitoringEnabled": "Cluster Monitoring Enabled",
+      "intervalSeconds": "Interval Seconds",
+      "timeoutMs": "Timeout Ms",
+      "retryCount": "Retry Count",
+      "latencyWarningMs": "Latency Warning Ms",
+      "latencyCriticalMs": "Latency Critical Ms",
+      "advancedConfig": "Advanced Config",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "serviceInstance": "Service Instance",
+      "heartbeat": "Heartbeat",
+      "datacenter": "Datacenter"
+    }
+  }
+}

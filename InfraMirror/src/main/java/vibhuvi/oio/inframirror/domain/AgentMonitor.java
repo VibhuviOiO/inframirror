@@ -7,8 +7,7 @@ import java.io.Serializable;
 import java.time.Instant;
 
 /**
- * AgentMonitor - Many-to-many mapping between agents and HTTP monitors
- * Table: agent_monitors
+ * A AgentMonitor.
  */
 @Entity
 @Table(name = "agent_monitor")
@@ -18,10 +17,11 @@ public class AgentMonitor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
@@ -48,12 +48,15 @@ public class AgentMonitor implements Serializable {
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "instances", "httpHeartbeats", "pingHeartbeats", "datacenter" }, allowSetters = true)
+    @JsonIgnoreProperties(
+        value = { "instances", "httpHeartbeats", "instanceHeartbeats", "serviceHeartbeats", "region" },
+        allowSetters = true
+    )
     private Agent agent;
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "heartbeats", "schedule" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "children", "heartbeats", "parent" }, allowSetters = true)
     private HttpMonitor monitor;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

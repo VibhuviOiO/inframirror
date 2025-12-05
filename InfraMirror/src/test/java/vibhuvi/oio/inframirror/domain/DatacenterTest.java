@@ -1,10 +1,10 @@
 package vibhuvi.oio.inframirror.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static vibhuvi.oio.inframirror.domain.AgentTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.DatacenterTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.InstanceTestSamples.*;
 import static vibhuvi.oio.inframirror.domain.RegionTestSamples.*;
+import static vibhuvi.oio.inframirror.domain.ServiceTestSamples.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,37 +28,15 @@ class DatacenterTest {
     }
 
     @Test
-    void agentsTest() {
-        Datacenter datacenter = getDatacenterRandomSampleGenerator();
-        Agent agentBack = getAgentRandomSampleGenerator();
-
-        datacenter.addAgents(agentBack);
-        assertThat(datacenter.getAgents()).containsOnly(agentBack);
-        assertThat(agentBack.getDatacenter()).isEqualTo(datacenter);
-
-        datacenter.removeAgents(agentBack);
-        assertThat(datacenter.getAgents()).doesNotContain(agentBack);
-        assertThat(agentBack.getDatacenter()).isNull();
-
-        datacenter.agents(new HashSet<>(Set.of(agentBack)));
-        assertThat(datacenter.getAgents()).containsOnly(agentBack);
-        assertThat(agentBack.getDatacenter()).isEqualTo(datacenter);
-
-        datacenter.setAgents(new HashSet<>());
-        assertThat(datacenter.getAgents()).doesNotContain(agentBack);
-        assertThat(agentBack.getDatacenter()).isNull();
-    }
-
-    @Test
-    void instancesTest() {
+    void instanceTest() {
         Datacenter datacenter = getDatacenterRandomSampleGenerator();
         Instance instanceBack = getInstanceRandomSampleGenerator();
 
-        datacenter.addInstances(instanceBack);
+        datacenter.addInstance(instanceBack);
         assertThat(datacenter.getInstances()).containsOnly(instanceBack);
         assertThat(instanceBack.getDatacenter()).isEqualTo(datacenter);
 
-        datacenter.removeInstances(instanceBack);
+        datacenter.removeInstance(instanceBack);
         assertThat(datacenter.getInstances()).doesNotContain(instanceBack);
         assertThat(instanceBack.getDatacenter()).isNull();
 
@@ -69,6 +47,28 @@ class DatacenterTest {
         datacenter.setInstances(new HashSet<>());
         assertThat(datacenter.getInstances()).doesNotContain(instanceBack);
         assertThat(instanceBack.getDatacenter()).isNull();
+    }
+
+    @Test
+    void serviceTest() {
+        Datacenter datacenter = getDatacenterRandomSampleGenerator();
+        Service serviceBack = getServiceRandomSampleGenerator();
+
+        datacenter.addService(serviceBack);
+        assertThat(datacenter.getServices()).containsOnly(serviceBack);
+        assertThat(serviceBack.getDatacenter()).isEqualTo(datacenter);
+
+        datacenter.removeService(serviceBack);
+        assertThat(datacenter.getServices()).doesNotContain(serviceBack);
+        assertThat(serviceBack.getDatacenter()).isNull();
+
+        datacenter.services(new HashSet<>(Set.of(serviceBack)));
+        assertThat(datacenter.getServices()).containsOnly(serviceBack);
+        assertThat(serviceBack.getDatacenter()).isEqualTo(datacenter);
+
+        datacenter.setServices(new HashSet<>());
+        assertThat(datacenter.getServices()).doesNotContain(serviceBack);
+        assertThat(serviceBack.getDatacenter()).isNull();
     }
 
     @Test

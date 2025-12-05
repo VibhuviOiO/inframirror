@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Service Heartbeat جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Service Heartbeat",
+        "search": "البحث عن Service Heartbeat",
+        "notFound": "لم يتم العثور على Service Heartbeats"
+      },
+      "created": "Service Heartbeat جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Service Heartbeat تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Service Heartbeat تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Service Heartbeat {{ id }}؟"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

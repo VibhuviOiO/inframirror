@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "创建新 Service Heartbeat",
+        "createOrEditLabel": "创建或编辑 Service Heartbeat",
+        "search": "查找 Service Heartbeat",
+        "notFound": "No Service Heartbeats found"
+      },
+      "created": "Service Heartbeat {{ param }} 创建成功",
+      "updated": "Service Heartbeat {{ param }} 更新成功",
+      "deleted": "Service Heartbeat {{ param }} 删除成功",
+      "delete": {
+        "question": "你确定要删除 Service Heartbeat {{ id }} 吗？"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Luo Agent Lock",
+        "createOrEditLabel": "Luo tai muokkaa Agent Lock",
+        "search": "Etsi Agent Lock",
+        "notFound": "Agent Lock ei löytynyt"
+      },
+      "created": "Uusi Agent Lock on luotu, id: {{ param }}",
+      "updated": "Agent Lock on päivitetty, id: {{ param }}",
+      "deleted": "Agent Lock on päivitetty, id: {{ param }}",
+      "delete": {
+        "question": "Haluatko varmasti poistaa Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

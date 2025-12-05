@@ -28,9 +28,9 @@ public class DatacenterCriteria implements Serializable, Criteria {
 
     private StringFilter name;
 
-    private LongFilter agentsId;
+    private LongFilter instanceId;
 
-    private LongFilter instancesId;
+    private LongFilter serviceId;
 
     private LongFilter regionId;
 
@@ -42,8 +42,8 @@ public class DatacenterCriteria implements Serializable, Criteria {
         this.id = other.optionalId().map(LongFilter::copy).orElse(null);
         this.code = other.optionalCode().map(StringFilter::copy).orElse(null);
         this.name = other.optionalName().map(StringFilter::copy).orElse(null);
-        this.agentsId = other.optionalAgentsId().map(LongFilter::copy).orElse(null);
-        this.instancesId = other.optionalInstancesId().map(LongFilter::copy).orElse(null);
+        this.instanceId = other.optionalInstanceId().map(LongFilter::copy).orElse(null);
+        this.serviceId = other.optionalServiceId().map(LongFilter::copy).orElse(null);
         this.regionId = other.optionalRegionId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
@@ -110,42 +110,42 @@ public class DatacenterCriteria implements Serializable, Criteria {
         this.name = name;
     }
 
-    public LongFilter getAgentsId() {
-        return agentsId;
+    public LongFilter getInstanceId() {
+        return instanceId;
     }
 
-    public Optional<LongFilter> optionalAgentsId() {
-        return Optional.ofNullable(agentsId);
+    public Optional<LongFilter> optionalInstanceId() {
+        return Optional.ofNullable(instanceId);
     }
 
-    public LongFilter agentsId() {
-        if (agentsId == null) {
-            setAgentsId(new LongFilter());
+    public LongFilter instanceId() {
+        if (instanceId == null) {
+            setInstanceId(new LongFilter());
         }
-        return agentsId;
+        return instanceId;
     }
 
-    public void setAgentsId(LongFilter agentsId) {
-        this.agentsId = agentsId;
+    public void setInstanceId(LongFilter instanceId) {
+        this.instanceId = instanceId;
     }
 
-    public LongFilter getInstancesId() {
-        return instancesId;
+    public LongFilter getServiceId() {
+        return serviceId;
     }
 
-    public Optional<LongFilter> optionalInstancesId() {
-        return Optional.ofNullable(instancesId);
+    public Optional<LongFilter> optionalServiceId() {
+        return Optional.ofNullable(serviceId);
     }
 
-    public LongFilter instancesId() {
-        if (instancesId == null) {
-            setInstancesId(new LongFilter());
+    public LongFilter serviceId() {
+        if (serviceId == null) {
+            setServiceId(new LongFilter());
         }
-        return instancesId;
+        return serviceId;
     }
 
-    public void setInstancesId(LongFilter instancesId) {
-        this.instancesId = instancesId;
+    public void setServiceId(LongFilter serviceId) {
+        this.serviceId = serviceId;
     }
 
     public LongFilter getRegionId() {
@@ -199,8 +199,8 @@ public class DatacenterCriteria implements Serializable, Criteria {
             Objects.equals(id, that.id) &&
             Objects.equals(code, that.code) &&
             Objects.equals(name, that.name) &&
-            Objects.equals(agentsId, that.agentsId) &&
-            Objects.equals(instancesId, that.instancesId) &&
+            Objects.equals(instanceId, that.instanceId) &&
+            Objects.equals(serviceId, that.serviceId) &&
             Objects.equals(regionId, that.regionId) &&
             Objects.equals(distinct, that.distinct)
         );
@@ -208,7 +208,7 @@ public class DatacenterCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, code, name, agentsId, instancesId, regionId, distinct);
+        return Objects.hash(id, code, name, instanceId, serviceId, regionId, distinct);
     }
 
     // prettier-ignore
@@ -218,8 +218,8 @@ public class DatacenterCriteria implements Serializable, Criteria {
             optionalId().map(f -> "id=" + f + ", ").orElse("") +
             optionalCode().map(f -> "code=" + f + ", ").orElse("") +
             optionalName().map(f -> "name=" + f + ", ").orElse("") +
-            optionalAgentsId().map(f -> "agentsId=" + f + ", ").orElse("") +
-            optionalInstancesId().map(f -> "instancesId=" + f + ", ").orElse("") +
+            optionalInstanceId().map(f -> "instanceId=" + f + ", ").orElse("") +
+            optionalServiceId().map(f -> "serviceId=" + f + ", ").orElse("") +
             optionalRegionId().map(f -> "regionId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";

@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Ստեղծել նոր Service Instance",
+        "createOrEditLabel": "Ստեղծել կամ փոփոխել Service Instance",
+        "search": "Գտնել Service Instance",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Նոր Service Instance ստեղծված է {{ param }} նունացուցիչով",
+      "updated": "Service Instance թարմացվաց է {{ param }} նունացուցիչով",
+      "deleted": "Service Instance հեռացված է {{ param }}  նունացուցիչով",
+      "delete": {
+        "question": "Դուք վստահ ե՞ք, որ ցանկանում եք հեռացնել Service Instance {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

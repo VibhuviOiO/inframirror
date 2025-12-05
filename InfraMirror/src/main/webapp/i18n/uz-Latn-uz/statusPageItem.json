@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Yangi Status Page Item qo`shish",
+        "createOrEditLabel": "Status Page Itemni tahrirlash",
+        "search": "Status Page Itemni izlash",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "Status Page Item {{ param }} bilan qo`shildi",
+      "updated": "{{ param }}- Status Page Item saqlandi",
+      "deleted": "{{ param }}- Status Page Item o`chirildi",
+      "delete": {
+        "question": "{{ id }}- Status Page Itemni o`chirmoqchimisiz? "
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

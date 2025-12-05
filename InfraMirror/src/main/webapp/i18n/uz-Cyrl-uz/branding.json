@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Янги Branding қўшиш",
+        "createOrEditLabel": "Brandingни таҳрирлаш",
+        "search": "Brandingни излаш",
+        "notFound": "No Brandings found"
+      },
+      "created": "Branding {{ param }} билан қўшилди.",
+      "updated": "{{ param }}- Branding сақланди.",
+      "deleted": "{{ param }}- Branding ўчирилди.",
+      "delete": {
+        "question": "{{ id }}- Brandingни ўчирмоқчимисиз? "
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

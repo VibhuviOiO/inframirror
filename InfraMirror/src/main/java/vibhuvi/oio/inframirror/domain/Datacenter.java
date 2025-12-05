@@ -8,8 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Datacenter - Physical datacenter locations within regions
- * Table: datacenters
+ * A Datacenter.
  */
 @Entity
 @Table(name = "datacenter")
@@ -19,10 +18,11 @@ public class Datacenter implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
@@ -39,16 +39,16 @@ public class Datacenter implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "datacenter")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "instances", "httpHeartbeats", "pingHeartbeats", "datacenter" }, allowSetters = true)
-    private Set<Agent> agents = new HashSet<>();
+    @JsonIgnoreProperties(value = { "heartbeats", "serviceInstances", "datacenter", "agent" }, allowSetters = true)
+    private Set<Instance> instances = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "datacenter")
     @org.springframework.data.annotation.Transient
-    @JsonIgnoreProperties(value = { "pingHeartbeats", "datacenter", "agent" }, allowSetters = true)
-    private Set<Instance> instances = new HashSet<>();
+    @JsonIgnoreProperties(value = { "serviceInstances", "heartbeats", "datacenter" }, allowSetters = true)
+    private Set<Service> services = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "datacenters" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "datacenters", "agents" }, allowSetters = true)
     private Region region;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -92,37 +92,6 @@ public class Datacenter implements Serializable {
         this.name = name;
     }
 
-    public Set<Agent> getAgents() {
-        return this.agents;
-    }
-
-    public void setAgents(Set<Agent> agents) {
-        if (this.agents != null) {
-            this.agents.forEach(i -> i.setDatacenter(null));
-        }
-        if (agents != null) {
-            agents.forEach(i -> i.setDatacenter(this));
-        }
-        this.agents = agents;
-    }
-
-    public Datacenter agents(Set<Agent> agents) {
-        this.setAgents(agents);
-        return this;
-    }
-
-    public Datacenter addAgents(Agent agent) {
-        this.agents.add(agent);
-        agent.setDatacenter(this);
-        return this;
-    }
-
-    public Datacenter removeAgents(Agent agent) {
-        this.agents.remove(agent);
-        agent.setDatacenter(null);
-        return this;
-    }
-
     public Set<Instance> getInstances() {
         return this.instances;
     }
@@ -142,15 +111,46 @@ public class Datacenter implements Serializable {
         return this;
     }
 
-    public Datacenter addInstances(Instance instance) {
+    public Datacenter addInstance(Instance instance) {
         this.instances.add(instance);
         instance.setDatacenter(this);
         return this;
     }
 
-    public Datacenter removeInstances(Instance instance) {
+    public Datacenter removeInstance(Instance instance) {
         this.instances.remove(instance);
         instance.setDatacenter(null);
+        return this;
+    }
+
+    public Set<Service> getServices() {
+        return this.services;
+    }
+
+    public void setServices(Set<Service> services) {
+        if (this.services != null) {
+            this.services.forEach(i -> i.setDatacenter(null));
+        }
+        if (services != null) {
+            services.forEach(i -> i.setDatacenter(this));
+        }
+        this.services = services;
+    }
+
+    public Datacenter services(Set<Service> services) {
+        this.setServices(services);
+        return this;
+    }
+
+    public Datacenter addService(Service service) {
+        this.services.add(service);
+        service.setDatacenter(this);
+        return this;
+    }
+
+    public Datacenter removeService(Service service) {
+        this.services.remove(service);
+        service.setDatacenter(null);
         return this;
     }
 

@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Ստեղծել նոր Agent Lock",
+        "createOrEditLabel": "Ստեղծել կամ փոփոխել Agent Lock",
+        "search": "Գտնել Agent Lock",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "Նոր Agent Lock ստեղծված է {{ param }} նունացուցիչով",
+      "updated": "Agent Lock թարմացվաց է {{ param }} նունացուցիչով",
+      "deleted": "Agent Lock հեռացված է {{ param }}  նունացուցիչով",
+      "delete": {
+        "question": "Դուք վստահ ե՞ք, որ ցանկանում եք հեռացնել Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

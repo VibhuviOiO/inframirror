@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "Status Dependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Status Dependency",
+        "createOrEditLabel": "Creeare sau editare Status Dependency",
+        "search": "Căutare după Status Dependency",
+        "notFound": "No Status Dependencies found"
+      },
+      "created": "A fost creată o nouă entitate Status Dependency cu identificatorul {{ param }}",
+      "updated": "Status Dependency cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Status Dependency cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Status Dependency {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

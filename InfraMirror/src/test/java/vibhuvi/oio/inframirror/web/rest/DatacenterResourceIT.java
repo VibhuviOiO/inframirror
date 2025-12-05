@@ -556,7 +556,7 @@ class DatacenterResourceIT {
         Datacenter partialUpdatedDatacenter = new Datacenter();
         partialUpdatedDatacenter.setId(datacenter.getId());
 
-        partialUpdatedDatacenter.code(UPDATED_CODE).name(UPDATED_NAME);
+        partialUpdatedDatacenter.code(UPDATED_CODE);
 
         restDatacenterMockMvc
             .perform(

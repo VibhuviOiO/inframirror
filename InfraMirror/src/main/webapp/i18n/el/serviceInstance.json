@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Δημιουργήστε ένα νέο Service Instance",
+        "createOrEditLabel": "Δημιουργήστε η επεξεργαστείτε ένα Service Instance",
+        "search": "Αναζήτηση για Service Instance",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Ένα νέο Service Instance έχει δημιουργηθεί με αναγνωριστικό {{ param }}",
+      "updated": "Ένα Service Instance έχει ενημερωθεί με αναγνωριστικό {{ param }}",
+      "deleted": "Ένα Service Instance έχει διαγραφτεί με αναγνωριστικό {{ param }}",
+      "delete": {
+        "question": "Είστε βέβαιοι όταν θέλετε να διαγράψετε το ακόλουθο Service Instance {{ id }};"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

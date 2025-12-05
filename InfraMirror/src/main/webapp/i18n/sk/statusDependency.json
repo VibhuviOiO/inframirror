@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "Status Dependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Pridať Status Dependency",
+        "createOrEditLabel": "Pridať alebo upraviť Status Dependency",
+        "search": "Vyhľadať Status Dependency",
+        "notFound": "No Status Dependencies found"
+      },
+      "created": "Bol vytvorený potomok entity Status Dependency s identifikátorom {{ param }}",
+      "updated": "Potomok entity Status Dependency s identifikátorom {{ param }} bol upravený.",
+      "deleted": "Potomok entity Status Dependency s identifikátorom {{ param }} bol vymazaný.",
+      "delete": {
+        "question": "Ste si istý, že chcete vymazať Status Dependency {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

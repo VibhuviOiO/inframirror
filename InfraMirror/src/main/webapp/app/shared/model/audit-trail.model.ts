@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { IUser } from 'app/shared/model/user.model';
 
 export interface IAuditTrail {
   id?: number;
@@ -11,7 +10,6 @@ export interface IAuditTrail {
   timestamp?: dayjs.Dayjs;
   ipAddress?: string | null;
   userAgent?: string | null;
-  user?: IUser | null;
 }
 
 export const defaultValue: Readonly<IAuditTrail> = {};

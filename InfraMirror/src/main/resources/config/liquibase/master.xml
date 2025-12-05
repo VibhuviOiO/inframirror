@@ -12,29 +12,37 @@
     <property name="timeType" value="time(6)" dbms="postgresql"/>
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083824_added_entity_Region.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083825_added_entity_Datacenter.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083826_added_entity_Agent.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083827_added_entity_Instance.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083828_added_entity_Schedule.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083829_added_entity_HttpMonitor.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083830_added_entity_HttpHeartbeat.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083831_added_entity_PingHeartbeat.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083832_added_entity_AgentMonitor.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083833_added_entity_ApiKey.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083834_added_entity_AuditTrail.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083835_added_entity_Tag.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083836_added_entity_SessionLog.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053321_added_entity_Branding.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053322_added_entity_Region.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053323_added_entity_Datacenter.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053324_added_entity_Agent.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053325_added_entity_AuditTrail.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053326_added_entity_ApiKey.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053327_added_entity_HttpMonitor.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053328_added_entity_HttpHeartbeat.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053329_added_entity_AgentMonitor.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053330_added_entity_AgentLock.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053331_added_entity_Instance.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053332_added_entity_InstanceHeartbeat.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053333_added_entity_Service.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053334_added_entity_ServiceInstance.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053335_added_entity_ServiceHeartbeat.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053336_added_entity_StatusPage.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053337_added_entity_StatusPageItem.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053338_added_entity_StatusDependency.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
-    <include file="config/liquibase/changelog/20251203083825_added_entity_constraints_Datacenter.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083826_added_entity_constraints_Agent.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083827_added_entity_constraints_Instance.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083829_added_entity_constraints_HttpMonitor.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083830_added_entity_constraints_HttpHeartbeat.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083831_added_entity_constraints_PingHeartbeat.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083832_added_entity_constraints_AgentMonitor.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083834_added_entity_constraints_AuditTrail.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251203083836_added_entity_constraints_SessionLog.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053323_added_entity_constraints_Datacenter.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053324_added_entity_constraints_Agent.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053327_added_entity_constraints_HttpMonitor.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053328_added_entity_constraints_HttpHeartbeat.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053329_added_entity_constraints_AgentMonitor.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053331_added_entity_constraints_Instance.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053332_added_entity_constraints_InstanceHeartbeat.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053333_added_entity_constraints_Service.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053334_added_entity_constraints_ServiceInstance.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053335_added_entity_constraints_ServiceHeartbeat.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053337_added_entity_constraints_StatusPageItem.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251205053338_added_entity_constraints_StatusDependency.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

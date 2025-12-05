@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Status Page Item-ஐ உருவாக்கு",
+        "createOrEditLabel": "Status Page Item -ஐ மாற்று (அ) உருவாக்கு",
+        "search": "Search for Status Page Item",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "Status Page Item புதிதாக உருவாக்கப்பட்டது, அடையாளம் {{ param }}",
+      "updated": "Status Page Item மாற்றப்பட்டது, அடையாளம்  {{ param }}",
+      "deleted": "A Status Page Item நீக்கப்பட்டது, அடையாளம {{ param }}",
+      "delete": {
+        "question": "நீக்குவதற்கு உறுதி செய் Status Page Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

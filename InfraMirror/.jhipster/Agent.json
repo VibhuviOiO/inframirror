@@ -1,11 +1,15 @@
 {
   "annotations": {
-    "changelogDate": "20251203083826"
+    "changelogDate": "20251205053324"
   },
   "applications": "*",
-  "documentation": "Agent - Monitoring agents deployed in datacenters to collect metrics\\nTable: agents",
   "dto": "mapstruct",
   "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
     {
       "fieldName": "name",
       "fieldType": "String",
@@ -20,28 +24,35 @@
     {
       "otherEntityName": "instance",
       "otherEntityRelationshipName": "agent",
-      "relationshipName": "instances",
+      "relationshipName": "instance",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
     {
       "otherEntityName": "httpHeartbeat",
       "otherEntityRelationshipName": "agent",
-      "relationshipName": "httpHeartbeats",
+      "relationshipName": "httpHeartbeat",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
     {
-      "otherEntityName": "pingHeartbeat",
+      "otherEntityName": "instanceHeartbeat",
       "otherEntityRelationshipName": "agent",
-      "relationshipName": "pingHeartbeats",
+      "relationshipName": "instanceHeartbeat",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
     {
-      "otherEntityName": "datacenter",
-      "otherEntityRelationshipName": "agents",
-      "relationshipName": "datacenter",
+      "otherEntityName": "serviceHeartbeat",
+      "otherEntityRelationshipName": "agent",
+      "relationshipName": "serviceHeartbeat",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "region",
+      "otherEntityRelationshipName": "agent",
+      "relationshipName": "region",
       "relationshipSide": "right",
       "relationshipType": "many-to-one"
     }

@@ -78,6 +78,13 @@ public class AuditTrailServiceImpl implements AuditTrailService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<AuditTrailDTO> findAll(Pageable pageable) {
+        LOG.debug("Request to get all AuditTrails");
+        return auditTrailRepository.findAll(pageable).map(auditTrailMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<AuditTrailDTO> findOne(Long id) {
         LOG.debug("Request to get AuditTrail : {}", id);
         return auditTrailRepository.findById(id).map(auditTrailMapper::toDto);

@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Янги Audit Trail қўшиш",
+        "createOrEditLabel": "Audit Trailни таҳрирлаш",
         "search": "Audit Trailни излаш",
         "notFound": "No Audit Trails found"
+      },
+      "created": "Audit Trail {{ param }} билан қўшилди.",
+      "updated": "{{ param }}- Audit Trail сақланди.",
+      "deleted": "{{ param }}- Audit Trail ўчирилди.",
+      "delete": {
+        "question": "{{ id }}- Audit Trailни ўчирмоқчимисиз? "
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

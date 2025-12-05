@@ -1,0 +1,44 @@
+{
+  "infraMirrorApp": {
+    "statusPage": {
+      "home": {
+        "title": "StatusPages",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "नया Status Page बनाएँ",
+        "createOrEditLabel": "Status Page बनाएँ या संपादित करें",
+        "search": "Status Page खोजें",
+        "notFound": "No Status Pages found"
+      },
+      "created": "एक नया Status Page [identifier: {{ param }}] तैयार है",
+      "updated": "एक Status Page [identifier: {{ param }}] का अद्यतन हुआ है",
+      "deleted": "Status Page [identifier: {{ param }}] हटा दिया है",
+      "delete": {
+        "question": "Status Page [id: {{ id }}] हटाने की पुष्टि करें"
+      },
+      "detail": {
+        "title": "Status Page"
+      },
+      "id": "Id",
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "isPublic": "Is Public",
+      "customDomain": "Custom Domain",
+      "logoUrl": "Logo Url",
+      "themeColor": "Theme Color",
+      "headerText": "Header Text",
+      "footerText": "Footer Text",
+      "showResponseTimes": "Show Response Times",
+      "showUptimePercentage": "Show Uptime Percentage",
+      "autoRefreshSeconds": "Auto Refresh Seconds",
+      "monitorSelection": "Monitor Selection",
+      "isActive": "Is Active",
+      "isHomePage": "Is Home Page",
+      "allowedRoles": "Allowed Roles",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "item": "Item",
+      "statusDependency": "Status Dependency"
+    }
+  }
+}

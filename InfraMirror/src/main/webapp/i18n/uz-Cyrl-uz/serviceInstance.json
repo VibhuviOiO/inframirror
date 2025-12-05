@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Янги Service Instance қўшиш",
+        "createOrEditLabel": "Service Instanceни таҳрирлаш",
+        "search": "Service Instanceни излаш",
+        "notFound": "No Service Instances found"
+      },
+      "created": "Service Instance {{ param }} билан қўшилди.",
+      "updated": "{{ param }}- Service Instance сақланди.",
+      "deleted": "{{ param }}- Service Instance ўчирилди.",
+      "delete": {
+        "question": "{{ id }}- Service Instanceни ўчирмоқчимисиз? "
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Creeare o nouă entitate Status Page Item",
+        "createOrEditLabel": "Creeare sau editare Status Page Item",
+        "search": "Căutare după Status Page Item",
+        "notFound": "No Status Page Items found"
+      },
+      "created": "A fost creată o nouă entitate Status Page Item cu identificatorul {{ param }}",
+      "updated": "Status Page Item cu identificatorul {{ param }} a fost actualizată",
+      "deleted": "Status Page Item cu identificatorul {{ param }} a fost ștearsă",
+      "delete": {
+        "question": "Sunteți sigur că doriți să ștergeți Status Page Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

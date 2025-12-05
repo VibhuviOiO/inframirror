@@ -4,13 +4,21 @@
       "home": {
         "title": "AuditTrails",
         "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Audit Trail létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Audit Trailt",
         "search": "Audit Trail keresése",
         "notFound": "No Audit Trails found"
+      },
+      "created": "Egy új Audit Trail lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Audit Trail módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Audit Trail törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Audit Trailt {{ id }} azonosítóval?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

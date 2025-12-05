@@ -1,6 +1,5 @@
 package vibhuvi.oio.inframirror.service.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
@@ -9,10 +8,10 @@ import java.util.Objects;
 /**
  * A DTO for the {@link vibhuvi.oio.inframirror.domain.AgentMonitor} entity.
  */
-@Schema(description = "AgentMonitor - Many-to-many mapping between agents and HTTP monitors\nTable: agent_monitors")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class AgentMonitorDTO implements Serializable {
 
+    @NotNull
     private Long id;
 
     @NotNull

@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Maak een nieuwe Service Instance",
+        "createOrEditLabel": "Maak of wijzig een Service Instance",
+        "search": "Search for Service Instance",
+        "notFound": "No Service Instances found"
+      },
+      "created": "A new Service Instance is created with identifier {{ param }}",
+      "updated": "A Service Instance is updated with identifier {{ param }}",
+      "deleted": "A Service Instance is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Bent u zeker dat u Service Instance {{ id }} wilt verwijderen?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

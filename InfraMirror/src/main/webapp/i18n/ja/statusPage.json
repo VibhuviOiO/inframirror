@@ -1,0 +1,44 @@
+{
+  "infraMirrorApp": {
+    "statusPage": {
+      "home": {
+        "title": "StatusPages",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Status Page の作成",
+        "createOrEditLabel": "Status Pageの作成または編集",
+        "search": "Status Page の検索",
+        "notFound": "Status Pages が見つかりません。"
+      },
+      "created": "新しい Status Page がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Status Page が更新されました。",
+      "deleted": "ID {{ param }} の Status Page が削除されました。",
+      "delete": {
+        "question": "Status Page {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Status Page"
+      },
+      "id": "Id",
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "isPublic": "Is Public",
+      "customDomain": "Custom Domain",
+      "logoUrl": "Logo Url",
+      "themeColor": "Theme Color",
+      "headerText": "Header Text",
+      "footerText": "Footer Text",
+      "showResponseTimes": "Show Response Times",
+      "showUptimePercentage": "Show Uptime Percentage",
+      "autoRefreshSeconds": "Auto Refresh Seconds",
+      "monitorSelection": "Monitor Selection",
+      "isActive": "Is Active",
+      "isHomePage": "Is Home Page",
+      "allowedRoles": "Allowed Roles",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "item": "Item",
+      "statusDependency": "Status Dependency"
+    }
+  }
+}

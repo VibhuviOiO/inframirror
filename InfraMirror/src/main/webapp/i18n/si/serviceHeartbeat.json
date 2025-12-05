@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "නව Service Heartbeat එකක් සාදන්න",
+        "createOrEditLabel": "Service Heartbeat සාදන්න හෝ සංස්කරණය කරන්න",
+        "search": "Service Heartbeat සඳහා සොයන්න",
+        "notFound": "Service Heartbeats හමු නොවීය"
+      },
+      "created": "{{ param }} හඳුනාගැනීමෙන් නව Service Heartbeat සාදනු ලැබේ",
+      "updated": "{{ param }} හඳුනාගැනීමෙන් Service Heartbeat යාවත්කාලීන වේ",
+      "deleted": "{{ param }} හඳුනාගැනීමෙන් Service Heartbeat මකා දමනු ලැබේ",
+      "delete": {
+        "question": "Service Heartbeat {{ id }} මකා දැමීමට ඔබට විශ්වාසද?"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

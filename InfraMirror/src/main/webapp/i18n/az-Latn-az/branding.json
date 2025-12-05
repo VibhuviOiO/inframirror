@@ -1,0 +1,36 @@
+{
+  "infraMirrorApp": {
+    "branding": {
+      "home": {
+        "title": "Brandings",
+        "refreshListLabel": "Siyahını yenilə",
+        "createLabel": "Yeni Branding əlavə et",
+        "createOrEditLabel": "Yeni Branding əlavə et və ya yenilə",
+        "search": "Branding axtar",
+        "notFound": "Brandings məlumatı tapılmadı"
+      },
+      "created": "{{ param }} ID ilə bir Branding əlavə edildi",
+      "updated": "{{ param }} nolu Branding dəyişildi",
+      "deleted": "{{ param }} nolu Branding silindi",
+      "delete": {
+        "question": "{{ id }} nolu Branding silinəcək. Davam etmək istəyirsiniz?"
+      },
+      "detail": {
+        "title": "Branding"
+      },
+      "id": "ID",
+      "title": "Title",
+      "description": "Description",
+      "keywords": "Keywords",
+      "author": "Author",
+      "faviconPath": "Favicon Path",
+      "logoPath": "Logo Path",
+      "logoWidth": "Logo Width",
+      "logoHeight": "Logo Height",
+      "footerTitle": "Footer Title",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  }
+}

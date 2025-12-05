@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "ServiceInstances",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Service Instance の作成",
+        "createOrEditLabel": "Service Instanceの作成または編集",
+        "search": "Service Instance の検索",
+        "notFound": "Service Instances が見つかりません。"
+      },
+      "created": "新しい Service Instance がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Service Instance が更新されました。",
+      "deleted": "ID {{ param }} の Service Instance が削除されました。",
+      "delete": {
+        "question": "Service Instance {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

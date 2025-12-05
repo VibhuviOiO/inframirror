@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "serviceInstance": {
+      "home": {
+        "title": "Service Instances",
+        "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Service Instance",
+        "createOrEditLabel": "Lisa või muuda Service Instance",
+        "search": "Otsi Service Instance",
+        "notFound": "Ei leitud ühtegi Service Instances"
+      },
+      "created": "Uus Service Instance on loodud identifikaatoriga {{ param }}",
+      "updated": "Service Instance identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Service Instance identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Service Instance {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Instance"
+      },
+      "id": "Id",
+      "port": "Port",
+      "isActive": "Is Active",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "heartbeat": "Heartbeat",
+      "instance": "Instance",
+      "service": "Service"
+    }
+  }
+}

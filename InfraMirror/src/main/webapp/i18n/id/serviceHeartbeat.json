@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Buat Service Heartbeat baru",
+        "createOrEditLabel": "Buat atau edit Service Heartbeat",
+        "search": "Cari Service Heartbeat",
+        "notFound": "No Service Heartbeats found"
+      },
+      "created": "Service Heartbeat dengan id {{ param }} telah dibuat",
+      "updated": "Service Heartbeat dengan id {{ param }} telah diperbaharui",
+      "deleted": "Service Heartbeat dengan id {{ param }} telah dihapus",
+      "delete": {
+        "question": "Apakah anda yakin ingin menghapus Service Heartbeat {{ id }}?"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

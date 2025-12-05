@@ -1,11 +1,15 @@
 {
   "annotations": {
-    "changelogDate": "20251203083824"
+    "changelogDate": "20251205053322"
   },
   "applications": "*",
-  "documentation": "Region - Represents geographical regions containing multiple datacenters\\nTable: regions",
   "dto": "mapstruct",
   "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
     {
       "fieldName": "name",
       "fieldType": "String",
@@ -32,7 +36,14 @@
     {
       "otherEntityName": "datacenter",
       "otherEntityRelationshipName": "region",
-      "relationshipName": "datacenters",
+      "relationshipName": "datacenter",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "agent",
+      "otherEntityRelationshipName": "region",
+      "relationshipName": "agent",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     }

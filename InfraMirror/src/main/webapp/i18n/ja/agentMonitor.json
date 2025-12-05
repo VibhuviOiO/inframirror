@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "agentMonitor": {
+      "home": {
+        "title": "AgentMonitors",
+        "refreshListLabel": "リストの更新",
+        "createLabel": "Agent Monitor の作成",
+        "createOrEditLabel": "Agent Monitorの作成または編集",
+        "search": "Agent Monitor の検索",
+        "notFound": "Agent Monitors が見つかりません。"
+      },
+      "created": "新しい Agent Monitor がID {{ param }} で作成されました。",
+      "updated": "ID {{ param }} の Agent Monitor が更新されました。",
+      "deleted": "ID {{ param }} の Agent Monitor が削除されました。",
+      "delete": {
+        "question": "Agent Monitor {{ id }}を削除してもよろしいですか？"
+      },
+      "detail": {
+        "title": "Agent Monitor"
+      },
+      "id": "Id",
+      "active": "Active",
+      "createdBy": "Created By",
+      "createdDate": "Created Date",
+      "lastModifiedBy": "Last Modified By",
+      "lastModifiedDate": "Last Modified Date",
+      "agent": "Agent",
+      "monitor": "Monitor"
+    }
+  }
+}

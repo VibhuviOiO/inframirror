@@ -1,0 +1,31 @@
+{
+  "infraMirrorApp": {
+    "statusDependency": {
+      "home": {
+        "title": "Status Dependencies",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "建立一筆新的 Status Dependency",
+        "createOrEditLabel": "建立或編輯 Status Dependency",
+        "search": "搜尋 Status Dependency",
+        "notFound": "No Status Dependencies found"
+      },
+      "created": "新的 Status Dependency 建立成功，識別碼為 {{ param }}",
+      "updated": "識別碼為 {{ param }} 的 Status Dependency 更新成功",
+      "deleted": "識別碼為 {{ param }} 的 Status Dependency 刪除成功",
+      "delete": {
+        "question": "您確定要刪除 Status Dependency {{ id }} 嗎?"
+      },
+      "detail": {
+        "title": "Status Dependency"
+      },
+      "id": "Id",
+      "parentType": "Parent Type",
+      "parentId": "Parent Id",
+      "childType": "Child Type",
+      "childId": "Child Id",
+      "metadata": "Metadata",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

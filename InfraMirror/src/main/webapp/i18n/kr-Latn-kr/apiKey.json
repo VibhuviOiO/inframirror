@@ -18,7 +18,7 @@
       "detail": {
         "title": "Api Key"
       },
-      "id": "ID",
+      "id": "Id",
       "name": "Name",
       "description": "Description",
       "keyHash": "Key Hash",

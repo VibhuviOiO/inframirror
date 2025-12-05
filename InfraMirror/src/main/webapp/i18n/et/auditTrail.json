@@ -4,13 +4,21 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Värskenda nimekirja",
+        "createLabel": "Lisa uus Audit Trail",
+        "createOrEditLabel": "Lisa või muuda Audit Trail",
         "search": "Otsi Audit Trail",
         "notFound": "Ei leitud ühtegi Audit Trails"
+      },
+      "created": "Uus Audit Trail on loodud identifikaatoriga {{ param }}",
+      "updated": "Audit Trail identifikaatoriga {{ param }} on muudetud",
+      "deleted": "Audit Trail identifikaatoriga {{ param }} on kustutatud",
+      "delete": {
+        "question": "Kas olete kindel, et soovite kustutada Audit Trail {{ id }}?"
       },
       "detail": {
         "title": "Audit Trail"
       },
-      "id": "ID",
+      "id": "Id",
       "action": "Action",
       "entityName": "Entity Name",
       "entityId": "Entity Id",
@@ -18,8 +26,7 @@
       "newValue": "New Value",
       "timestamp": "Timestamp",
       "ipAddress": "Ip Address",
-      "userAgent": "User Agent",
-      "user": "User"
+      "userAgent": "User Agent"
     }
   }
 }

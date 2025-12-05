@@ -9,4 +9,4 @@ import vibhuvi.oio.inframirror.domain.HttpHeartbeat;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface HttpHeartbeatRepository extends JpaRepository<HttpHeartbeat, Long>, JpaSpecificationExecutor<HttpHeartbeat> {}
+public interface HttpHeartbeatRepository extends JpaRepository<HttpHeartbeat, Long> {}

@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "רענן רשימה",
+        "createLabel": "צור חדש Status Page Item",
+        "createOrEditLabel": "צור או ערוך Status Page Item",
+        "search": "חפש Status Page Item",
+        "notFound": "לא נמצאו Status Page Items"
+      },
+      "created": "Status Page Item חדש נוצר עם מזהה {{ param }}",
+      "updated": "Status Page Item עודכן עם מזהה {{ param }}",
+      "deleted": "Status Page Item נמחק עם מזהה {{ param }}",
+      "delete": {
+        "question": "האם אתה בטוח שברצונך למחוק את Status Page Item {{ id }}?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

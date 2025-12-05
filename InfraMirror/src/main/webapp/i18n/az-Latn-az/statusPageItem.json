@@ -1,0 +1,29 @@
+{
+  "infraMirrorApp": {
+    "statusPageItem": {
+      "home": {
+        "title": "Status Page Items",
+        "refreshListLabel": "Siyahını yenilə",
+        "createLabel": "Yeni Status Page Item əlavə et",
+        "createOrEditLabel": "Yeni Status Page Item əlavə et və ya yenilə",
+        "search": "Status Page Item axtar",
+        "notFound": "Status Page Items məlumatı tapılmadı"
+      },
+      "created": "{{ param }} ID ilə bir Status Page Item əlavə edildi",
+      "updated": "{{ param }} nolu Status Page Item dəyişildi",
+      "deleted": "{{ param }} nolu Status Page Item silindi",
+      "delete": {
+        "question": "{{ id }} nolu Status Page Item silinəcək. Davam etmək istəyirsiniz?"
+      },
+      "detail": {
+        "title": "Status Page Item"
+      },
+      "id": "Id",
+      "itemType": "Item Type",
+      "itemId": "Item Id",
+      "displayOrder": "Display Order",
+      "createdAt": "Created At",
+      "statusPage": "Status Page"
+    }
+  }
+}

@@ -30,7 +30,9 @@ public class RegionCriteria implements Serializable, Criteria {
 
     private StringFilter groupName;
 
-    private LongFilter datacentersId;
+    private LongFilter datacenterId;
+
+    private LongFilter agentId;
 
     private Boolean distinct;
 
@@ -41,7 +43,8 @@ public class RegionCriteria implements Serializable, Criteria {
         this.name = other.optionalName().map(StringFilter::copy).orElse(null);
         this.regionCode = other.optionalRegionCode().map(StringFilter::copy).orElse(null);
         this.groupName = other.optionalGroupName().map(StringFilter::copy).orElse(null);
-        this.datacentersId = other.optionalDatacentersId().map(LongFilter::copy).orElse(null);
+        this.datacenterId = other.optionalDatacenterId().map(LongFilter::copy).orElse(null);
+        this.agentId = other.optionalAgentId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -126,23 +129,42 @@ public class RegionCriteria implements Serializable, Criteria {
         this.groupName = groupName;
     }
 
-    public LongFilter getDatacentersId() {
-        return datacentersId;
+    public LongFilter getDatacenterId() {
+        return datacenterId;
     }
 
-    public Optional<LongFilter> optionalDatacentersId() {
-        return Optional.ofNullable(datacentersId);
+    public Optional<LongFilter> optionalDatacenterId() {
+        return Optional.ofNullable(datacenterId);
     }
 
-    public LongFilter datacentersId() {
-        if (datacentersId == null) {
-            setDatacentersId(new LongFilter());
+    public LongFilter datacenterId() {
+        if (datacenterId == null) {
+            setDatacenterId(new LongFilter());
         }
-        return datacentersId;
+        return datacenterId;
     }
 
-    public void setDatacentersId(LongFilter datacentersId) {
-        this.datacentersId = datacentersId;
+    public void setDatacenterId(LongFilter datacenterId) {
+        this.datacenterId = datacenterId;
+    }
+
+    public LongFilter getAgentId() {
+        return agentId;
+    }
+
+    public Optional<LongFilter> optionalAgentId() {
+        return Optional.ofNullable(agentId);
+    }
+
+    public LongFilter agentId() {
+        if (agentId == null) {
+            setAgentId(new LongFilter());
+        }
+        return agentId;
+    }
+
+    public void setAgentId(LongFilter agentId) {
+        this.agentId = agentId;
     }
 
     public Boolean getDistinct() {
@@ -178,14 +200,15 @@ public class RegionCriteria implements Serializable, Criteria {
             Objects.equals(name, that.name) &&
             Objects.equals(regionCode, that.regionCode) &&
             Objects.equals(groupName, that.groupName) &&
-            Objects.equals(datacentersId, that.datacentersId) &&
+            Objects.equals(datacenterId, that.datacenterId) &&
+            Objects.equals(agentId, that.agentId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, regionCode, groupName, datacentersId, distinct);
+        return Objects.hash(id, name, regionCode, groupName, datacenterId, agentId, distinct);
     }
 
     // prettier-ignore
@@ -196,7 +219,8 @@ public class RegionCriteria implements Serializable, Criteria {
             optionalName().map(f -> "name=" + f + ", ").orElse("") +
             optionalRegionCode().map(f -> "regionCode=" + f + ", ").orElse("") +
             optionalGroupName().map(f -> "groupName=" + f + ", ").orElse("") +
-            optionalDatacentersId().map(f -> "datacentersId=" + f + ", ").orElse("") +
+            optionalDatacenterId().map(f -> "datacenterId=" + f + ", ").orElse("") +
+            optionalAgentId().map(f -> "agentId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";
     }

@@ -588,18 +588,18 @@ public class InstanceServiceImpl implements InstanceService {
     private final InstanceRepository instanceRepository;
     private final InstanceMapper instanceMapper;
     private final AgentService agentService;
-    private final AuditLogService auditLogService;
+    private final AuditTrailService auditTrailService;
     
     public InstanceServiceImpl(
         InstanceRepository instanceRepository,
         InstanceMapper instanceMapper,
         AgentService agentService,
-        AuditLogService auditLogService
+        AuditTrailService auditTrailService
     ) {
         this.instanceRepository = instanceRepository;
         this.instanceMapper = instanceMapper;
         this.agentService = agentService;
-        this.auditLogService = auditLogService;
+        this.auditTrailService = auditTrailService;
     }
     
     @Override
@@ -634,7 +634,7 @@ public class InstanceServiceImpl implements InstanceService {
         instance = instanceRepository.save(instance);
         
         // Audit log
-        auditLogService.logCreate("Instance", instance.getId(), instanceDTO);
+        auditTrailService.logCreate("Instance", instance.getId(), instanceDTO);
         
         // Trigger agent registration
         agentService.registerInstance(instance);
@@ -659,7 +659,7 @@ public class InstanceServiceImpl implements InstanceService {
         existing = instanceRepository.save(existing);
         
         // Audit log
-        auditLogService.logUpdate("Instance", id, oldValues, instanceDTO);
+        auditTrailService.logUpdate("Instance", id, oldValues, instanceDTO);
         
         return instanceMapper.toDto(existing);
     }

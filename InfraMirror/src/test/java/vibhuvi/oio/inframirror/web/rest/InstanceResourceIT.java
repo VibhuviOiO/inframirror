@@ -2594,21 +2594,16 @@ class InstanceResourceIT {
         partialUpdatedInstance.setId(instance.getId());
 
         partialUpdatedInstance
-            .hostname(UPDATED_HOSTNAME)
-            .description(UPDATED_DESCRIPTION)
+            .name(UPDATED_NAME)
+            .instanceType(UPDATED_INSTANCE_TYPE)
             .monitoringType(UPDATED_MONITORING_TYPE)
-            .operatingSystem(UPDATED_OPERATING_SYSTEM)
             .platform(UPDATED_PLATFORM)
             .privateIpAddress(UPDATED_PRIVATE_IP_ADDRESS)
-            .pingEnabled(UPDATED_PING_ENABLED)
-            .pingTimeoutMs(UPDATED_PING_TIMEOUT_MS)
-            .hardwareMonitoringEnabled(UPDATED_HARDWARE_MONITORING_ENABLED)
-            .cpuWarningThreshold(UPDATED_CPU_WARNING_THRESHOLD)
-            .cpuDangerThreshold(UPDATED_CPU_DANGER_THRESHOLD)
-            .memoryWarningThreshold(UPDATED_MEMORY_WARNING_THRESHOLD)
-            .diskWarningThreshold(UPDATED_DISK_WARNING_THRESHOLD)
-            .updatedAt(UPDATED_UPDATED_AT)
-            .lastPingAt(UPDATED_LAST_PING_AT);
+            .publicIpAddress(UPDATED_PUBLIC_IP_ADDRESS)
+            .pingInterval(UPDATED_PING_INTERVAL)
+            .hardwareMonitoringInterval(UPDATED_HARDWARE_MONITORING_INTERVAL)
+            .diskDangerThreshold(UPDATED_DISK_DANGER_THRESHOLD)
+            .updatedAt(UPDATED_UPDATED_AT);
 
         restInstanceMockMvc
             .perform(

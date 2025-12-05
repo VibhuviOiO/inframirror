@@ -18,12 +18,13 @@
       "detail": {
         "title": "Agent"
       },
-      "id": "ID",
+      "id": "Id",
       "name": "Name",
-      "instances": "Instances",
-      "httpHeartbeats": "Http Heartbeats",
-      "pingHeartbeats": "Ping Heartbeats",
-      "datacenter": "Datacenter"
+      "instance": "Instance",
+      "httpHeartbeat": "Http Heartbeat",
+      "instanceHeartbeat": "Instance Heartbeat",
+      "serviceHeartbeat": "Service Heartbeat",
+      "region": "Region"
     }
   }
 }

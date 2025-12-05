@@ -174,7 +174,7 @@ export const Datacenter = () => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="infraMirrorApp.datacenter.id">ID</Translate>{' '}
+                  <Translate contentKey="infraMirrorApp.datacenter.id">Id</Translate>{' '}
                   <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
                 <th className="hand" onClick={sort('code')}>

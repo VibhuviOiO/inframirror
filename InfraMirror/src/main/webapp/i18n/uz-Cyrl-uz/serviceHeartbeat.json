@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "Service Heartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Янги Service Heartbeat қўшиш",
+        "createOrEditLabel": "Service Heartbeatни таҳрирлаш",
+        "search": "Service Heartbeatни излаш",
+        "notFound": "No Service Heartbeats found"
+      },
+      "created": "Service Heartbeat {{ param }} билан қўшилди.",
+      "updated": "{{ param }}- Service Heartbeat сақланди.",
+      "deleted": "{{ param }}- Service Heartbeat ўчирилди.",
+      "delete": {
+        "question": "{{ id }}- Service Heartbeatни ўчирмоқчимисиз? "
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Thêm mới một Agent Lock",
+        "createOrEditLabel": "Thêm mới hoặc cập nhật Agent Lock",
+        "search": "Tìm Agent Lock",
+        "notFound": "No Agent Locks found"
+      },
+      "created": "Một Agent Lock mới được tạo với định danh {{ param }}",
+      "updated": "Một Agent Lock cập nhật với định danh {{ param }}",
+      "deleted": "Một Agent Lock đã xóa với định danh {{ param }}",
+      "delete": {
+        "question": "Bạn có chắc là muốn xóa Agent Lock {{ id }}?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

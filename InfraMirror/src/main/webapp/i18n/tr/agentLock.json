@@ -1,0 +1,27 @@
+{
+  "infraMirrorApp": {
+    "agentLock": {
+      "home": {
+        "title": "Agent Locks",
+        "refreshListLabel": "Listeyi yenile",
+        "createLabel": "Yeni Agent Lock ekle",
+        "createOrEditLabel": "Yeni Agent Lock ekle veya guncelle",
+        "search": "Agent Lock ara",
+        "notFound": "Agent Locks kaydi bulunamadi"
+      },
+      "created": "{{ param }} ID ile bir Agent Lock eklendi",
+      "updated": "{{ param }} nolu Agent Lock guncellendi",
+      "deleted": "{{ param }} nolu Agent Lock silindi",
+      "delete": {
+        "question": "{{ id }} nolu Agent Lock silinecek. Devem etmek istiyor musunuz?"
+      },
+      "detail": {
+        "title": "Agent Lock"
+      },
+      "id": "ID",
+      "agentId": "Agent Id",
+      "acquiredAt": "Acquired At",
+      "expiresAt": "Expires At"
+    }
+  }
+}

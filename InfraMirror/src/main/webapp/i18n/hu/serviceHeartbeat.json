@@ -1,0 +1,33 @@
+{
+  "infraMirrorApp": {
+    "serviceHeartbeat": {
+      "home": {
+        "title": "ServiceHeartbeats",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Egy új Service Heartbeat létrehozása",
+        "createOrEditLabel": "Hozzon létre, vagy módosítson Service Heartbeatt",
+        "search": "Service Heartbeat keresése",
+        "notFound": "No Service Heartbeats found"
+      },
+      "created": "Egy új Service Heartbeat lett létrehozva {{ param }} azonosítóval",
+      "updated": "A Service Heartbeat módosítva lett {{ param }} azonosítóval",
+      "deleted": "A Service Heartbeat törölve lett {{ param }} azonosítóval",
+      "delete": {
+        "question": "Biztos benne, hogy törölni szeretné az Service Heartbeatt {{ id }} azonosítóval?"
+      },
+      "detail": {
+        "title": "Service Heartbeat"
+      },
+      "id": "Id",
+      "executedAt": "Executed At",
+      "success": "Success",
+      "status": "Status",
+      "responseTimeMs": "Response Time Ms",
+      "errorMessage": "Error Message",
+      "metadata": "Metadata",
+      "agent": "Agent",
+      "service": "Service",
+      "serviceInstance": "Service Instance"
+    }
+  }
+}

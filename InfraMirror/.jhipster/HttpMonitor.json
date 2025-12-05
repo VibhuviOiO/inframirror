@@ -1,11 +1,15 @@
 {
   "annotations": {
-    "changelogDate": "20251203083829"
+    "changelogDate": "20251205053327"
   },
   "applications": "*",
-  "documentation": "HttpMonitor - HTTP/HTTPS endpoint monitoring configuration\\nTable: api_monitors\\nNote: Table is named api_monitors in database, entity name is HttpMonitor",
   "dto": "mapstruct",
   "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
     {
       "fieldName": "name",
       "fieldType": "String",
@@ -26,8 +30,7 @@
     },
     {
       "fieldName": "url",
-      "fieldType": "TextBlob",
-      "fieldValidateRules": ["required"]
+      "fieldType": "TextBlob"
     },
     {
       "fieldName": "headers",
@@ -36,6 +39,102 @@
     {
       "fieldName": "body",
       "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "intervalSeconds",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "timeoutSeconds",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "retryCount",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "retryDelaySeconds",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "responseTimeWarningMs",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "responseTimeCriticalMs",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "uptimeWarningPercent",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "uptimeCriticalPercent",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "includeResponseBody",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "resendNotificationCount",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "certificateExpiryDays",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "ignoreTlsError",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "checkSslCertificate",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "checkDnsResolution",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "upsideDownMode",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "maxRedirects",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "tags",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "500"
+    },
+    {
+      "fieldName": "enabled",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "expectedStatusCodes",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "100"
+    },
+    {
+      "fieldName": "performanceBudgetMs",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "sizeBudgetKb",
+      "fieldType": "Integer"
     }
   ],
   "jpaMetamodelFiltering": true,
@@ -43,16 +142,23 @@
   "pagination": "pagination",
   "relationships": [
     {
-      "otherEntityName": "httpHeartbeat",
-      "otherEntityRelationshipName": "monitor",
-      "relationshipName": "heartbeats",
+      "otherEntityName": "httpMonitor",
+      "otherEntityRelationshipName": "parent",
+      "relationshipName": "children",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
     {
-      "otherEntityName": "schedule",
-      "otherEntityRelationshipName": "monitors",
-      "relationshipName": "schedule",
+      "otherEntityName": "httpHeartbeat",
+      "otherEntityRelationshipName": "monitor",
+      "relationshipName": "heartbeat",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "httpMonitor",
+      "otherEntityRelationshipName": "children",
+      "relationshipName": "parent",
       "relationshipSide": "right",
       "relationshipType": "many-to-one"
     }
