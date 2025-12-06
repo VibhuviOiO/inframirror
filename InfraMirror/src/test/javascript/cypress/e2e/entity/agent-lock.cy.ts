@@ -15,7 +15,7 @@ describe('AgentLock e2e test', () => {
   const agentLockPageUrlPattern = new RegExp('/agent-lock(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const agentLockSample = { agentId: 15485, acquiredAt: '2025-12-04T21:53:09.611Z', expiresAt: '2025-12-04T14:44:06.405Z' };
+  const agentLockSample = { agentId: 27462, acquiredAt: '2025-12-04T10:40:23.925Z', expiresAt: '2025-12-04T19:20:04.473Z' };
 
   let agentLock;
 
@@ -162,16 +162,16 @@ describe('AgentLock e2e test', () => {
     });
 
     it('should create an instance of AgentLock', () => {
-      cy.get(`[data-cy="agentId"]`).type('20032');
-      cy.get(`[data-cy="agentId"]`).should('have.value', '20032');
+      cy.get(`[data-cy="agentId"]`).type('16920');
+      cy.get(`[data-cy="agentId"]`).should('have.value', '16920');
 
-      cy.get(`[data-cy="acquiredAt"]`).type('2025-12-05T05:00');
+      cy.get(`[data-cy="acquiredAt"]`).type('2025-12-04T06:02');
       cy.get(`[data-cy="acquiredAt"]`).blur();
-      cy.get(`[data-cy="acquiredAt"]`).should('have.value', '2025-12-05T05:00');
+      cy.get(`[data-cy="acquiredAt"]`).should('have.value', '2025-12-04T06:02');
 
-      cy.get(`[data-cy="expiresAt"]`).type('2025-12-04T17:43');
+      cy.get(`[data-cy="expiresAt"]`).type('2025-12-04T12:54');
       cy.get(`[data-cy="expiresAt"]`).blur();
-      cy.get(`[data-cy="expiresAt"]`).should('have.value', '2025-12-04T17:43');
+      cy.get(`[data-cy="expiresAt"]`).should('have.value', '2025-12-04T12:54');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

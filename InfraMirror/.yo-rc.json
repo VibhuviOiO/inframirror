@@ -8,7 +8,7 @@
     "clientFramework": "react",
     "clientTestFrameworks": ["cypress"],
     "clientTheme": "none",
-    "creationTimestamp": 1764740056362,
+    "creationTimestamp": 1765010906030,
     "cypressAudit": true,
     "cypressCoverage": null,
     "databaseType": "sql",
@@ -90,7 +90,6 @@
       "vi",
       "kr-Latn-kr"
     ],
-    "lastLiquibaseTimestamp": 1764913578000,
     "microfrontend": null,
     "microfrontends": [],
     "monorepository": true,
@@ -102,7 +101,7 @@
     "serverPort": null,
     "serviceDiscoveryType": null,
     "skipCommitHook": true,
-    "skipUserManagement": false,
+    "skipUserManagement": true,
     "syncUserWithIdp": true,
     "testFrameworks": ["gatling", "cypress"],
     "withAdminUi": true

@@ -16,11 +16,11 @@ describe('StatusDependency e2e test', () => {
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
   const statusDependencySample = {
-    parentType: 'who buck geez',
-    parentId: 7754,
-    childType: 'stiffen',
-    childId: 1809,
-    createdAt: '2025-12-04T12:17:52.709Z',
+    parentType: 'yet meaningfully gadzooks',
+    parentId: 17225,
+    childType: 'jaggedly than finished',
+    childId: 10817,
+    createdAt: '2025-12-04T07:25:11.821Z',
   };
 
   let statusDependency;
@@ -168,24 +168,24 @@ describe('StatusDependency e2e test', () => {
     });
 
     it('should create an instance of StatusDependency', () => {
-      cy.get(`[data-cy="parentType"]`).type('possession');
-      cy.get(`[data-cy="parentType"]`).should('have.value', 'possession');
+      cy.get(`[data-cy="parentType"]`).type('inscribe whose rapidly');
+      cy.get(`[data-cy="parentType"]`).should('have.value', 'inscribe whose rapidly');
 
-      cy.get(`[data-cy="parentId"]`).type('21814');
-      cy.get(`[data-cy="parentId"]`).should('have.value', '21814');
+      cy.get(`[data-cy="parentId"]`).type('13681');
+      cy.get(`[data-cy="parentId"]`).should('have.value', '13681');
 
-      cy.get(`[data-cy="childType"]`).type('pigsty honestly although');
-      cy.get(`[data-cy="childType"]`).should('have.value', 'pigsty honestly although');
+      cy.get(`[data-cy="childType"]`).type('instance snack');
+      cy.get(`[data-cy="childType"]`).should('have.value', 'instance snack');
 
-      cy.get(`[data-cy="childId"]`).type('30736');
-      cy.get(`[data-cy="childId"]`).should('have.value', '30736');
+      cy.get(`[data-cy="childId"]`).type('22478');
+      cy.get(`[data-cy="childId"]`).should('have.value', '22478');
 
       cy.get(`[data-cy="metadata"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="metadata"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
 
-      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T13:03');
+      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T16:18');
       cy.get(`[data-cy="createdAt"]`).blur();
-      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T13:03');
+      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T16:18');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

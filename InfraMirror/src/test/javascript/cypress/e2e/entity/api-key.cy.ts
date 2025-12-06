@@ -15,7 +15,7 @@ describe('ApiKey e2e test', () => {
   const apiKeyPageUrlPattern = new RegExp('/api-key(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const apiKeySample = { name: 'phooey aha absent', keyHash: 'likewise however', active: false, createdBy: 'stigmatize chops beautifully' };
+  const apiKeySample = { name: 'openly along frenetically', keyHash: 'fold gah handover', active: true, createdBy: 'culminate' };
 
   let apiKey;
 
@@ -162,40 +162,40 @@ describe('ApiKey e2e test', () => {
     });
 
     it('should create an instance of ApiKey', () => {
-      cy.get(`[data-cy="name"]`).type('overstay mild towards');
-      cy.get(`[data-cy="name"]`).should('have.value', 'overstay mild towards');
+      cy.get(`[data-cy="name"]`).type('colorfully');
+      cy.get(`[data-cy="name"]`).should('have.value', 'colorfully');
 
-      cy.get(`[data-cy="description"]`).type('even inborn gnash');
-      cy.get(`[data-cy="description"]`).should('have.value', 'even inborn gnash');
+      cy.get(`[data-cy="description"]`).type('aw doodle');
+      cy.get(`[data-cy="description"]`).should('have.value', 'aw doodle');
 
-      cy.get(`[data-cy="keyHash"]`).type('overcooked hmph');
-      cy.get(`[data-cy="keyHash"]`).should('have.value', 'overcooked hmph');
+      cy.get(`[data-cy="keyHash"]`).type('yuck wring');
+      cy.get(`[data-cy="keyHash"]`).should('have.value', 'yuck wring');
 
       cy.get(`[data-cy="active"]`).should('not.be.checked');
       cy.get(`[data-cy="active"]`).click();
       cy.get(`[data-cy="active"]`).should('be.checked');
 
-      cy.get(`[data-cy="lastUsedDate"]`).type('2025-12-05T01:39');
+      cy.get(`[data-cy="lastUsedDate"]`).type('2025-12-04T23:29');
       cy.get(`[data-cy="lastUsedDate"]`).blur();
-      cy.get(`[data-cy="lastUsedDate"]`).should('have.value', '2025-12-05T01:39');
+      cy.get(`[data-cy="lastUsedDate"]`).should('have.value', '2025-12-04T23:29');
 
-      cy.get(`[data-cy="expiresAt"]`).type('2025-12-04T23:58');
+      cy.get(`[data-cy="expiresAt"]`).type('2025-12-04T11:18');
       cy.get(`[data-cy="expiresAt"]`).blur();
-      cy.get(`[data-cy="expiresAt"]`).should('have.value', '2025-12-04T23:58');
+      cy.get(`[data-cy="expiresAt"]`).should('have.value', '2025-12-04T11:18');
 
-      cy.get(`[data-cy="createdBy"]`).type('purse');
-      cy.get(`[data-cy="createdBy"]`).should('have.value', 'purse');
+      cy.get(`[data-cy="createdBy"]`).type('absentmindedly per');
+      cy.get(`[data-cy="createdBy"]`).should('have.value', 'absentmindedly per');
 
-      cy.get(`[data-cy="createdDate"]`).type('2025-12-04T13:29');
+      cy.get(`[data-cy="createdDate"]`).type('2025-12-04T21:28');
       cy.get(`[data-cy="createdDate"]`).blur();
-      cy.get(`[data-cy="createdDate"]`).should('have.value', '2025-12-04T13:29');
+      cy.get(`[data-cy="createdDate"]`).should('have.value', '2025-12-04T21:28');
 
-      cy.get(`[data-cy="lastModifiedBy"]`).type('for');
-      cy.get(`[data-cy="lastModifiedBy"]`).should('have.value', 'for');
+      cy.get(`[data-cy="lastModifiedBy"]`).type('nor');
+      cy.get(`[data-cy="lastModifiedBy"]`).should('have.value', 'nor');
 
-      cy.get(`[data-cy="lastModifiedDate"]`).type('2025-12-05T01:32');
+      cy.get(`[data-cy="lastModifiedDate"]`).type('2025-12-05T02:17');
       cy.get(`[data-cy="lastModifiedDate"]`).blur();
-      cy.get(`[data-cy="lastModifiedDate"]`).should('have.value', '2025-12-05T01:32');
+      cy.get(`[data-cy="lastModifiedDate"]`).should('have.value', '2025-12-05T02:17');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

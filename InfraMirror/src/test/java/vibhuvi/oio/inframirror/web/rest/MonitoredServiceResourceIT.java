@@ -1498,15 +1498,12 @@ class MonitoredServiceResourceIT {
         partialUpdatedMonitoredService.setId(monitoredService.getId());
 
         partialUpdatedMonitoredService
-            .name(UPDATED_NAME)
-            .description(UPDATED_DESCRIPTION)
+            .serviceType(UPDATED_SERVICE_TYPE)
             .environment(UPDATED_ENVIRONMENT)
-            .monitoringEnabled(UPDATED_MONITORING_ENABLED)
-            .clusterMonitoringEnabled(UPDATED_CLUSTER_MONITORING_ENABLED)
-            .intervalSeconds(UPDATED_INTERVAL_SECONDS)
-            .timeoutMs(UPDATED_TIMEOUT_MS)
-            .latencyWarningMs(UPDATED_LATENCY_WARNING_MS)
-            .advancedConfig(UPDATED_ADVANCED_CONFIG);
+            .retryCount(UPDATED_RETRY_COUNT)
+            .latencyCriticalMs(UPDATED_LATENCY_CRITICAL_MS)
+            .isActive(UPDATED_IS_ACTIVE)
+            .updatedAt(UPDATED_UPDATED_AT);
 
         restMonitoredServiceMockMvc
             .perform(

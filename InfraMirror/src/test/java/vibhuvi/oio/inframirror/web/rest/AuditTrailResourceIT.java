@@ -473,10 +473,11 @@ class AuditTrailResourceIT {
         partialUpdatedAuditTrail.setId(auditTrail.getId());
 
         partialUpdatedAuditTrail
+            .action(UPDATED_ACTION)
+            .entityName(UPDATED_ENTITY_NAME)
             .entityId(UPDATED_ENTITY_ID)
-            .newValue(UPDATED_NEW_VALUE)
-            .ipAddress(UPDATED_IP_ADDRESS)
-            .userAgent(UPDATED_USER_AGENT);
+            .oldValue(UPDATED_OLD_VALUE)
+            .timestamp(UPDATED_TIMESTAMP);
 
         restAuditTrailMockMvc
             .perform(

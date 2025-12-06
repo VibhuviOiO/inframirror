@@ -607,12 +607,13 @@ class InstanceHeartbeatResourceIT {
 
         partialUpdatedInstanceHeartbeat
             .executedAt(UPDATED_EXECUTED_AT)
+            .responseTimeMs(UPDATED_RESPONSE_TIME_MS)
             .packetLoss(UPDATED_PACKET_LOSS)
             .jitterMs(UPDATED_JITTER_MS)
             .cpuUsage(UPDATED_CPU_USAGE)
+            .memoryUsage(UPDATED_MEMORY_USAGE)
             .loadAverage(UPDATED_LOAD_AVERAGE)
-            .uptimeSeconds(UPDATED_UPTIME_SECONDS)
-            .status(UPDATED_STATUS)
+            .errorMessage(UPDATED_ERROR_MESSAGE)
             .errorType(UPDATED_ERROR_TYPE);
 
         restInstanceHeartbeatMockMvc

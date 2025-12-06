@@ -15,7 +15,7 @@ describe('AgentMonitor e2e test', () => {
   const agentMonitorPageUrlPattern = new RegExp('/agent-monitor(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const agentMonitorSample = { active: true, createdBy: 'towards gaseous' };
+  const agentMonitorSample = { active: true, createdBy: 'writhing gee' };
 
   let agentMonitor;
   let agent;
@@ -30,7 +30,7 @@ describe('AgentMonitor e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/agents',
-      body: { name: 'wherever' },
+      body: { name: 'gentle quarrelsome' },
     }).then(({ body }) => {
       agent = body;
     });
@@ -39,34 +39,34 @@ describe('AgentMonitor e2e test', () => {
       method: 'POST',
       url: '/api/http-monitors',
       body: {
-        name: 'close veto',
-        method: 'muffled',
-        type: 'responsibi',
+        name: 'playfully ew',
+        method: 'duh gee du',
+        type: 'ugh',
         url: 'Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=',
         headers: 'Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=',
         body: 'Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=',
-        intervalSeconds: 14244,
-        timeoutSeconds: 3298,
-        retryCount: 31866,
-        retryDelaySeconds: 10626,
-        responseTimeWarningMs: 9976,
-        responseTimeCriticalMs: 25368,
-        uptimeWarningPercent: 5088.56,
-        uptimeCriticalPercent: 2157.66,
-        includeResponseBody: true,
-        resendNotificationCount: 15607,
-        certificateExpiryDays: 5316,
+        intervalSeconds: 6048,
+        timeoutSeconds: 7854,
+        retryCount: 28705,
+        retryDelaySeconds: 12057,
+        responseTimeWarningMs: 27836,
+        responseTimeCriticalMs: 30077,
+        uptimeWarningPercent: 30852.19,
+        uptimeCriticalPercent: 31961.78,
+        includeResponseBody: false,
+        resendNotificationCount: 29964,
+        certificateExpiryDays: 4520,
         ignoreTlsError: true,
-        checkSslCertificate: true,
-        checkDnsResolution: true,
-        upsideDownMode: true,
-        maxRedirects: 30666,
+        checkSslCertificate: false,
+        checkDnsResolution: false,
+        upsideDownMode: false,
+        maxRedirects: 1659,
         description: 'Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=',
-        tags: 'excepting though aside',
+        tags: 'than huzzah hopelessly',
         enabled: true,
-        expectedStatusCodes: 'for yippee uh-huh',
-        performanceBudgetMs: 14181,
-        sizeBudgetKb: 26111,
+        expectedStatusCodes: 'deeply',
+        performanceBudgetMs: 6830,
+        sizeBudgetKb: 10015,
       },
     }).then(({ body }) => {
       httpMonitor = body;
@@ -249,19 +249,19 @@ describe('AgentMonitor e2e test', () => {
       cy.get(`[data-cy="active"]`).click();
       cy.get(`[data-cy="active"]`).should('be.checked');
 
-      cy.get(`[data-cy="createdBy"]`).type('shabby cantaloupe');
-      cy.get(`[data-cy="createdBy"]`).should('have.value', 'shabby cantaloupe');
+      cy.get(`[data-cy="createdBy"]`).type('sadly airbrush');
+      cy.get(`[data-cy="createdBy"]`).should('have.value', 'sadly airbrush');
 
-      cy.get(`[data-cy="createdDate"]`).type('2025-12-04T20:39');
+      cy.get(`[data-cy="createdDate"]`).type('2025-12-04T08:05');
       cy.get(`[data-cy="createdDate"]`).blur();
-      cy.get(`[data-cy="createdDate"]`).should('have.value', '2025-12-04T20:39');
+      cy.get(`[data-cy="createdDate"]`).should('have.value', '2025-12-04T08:05');
 
-      cy.get(`[data-cy="lastModifiedBy"]`).type('impractical rue');
-      cy.get(`[data-cy="lastModifiedBy"]`).should('have.value', 'impractical rue');
+      cy.get(`[data-cy="lastModifiedBy"]`).type('sadly heartbeat');
+      cy.get(`[data-cy="lastModifiedBy"]`).should('have.value', 'sadly heartbeat');
 
-      cy.get(`[data-cy="lastModifiedDate"]`).type('2025-12-04T23:26');
+      cy.get(`[data-cy="lastModifiedDate"]`).type('2025-12-05T01:20');
       cy.get(`[data-cy="lastModifiedDate"]`).blur();
-      cy.get(`[data-cy="lastModifiedDate"]`).should('have.value', '2025-12-04T23:26');
+      cy.get(`[data-cy="lastModifiedDate"]`).should('have.value', '2025-12-05T01:20');
 
       cy.get(`[data-cy="agent"]`).select(1);
       cy.get(`[data-cy="monitor"]`).select(1);

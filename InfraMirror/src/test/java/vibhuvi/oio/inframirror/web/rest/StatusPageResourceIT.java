@@ -1385,10 +1385,11 @@ class StatusPageResourceIT {
 
         partialUpdatedStatusPage
             .name(UPDATED_NAME)
-            .slug(UPDATED_SLUG)
             .customDomain(UPDATED_CUSTOM_DOMAIN)
-            .autoRefreshSeconds(UPDATED_AUTO_REFRESH_SECONDS)
-            .isActive(UPDATED_IS_ACTIVE);
+            .logoUrl(UPDATED_LOGO_URL)
+            .themeColor(UPDATED_THEME_COLOR)
+            .isHomePage(UPDATED_IS_HOME_PAGE)
+            .updatedAt(UPDATED_UPDATED_AT);
 
         restStatusPageMockMvc
             .perform(

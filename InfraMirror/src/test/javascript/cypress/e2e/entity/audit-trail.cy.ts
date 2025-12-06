@@ -15,12 +15,7 @@ describe('AuditTrail e2e test', () => {
   const auditTrailPageUrlPattern = new RegExp('/audit-trail(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const auditTrailSample = {
-    action: 'colonialism like',
-    entityName: 'failing unlike',
-    entityId: 26891,
-    timestamp: '2025-12-04T15:09:36.030Z',
-  };
+  const auditTrailSample = { action: 'freely', entityName: 'noisily at edge', entityId: 31923, timestamp: '2025-12-04T12:39:07.378Z' };
 
   let auditTrail;
 
@@ -167,14 +162,14 @@ describe('AuditTrail e2e test', () => {
     });
 
     it('should create an instance of AuditTrail', () => {
-      cy.get(`[data-cy="action"]`).type('that slather');
-      cy.get(`[data-cy="action"]`).should('have.value', 'that slather');
+      cy.get(`[data-cy="action"]`).type('moralise');
+      cy.get(`[data-cy="action"]`).should('have.value', 'moralise');
 
-      cy.get(`[data-cy="entityName"]`).type('even dispose freckle');
-      cy.get(`[data-cy="entityName"]`).should('have.value', 'even dispose freckle');
+      cy.get(`[data-cy="entityName"]`).type('as boldly');
+      cy.get(`[data-cy="entityName"]`).should('have.value', 'as boldly');
 
-      cy.get(`[data-cy="entityId"]`).type('29727');
-      cy.get(`[data-cy="entityId"]`).should('have.value', '29727');
+      cy.get(`[data-cy="entityId"]`).type('6394');
+      cy.get(`[data-cy="entityId"]`).should('have.value', '6394');
 
       cy.get(`[data-cy="oldValue"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="oldValue"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
@@ -182,12 +177,12 @@ describe('AuditTrail e2e test', () => {
       cy.get(`[data-cy="newValue"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="newValue"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
 
-      cy.get(`[data-cy="timestamp"]`).type('2025-12-04T08:33');
+      cy.get(`[data-cy="timestamp"]`).type('2025-12-04T19:25');
       cy.get(`[data-cy="timestamp"]`).blur();
-      cy.get(`[data-cy="timestamp"]`).should('have.value', '2025-12-04T08:33');
+      cy.get(`[data-cy="timestamp"]`).should('have.value', '2025-12-04T19:25');
 
-      cy.get(`[data-cy="ipAddress"]`).type('garrote');
-      cy.get(`[data-cy="ipAddress"]`).should('have.value', 'garrote');
+      cy.get(`[data-cy="ipAddress"]`).type('bank outside underplay');
+      cy.get(`[data-cy="ipAddress"]`).should('have.value', 'bank outside underplay');
 
       cy.get(`[data-cy="userAgent"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="userAgent"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));

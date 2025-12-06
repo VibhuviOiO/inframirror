@@ -15,7 +15,7 @@ describe('ServiceInstance e2e test', () => {
   const serviceInstancePageUrlPattern = new RegExp('/service-instance(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const serviceInstanceSample = {"port":31842};
+  // const serviceInstanceSample = {"port":7328};
 
   let serviceInstance;
   // let instance;
@@ -31,7 +31,7 @@ describe('ServiceInstance e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/instances',
-      body: {"name":"steel","hostname":"straight mmm consequently","description":"diligently greatly","instanceType":"interchange","monitoringType":"finally obnoxiously inasmuch","operatingSystem":"convalesce what","platform":"considering scale","privateIpAddress":"reclassify fortunately","publicIpAddress":"ew","tags":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=","pingEnabled":false,"pingInterval":26600,"pingTimeoutMs":32224,"pingRetryCount":24950,"hardwareMonitoringEnabled":false,"hardwareMonitoringInterval":20918,"cpuWarningThreshold":16180,"cpuDangerThreshold":24527,"memoryWarningThreshold":20838,"memoryDangerThreshold":14803,"diskWarningThreshold":27792,"diskDangerThreshold":2777,"createdAt":"2025-12-05T04:47:21.730Z","updatedAt":"2025-12-04T17:49:59.667Z","lastPingAt":"2025-12-04T15:56:31.858Z","lastHardwareCheckAt":"2025-12-04T06:00:49.313Z"},
+      body: {"name":"hence","hostname":"deliberately captain","description":"cram","instanceType":"out","monitoringType":"consequently contrail past","operatingSystem":"delight neat regarding","platform":"now","privateIpAddress":"onto after jaggedly","publicIpAddress":"until slap","tags":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=","pingEnabled":false,"pingInterval":13905,"pingTimeoutMs":6057,"pingRetryCount":25481,"hardwareMonitoringEnabled":false,"hardwareMonitoringInterval":25552,"cpuWarningThreshold":27076,"cpuDangerThreshold":6794,"memoryWarningThreshold":22610,"memoryDangerThreshold":20595,"diskWarningThreshold":26940,"diskDangerThreshold":719,"createdAt":"2025-12-04T23:05:58.079Z","updatedAt":"2025-12-04T10:07:31.633Z","lastPingAt":"2025-12-05T01:05:51.788Z","lastHardwareCheckAt":"2025-12-04T20:58:23.505Z"},
     }).then(({ body }) => {
       instance = body;
     });
@@ -39,7 +39,7 @@ describe('ServiceInstance e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/monitored-services',
-      body: {"name":"as","description":"who equally","serviceType":"ick","environment":"including","monitoringEnabled":true,"clusterMonitoringEnabled":false,"intervalSeconds":16178,"timeoutMs":884,"retryCount":15938,"latencyWarningMs":15567,"latencyCriticalMs":19936,"advancedConfig":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=","isActive":false,"createdAt":"2025-12-04T08:39:20.770Z","updatedAt":"2025-12-04T20:14:45.584Z"},
+      body: {"name":"meh firsthand","description":"whether","serviceType":"frozen","environment":"hmph fat nucleotidas","monitoringEnabled":false,"clusterMonitoringEnabled":false,"intervalSeconds":6560,"timeoutMs":9242,"retryCount":15208,"latencyWarningMs":2641,"latencyCriticalMs":961,"advancedConfig":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=","isActive":false,"createdAt":"2025-12-04T06:40:53.030Z","updatedAt":"2025-12-04T13:27:20.672Z"},
     }).then(({ body }) => {
       monitoredService = body;
     });
@@ -245,20 +245,20 @@ describe('ServiceInstance e2e test', () => {
 
     // Reason: cannot create a required entity with relationship with required relationships.
     it.skip('should create an instance of ServiceInstance', () => {
-      cy.get(`[data-cy="port"]`).type('19704');
-      cy.get(`[data-cy="port"]`).should('have.value', '19704');
+      cy.get(`[data-cy="port"]`).type('18672');
+      cy.get(`[data-cy="port"]`).should('have.value', '18672');
 
       cy.get(`[data-cy="isActive"]`).should('not.be.checked');
       cy.get(`[data-cy="isActive"]`).click();
       cy.get(`[data-cy="isActive"]`).should('be.checked');
 
-      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T08:10');
+      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T17:00');
       cy.get(`[data-cy="createdAt"]`).blur();
-      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T08:10');
+      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T17:00');
 
-      cy.get(`[data-cy="updatedAt"]`).type('2025-12-04T09:33');
+      cy.get(`[data-cy="updatedAt"]`).type('2025-12-04T10:48');
       cy.get(`[data-cy="updatedAt"]`).blur();
-      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-04T09:33');
+      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-04T10:48');
 
       cy.get(`[data-cy="instance"]`).select(1);
       cy.get(`[data-cy="monitoredService"]`).select(1);

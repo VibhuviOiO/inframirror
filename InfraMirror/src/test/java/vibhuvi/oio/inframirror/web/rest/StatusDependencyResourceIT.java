@@ -494,12 +494,7 @@ class StatusDependencyResourceIT {
         StatusDependency partialUpdatedStatusDependency = new StatusDependency();
         partialUpdatedStatusDependency.setId(statusDependency.getId());
 
-        partialUpdatedStatusDependency
-            .parentType(UPDATED_PARENT_TYPE)
-            .childType(UPDATED_CHILD_TYPE)
-            .childId(UPDATED_CHILD_ID)
-            .metadata(UPDATED_METADATA)
-            .createdAt(UPDATED_CREATED_AT);
+        partialUpdatedStatusDependency.parentType(UPDATED_PARENT_TYPE).parentId(UPDATED_PARENT_ID).childType(UPDATED_CHILD_TYPE);
 
         restStatusDependencyMockMvc
             .perform(

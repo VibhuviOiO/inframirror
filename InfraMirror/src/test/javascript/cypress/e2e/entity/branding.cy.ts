@@ -15,7 +15,7 @@ describe('Branding e2e test', () => {
   const brandingPageUrlPattern = new RegExp('/branding(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const brandingSample = { title: 'cautiously', isActive: true };
+  const brandingSample = { title: 'sticky pfft', isActive: false };
 
   let branding;
 
@@ -162,44 +162,44 @@ describe('Branding e2e test', () => {
     });
 
     it('should create an instance of Branding', () => {
-      cy.get(`[data-cy="title"]`).type('cinder far-flung regular');
-      cy.get(`[data-cy="title"]`).should('have.value', 'cinder far-flung regular');
+      cy.get(`[data-cy="title"]`).type('pro why');
+      cy.get(`[data-cy="title"]`).should('have.value', 'pro why');
 
-      cy.get(`[data-cy="description"]`).type('an phew ordinary');
-      cy.get(`[data-cy="description"]`).should('have.value', 'an phew ordinary');
+      cy.get(`[data-cy="description"]`).type('terrorise usable');
+      cy.get(`[data-cy="description"]`).should('have.value', 'terrorise usable');
 
-      cy.get(`[data-cy="keywords"]`).type('even');
-      cy.get(`[data-cy="keywords"]`).should('have.value', 'even');
+      cy.get(`[data-cy="keywords"]`).type('properly ew');
+      cy.get(`[data-cy="keywords"]`).should('have.value', 'properly ew');
 
-      cy.get(`[data-cy="author"]`).type('manner tooth equatorial');
-      cy.get(`[data-cy="author"]`).should('have.value', 'manner tooth equatorial');
+      cy.get(`[data-cy="author"]`).type('but scrap rue');
+      cy.get(`[data-cy="author"]`).should('have.value', 'but scrap rue');
 
-      cy.get(`[data-cy="faviconPath"]`).type('than whereas');
-      cy.get(`[data-cy="faviconPath"]`).should('have.value', 'than whereas');
+      cy.get(`[data-cy="faviconPath"]`).type('valiantly unethically');
+      cy.get(`[data-cy="faviconPath"]`).should('have.value', 'valiantly unethically');
 
-      cy.get(`[data-cy="logoPath"]`).type('below');
-      cy.get(`[data-cy="logoPath"]`).should('have.value', 'below');
+      cy.get(`[data-cy="logoPath"]`).type('painfully cop interviewer');
+      cy.get(`[data-cy="logoPath"]`).should('have.value', 'painfully cop interviewer');
 
-      cy.get(`[data-cy="logoWidth"]`).type('21587');
-      cy.get(`[data-cy="logoWidth"]`).should('have.value', '21587');
+      cy.get(`[data-cy="logoWidth"]`).type('10413');
+      cy.get(`[data-cy="logoWidth"]`).should('have.value', '10413');
 
-      cy.get(`[data-cy="logoHeight"]`).type('7727');
-      cy.get(`[data-cy="logoHeight"]`).should('have.value', '7727');
+      cy.get(`[data-cy="logoHeight"]`).type('29270');
+      cy.get(`[data-cy="logoHeight"]`).should('have.value', '29270');
 
-      cy.get(`[data-cy="footerTitle"]`).type('label');
-      cy.get(`[data-cy="footerTitle"]`).should('have.value', 'label');
+      cy.get(`[data-cy="footerTitle"]`).type('aha catch');
+      cy.get(`[data-cy="footerTitle"]`).should('have.value', 'aha catch');
 
       cy.get(`[data-cy="isActive"]`).should('not.be.checked');
       cy.get(`[data-cy="isActive"]`).click();
       cy.get(`[data-cy="isActive"]`).should('be.checked');
 
-      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T21:56');
+      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T08:30');
       cy.get(`[data-cy="createdAt"]`).blur();
-      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T21:56');
+      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T08:30');
 
-      cy.get(`[data-cy="updatedAt"]`).type('2025-12-04T08:55');
+      cy.get(`[data-cy="updatedAt"]`).type('2025-12-05T04:21');
       cy.get(`[data-cy="updatedAt"]`).blur();
-      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-04T08:55');
+      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-05T04:21');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

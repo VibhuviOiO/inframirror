@@ -462,12 +462,7 @@ class BrandingResourceIT {
         Branding partialUpdatedBranding = new Branding();
         partialUpdatedBranding.setId(branding.getId());
 
-        partialUpdatedBranding
-            .description(UPDATED_DESCRIPTION)
-            .author(UPDATED_AUTHOR)
-            .faviconPath(UPDATED_FAVICON_PATH)
-            .logoPath(UPDATED_LOGO_PATH)
-            .createdAt(UPDATED_CREATED_AT);
+        partialUpdatedBranding.author(UPDATED_AUTHOR).logoPath(UPDATED_LOGO_PATH).logoHeight(UPDATED_LOGO_HEIGHT);
 
         restBrandingMockMvc
             .perform(

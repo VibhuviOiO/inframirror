@@ -426,7 +426,7 @@ class ServiceInstanceResourceIT {
         ServiceInstance partialUpdatedServiceInstance = new ServiceInstance();
         partialUpdatedServiceInstance.setId(serviceInstance.getId());
 
-        partialUpdatedServiceInstance.isActive(UPDATED_IS_ACTIVE).updatedAt(UPDATED_UPDATED_AT);
+        partialUpdatedServiceInstance.updatedAt(UPDATED_UPDATED_AT);
 
         restServiceInstanceMockMvc
             .perform(

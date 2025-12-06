@@ -16,12 +16,12 @@ describe('MonitoredService e2e test', () => {
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
   const monitoredServiceSample = {
-    name: 'phony how ashamed',
-    serviceType: 'fondly miskey',
-    environment: 'clinch indeed jovial',
-    intervalSeconds: 24054,
-    timeoutMs: 6538,
-    retryCount: 13441,
+    name: 'trustworthy ew heating',
+    serviceType: 'probe pleasant',
+    environment: 'state',
+    intervalSeconds: 19864,
+    timeoutMs: 1155,
+    retryCount: 20356,
   };
 
   let monitoredService;
@@ -169,17 +169,17 @@ describe('MonitoredService e2e test', () => {
     });
 
     it('should create an instance of MonitoredService', () => {
-      cy.get(`[data-cy="name"]`).type('striking violently');
-      cy.get(`[data-cy="name"]`).should('have.value', 'striking violently');
+      cy.get(`[data-cy="name"]`).type('gaseous but bludgeon');
+      cy.get(`[data-cy="name"]`).should('have.value', 'gaseous but bludgeon');
 
-      cy.get(`[data-cy="description"]`).type('electrify after about');
-      cy.get(`[data-cy="description"]`).should('have.value', 'electrify after about');
+      cy.get(`[data-cy="description"]`).type('yuck attest');
+      cy.get(`[data-cy="description"]`).should('have.value', 'yuck attest');
 
-      cy.get(`[data-cy="serviceType"]`).type('reorganisation when');
-      cy.get(`[data-cy="serviceType"]`).should('have.value', 'reorganisation when');
+      cy.get(`[data-cy="serviceType"]`).type('fooey');
+      cy.get(`[data-cy="serviceType"]`).should('have.value', 'fooey');
 
-      cy.get(`[data-cy="environment"]`).type('phooey');
-      cy.get(`[data-cy="environment"]`).should('have.value', 'phooey');
+      cy.get(`[data-cy="environment"]`).type('deed upwardly');
+      cy.get(`[data-cy="environment"]`).should('have.value', 'deed upwardly');
 
       cy.get(`[data-cy="monitoringEnabled"]`).should('not.be.checked');
       cy.get(`[data-cy="monitoringEnabled"]`).click();
@@ -189,20 +189,20 @@ describe('MonitoredService e2e test', () => {
       cy.get(`[data-cy="clusterMonitoringEnabled"]`).click();
       cy.get(`[data-cy="clusterMonitoringEnabled"]`).should('be.checked');
 
-      cy.get(`[data-cy="intervalSeconds"]`).type('15062');
-      cy.get(`[data-cy="intervalSeconds"]`).should('have.value', '15062');
+      cy.get(`[data-cy="intervalSeconds"]`).type('31182');
+      cy.get(`[data-cy="intervalSeconds"]`).should('have.value', '31182');
 
-      cy.get(`[data-cy="timeoutMs"]`).type('19827');
-      cy.get(`[data-cy="timeoutMs"]`).should('have.value', '19827');
+      cy.get(`[data-cy="timeoutMs"]`).type('16766');
+      cy.get(`[data-cy="timeoutMs"]`).should('have.value', '16766');
 
-      cy.get(`[data-cy="retryCount"]`).type('28394');
-      cy.get(`[data-cy="retryCount"]`).should('have.value', '28394');
+      cy.get(`[data-cy="retryCount"]`).type('16639');
+      cy.get(`[data-cy="retryCount"]`).should('have.value', '16639');
 
-      cy.get(`[data-cy="latencyWarningMs"]`).type('582');
-      cy.get(`[data-cy="latencyWarningMs"]`).should('have.value', '582');
+      cy.get(`[data-cy="latencyWarningMs"]`).type('30349');
+      cy.get(`[data-cy="latencyWarningMs"]`).should('have.value', '30349');
 
-      cy.get(`[data-cy="latencyCriticalMs"]`).type('16897');
-      cy.get(`[data-cy="latencyCriticalMs"]`).should('have.value', '16897');
+      cy.get(`[data-cy="latencyCriticalMs"]`).type('32392');
+      cy.get(`[data-cy="latencyCriticalMs"]`).should('have.value', '32392');
 
       cy.get(`[data-cy="advancedConfig"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="advancedConfig"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
@@ -211,13 +211,13 @@ describe('MonitoredService e2e test', () => {
       cy.get(`[data-cy="isActive"]`).click();
       cy.get(`[data-cy="isActive"]`).should('be.checked');
 
-      cy.get(`[data-cy="createdAt"]`).type('2025-12-04T19:17');
+      cy.get(`[data-cy="createdAt"]`).type('2025-12-05T04:05');
       cy.get(`[data-cy="createdAt"]`).blur();
-      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-04T19:17');
+      cy.get(`[data-cy="createdAt"]`).should('have.value', '2025-12-05T04:05');
 
-      cy.get(`[data-cy="updatedAt"]`).type('2025-12-05T02:09');
+      cy.get(`[data-cy="updatedAt"]`).type('2025-12-04T07:16');
       cy.get(`[data-cy="updatedAt"]`).blur();
-      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-05T02:09');
+      cy.get(`[data-cy="updatedAt"]`).should('have.value', '2025-12-04T07:16');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

@@ -15,7 +15,7 @@ describe('ServiceHeartbeat e2e test', () => {
   const serviceHeartbeatPageUrlPattern = new RegExp('/service-heartbeat(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const serviceHeartbeatSample = { executedAt: '2025-12-05T02:57:42.288Z', success: true, status: 'white sew' };
+  const serviceHeartbeatSample = { executedAt: '2025-12-04T13:21:33.525Z', success: true, status: 'upside-down railway' };
 
   let serviceHeartbeat;
   let monitoredService;
@@ -30,21 +30,21 @@ describe('ServiceHeartbeat e2e test', () => {
       method: 'POST',
       url: '/api/monitored-services',
       body: {
-        name: 'between knottily',
-        description: 'furiously throughout',
-        serviceType: 'boohoo gosh whenever',
-        environment: 'rim shakily',
+        name: 'pfft',
+        description: 'or',
+        serviceType: 'consequently',
+        environment: 'nautical deselect',
         monitoringEnabled: true,
-        clusterMonitoringEnabled: false,
-        intervalSeconds: 21039,
-        timeoutMs: 23971,
-        retryCount: 12180,
-        latencyWarningMs: 28915,
-        latencyCriticalMs: 867,
+        clusterMonitoringEnabled: true,
+        intervalSeconds: 31460,
+        timeoutMs: 25575,
+        retryCount: 18093,
+        latencyWarningMs: 757,
+        latencyCriticalMs: 1674,
         advancedConfig: 'Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=',
-        isActive: true,
-        createdAt: '2025-12-05T01:32:02.404Z',
-        updatedAt: '2025-12-04T09:30:44.904Z',
+        isActive: false,
+        createdAt: '2025-12-04T16:24:43.474Z',
+        updatedAt: '2025-12-04T18:06:08.262Z',
       },
     }).then(({ body }) => {
       monitoredService = body;
@@ -222,19 +222,19 @@ describe('ServiceHeartbeat e2e test', () => {
     });
 
     it('should create an instance of ServiceHeartbeat', () => {
-      cy.get(`[data-cy="executedAt"]`).type('2025-12-04T16:15');
+      cy.get(`[data-cy="executedAt"]`).type('2025-12-04T21:11');
       cy.get(`[data-cy="executedAt"]`).blur();
-      cy.get(`[data-cy="executedAt"]`).should('have.value', '2025-12-04T16:15');
+      cy.get(`[data-cy="executedAt"]`).should('have.value', '2025-12-04T21:11');
 
       cy.get(`[data-cy="success"]`).should('not.be.checked');
       cy.get(`[data-cy="success"]`).click();
       cy.get(`[data-cy="success"]`).should('be.checked');
 
-      cy.get(`[data-cy="status"]`).type('palatable instead at');
-      cy.get(`[data-cy="status"]`).should('have.value', 'palatable instead at');
+      cy.get(`[data-cy="status"]`).type('abaft if ah');
+      cy.get(`[data-cy="status"]`).should('have.value', 'abaft if ah');
 
-      cy.get(`[data-cy="responseTimeMs"]`).type('26575');
-      cy.get(`[data-cy="responseTimeMs"]`).should('have.value', '26575');
+      cy.get(`[data-cy="responseTimeMs"]`).type('12267');
+      cy.get(`[data-cy="responseTimeMs"]`).should('have.value', '12267');
 
       cy.get(`[data-cy="errorMessage"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="errorMessage"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));

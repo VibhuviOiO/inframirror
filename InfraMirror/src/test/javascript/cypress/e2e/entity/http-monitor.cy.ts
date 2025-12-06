@@ -16,13 +16,13 @@ describe('HttpMonitor e2e test', () => {
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
   const httpMonitorSample = {
-    name: 'shyly furthermore though',
-    method: 'up put les',
-    type: 'vacation',
-    intervalSeconds: 14322,
-    timeoutSeconds: 10707,
-    retryCount: 26141,
-    retryDelaySeconds: 1450,
+    name: 'ouch shush',
+    method: 'experience',
+    type: 'oof',
+    intervalSeconds: 23792,
+    timeoutSeconds: 26098,
+    retryCount: 12436,
+    retryDelaySeconds: 30405,
   };
 
   let httpMonitor;
@@ -170,14 +170,14 @@ describe('HttpMonitor e2e test', () => {
     });
 
     it('should create an instance of HttpMonitor', () => {
-      cy.get(`[data-cy="name"]`).type('following carboxyl');
-      cy.get(`[data-cy="name"]`).should('have.value', 'following carboxyl');
+      cy.get(`[data-cy="name"]`).type('incidentally');
+      cy.get(`[data-cy="name"]`).should('have.value', 'incidentally');
 
-      cy.get(`[data-cy="method"]`).type('sleet plai');
-      cy.get(`[data-cy="method"]`).should('have.value', 'sleet plai');
+      cy.get(`[data-cy="method"]`).type('inside');
+      cy.get(`[data-cy="method"]`).should('have.value', 'inside');
 
-      cy.get(`[data-cy="type"]`).type('scorpion');
-      cy.get(`[data-cy="type"]`).should('have.value', 'scorpion');
+      cy.get(`[data-cy="type"]`).type('gosh inasm');
+      cy.get(`[data-cy="type"]`).should('have.value', 'gosh inasm');
 
       cy.get(`[data-cy="url"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="url"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
@@ -188,39 +188,39 @@ describe('HttpMonitor e2e test', () => {
       cy.get(`[data-cy="body"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="body"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
 
-      cy.get(`[data-cy="intervalSeconds"]`).type('28414');
-      cy.get(`[data-cy="intervalSeconds"]`).should('have.value', '28414');
+      cy.get(`[data-cy="intervalSeconds"]`).type('31473');
+      cy.get(`[data-cy="intervalSeconds"]`).should('have.value', '31473');
 
-      cy.get(`[data-cy="timeoutSeconds"]`).type('16486');
-      cy.get(`[data-cy="timeoutSeconds"]`).should('have.value', '16486');
+      cy.get(`[data-cy="timeoutSeconds"]`).type('30286');
+      cy.get(`[data-cy="timeoutSeconds"]`).should('have.value', '30286');
 
-      cy.get(`[data-cy="retryCount"]`).type('27507');
-      cy.get(`[data-cy="retryCount"]`).should('have.value', '27507');
+      cy.get(`[data-cy="retryCount"]`).type('18525');
+      cy.get(`[data-cy="retryCount"]`).should('have.value', '18525');
 
-      cy.get(`[data-cy="retryDelaySeconds"]`).type('8578');
-      cy.get(`[data-cy="retryDelaySeconds"]`).should('have.value', '8578');
+      cy.get(`[data-cy="retryDelaySeconds"]`).type('31232');
+      cy.get(`[data-cy="retryDelaySeconds"]`).should('have.value', '31232');
 
-      cy.get(`[data-cy="responseTimeWarningMs"]`).type('1806');
-      cy.get(`[data-cy="responseTimeWarningMs"]`).should('have.value', '1806');
+      cy.get(`[data-cy="responseTimeWarningMs"]`).type('13963');
+      cy.get(`[data-cy="responseTimeWarningMs"]`).should('have.value', '13963');
 
-      cy.get(`[data-cy="responseTimeCriticalMs"]`).type('3004');
-      cy.get(`[data-cy="responseTimeCriticalMs"]`).should('have.value', '3004');
+      cy.get(`[data-cy="responseTimeCriticalMs"]`).type('8446');
+      cy.get(`[data-cy="responseTimeCriticalMs"]`).should('have.value', '8446');
 
-      cy.get(`[data-cy="uptimeWarningPercent"]`).type('2499.71');
-      cy.get(`[data-cy="uptimeWarningPercent"]`).should('have.value', '2499.71');
+      cy.get(`[data-cy="uptimeWarningPercent"]`).type('533.86');
+      cy.get(`[data-cy="uptimeWarningPercent"]`).should('have.value', '533.86');
 
-      cy.get(`[data-cy="uptimeCriticalPercent"]`).type('6037.14');
-      cy.get(`[data-cy="uptimeCriticalPercent"]`).should('have.value', '6037.14');
+      cy.get(`[data-cy="uptimeCriticalPercent"]`).type('18765.47');
+      cy.get(`[data-cy="uptimeCriticalPercent"]`).should('have.value', '18765.47');
 
       cy.get(`[data-cy="includeResponseBody"]`).should('not.be.checked');
       cy.get(`[data-cy="includeResponseBody"]`).click();
       cy.get(`[data-cy="includeResponseBody"]`).should('be.checked');
 
-      cy.get(`[data-cy="resendNotificationCount"]`).type('10761');
-      cy.get(`[data-cy="resendNotificationCount"]`).should('have.value', '10761');
+      cy.get(`[data-cy="resendNotificationCount"]`).type('16977');
+      cy.get(`[data-cy="resendNotificationCount"]`).should('have.value', '16977');
 
-      cy.get(`[data-cy="certificateExpiryDays"]`).type('30033');
-      cy.get(`[data-cy="certificateExpiryDays"]`).should('have.value', '30033');
+      cy.get(`[data-cy="certificateExpiryDays"]`).type('1553');
+      cy.get(`[data-cy="certificateExpiryDays"]`).should('have.value', '1553');
 
       cy.get(`[data-cy="ignoreTlsError"]`).should('not.be.checked');
       cy.get(`[data-cy="ignoreTlsError"]`).click();
@@ -238,27 +238,27 @@ describe('HttpMonitor e2e test', () => {
       cy.get(`[data-cy="upsideDownMode"]`).click();
       cy.get(`[data-cy="upsideDownMode"]`).should('be.checked');
 
-      cy.get(`[data-cy="maxRedirects"]`).type('25581');
-      cy.get(`[data-cy="maxRedirects"]`).should('have.value', '25581');
+      cy.get(`[data-cy="maxRedirects"]`).type('21547');
+      cy.get(`[data-cy="maxRedirects"]`).should('have.value', '21547');
 
       cy.get(`[data-cy="description"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="description"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
 
-      cy.get(`[data-cy="tags"]`).type('an energetic');
-      cy.get(`[data-cy="tags"]`).should('have.value', 'an energetic');
+      cy.get(`[data-cy="tags"]`).type('regarding wasabi versus');
+      cy.get(`[data-cy="tags"]`).should('have.value', 'regarding wasabi versus');
 
       cy.get(`[data-cy="enabled"]`).should('not.be.checked');
       cy.get(`[data-cy="enabled"]`).click();
       cy.get(`[data-cy="enabled"]`).should('be.checked');
 
-      cy.get(`[data-cy="expectedStatusCodes"]`).type('evenly gleefully');
-      cy.get(`[data-cy="expectedStatusCodes"]`).should('have.value', 'evenly gleefully');
+      cy.get(`[data-cy="expectedStatusCodes"]`).type('weight whereas remand');
+      cy.get(`[data-cy="expectedStatusCodes"]`).should('have.value', 'weight whereas remand');
 
-      cy.get(`[data-cy="performanceBudgetMs"]`).type('4565');
-      cy.get(`[data-cy="performanceBudgetMs"]`).should('have.value', '4565');
+      cy.get(`[data-cy="performanceBudgetMs"]`).type('27981');
+      cy.get(`[data-cy="performanceBudgetMs"]`).should('have.value', '27981');
 
-      cy.get(`[data-cy="sizeBudgetKb"]`).type('1779');
-      cy.get(`[data-cy="sizeBudgetKb"]`).should('have.value', '1779');
+      cy.get(`[data-cy="sizeBudgetKb"]`).type('7551');
+      cy.get(`[data-cy="sizeBudgetKb"]`).should('have.value', '7551');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

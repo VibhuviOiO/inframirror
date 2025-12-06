@@ -2423,19 +2423,16 @@ class HttpMonitorResourceIT {
         partialUpdatedHttpMonitor.setId(httpMonitor.getId());
 
         partialUpdatedHttpMonitor
-            .method(UPDATED_METHOD)
-            .type(UPDATED_TYPE)
-            .url(UPDATED_URL)
-            .headers(UPDATED_HEADERS)
+            .name(UPDATED_NAME)
             .intervalSeconds(UPDATED_INTERVAL_SECONDS)
-            .timeoutSeconds(UPDATED_TIMEOUT_SECONDS)
-            .retryCount(UPDATED_RETRY_COUNT)
+            .retryDelaySeconds(UPDATED_RETRY_DELAY_SECONDS)
             .responseTimeCriticalMs(UPDATED_RESPONSE_TIME_CRITICAL_MS)
+            .uptimeWarningPercent(UPDATED_UPTIME_WARNING_PERCENT)
             .resendNotificationCount(UPDATED_RESEND_NOTIFICATION_COUNT)
-            .checkSslCertificate(UPDATED_CHECK_SSL_CERTIFICATE)
-            .checkDnsResolution(UPDATED_CHECK_DNS_RESOLUTION)
-            .upsideDownMode(UPDATED_UPSIDE_DOWN_MODE)
-            .maxRedirects(UPDATED_MAX_REDIRECTS)
+            .certificateExpiryDays(UPDATED_CERTIFICATE_EXPIRY_DAYS)
+            .ignoreTlsError(UPDATED_IGNORE_TLS_ERROR)
+            .description(UPDATED_DESCRIPTION)
+            .enabled(UPDATED_ENABLED)
             .performanceBudgetMs(UPDATED_PERFORMANCE_BUDGET_MS)
             .sizeBudgetKb(UPDATED_SIZE_BUDGET_KB);
 

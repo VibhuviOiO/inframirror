@@ -15,7 +15,7 @@ describe('Datacenter e2e test', () => {
   const datacenterPageUrlPattern = new RegExp('/datacenter(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const datacenterSample = { code: 'nor that', name: 'rejoin tame famously' };
+  const datacenterSample = { code: 'sorrowful', name: 'yum' };
 
   let datacenter;
 
@@ -162,11 +162,11 @@ describe('Datacenter e2e test', () => {
     });
 
     it('should create an instance of Datacenter', () => {
-      cy.get(`[data-cy="code"]`).type('tensely');
-      cy.get(`[data-cy="code"]`).should('have.value', 'tensely');
+      cy.get(`[data-cy="code"]`).type('lightly by');
+      cy.get(`[data-cy="code"]`).should('have.value', 'lightly by');
 
-      cy.get(`[data-cy="name"]`).type('circa tenement');
-      cy.get(`[data-cy="name"]`).should('have.value', 'circa tenement');
+      cy.get(`[data-cy="name"]`).type('usable');
+      cy.get(`[data-cy="name"]`).should('have.value', 'usable');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

@@ -15,7 +15,7 @@ describe('InstanceHeartbeat e2e test', () => {
   const instanceHeartbeatPageUrlPattern = new RegExp('/instance-heartbeat(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  // const instanceHeartbeatSample = {"executedAt":"2025-12-04T07:04:34.409Z","heartbeatType":"clueless saturate","success":false,"status":"which randomize bold"};
+  // const instanceHeartbeatSample = {"executedAt":"2025-12-04T10:39:20.298Z","heartbeatType":"ack couch vibraphone","success":false,"status":"aha"};
 
   let instanceHeartbeat;
   // let instance;
@@ -30,7 +30,7 @@ describe('InstanceHeartbeat e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/instances',
-      body: {"name":"woot french","hostname":"supposing aside pale","description":"glimmer deep","instanceType":"instead","monitoringType":"underneath tedious till","operatingSystem":"after hence phew","platform":"furthermore pfft longingly","privateIpAddress":"wide-eyed even blah","publicIpAddress":"fax apt lumpy","tags":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=","pingEnabled":true,"pingInterval":20458,"pingTimeoutMs":28034,"pingRetryCount":1378,"hardwareMonitoringEnabled":true,"hardwareMonitoringInterval":24517,"cpuWarningThreshold":31417,"cpuDangerThreshold":18414,"memoryWarningThreshold":32079,"memoryDangerThreshold":31363,"diskWarningThreshold":24510,"diskDangerThreshold":32272,"createdAt":"2025-12-04T08:06:02.370Z","updatedAt":"2025-12-04T13:44:00.474Z","lastPingAt":"2025-12-05T05:30:38.741Z","lastHardwareCheckAt":"2025-12-05T04:30:22.149Z"},
+      body: {"name":"once ha cash","hostname":"lest lightly beside","description":"shimmering too","instanceType":"how elevator of","monitoringType":"until","operatingSystem":"loosely smug","platform":"hence","privateIpAddress":"sign","publicIpAddress":"slowly zowie","tags":"Li4vZmFrZS1kYXRhL2Jsb2IvaGlwc3Rlci50eHQ=","pingEnabled":false,"pingInterval":6816,"pingTimeoutMs":18468,"pingRetryCount":27732,"hardwareMonitoringEnabled":true,"hardwareMonitoringInterval":10458,"cpuWarningThreshold":8977,"cpuDangerThreshold":30383,"memoryWarningThreshold":17307,"memoryDangerThreshold":4093,"diskWarningThreshold":2338,"diskDangerThreshold":26798,"createdAt":"2025-12-04T20:37:41.183Z","updatedAt":"2025-12-04T23:24:44.978Z","lastPingAt":"2025-12-05T03:53:55.633Z","lastHardwareCheckAt":"2025-12-05T03:12:01.255Z"},
     }).then(({ body }) => {
       instance = body;
     });
@@ -222,58 +222,58 @@ describe('InstanceHeartbeat e2e test', () => {
 
     // Reason: cannot create a required entity with relationship with required relationships.
     it.skip('should create an instance of InstanceHeartbeat', () => {
-      cy.get(`[data-cy="executedAt"]`).type('2025-12-05T03:28');
+      cy.get(`[data-cy="executedAt"]`).type('2025-12-05T02:40');
       cy.get(`[data-cy="executedAt"]`).blur();
-      cy.get(`[data-cy="executedAt"]`).should('have.value', '2025-12-05T03:28');
+      cy.get(`[data-cy="executedAt"]`).should('have.value', '2025-12-05T02:40');
 
-      cy.get(`[data-cy="heartbeatType"]`).type('palatable');
-      cy.get(`[data-cy="heartbeatType"]`).should('have.value', 'palatable');
+      cy.get(`[data-cy="heartbeatType"]`).type('metal gee at');
+      cy.get(`[data-cy="heartbeatType"]`).should('have.value', 'metal gee at');
 
       cy.get(`[data-cy="success"]`).should('not.be.checked');
       cy.get(`[data-cy="success"]`).click();
       cy.get(`[data-cy="success"]`).should('be.checked');
 
-      cy.get(`[data-cy="responseTimeMs"]`).type('23578');
-      cy.get(`[data-cy="responseTimeMs"]`).should('have.value', '23578');
+      cy.get(`[data-cy="responseTimeMs"]`).type('29531');
+      cy.get(`[data-cy="responseTimeMs"]`).should('have.value', '29531');
 
-      cy.get(`[data-cy="packetLoss"]`).type('23767.17');
-      cy.get(`[data-cy="packetLoss"]`).should('have.value', '23767.17');
+      cy.get(`[data-cy="packetLoss"]`).type('27322.06');
+      cy.get(`[data-cy="packetLoss"]`).should('have.value', '27322.06');
 
-      cy.get(`[data-cy="jitterMs"]`).type('20524');
-      cy.get(`[data-cy="jitterMs"]`).should('have.value', '20524');
+      cy.get(`[data-cy="jitterMs"]`).type('6328');
+      cy.get(`[data-cy="jitterMs"]`).should('have.value', '6328');
 
-      cy.get(`[data-cy="cpuUsage"]`).type('17406.96');
-      cy.get(`[data-cy="cpuUsage"]`).should('have.value', '17406.96');
+      cy.get(`[data-cy="cpuUsage"]`).type('8129.53');
+      cy.get(`[data-cy="cpuUsage"]`).should('have.value', '8129.53');
 
-      cy.get(`[data-cy="memoryUsage"]`).type('4741.88');
-      cy.get(`[data-cy="memoryUsage"]`).should('have.value', '4741.88');
+      cy.get(`[data-cy="memoryUsage"]`).type('4002.76');
+      cy.get(`[data-cy="memoryUsage"]`).should('have.value', '4002.76');
 
-      cy.get(`[data-cy="diskUsage"]`).type('12404.02');
-      cy.get(`[data-cy="diskUsage"]`).should('have.value', '12404.02');
+      cy.get(`[data-cy="diskUsage"]`).type('21402.48');
+      cy.get(`[data-cy="diskUsage"]`).should('have.value', '21402.48');
 
-      cy.get(`[data-cy="loadAverage"]`).type('24253.28');
-      cy.get(`[data-cy="loadAverage"]`).should('have.value', '24253.28');
+      cy.get(`[data-cy="loadAverage"]`).type('14655.98');
+      cy.get(`[data-cy="loadAverage"]`).should('have.value', '14655.98');
 
-      cy.get(`[data-cy="processCount"]`).type('8117');
-      cy.get(`[data-cy="processCount"]`).should('have.value', '8117');
+      cy.get(`[data-cy="processCount"]`).type('5997');
+      cy.get(`[data-cy="processCount"]`).should('have.value', '5997');
 
-      cy.get(`[data-cy="networkRxBytes"]`).type('15779');
-      cy.get(`[data-cy="networkRxBytes"]`).should('have.value', '15779');
+      cy.get(`[data-cy="networkRxBytes"]`).type('3284');
+      cy.get(`[data-cy="networkRxBytes"]`).should('have.value', '3284');
 
-      cy.get(`[data-cy="networkTxBytes"]`).type('14793');
-      cy.get(`[data-cy="networkTxBytes"]`).should('have.value', '14793');
+      cy.get(`[data-cy="networkTxBytes"]`).type('30720');
+      cy.get(`[data-cy="networkTxBytes"]`).should('have.value', '30720');
 
-      cy.get(`[data-cy="uptimeSeconds"]`).type('23346');
-      cy.get(`[data-cy="uptimeSeconds"]`).should('have.value', '23346');
+      cy.get(`[data-cy="uptimeSeconds"]`).type('10736');
+      cy.get(`[data-cy="uptimeSeconds"]`).should('have.value', '10736');
 
-      cy.get(`[data-cy="status"]`).type('before bustling');
-      cy.get(`[data-cy="status"]`).should('have.value', 'before bustling');
+      cy.get(`[data-cy="status"]`).type('after whoa below');
+      cy.get(`[data-cy="status"]`).should('have.value', 'after whoa below');
 
       cy.get(`[data-cy="errorMessage"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="errorMessage"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));
 
-      cy.get(`[data-cy="errorType"]`).type('alongside');
-      cy.get(`[data-cy="errorType"]`).should('have.value', 'alongside');
+      cy.get(`[data-cy="errorType"]`).type('whoever gah');
+      cy.get(`[data-cy="errorType"]`).should('have.value', 'whoever gah');
 
       cy.get(`[data-cy="metadata"]`).type('../fake-data/blob/hipster.txt');
       cy.get(`[data-cy="metadata"]`).invoke('val').should('match', new RegExp('../fake-data/blob/hipster.txt'));

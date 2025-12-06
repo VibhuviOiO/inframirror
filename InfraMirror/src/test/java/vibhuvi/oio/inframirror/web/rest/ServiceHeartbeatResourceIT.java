@@ -471,12 +471,7 @@ class ServiceHeartbeatResourceIT {
         ServiceHeartbeat partialUpdatedServiceHeartbeat = new ServiceHeartbeat();
         partialUpdatedServiceHeartbeat.setId(serviceHeartbeat.getId());
 
-        partialUpdatedServiceHeartbeat
-            .executedAt(UPDATED_EXECUTED_AT)
-            .success(UPDATED_SUCCESS)
-            .status(UPDATED_STATUS)
-            .responseTimeMs(UPDATED_RESPONSE_TIME_MS)
-            .errorMessage(UPDATED_ERROR_MESSAGE);
+        partialUpdatedServiceHeartbeat.responseTimeMs(UPDATED_RESPONSE_TIME_MS);
 
         restServiceHeartbeatMockMvc
             .perform(
