@@ -10,6 +10,7 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities, searchEntities } from './instance.reducer';
+import 'app/custom.scss';
 
 export const Instance = () => {
   const dispatch = useAppDispatch();

@@ -45,6 +45,11 @@ spring:
       auto-commit: false
   elasticsearch:
     uris: http://localhost:9200
+  data:
+    elasticsearch:
+      properties:
+        index:
+          number-of-replicas: 0
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, realdata

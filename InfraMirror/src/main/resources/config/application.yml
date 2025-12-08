@@ -141,6 +141,8 @@ spring:
   main:
     allow-bean-definition-overriding: true
   mvc:
+    locale: ${APP_LANGUAGE:te} # Default to English if APP_LANGUAGE is not set
+    locale-resolver: fixed
     problemdetails:
       enabled: true
   security:

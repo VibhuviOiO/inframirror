@@ -73,6 +73,16 @@ module.exports = async options => {
             include: [utils.root('./src/main/webapp/app')],
             exclude: [utils.root('node_modules')],
           },
+          {
+            test: /\.jsx?$/,
+            exclude: /node_modules/,
+            use: {
+              loader: 'babel-loader',
+              options: {
+                presets: ['@babel/preset-env', '@babel/preset-react'],
+              },
+            },
+          },
           /*
        ,
        Disabled due to https://github.com/jhipster/generator-jhipster/issues/16116

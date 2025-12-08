@@ -37,11 +37,25 @@ const accountMenuItems = () => {
   );
 };
 
-export const AccountMenu = ({ isAuthenticated = false }) => (
-  <NavDropdown icon="user" name={translate('global.menu.account.main')} id="account-menu" data-cy="accountMenu">
-    {isAuthenticated && accountMenuItemsAuthenticated()}
-    {!isAuthenticated && accountMenuItems()}
-  </NavDropdown>
-);
+export const AccountMenu = ({ isAuthenticated = false }) => {
+  const accountLabel = translate('global.menu.account.main');
+  const accountInitial = accountLabel?.charAt(0)?.toUpperCase() || '?';
+
+  const accountAvatar = (
+    <span className="d-inline-flex align-items-center gap-2">
+      <span className="account-avatar" aria-hidden="true">
+        {accountInitial}
+      </span>
+      <span className="sr-only">{accountLabel}</span>
+    </span>
+  );
+
+  return (
+    <NavDropdown className="account-dropdown" name={accountAvatar} id="account-menu" data-cy="accountMenu">
+      {isAuthenticated && accountMenuItemsAuthenticated()}
+      {!isAuthenticated && accountMenuItems()}
+    </NavDropdown>
+  );
+};
 
 export default AccountMenu;

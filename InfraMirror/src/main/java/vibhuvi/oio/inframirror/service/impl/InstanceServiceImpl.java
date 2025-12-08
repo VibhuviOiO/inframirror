@@ -96,4 +96,11 @@ public class InstanceServiceImpl implements InstanceService {
         LOG.debug("Request to search for a page of Instances for query {}", query);
         return instanceSearchRepository.search(query, pageable).map(instanceMapper::toDto);
     }
+
+    @Override
+    public void reindexAll() {
+        LOG.info("Reindexing all instances to Elasticsearch");
+        instanceRepository.findAll().forEach(instanceSearchRepository::index);
+        LOG.info("Reindexing completed");
+    }
 }

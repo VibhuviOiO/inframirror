@@ -151,6 +151,10 @@ public class HttpMonitor implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer sizeBudgetKb;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "children", "heartbeats", "parent" }, allowSetters = true)
+    private HttpMonitor parent;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
     @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "children", "heartbeats", "parent" }, allowSetters = true)
@@ -160,10 +164,6 @@ public class HttpMonitor implements Serializable {
     @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "agent", "monitor" }, allowSetters = true)
     private Set<HttpHeartbeat> heartbeats = new HashSet<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "children", "heartbeats", "parent" }, allowSetters = true)
-    private HttpMonitor parent;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 

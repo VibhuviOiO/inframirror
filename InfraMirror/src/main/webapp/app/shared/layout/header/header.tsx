@@ -7,8 +7,9 @@ import LoadingBar from 'react-redux-loading-bar';
 
 import { useAppDispatch } from 'app/config/store';
 import { setLocale } from 'app/shared/reducers/locale';
-import { AccountMenu, AdminMenu, EntitiesMenu, LocaleMenu } from '../menus';
+import { AccountMenu, LocaleMenu } from '../menus';
 import { Brand, Home } from './header-components';
+import { FaBars } from 'react-icons/fa';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;
@@ -17,6 +18,7 @@ export interface IHeaderProps {
   isInProduction: boolean;
   isOpenAPIEnabled: boolean;
   currentLocale: string;
+  onSidebarToggle?: () => void;
 }
 
 const Header = (props: IHeaderProps) => {
@@ -48,13 +50,21 @@ const Header = (props: IHeaderProps) => {
       {renderDevRibbon()}
       <LoadingBar className="loading-bar" />
       <Navbar data-cy="navbar" dark expand="md" fixed="top" className="jh-navbar">
+        {props.isAuthenticated && props.onSidebarToggle && (
+          <button
+            className="btn btn-link text-white"
+            onClick={props.onSidebarToggle}
+            aria-label="Toggle Sidebar"
+            style={{ fontSize: '18px', padding: '15px', marginLeft: '0', lineHeight: '1' }}
+          >
+            <FaBars />
+          </button>
+        )}
         <NavbarToggler aria-label="Menu" onClick={toggleMenu} />
         <Brand />
         <Collapse isOpen={menuOpen} navbar>
           <Nav id="header-tabs" className="ms-auto" navbar>
             <Home />
-            {props.isAuthenticated && <EntitiesMenu />}
-            {props.isAuthenticated && props.isAdmin && <AdminMenu showOpenAPI={props.isOpenAPIEnabled} />}
             <LocaleMenu currentLocale={props.currentLocale} onClick={handleLocaleChange} />
             <AccountMenu isAuthenticated={props.isAuthenticated} />
           </Nav>

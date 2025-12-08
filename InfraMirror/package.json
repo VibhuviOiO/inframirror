@@ -103,6 +103,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "7.56.2",
+    "react-icons": "^5.5.0",
     "react-jhipster": "0.25.3",
     "react-loadable": "5.5.0",
     "react-redux": "9.2.0",
@@ -117,6 +118,9 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
     "@testing-library/react": "16.3.0",
     "@types/jest": "29.5.14",
     "@types/lodash": "4.17.16",
@@ -127,6 +131,7 @@
     "@types/redux": "3.6.31",
     "@types/webpack-env": "1.18.8",
     "autoprefixer": "10.4.21",
+    "babel-loader": "^10.0.0",
     "browser-sync": "3.0.4",
     "browser-sync-webpack-plugin": "2.3.0",
     "concurrently": "9.1.2",

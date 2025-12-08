@@ -57,4 +57,9 @@ public interface InstanceService {
      * @return the list of entities.
      */
     Page<InstanceDTO> search(String query, Pageable pageable);
+
+    /**
+     * Reindex all instances from database to Elasticsearch.
+     */
+    void reindexAll();
 }

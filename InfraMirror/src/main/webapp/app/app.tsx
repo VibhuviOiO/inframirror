@@ -17,11 +17,14 @@ import ErrorBoundary from 'app/shared/error/error-boundary';
 import { AUTHORITIES } from 'app/config/constants';
 import AppRoutes from 'app/routes';
 import { setTextDirection } from './config/translation';
+import Sidebar from 'app/components/Sidebar';
 
 const baseHref = document.querySelector('base').getAttribute('href').replace(/\/$/, '');
 
 export const App = () => {
   const dispatch = useAppDispatch();
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  const [hasSecondarySidebar, setHasSecondarySidebar] = React.useState(false);
 
   useEffect(() => {
     dispatch(getSession());
@@ -52,15 +55,24 @@ export const App = () => {
             ribbonEnv={ribbonEnv}
             isInProduction={isInProduction}
             isOpenAPIEnabled={isOpenAPIEnabled}
+            onSidebarToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           />
         </ErrorBoundary>
         <div className="container-fluid view-container" id="app-view-container">
-          <Card className="jh-card">
-            <ErrorBoundary>
-              <AppRoutes />
-            </ErrorBoundary>
-          </Card>
-          <Footer />
+          <Sidebar isAuthenticated={isAuthenticated} isAdmin={isAdmin} isCollapsed={sidebarCollapsed} />
+          <div
+            style={{
+              marginLeft: sidebarCollapsed ? (hasSecondarySidebar ? '310px' : '60px') : '250px',
+              transition: 'margin-left 0.3s ease',
+            }}
+          >
+            <Card className="jh-card">
+              <ErrorBoundary>
+                <AppRoutes />
+              </ErrorBoundary>
+            </Card>
+            <Footer />
+          </div>
         </div>
       </div>
     </BrowserRouter>

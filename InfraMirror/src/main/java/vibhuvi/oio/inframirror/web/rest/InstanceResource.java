@@ -226,4 +226,16 @@ public class InstanceResource {
             throw ElasticsearchExceptionMapper.mapException(e);
         }
     }
+
+    /**
+     * {@code POST  /instances/_reindex} : Reindex all instances to Elasticsearch.
+     *
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     */
+    @PostMapping("/_reindex")
+    public ResponseEntity<Void> reindexInstances() {
+        LOG.info("REST request to reindex all Instances");
+        instanceService.reindexAll();
+        return ResponseEntity.noContent().build();
+    }
 }
