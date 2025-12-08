@@ -38,8 +38,10 @@ Development Ribbon
 Navbar styles
 ========================================================================== */
 .jh-navbar {
-  background-color: #353d47;
-  padding: 0.2em 1em;
+  background-color: var(--theme-primary);
+  padding: 0.25rem 1rem;
+  min-height: 45px;
+  max-height: 45px;
   .profile-image {
     margin: -10px 0;
     height: 40px;
@@ -49,13 +51,13 @@ Navbar styles
   .dropdown-item.active,
   .dropdown-item.active:focus,
   .dropdown-item.active:hover {
-    background-color: #353d47;
+    background-color: var(--theme-primary);
   }
   .dropdown-toggle::after {
     margin-left: 0.15em;
   }
   ul.navbar-nav {
-    padding: 0.5em;
+    padding: 0;
     .nav-item {
       margin-left: 1.5rem;
     }

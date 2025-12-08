@@ -4,10 +4,13 @@
       "home": {
         "title": "Regions",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Region",
-        "createOrEditLabel": "Create or edit a Region",
+        "createLabel": "Create",
+        "createOrEditLabel": "Create",
         "search": "Search for Region",
-        "notFound": "No Regions found"
+        "searchButton": "Search",
+        "clearSearch": "Clear",
+        "notFound": "No Regions found",
+        "emptyState": "No regions available. Create your first region to get started."
       },
       "created": "A new Region is created with identifier {{ param }}",
       "updated": "A Region is updated with identifier {{ param }}",

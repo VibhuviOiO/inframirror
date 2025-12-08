@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Sidebar.css';
+import { theme } from 'app/config/theme';
 import {
   FaCogs,
   FaServer,
@@ -100,7 +101,7 @@ const sidebarMenu: SidebarMenu[] = [
     ],
   },
   {
-    title: 'Application Administration',
+    title: 'App Metrics',
     icon: FaTools,
     items: [
       { name: 'Metrics', icon: FaChartLine, route: '/admin/metrics' },
@@ -127,7 +128,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isAuthenticated, isAdmin, isCollapsed
 
   // Filter menu based on authentication and role
   const filteredMenu = sidebarMenu.filter(menu => {
-    if (menu.title === 'Application Administration') {
+    if (menu.title === 'App Metrics') {
       return isAuthenticated && isAdmin;
     }
     return isAuthenticated;
@@ -141,7 +142,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isAuthenticated, isAdmin, isCollapsed
     <>
       <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
         {filteredMenu.map((menu, index) => (
-          <div key={index} className="sidebar-section">
+          <div key={index}>
             {menu.route ? (
               <div className="sidebar-item" onClick={() => handleNavigation(menu.route)}>
                 {menu.title}

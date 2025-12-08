@@ -4,10 +4,13 @@
       "home": {
         "title": "Datacenters",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Datacenter",
+        "createLabel": "Create",
         "createOrEditLabel": "Create or edit a Datacenter",
         "search": "Search for Datacenter",
-        "notFound": "No Datacenters found"
+        "searchButton": "Search",
+        "clearSearch": "Clear",
+        "notFound": "No Datacenters found",
+        "emptyState": "No datacenters available. Create your first datacenter to get started."
       },
       "created": "A new Datacenter is created with identifier {{ param }}",
       "updated": "A Datacenter is updated with identifier {{ param }}",

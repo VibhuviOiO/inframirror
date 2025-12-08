@@ -12,7 +12,7 @@ export const BrandIcon = props => (
 );
 
 export const Brand = () => (
-  <NavbarBrand tag={Link} to="/" className="brand-logo">
+  <NavbarBrand tag={Link} to="/" className="brand-logo" style={{ marginLeft: 0 }}>
     <span className="brand-title">
       <Translate contentKey="global.title">InfraMirror</Translate>
     </span>

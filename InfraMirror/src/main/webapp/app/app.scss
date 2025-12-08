@@ -2,6 +2,15 @@
 @import 'bootstrap-variables';
 // Import Bootstrap source files from node_modules
 @import 'bootstrap/scss/bootstrap';
+
+:root {
+  --theme-primary: #2c3e50;
+  --theme-secondary: #34495e;
+  --theme-text: #ecf0f1;
+  --theme-hover: #3498db;
+  --theme-border: rgba(255, 255, 255, 0.1);
+}
+
 body {
   background: #fafafa;
   margin: 0;

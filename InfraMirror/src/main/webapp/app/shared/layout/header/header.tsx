@@ -1,6 +1,7 @@
 import './header.scss';
 
 import React, { useState } from 'react';
+import { theme } from 'app/config/theme';
 import { Storage, Translate } from 'react-jhipster';
 import { Collapse, Nav, Navbar, NavbarToggler } from 'reactstrap';
 import LoadingBar from 'react-redux-loading-bar';
@@ -49,27 +50,24 @@ const Header = (props: IHeaderProps) => {
     <div id="app-header">
       {renderDevRibbon()}
       <LoadingBar className="loading-bar" />
-      <Navbar data-cy="navbar" dark expand="md" fixed="top" className="jh-navbar">
+      <div className="navbar-wrapper">
         {props.isAuthenticated && props.onSidebarToggle && (
-          <button
-            className="btn btn-link text-white"
-            onClick={props.onSidebarToggle}
-            aria-label="Toggle Sidebar"
-            style={{ fontSize: '18px', padding: '15px', marginLeft: '0', lineHeight: '1' }}
-          >
+          <button onClick={props.onSidebarToggle} aria-label="Toggle Sidebar" className="sidebar-toggle-btn">
             <FaBars />
           </button>
         )}
-        <NavbarToggler aria-label="Menu" onClick={toggleMenu} />
-        <Brand />
-        <Collapse isOpen={menuOpen} navbar>
-          <Nav id="header-tabs" className="ms-auto" navbar>
-            <Home />
-            <LocaleMenu currentLocale={props.currentLocale} onClick={handleLocaleChange} />
-            <AccountMenu isAuthenticated={props.isAuthenticated} />
-          </Nav>
-        </Collapse>
-      </Navbar>
+        <Navbar data-cy="navbar" dark expand="md" className="jh-navbar">
+          <NavbarToggler aria-label="Menu" onClick={toggleMenu} />
+          <Brand />
+          <Collapse isOpen={menuOpen} navbar>
+            <Nav id="header-tabs" className="ms-auto" navbar>
+              {/* <Home /> */}
+              {/* <LocaleMenu currentLocale={props.currentLocale} onClick={handleLocaleChange} /> */}
+              <AccountMenu isAuthenticated={props.isAuthenticated} />
+            </Nav>
+          </Collapse>
+        </Navbar>
+      </div>
     </div>
   );
 };

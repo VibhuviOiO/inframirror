@@ -2,7 +2,7 @@ import { Storage, TranslatorContext } from 'react-jhipster';
 
 import { setLocale } from 'app/shared/reducers/locale';
 
-TranslatorContext.setDefaultLocale('en');
+TranslatorContext.setDefaultLocale('ja');
 TranslatorContext.setRenderInnerTextForMissingKeys(false);
 
 export const languages: any = {
@@ -69,5 +69,5 @@ export const setTextDirection = (lang: string) => {
 };
 
 export const registerLocale = store => {
-  store.dispatch(setLocale(Storage.session.get('locale', 'en')));
+  store.dispatch(setLocale(Storage.session.get('locale', 'ja')));
 };

@@ -66,11 +66,9 @@ export const App = () => {
               transition: 'margin-left 0.3s ease',
             }}
           >
-            <Card className="jh-card">
-              <ErrorBoundary>
-                <AppRoutes />
-              </ErrorBoundary>
-            </Card>
+            <ErrorBoundary>
+              <AppRoutes />
+            </ErrorBoundary>
             <Footer />
           </div>
         </div>
