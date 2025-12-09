@@ -145,4 +145,10 @@ button:active,
 .form-control-sm {
   font-size: 0.875rem;
   padding: 0.25rem 0.5rem;
+  border-radius: var(--bs-border-radius) !important;
+}
+
+.form-control,
+.form-select {
+  border-radius: var(--bs-border-radius) !important;
 }

@@ -142,11 +142,10 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
           <div className="row">
             <div className="col-md-6">
               <FormGroup className="mb-3">
-                <Label for="name" className="form-label-sm">
+                <Label for="name">
                   Name <span className="text-danger">*</span>
                 </Label>
                 <Input
-                  bsSize="sm"
                   type="text"
                   id="name"
                   value={formData.name}
@@ -158,11 +157,10 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
             </div>
             <div className="col-md-6">
               <FormGroup className="mb-3">
-                <Label for="hostname" className="form-label-sm">
+                <Label for="hostname">
                   Hostname <span className="text-danger">*</span>
                 </Label>
                 <Input
-                  bsSize="sm"
                   type="text"
                   id="hostname"
                   value={formData.hostname}
@@ -175,11 +173,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
           </div>
 
           <FormGroup className="mb-3">
-            <Label for="description" className="form-label-sm">
-              Description
-            </Label>
+            <Label for="description">Description</Label>
             <Input
-              bsSize="sm"
               type="text"
               id="description"
               value={formData.description || ''}
@@ -190,11 +185,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
           <div className="row">
             <div className="col-md-6">
               <FormGroup className="mb-3">
-                <Label for="instanceType" className="form-label-sm">
-                  Instance Type
-                </Label>
+                <Label for="instanceType">Instance Type</Label>
                 <Input
-                  bsSize="sm"
                   type="select"
                   id="instanceType"
                   value={formData.instanceType}
@@ -209,11 +201,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
             </div>
             <div className="col-md-6">
               <FormGroup className="mb-3">
-                <Label for="monitoringType" className="form-label-sm">
-                  Monitoring Type
-                </Label>
+                <Label for="monitoringType">Monitoring Type</Label>
                 <Input
-                  bsSize="sm"
                   type="select"
                   id="monitoringType"
                   value={formData.monitoringType}
@@ -228,11 +217,10 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
 
           {formData.monitoringType === 'AGENT_MONITORED' && (
             <FormGroup className="mb-3">
-              <Label for="agentId" className="form-label-sm">
+              <Label for="agentId">
                 Agent <span className="text-danger">*</span>
               </Label>
               <Input
-                bsSize="sm"
                 type="select"
                 id="agentId"
                 value={formData.agentId || ''}
@@ -253,11 +241,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
           <div className="row">
             <div className="col-md-6">
               <FormGroup className="mb-3">
-                <Label for="operatingSystem" className="form-label-sm">
-                  Operating System
-                </Label>
+                <Label for="operatingSystem">Operating System</Label>
                 <Input
-                  bsSize="sm"
                   type="text"
                   id="operatingSystem"
                   value={formData.operatingSystem || ''}
@@ -267,11 +252,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
             </div>
             <div className="col-md-6">
               <FormGroup className="mb-3">
-                <Label for="platform" className="form-label-sm">
-                  Platform
-                </Label>
+                <Label for="platform">Platform</Label>
                 <Input
-                  bsSize="sm"
                   type="text"
                   id="platform"
                   value={formData.platform || ''}
@@ -284,11 +266,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
           <div className="row">
             <div className="col-md-6">
               <FormGroup className="mb-3">
-                <Label for="privateIpAddress" className="form-label-sm">
-                  Private IP
-                </Label>
+                <Label for="privateIpAddress">Private IP</Label>
                 <Input
-                  bsSize="sm"
                   type="text"
                   id="privateIpAddress"
                   value={formData.privateIpAddress || ''}
@@ -298,11 +277,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
             </div>
             <div className="col-md-6">
               <FormGroup className="mb-3">
-                <Label for="publicIpAddress" className="form-label-sm">
-                  Public IP
-                </Label>
+                <Label for="publicIpAddress">Public IP</Label>
                 <Input
-                  bsSize="sm"
                   type="text"
                   id="publicIpAddress"
                   value={formData.publicIpAddress || ''}
@@ -313,11 +289,10 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
           </div>
 
           <FormGroup className="mb-3">
-            <Label for="datacenterId" className="form-label-sm">
+            <Label for="datacenterId">
               Datacenter <span className="text-danger">*</span>
             </Label>
             <Input
-              bsSize="sm"
               type="select"
               id="datacenterId"
               value={formData.datacenterId || ''}
@@ -352,11 +327,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
             <div className="row">
               <div className="col-md-4">
                 <FormGroup className="mb-3">
-                  <Label for="pingInterval" className="form-label-sm">
-                    Interval (sec)
-                  </Label>
+                  <Label for="pingInterval">Interval (sec)</Label>
                   <Input
-                    bsSize="sm"
                     type="number"
                     id="pingInterval"
                     value={formData.pingInterval}
@@ -366,11 +338,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
               </div>
               <div className="col-md-4">
                 <FormGroup className="mb-3">
-                  <Label for="pingTimeoutMs" className="form-label-sm">
-                    Timeout (ms)
-                  </Label>
+                  <Label for="pingTimeoutMs">Timeout (ms)</Label>
                   <Input
-                    bsSize="sm"
                     type="number"
                     id="pingTimeoutMs"
                     value={formData.pingTimeoutMs}
@@ -380,11 +349,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
               </div>
               <div className="col-md-4">
                 <FormGroup className="mb-3">
-                  <Label for="pingRetryCount" className="form-label-sm">
-                    Retry Count
-                  </Label>
+                  <Label for="pingRetryCount">Retry Count</Label>
                   <Input
-                    bsSize="sm"
                     type="number"
                     id="pingRetryCount"
                     value={formData.pingRetryCount}
@@ -414,11 +380,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
           {formData.hardwareMonitoringEnabled && (
             <>
               <FormGroup className="mb-3">
-                <Label for="hardwareMonitoringInterval" className="form-label-sm">
-                  Interval (sec)
-                </Label>
+                <Label for="hardwareMonitoringInterval">Interval (sec)</Label>
                 <Input
-                  bsSize="sm"
                   type="number"
                   id="hardwareMonitoringInterval"
                   value={formData.hardwareMonitoringInterval}
@@ -429,11 +392,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
               <div className="row">
                 <div className="col-md-6">
                   <FormGroup className="mb-3">
-                    <Label for="cpuWarningThreshold" className="form-label-sm">
-                      CPU Warning (%)
-                    </Label>
+                    <Label for="cpuWarningThreshold">CPU Warning (%)</Label>
                     <Input
-                      bsSize="sm"
                       type="number"
                       id="cpuWarningThreshold"
                       value={formData.cpuWarningThreshold}
@@ -443,11 +403,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
                 </div>
                 <div className="col-md-6">
                   <FormGroup className="mb-3">
-                    <Label for="cpuDangerThreshold" className="form-label-sm">
-                      CPU Danger (%)
-                    </Label>
+                    <Label for="cpuDangerThreshold">CPU Danger (%)</Label>
                     <Input
-                      bsSize="sm"
                       type="number"
                       id="cpuDangerThreshold"
                       value={formData.cpuDangerThreshold}
@@ -460,11 +417,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
               <div className="row">
                 <div className="col-md-6">
                   <FormGroup className="mb-3">
-                    <Label for="memoryWarningThreshold" className="form-label-sm">
-                      Memory Warning (%)
-                    </Label>
+                    <Label for="memoryWarningThreshold">Memory Warning (%)</Label>
                     <Input
-                      bsSize="sm"
                       type="number"
                       id="memoryWarningThreshold"
                       value={formData.memoryWarningThreshold}
@@ -474,11 +428,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
                 </div>
                 <div className="col-md-6">
                   <FormGroup className="mb-3">
-                    <Label for="memoryDangerThreshold" className="form-label-sm">
-                      Memory Danger (%)
-                    </Label>
+                    <Label for="memoryDangerThreshold">Memory Danger (%)</Label>
                     <Input
-                      bsSize="sm"
                       type="number"
                       id="memoryDangerThreshold"
                       value={formData.memoryDangerThreshold}
@@ -491,11 +442,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
               <div className="row">
                 <div className="col-md-6">
                   <FormGroup className="mb-3">
-                    <Label for="diskWarningThreshold" className="form-label-sm">
-                      Disk Warning (%)
-                    </Label>
+                    <Label for="diskWarningThreshold">Disk Warning (%)</Label>
                     <Input
-                      bsSize="sm"
                       type="number"
                       id="diskWarningThreshold"
                       value={formData.diskWarningThreshold}
@@ -505,11 +453,8 @@ export const InstanceEditModal: React.FC<InstanceEditModalProps> = ({ isOpen, to
                 </div>
                 <div className="col-md-6">
                   <FormGroup className="mb-3">
-                    <Label for="diskDangerThreshold" className="form-label-sm">
-                      Disk Danger (%)
-                    </Label>
+                    <Label for="diskDangerThreshold">Disk Danger (%)</Label>
                     <Input
-                      bsSize="sm"
                       type="number"
                       id="diskDangerThreshold"
                       value={formData.diskDangerThreshold}
