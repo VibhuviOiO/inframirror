@@ -10,7 +10,6 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class DatacenterDTO implements Serializable {
 
-    @NotNull
     private Long id;
 
     @NotNull
