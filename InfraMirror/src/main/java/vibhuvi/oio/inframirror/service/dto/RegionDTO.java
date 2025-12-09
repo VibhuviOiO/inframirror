@@ -10,7 +10,6 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class RegionDTO implements Serializable {
 
-    @NotNull
     private Long id;
 
     @NotNull
