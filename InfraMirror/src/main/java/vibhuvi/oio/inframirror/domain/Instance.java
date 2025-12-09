@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import vibhuvi.oio.inframirror.domain.enumeration.InstanceType;
+import vibhuvi.oio.inframirror.domain.enumeration.MonitoringType;
+import vibhuvi.oio.inframirror.domain.enumeration.OperatingSystem;
 
 /**
  * A Instance.
@@ -44,21 +47,21 @@ public class Instance implements Serializable {
     private String description;
 
     @NotNull
-    @Size(max = 50)
-    @Column(name = "instance_type", length = 50, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String instanceType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "instance_type", nullable = false)
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
+    private InstanceType instanceType;
 
     @NotNull
-    @Size(max = 50)
-    @Column(name = "monitoring_type", length = 50, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String monitoringType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "monitoring_type", nullable = false)
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
+    private MonitoringType monitoringType;
 
-    @Size(max = 100)
-    @Column(name = "operating_system", length = 100)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String operatingSystem;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "operating_system")
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
+    private OperatingSystem operatingSystem;
 
     @Size(max = 100)
     @Column(name = "platform", length = 100)
@@ -75,70 +78,89 @@ public class Instance implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String publicIpAddress;
 
-    @Lob
-    @Column(name = "tags")
+    @Column(name = "tags", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String tags;
 
     @NotNull
     @Column(name = "ping_enabled", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
-    private Boolean pingEnabled;
+    private Boolean pingEnabled = true;
 
     @NotNull
+    @Min(10)
+    @Max(3600)
     @Column(name = "ping_interval", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
-    private Integer pingInterval;
+    private Integer pingInterval = 30;
 
     @NotNull
+    @Min(500)
+    @Max(30000)
     @Column(name = "ping_timeout_ms", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
-    private Integer pingTimeoutMs;
+    private Integer pingTimeoutMs = 3000;
 
     @NotNull
+    @Min(0)
+    @Max(5)
     @Column(name = "ping_retry_count", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
-    private Integer pingRetryCount;
+    private Integer pingRetryCount = 2;
 
     @NotNull
     @Column(name = "hardware_monitoring_enabled", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
-    private Boolean hardwareMonitoringEnabled;
+    private Boolean hardwareMonitoringEnabled = false;
 
     @NotNull
+    @Min(60)
+    @Max(3600)
     @Column(name = "hardware_monitoring_interval", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
-    private Integer hardwareMonitoringInterval;
+    private Integer hardwareMonitoringInterval = 300;
 
     @NotNull
+    @Min(0)
+    @Max(100)
     @Column(name = "cpu_warning_threshold", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
-    private Integer cpuWarningThreshold;
+    private Integer cpuWarningThreshold = 70;
 
     @NotNull
+    @Min(0)
+    @Max(100)
     @Column(name = "cpu_danger_threshold", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
-    private Integer cpuDangerThreshold;
+    private Integer cpuDangerThreshold = 90;
 
     @NotNull
+    @Min(0)
+    @Max(100)
     @Column(name = "memory_warning_threshold", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
-    private Integer memoryWarningThreshold;
+    private Integer memoryWarningThreshold = 75;
 
     @NotNull
+    @Min(0)
+    @Max(100)
     @Column(name = "memory_danger_threshold", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
-    private Integer memoryDangerThreshold;
+    private Integer memoryDangerThreshold = 90;
 
     @NotNull
+    @Min(0)
+    @Max(100)
     @Column(name = "disk_warning_threshold", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
-    private Integer diskWarningThreshold;
+    private Integer diskWarningThreshold = 80;
 
     @NotNull
+    @Min(0)
+    @Max(100)
     @Column(name = "disk_danger_threshold", nullable = false)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
-    private Integer diskDangerThreshold;
+    private Integer diskDangerThreshold = 95;
 
     @Column(name = "created_at")
     private Instant createdAt;
@@ -151,6 +173,11 @@ public class Instance implements Serializable {
 
     @Column(name = "last_hardware_check_at")
     private Instant lastHardwareCheckAt;
+
+    @NotNull
+    @Column(name = "is_active", nullable = false)
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
+    private Boolean isActive = true;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instance")
     @org.springframework.data.annotation.Transient
@@ -228,42 +255,42 @@ public class Instance implements Serializable {
         this.description = description;
     }
 
-    public String getInstanceType() {
+    public InstanceType getInstanceType() {
         return this.instanceType;
     }
 
-    public Instance instanceType(String instanceType) {
+    public Instance instanceType(InstanceType instanceType) {
         this.setInstanceType(instanceType);
         return this;
     }
 
-    public void setInstanceType(String instanceType) {
+    public void setInstanceType(InstanceType instanceType) {
         this.instanceType = instanceType;
     }
 
-    public String getMonitoringType() {
+    public MonitoringType getMonitoringType() {
         return this.monitoringType;
     }
 
-    public Instance monitoringType(String monitoringType) {
+    public Instance monitoringType(MonitoringType monitoringType) {
         this.setMonitoringType(monitoringType);
         return this;
     }
 
-    public void setMonitoringType(String monitoringType) {
+    public void setMonitoringType(MonitoringType monitoringType) {
         this.monitoringType = monitoringType;
     }
 
-    public String getOperatingSystem() {
+    public OperatingSystem getOperatingSystem() {
         return this.operatingSystem;
     }
 
-    public Instance operatingSystem(String operatingSystem) {
+    public Instance operatingSystem(OperatingSystem operatingSystem) {
         this.setOperatingSystem(operatingSystem);
         return this;
     }
 
-    public void setOperatingSystem(String operatingSystem) {
+    public void setOperatingSystem(OperatingSystem operatingSystem) {
         this.operatingSystem = operatingSystem;
     }
 
@@ -613,6 +640,19 @@ public class Instance implements Serializable {
     public Instance agent(Agent agent) {
         this.setAgent(agent);
         return this;
+    }
+
+    public Boolean getIsActive() {
+        return this.isActive;
+    }
+
+    public Instance isActive(Boolean isActive) {
+        this.setIsActive(isActive);
+        return this;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

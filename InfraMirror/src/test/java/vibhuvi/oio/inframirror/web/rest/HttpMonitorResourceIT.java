@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static vibhuvi.oio.inframirror.domain.HttpMonitorAsserts.*;
 import static vibhuvi.oio.inframirror.web.rest.TestUtil.createUpdateProxyForBean;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -55,11 +56,11 @@ class HttpMonitorResourceIT {
     private static final String DEFAULT_URL = "AAAAAAAAAA";
     private static final String UPDATED_URL = "BBBBBBBBBB";
 
-    private static final String DEFAULT_HEADERS = "AAAAAAAAAA";
-    private static final String UPDATED_HEADERS = "BBBBBBBBBB";
+    private static JsonNode DEFAULT_HEADERS;
+    private static JsonNode UPDATED_HEADERS;
 
-    private static final String DEFAULT_BODY = "AAAAAAAAAA";
-    private static final String UPDATED_BODY = "BBBBBBBBBB";
+    private static JsonNode DEFAULT_BODY;
+    private static JsonNode UPDATED_BODY;
 
     private static final Integer DEFAULT_INTERVAL_SECONDS = 1;
     private static final Integer UPDATED_INTERVAL_SECONDS = 2;
@@ -149,6 +150,18 @@ class HttpMonitorResourceIT {
 
     @Autowired
     private ObjectMapper om;
+
+    static {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            DEFAULT_HEADERS = mapper.readTree("{\"key\":\"value\"}");
+            UPDATED_HEADERS = mapper.readTree("{\"key\":\"updated\"}");
+            DEFAULT_BODY = mapper.readTree("{\"data\":\"test\"}");
+            UPDATED_BODY = mapper.readTree("{\"data\":\"updated\"}");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Autowired
     private HttpMonitorRepository httpMonitorRepository;

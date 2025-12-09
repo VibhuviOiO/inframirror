@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Col, Row } from 'reactstrap';
+import { Button, Card, CardBody, Col, Row } from 'reactstrap';
 import { Translate, ValidatedField, ValidatedForm, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -73,80 +73,71 @@ export const DatacenterUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="infraMirrorApp.datacenter.home.createOrEditLabel" data-cy="DatacenterCreateUpdateHeading">
+          <h4>
             <Translate contentKey="infraMirrorApp.datacenter.home.createOrEditLabel">Create or edit a Datacenter</Translate>
-          </h2>
-        </Col>
-      </Row>
-      <Row className="justify-content-center">
-        <Col md="8">
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
-              {!isNew ? (
-                <ValidatedField
-                  name="id"
-                  required
-                  readOnly
-                  id="datacenter-id"
-                  label={translate('infraMirrorApp.datacenter.id')}
-                  validate={{ required: true }}
-                />
-              ) : null}
-              <ValidatedField
-                label={translate('infraMirrorApp.datacenter.code')}
-                id="datacenter-code"
-                name="code"
-                data-cy="code"
-                type="text"
-                validate={{
-                  required: { value: true, message: translate('entity.validation.required') },
-                  maxLength: { value: 10, message: translate('entity.validation.maxlength', { max: 10 }) },
-                }}
-              />
-              <ValidatedField
-                label={translate('infraMirrorApp.datacenter.name')}
-                id="datacenter-name"
-                name="name"
-                data-cy="name"
-                type="text"
-                validate={{
-                  required: { value: true, message: translate('entity.validation.required') },
-                  maxLength: { value: 50, message: translate('entity.validation.maxlength', { max: 50 }) },
-                }}
-              />
-              <ValidatedField
-                id="datacenter-region"
-                name="region"
-                data-cy="region"
-                label={translate('infraMirrorApp.datacenter.region')}
-                type="select"
-              >
-                <option value="" key="0" />
-                {regions
-                  ? regions.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/datacenter" replace color="info">
-                <FontAwesomeIcon icon="arrow-left" />
-                &nbsp;
-                <span className="d-none d-md-inline">
-                  <Translate contentKey="entity.action.back">Back</Translate>
-                </span>
-              </Button>
-              &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
-                <FontAwesomeIcon icon="save" />
-                &nbsp;
-                <Translate contentKey="entity.action.save">Save</Translate>
-              </Button>
-            </ValidatedForm>
-          )}
+          </h4>
+          <hr />
+          <Card>
+            <CardBody>
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
+                  <ValidatedField
+                    label={translate('infraMirrorApp.datacenter.code')}
+                    id="datacenter-code"
+                    name="code"
+                    data-cy="code"
+                    type="text"
+                    validate={{
+                      required: { value: true, message: translate('entity.validation.required') },
+                      maxLength: { value: 10, message: translate('entity.validation.maxlength', { max: 10 }) },
+                    }}
+                  />
+                  <ValidatedField
+                    label={translate('infraMirrorApp.datacenter.name')}
+                    id="datacenter-name"
+                    name="name"
+                    data-cy="name"
+                    type="text"
+                    validate={{
+                      required: { value: true, message: translate('entity.validation.required') },
+                      maxLength: { value: 50, message: translate('entity.validation.maxlength', { max: 50 }) },
+                    }}
+                  />
+                  <ValidatedField
+                    id="datacenter-region"
+                    name="region"
+                    data-cy="region"
+                    label={translate('infraMirrorApp.datacenter.region')}
+                    type="select"
+                  >
+                    <option value="" key="0" />
+                    {regions
+                      ? regions.map(otherEntity => (
+                          <option value={otherEntity.id} key={otherEntity.id}>
+                            {otherEntity.name}
+                          </option>
+                        ))
+                      : null}
+                  </ValidatedField>
+                  <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/datacenter" replace color="info">
+                    <FontAwesomeIcon icon="arrow-left" />
+                    &nbsp;
+                    <span className="d-none d-md-inline">
+                      <Translate contentKey="entity.action.back">Back</Translate>
+                    </span>
+                  </Button>
+                  &nbsp;
+                  <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+                    <FontAwesomeIcon icon="save" />
+                    &nbsp;
+                    <Translate contentKey="entity.action.save">Save</Translate>
+                  </Button>
+                </ValidatedForm>
+              )}
+            </CardBody>
+          </Card>
         </Col>
       </Row>
     </div>

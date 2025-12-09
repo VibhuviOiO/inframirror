@@ -37,6 +37,9 @@ import vibhuvi.oio.inframirror.repository.InstanceRepository;
 import vibhuvi.oio.inframirror.repository.search.InstanceSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.InstanceDTO;
 import vibhuvi.oio.inframirror.service.mapper.InstanceMapper;
+import vibhuvi.oio.inframirror.domain.enumeration.InstanceType;
+import vibhuvi.oio.inframirror.domain.enumeration.MonitoringType;
+import vibhuvi.oio.inframirror.domain.enumeration.OperatingSystem;
 
 /**
  * Integration tests for the {@link InstanceResource} REST controller.
@@ -55,14 +58,14 @@ class InstanceResourceIT {
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
-    private static final String DEFAULT_INSTANCE_TYPE = "AAAAAAAAAA";
-    private static final String UPDATED_INSTANCE_TYPE = "BBBBBBBBBB";
+    private static final InstanceType DEFAULT_INSTANCE_TYPE = InstanceType.VM;
+    private static final InstanceType UPDATED_INSTANCE_TYPE = InstanceType.BARE_METAL;
 
-    private static final String DEFAULT_MONITORING_TYPE = "AAAAAAAAAA";
-    private static final String UPDATED_MONITORING_TYPE = "BBBBBBBBBB";
+    private static final MonitoringType DEFAULT_MONITORING_TYPE = MonitoringType.SELF_HOSTED;
+    private static final MonitoringType UPDATED_MONITORING_TYPE = MonitoringType.AGENT_MONITORED;
 
-    private static final String DEFAULT_OPERATING_SYSTEM = "AAAAAAAAAA";
-    private static final String UPDATED_OPERATING_SYSTEM = "BBBBBBBBBB";
+    private static final OperatingSystem DEFAULT_OPERATING_SYSTEM = OperatingSystem.LINUX;
+    private static final OperatingSystem UPDATED_OPERATING_SYSTEM = OperatingSystem.WINDOWS;
 
     private static final String DEFAULT_PLATFORM = "AAAAAAAAAA";
     private static final String UPDATED_PLATFORM = "BBBBBBBBBB";

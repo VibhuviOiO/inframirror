@@ -4,10 +4,13 @@
       "home": {
         "title": "Instances",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Instance",
+        "createLabel": "Create",
         "createOrEditLabel": "Create or edit a Instance",
         "search": "Search for Instance",
-        "notFound": "No Instances found"
+        "searchButton": "Search",
+        "clearSearch": "Clear",
+        "notFound": "No Instances found",
+        "emptyState": "No instances available. Create your first instance to get started."
       },
       "created": "A new Instance is created with identifier {{ param }}",
       "updated": "A Instance is updated with identifier {{ param }}",

@@ -4,10 +4,13 @@
       "home": {
         "title": "Audit Trails",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Audit Trail",
+        "createLabel": "Create",
         "createOrEditLabel": "Create or edit a Audit Trail",
         "search": "Search for Audit Trail",
-        "notFound": "No Audit Trails found"
+        "searchButton": "Search",
+        "clearSearch": "Clear",
+        "notFound": "No Audit Trails found",
+        "emptyState": "No audit trails available. Create your first audit trail to get started."
       },
       "created": "A new Audit Trail is created with identifier {{ param }}",
       "updated": "A Audit Trail is updated with identifier {{ param }}",

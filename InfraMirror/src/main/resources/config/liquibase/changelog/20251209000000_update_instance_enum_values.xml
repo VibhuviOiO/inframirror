@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20251209000000-1" author="system">
+        <comment>Update existing enum values to uppercase</comment>
+        
+        <!-- Update OperatingSystem values -->
+        <update tableName="instance">
+            <column name="operating_system" value="LINUX"/>
+            <where>operating_system = 'Linux'</where>
+        </update>
+        
+        <update tableName="instance">
+            <column name="operating_system" value="WINDOWS"/>
+            <where>operating_system = 'Windows'</where>
+        </update>
+        
+        <update tableName="instance">
+            <column name="operating_system" value="MACOS"/>
+            <where>operating_system = 'macOS' OR operating_system = 'MacOS'</where>
+        </update>
+        
+        <update tableName="instance">
+            <column name="operating_system" value="UNIX"/>
+            <where>operating_system = 'Unix'</where>
+        </update>
+        
+        <update tableName="instance">
+            <column name="operating_system" value="BSD"/>
+            <where>operating_system = 'BSD' OR operating_system = 'bsd'</where>
+        </update>
+        
+        <update tableName="instance">
+            <column name="operating_system" value="OTHER"/>
+            <where>operating_system = 'Other'</where>
+        </update>
+        
+        <!-- Update InstanceType values -->
+        <update tableName="instance">
+            <column name="instance_type" value="VM"/>
+            <where>instance_type = 'vm' OR instance_type = 'Vm'</where>
+        </update>
+        
+        <update tableName="instance">
+            <column name="instance_type" value="BARE_METAL"/>
+            <where>instance_type = 'bare_metal' OR instance_type = 'Bare_Metal' OR instance_type = 'BareMetal'</where>
+        </update>
+        
+        <update tableName="instance">
+            <column name="instance_type" value="CONTAINER"/>
+            <where>instance_type = 'container' OR instance_type = 'Container'</where>
+        </update>
+        
+        <update tableName="instance">
+            <column name="instance_type" value="CLOUD_INSTANCE"/>
+            <where>instance_type = 'cloud_instance' OR instance_type = 'Cloud_Instance' OR instance_type = 'CloudInstance'</where>
+        </update>
+        
+        <!-- Update MonitoringType values -->
+        <update tableName="instance">
+            <column name="monitoring_type" value="SELF_HOSTED"/>
+            <where>monitoring_type = 'self_hosted' OR monitoring_type = 'Self_Hosted' OR monitoring_type = 'SelfHosted'</where>
+        </update>
+        
+        <update tableName="instance">
+            <column name="monitoring_type" value="AGENT_MONITORED"/>
+            <where>monitoring_type = 'agent_monitored' OR monitoring_type = 'Agent_Monitored' OR monitoring_type = 'AgentMonitored'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

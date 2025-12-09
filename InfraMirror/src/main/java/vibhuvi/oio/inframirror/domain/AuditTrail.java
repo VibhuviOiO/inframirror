@@ -39,13 +39,11 @@ public class AuditTrail implements Serializable {
     @Column(name = "entity_id", nullable = false)
     private Long entityId;
 
-    @Lob
-    @Column(name = "old_value")
+    @Column(name = "old_value", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String oldValue;
 
-    @Lob
-    @Column(name = "new_value")
+    @Column(name = "new_value", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String newValue;
 
@@ -58,8 +56,7 @@ public class AuditTrail implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String ipAddress;
 
-    @Lob
-    @Column(name = "user_agent")
+    @Column(name = "user_agent", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String userAgent;
 

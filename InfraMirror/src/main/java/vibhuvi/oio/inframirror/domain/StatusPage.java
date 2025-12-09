@@ -85,8 +85,7 @@ public class StatusPage implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer autoRefreshSeconds;
 
-    @Lob
-    @Column(name = "monitor_selection")
+    @Column(name = "monitor_selection", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String monitorSelection;
 
@@ -98,8 +97,7 @@ public class StatusPage implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isHomePage;
 
-    @Lob
-    @Column(name = "allowed_roles")
+    @Column(name = "allowed_roles", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String allowedRoles;
 

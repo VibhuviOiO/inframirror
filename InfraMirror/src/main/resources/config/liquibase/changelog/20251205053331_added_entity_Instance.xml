@@ -98,6 +98,9 @@
             <column name="agent_id" type="bigint">
                 <constraints nullable="true" />
             </column>
+            <column name="is_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
         <dropDefaultValue tableName="instance" columnName="created_at" columnDataType="${datetimeType}"/>

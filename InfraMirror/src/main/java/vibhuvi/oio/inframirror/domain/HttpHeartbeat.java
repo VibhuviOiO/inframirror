@@ -109,33 +109,27 @@ public class HttpHeartbeat implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String errorType;
 
-    @Lob
-    @Column(name = "error_message")
+    @Column(name = "error_message", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String errorMessage;
 
-    @Lob
-    @Column(name = "raw_request_headers")
+    @Column(name = "raw_request_headers", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String rawRequestHeaders;
 
-    @Lob
-    @Column(name = "raw_response_headers")
+    @Column(name = "raw_response_headers", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String rawResponseHeaders;
 
-    @Lob
-    @Column(name = "raw_response_body")
+    @Column(name = "raw_response_body", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String rawResponseBody;
 
-    @Lob
-    @Column(name = "dns_details")
+    @Column(name = "dns_details", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String dnsDetails;
 
-    @Lob
-    @Column(name = "tls_details")
+    @Column(name = "tls_details", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String tlsDetails;
 
@@ -162,8 +156,7 @@ public class HttpHeartbeat implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String responseBodyHash;
 
-    @Lob
-    @Column(name = "response_body_sample")
+    @Column(name = "response_body_sample", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String responseBodySample;
 
@@ -175,8 +168,7 @@ public class HttpHeartbeat implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer responseBodyUncompressedBytes;
 
-    @Lob
-    @Column(name = "redirect_details")
+    @Column(name = "redirect_details", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String redirectDetails;
 
@@ -204,23 +196,19 @@ public class HttpHeartbeat implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String cdnPop;
 
-    @Lob
-    @Column(name = "rate_limit_details")
+    @Column(name = "rate_limit_details", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String rateLimitDetails;
 
-    @Lob
-    @Column(name = "network_path")
+    @Column(name = "network_path", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String networkPath;
 
-    @Lob
-    @Column(name = "agent_metrics")
+    @Column(name = "agent_metrics", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String agentMetrics;
 
-    @Lob
-    @Column(name = "phase_latencies")
+    @Column(name = "phase_latencies", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String phaseLatencies;
 

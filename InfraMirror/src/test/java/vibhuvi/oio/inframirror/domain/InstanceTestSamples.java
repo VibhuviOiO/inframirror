@@ -4,6 +4,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import vibhuvi.oio.inframirror.domain.enumeration.InstanceType;
+import vibhuvi.oio.inframirror.domain.enumeration.MonitoringType;
+import vibhuvi.oio.inframirror.domain.enumeration.OperatingSystem;
 
 public class InstanceTestSamples {
 
@@ -17,9 +20,9 @@ public class InstanceTestSamples {
             .name("name1")
             .hostname("hostname1")
             .description("description1")
-            .instanceType("instanceType1")
-            .monitoringType("monitoringType1")
-            .operatingSystem("operatingSystem1")
+            .instanceType(InstanceType.VM)
+            .monitoringType(MonitoringType.SELF_HOSTED)
+            .operatingSystem(OperatingSystem.LINUX)
             .platform("platform1")
             .privateIpAddress("privateIpAddress1")
             .publicIpAddress("publicIpAddress1")
@@ -41,9 +44,9 @@ public class InstanceTestSamples {
             .name("name2")
             .hostname("hostname2")
             .description("description2")
-            .instanceType("instanceType2")
-            .monitoringType("monitoringType2")
-            .operatingSystem("operatingSystem2")
+            .instanceType(InstanceType.BARE_METAL)
+            .monitoringType(MonitoringType.AGENT_MONITORED)
+            .operatingSystem(OperatingSystem.WINDOWS)
             .platform("platform2")
             .privateIpAddress("privateIpAddress2")
             .publicIpAddress("publicIpAddress2")
@@ -65,9 +68,9 @@ public class InstanceTestSamples {
             .name(UUID.randomUUID().toString())
             .hostname(UUID.randomUUID().toString())
             .description(UUID.randomUUID().toString())
-            .instanceType(UUID.randomUUID().toString())
-            .monitoringType(UUID.randomUUID().toString())
-            .operatingSystem(UUID.randomUUID().toString())
+            .instanceType(InstanceType.values()[random.nextInt(InstanceType.values().length)])
+            .monitoringType(MonitoringType.values()[random.nextInt(MonitoringType.values().length)])
+            .operatingSystem(OperatingSystem.values()[random.nextInt(OperatingSystem.values().length)])
             .platform(UUID.randomUUID().toString())
             .privateIpAddress(UUID.randomUUID().toString())
             .publicIpAddress(UUID.randomUUID().toString())

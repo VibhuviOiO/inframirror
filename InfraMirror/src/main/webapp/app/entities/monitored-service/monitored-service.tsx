@@ -132,52 +132,78 @@ export const MonitoredService = () => {
 
   return (
     <div>
-      <h2 id="monitored-service-heading" data-cy="MonitoredServiceHeading">
-        <Translate contentKey="infraMirrorApp.monitoredService.home.title">Monitored Services</Translate>
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
-            <Translate contentKey="infraMirrorApp.monitoredService.home.refreshListLabel">Refresh List</Translate>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h4 id="monitored-service-heading" data-cy="MonitoredServiceHeading" className="mb-0">
+          <Translate contentKey="infraMirrorApp.monitoredService.home.title">Monitored Services</Translate>
+        </h4>
+        <div className="d-flex">
+          <Button
+            className="me-2"
+            color="info"
+            size="sm"
+            onClick={handleSyncList}
+            disabled={loading}
+            title={translate('infraMirrorApp.monitoredService.home.refreshListLabel')}
+          >
+            <FontAwesomeIcon icon="sync" spin={loading} />
           </Button>
-          <Link to="/monitored-service/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;
-            <Translate contentKey="infraMirrorApp.monitoredService.home.createLabel">Create new Monitored Service</Translate>
+          <Link
+            to="/monitored-service/new"
+            className="btn btn-primary btn-sm jh-create-entity"
+            id="jh-create-entity"
+            data-cy="entityCreateButton"
+            title={translate('infraMirrorApp.monitoredService.home.createLabel')}
+          >
+            <Translate contentKey="infraMirrorApp.monitoredService.home.createLabel">Create</Translate>
           </Link>
         </div>
-      </h2>
-      <Row>
+      </div>
+      <hr />
+      <Row className="mb-3">
         <Col sm="12">
-          <Form onSubmit={startSearching}>
-            <FormGroup>
-              <InputGroup>
-                <Input
-                  type="text"
-                  name="search"
-                  defaultValue={search}
-                  onChange={handleSearch}
-                  placeholder={translate('infraMirrorApp.monitoredService.home.search')}
-                />
-                <Button className="input-group-addon">
-                  <FontAwesomeIcon icon="search" />
-                </Button>
-                <Button type="reset" className="input-group-addon" onClick={clear}>
-                  <FontAwesomeIcon icon="trash" />
-                </Button>
-              </InputGroup>
-            </FormGroup>
-          </Form>
+          <div className="d-flex gap-2">
+            <Input
+              type="text"
+              name="search"
+              value={search}
+              onChange={handleSearch}
+              placeholder={translate('infraMirrorApp.monitoredService.home.search')}
+              style={{ flex: 1 }}
+            />
+            <Button color="primary" size="sm" onClick={startSearching} disabled={!search}>
+              <Translate contentKey="infraMirrorApp.monitoredService.home.searchButton">Search</Translate>
+            </Button>
+            {search && (
+              <Button color="secondary" size="sm" onClick={clear}>
+                <Translate contentKey="infraMirrorApp.monitoredService.home.clearSearch">Clear</Translate>
+              </Button>
+            )}
+          </div>
         </Col>
       </Row>
-      <div className="table-responsive">
+      <div className="table-responsive" style={{ position: 'relative', minHeight: '200px' }}>
+        {loading && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 10,
+            }}
+          >
+            <FontAwesomeIcon icon="spinner" spin size="2x" />
+          </div>
+        )}
         {monitoredServiceList && monitoredServiceList.length > 0 ? (
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.id">Id</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
-                </th>
                 <th className="hand" onClick={sort('name')}>
                   <Translate contentKey="infraMirrorApp.monitoredService.name">Name</Translate>{' '}
                   <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
@@ -247,11 +273,6 @@ export const MonitoredService = () => {
             <tbody>
               {monitoredServiceList.map((monitoredService, i) => (
                 <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/monitored-service/${monitoredService.id}`} color="link" size="sm">
-                      {monitoredService.id}
-                    </Button>
-                  </td>
                   <td>{monitoredService.name}</td>
                   <td>{monitoredService.description}</td>
                   <td>{monitoredService.serviceType}</td>
@@ -290,11 +311,9 @@ export const MonitoredService = () => {
                         color="info"
                         size="sm"
                         data-cy="entityDetailsButton"
+                        title={translate('entity.action.view')}
                       >
-                        <FontAwesomeIcon icon="eye" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.view">View</Translate>
-                        </span>
+                        <FontAwesomeIcon icon="eye" size="sm" />
                       </Button>
                       <Button
                         tag={Link}
@@ -302,11 +321,9 @@ export const MonitoredService = () => {
                         color="primary"
                         size="sm"
                         data-cy="entityEditButton"
+                        title={translate('entity.action.edit')}
                       >
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.edit">Edit</Translate>
-                        </span>
+                        <FontAwesomeIcon icon="pencil-alt" size="sm" />
                       </Button>
                       <Button
                         onClick={() =>
@@ -315,11 +332,9 @@ export const MonitoredService = () => {
                         color="danger"
                         size="sm"
                         data-cy="entityDeleteButton"
+                        title={translate('entity.action.delete')}
                       >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.delete">Delete</Translate>
-                        </span>
+                        <FontAwesomeIcon icon="trash" size="sm" />
                       </Button>
                     </div>
                   </td>
@@ -329,18 +344,30 @@ export const MonitoredService = () => {
           </Table>
         ) : (
           !loading && (
-            <div className="alert alert-warning">
-              <Translate contentKey="infraMirrorApp.monitoredService.home.notFound">No Monitored Services found</Translate>
+            <div className="text-center py-5">
+              <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
+              <h5 className="text-muted">
+                <Translate contentKey="infraMirrorApp.monitoredService.home.emptyState">
+                  No monitored services available. Create your first service to get started.
+                </Translate>
+              </h5>
+              <Link to="/monitored-service/new" className="btn btn-primary mt-3">
+                <FontAwesomeIcon icon="plus" /> <Translate contentKey="infraMirrorApp.monitoredService.home.createLabel">Create</Translate>
+              </Link>
             </div>
           )
         )}
       </div>
       {totalItems ? (
-        <div className={monitoredServiceList && monitoredServiceList.length > 0 ? '' : 'd-none'}>
-          <div className="justify-content-center d-flex">
+        <div
+          className={
+            monitoredServiceList && monitoredServiceList.length > 0 ? 'd-flex justify-content-between align-items-center' : 'd-none'
+          }
+        >
+          <div>
             <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
           </div>
-          <div className="justify-content-center d-flex">
+          <div>
             <JhiPagination
               activePage={paginationState.activePage}
               onSelect={handlePagination}

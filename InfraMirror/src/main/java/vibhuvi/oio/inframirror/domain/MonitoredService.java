@@ -80,8 +80,7 @@ public class MonitoredService implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer latencyCriticalMs;
 
-    @Lob
-    @Column(name = "advanced_config")
+    @Column(name = "advanced_config", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String advancedConfig;
 

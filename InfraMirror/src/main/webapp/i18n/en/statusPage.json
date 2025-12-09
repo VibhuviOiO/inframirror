@@ -4,10 +4,13 @@
       "home": {
         "title": "Status Pages",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Status Page",
+        "createLabel": "Create",
         "createOrEditLabel": "Create or edit a Status Page",
         "search": "Search for Status Page",
-        "notFound": "No Status Pages found"
+        "searchButton": "Search",
+        "clearSearch": "Clear",
+        "notFound": "No Status Pages found",
+        "emptyState": "No status pages available. Create your first status page to get started."
       },
       "created": "A new Status Page is created with identifier {{ param }}",
       "updated": "A Status Page is updated with identifier {{ param }}",

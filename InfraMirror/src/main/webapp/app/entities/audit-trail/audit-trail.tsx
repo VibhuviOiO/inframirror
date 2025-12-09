@@ -132,52 +132,78 @@ export const AuditTrail = () => {
 
   return (
     <div>
-      <h2 id="audit-trail-heading" data-cy="AuditTrailHeading">
-        <Translate contentKey="infraMirrorApp.auditTrail.home.title">Audit Trails</Translate>
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
-            <Translate contentKey="infraMirrorApp.auditTrail.home.refreshListLabel">Refresh List</Translate>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h4 id="audit-trail-heading" data-cy="AuditTrailHeading" className="mb-0">
+          <Translate contentKey="infraMirrorApp.auditTrail.home.title">Audit Trails</Translate>
+        </h4>
+        <div className="d-flex">
+          <Button
+            className="me-2"
+            color="info"
+            size="sm"
+            onClick={handleSyncList}
+            disabled={loading}
+            title={translate('infraMirrorApp.auditTrail.home.refreshListLabel')}
+          >
+            <FontAwesomeIcon icon="sync" spin={loading} />
           </Button>
-          <Link to="/audit-trail/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;
-            <Translate contentKey="infraMirrorApp.auditTrail.home.createLabel">Create new Audit Trail</Translate>
+          <Link
+            to="/audit-trail/new"
+            className="btn btn-primary btn-sm jh-create-entity"
+            id="jh-create-entity"
+            data-cy="entityCreateButton"
+            title={translate('infraMirrorApp.auditTrail.home.createLabel')}
+          >
+            <Translate contentKey="infraMirrorApp.auditTrail.home.createLabel">Create</Translate>
           </Link>
         </div>
-      </h2>
-      <Row>
+      </div>
+      <hr />
+      <Row className="mb-3">
         <Col sm="12">
-          <Form onSubmit={startSearching}>
-            <FormGroup>
-              <InputGroup>
-                <Input
-                  type="text"
-                  name="search"
-                  defaultValue={search}
-                  onChange={handleSearch}
-                  placeholder={translate('infraMirrorApp.auditTrail.home.search')}
-                />
-                <Button className="input-group-addon">
-                  <FontAwesomeIcon icon="search" />
-                </Button>
-                <Button type="reset" className="input-group-addon" onClick={clear}>
-                  <FontAwesomeIcon icon="trash" />
-                </Button>
-              </InputGroup>
-            </FormGroup>
-          </Form>
+          <div className="d-flex gap-2">
+            <Input
+              type="text"
+              name="search"
+              value={search}
+              onChange={handleSearch}
+              placeholder={translate('infraMirrorApp.auditTrail.home.search')}
+              style={{ flex: 1 }}
+            />
+            <Button color="primary" size="sm" onClick={startSearching} disabled={!search}>
+              <Translate contentKey="infraMirrorApp.auditTrail.home.searchButton">Search</Translate>
+            </Button>
+            {search && (
+              <Button color="secondary" size="sm" onClick={clear}>
+                <Translate contentKey="infraMirrorApp.auditTrail.home.clearSearch">Clear</Translate>
+              </Button>
+            )}
+          </div>
         </Col>
       </Row>
-      <div className="table-responsive">
+      <div className="table-responsive" style={{ position: 'relative', minHeight: '200px' }}>
+        {loading && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 10,
+            }}
+          >
+            <FontAwesomeIcon icon="spinner" spin size="2x" />
+          </div>
+        )}
         {auditTrailList && auditTrailList.length > 0 ? (
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="infraMirrorApp.auditTrail.id">Id</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
-                </th>
                 <th className="hand" onClick={sort('action')}>
                   <Translate contentKey="infraMirrorApp.auditTrail.action">Action</Translate>{' '}
                   <FontAwesomeIcon icon={getSortIconByFieldName('action')} />
@@ -216,11 +242,6 @@ export const AuditTrail = () => {
             <tbody>
               {auditTrailList.map((auditTrail, i) => (
                 <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/audit-trail/${auditTrail.id}`} color="link" size="sm">
-                      {auditTrail.id}
-                    </Button>
-                  </td>
                   <td>{auditTrail.action}</td>
                   <td>{auditTrail.entityName}</td>
                   <td>{auditTrail.entityId}</td>
@@ -231,11 +252,15 @@ export const AuditTrail = () => {
                   <td>{auditTrail.userAgent}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/audit-trail/${auditTrail.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.view">View</Translate>
-                        </span>
+                      <Button
+                        tag={Link}
+                        to={`/audit-trail/${auditTrail.id}`}
+                        color="info"
+                        size="sm"
+                        data-cy="entityDetailsButton"
+                        title={translate('entity.action.view')}
+                      >
+                        <FontAwesomeIcon icon="eye" size="sm" />
                       </Button>
                       <Button
                         tag={Link}
@@ -243,11 +268,9 @@ export const AuditTrail = () => {
                         color="primary"
                         size="sm"
                         data-cy="entityEditButton"
+                        title={translate('entity.action.edit')}
                       >
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.edit">Edit</Translate>
-                        </span>
+                        <FontAwesomeIcon icon="pencil-alt" size="sm" />
                       </Button>
                       <Button
                         onClick={() =>
@@ -256,11 +279,9 @@ export const AuditTrail = () => {
                         color="danger"
                         size="sm"
                         data-cy="entityDeleteButton"
+                        title={translate('entity.action.delete')}
                       >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.delete">Delete</Translate>
-                        </span>
+                        <FontAwesomeIcon icon="trash" size="sm" />
                       </Button>
                     </div>
                   </td>
@@ -270,18 +291,26 @@ export const AuditTrail = () => {
           </Table>
         ) : (
           !loading && (
-            <div className="alert alert-warning">
-              <Translate contentKey="infraMirrorApp.auditTrail.home.notFound">No Audit Trails found</Translate>
+            <div className="text-center py-5">
+              <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
+              <h5 className="text-muted">
+                <Translate contentKey="infraMirrorApp.auditTrail.home.emptyState">
+                  No audit trails available. Create your first audit trail to get started.
+                </Translate>
+              </h5>
+              <Link to="/audit-trail/new" className="btn btn-primary mt-3">
+                <FontAwesomeIcon icon="plus" /> <Translate contentKey="infraMirrorApp.auditTrail.home.createLabel">Create</Translate>
+              </Link>
             </div>
           )
         )}
       </div>
       {totalItems ? (
-        <div className={auditTrailList && auditTrailList.length > 0 ? '' : 'd-none'}>
-          <div className="justify-content-center d-flex">
+        <div className={auditTrailList && auditTrailList.length > 0 ? 'd-flex justify-content-between align-items-center' : 'd-none'}>
+          <div>
             <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
           </div>
-          <div className="justify-content-center d-flex">
+          <div>
             <JhiPagination
               activePage={paginationState.activePage}
               onSelect={handlePagination}

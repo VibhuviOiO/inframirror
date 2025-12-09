@@ -44,7 +44,7 @@ class HttpMonitorSearchRepositoryInternalImpl implements HttpMonitorSearchReposi
 
     @Override
     public Page<HttpMonitor> search(String query, Pageable pageable) {
-        NativeQuery nativeQuery = new NativeQuery(QueryStringQuery.of(qs -> qs.query(query))._toQuery());
+        NativeQuery nativeQuery = new NativeQuery(QueryStringQuery.of(qs -> qs.query("*" + query + "*"))._toQuery());
         return search(nativeQuery.setPageable(pageable));
     }
 

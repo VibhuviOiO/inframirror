@@ -4,10 +4,13 @@
       "home": {
         "title": "Monitored Services",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Monitored Service",
+        "createLabel": "Create",
         "createOrEditLabel": "Create or edit a Monitored Service",
         "search": "Search for Monitored Service",
-        "notFound": "No Monitored Services found"
+        "searchButton": "Search",
+        "clearSearch": "Clear",
+        "notFound": "No Monitored Services found",
+        "emptyState": "No monitored services available. Create your first service to get started."
       },
       "created": "A new Monitored Service is created with identifier {{ param }}",
       "updated": "A Monitored Service is updated with identifier {{ param }}",

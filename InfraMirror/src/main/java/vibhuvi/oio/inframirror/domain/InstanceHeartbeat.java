@@ -81,8 +81,7 @@ public class InstanceHeartbeat implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String status;
 
-    @Lob
-    @Column(name = "error_message")
+    @Column(name = "error_message", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String errorMessage;
 
@@ -91,8 +90,7 @@ public class InstanceHeartbeat implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String errorType;
 
-    @Lob
-    @Column(name = "metadata")
+    @Column(name = "metadata", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String metadata;
 

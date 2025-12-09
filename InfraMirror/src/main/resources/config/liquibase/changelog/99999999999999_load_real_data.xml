@@ -79,7 +79,7 @@
             <column name="description" value="Raspberry Pi 4 - Docker host"/>
             <column name="instance_type" value="BARE_METAL"/>
             <column name="monitoring_type" value="SELF_HOSTED"/>
-            <column name="operating_system" value="Linux"/>
+            <column name="operating_system" value="LINUX"/>
             <column name="platform" value="Raspberry Pi OS"/>
             <column name="private_ip_address" value="192.168.0.104"/>
             <column name="ping_enabled" valueBoolean="true"/>
@@ -105,7 +105,7 @@
             <column name="description" value="Mac machine - Redis cluster host"/>
             <column name="instance_type" value="BARE_METAL"/>
             <column name="monitoring_type" value="SELF_HOSTED"/>
-            <column name="operating_system" value="macOS"/>
+            <column name="operating_system" value="MACOS"/>
             <column name="platform" value="macOS"/>
             <column name="private_ip_address" value="192.168.0.103"/>
             <column name="ping_enabled" valueBoolean="true"/>

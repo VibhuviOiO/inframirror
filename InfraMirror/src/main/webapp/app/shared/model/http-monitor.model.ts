@@ -3,9 +3,9 @@ export interface IHttpMonitor {
   name?: string;
   method?: string;
   type?: string;
-  url?: string | null;
-  headers?: string | null;
-  body?: string | null;
+  url?: string;
+  headers?: any;
+  body?: any;
   intervalSeconds?: number;
   timeoutSeconds?: number;
   retryCount?: number;
@@ -25,17 +25,33 @@ export interface IHttpMonitor {
   description?: string | null;
   tags?: string | null;
   enabled?: boolean | null;
+  parentId?: number | null;
   expectedStatusCodes?: string | null;
   performanceBudgetMs?: number | null;
   sizeBudgetKb?: number | null;
-  parent?: IHttpMonitor | null;
 }
 
 export const defaultValue: Readonly<IHttpMonitor> = {
+  intervalSeconds: 60,
+  timeoutSeconds: 30,
+  retryCount: 2,
+  retryDelaySeconds: 5,
+  responseTimeWarningMs: 1000,
+  responseTimeCriticalMs: 3000,
+  uptimeWarningPercent: 99.0,
+  uptimeCriticalPercent: 95.0,
   includeResponseBody: false,
+  resendNotificationCount: 0,
+  certificateExpiryDays: 30,
   ignoreTlsError: false,
-  checkSslCertificate: false,
-  checkDnsResolution: false,
+  checkSslCertificate: true,
+  checkDnsResolution: true,
   upsideDownMode: false,
-  enabled: false,
+  maxRedirects: 10,
+  description: '',
+  tags: '',
+  enabled: true,
+  expectedStatusCodes: '200',
+  performanceBudgetMs: null,
+  sizeBudgetKb: null,
 };

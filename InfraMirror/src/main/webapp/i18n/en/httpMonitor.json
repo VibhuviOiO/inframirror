@@ -4,10 +4,13 @@
       "home": {
         "title": "Http Monitors",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Http Monitor",
+        "createLabel": "Create",
         "createOrEditLabel": "Create or edit a Http Monitor",
         "search": "Search for Http Monitor",
-        "notFound": "No Http Monitors found"
+        "searchButton": "Search",
+        "clearSearch": "Clear",
+        "notFound": "No Http Monitors found",
+        "emptyState": "No HTTP monitors available. Create your first monitor to get started."
       },
       "created": "A new Http Monitor is created with identifier {{ param }}",
       "updated": "A Http Monitor is updated with identifier {{ param }}",

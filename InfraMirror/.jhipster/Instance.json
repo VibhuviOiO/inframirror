@@ -30,21 +30,20 @@
     },
     {
       "fieldName": "instanceType",
-      "fieldType": "String",
-      "fieldValidateRules": ["required", "maxlength"],
-      "fieldValidateRulesMaxlength": "50"
+      "fieldType": "InstanceType",
+      "fieldValues": "VM,BARE_METAL,CONTAINER,CLOUD_INSTANCE",
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "monitoringType",
-      "fieldType": "String",
-      "fieldValidateRules": ["required", "maxlength"],
-      "fieldValidateRulesMaxlength": "50"
+      "fieldType": "MonitoringType",
+      "fieldValues": "SELF_HOSTED,AGENT_MONITORED",
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "operatingSystem",
-      "fieldType": "String",
-      "fieldValidateRules": ["maxlength"],
-      "fieldValidateRulesMaxlength": "100"
+      "fieldType": "OperatingSystem",
+      "fieldValues": "LINUX,WINDOWS,MACOS,UNIX,BSD,OTHER"
     },
     {
       "fieldName": "platform",
@@ -143,6 +142,11 @@
     {
       "fieldName": "lastHardwareCheckAt",
       "fieldType": "Instant"
+    },
+    {
+      "fieldName": "isActive",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
     }
   ],
   "jpaMetamodelFiltering": true,

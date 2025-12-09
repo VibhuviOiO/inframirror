@@ -42,8 +42,7 @@ public class StatusDependency implements Serializable {
     @Column(name = "child_id", nullable = false)
     private Long childId;
 
-    @Lob
-    @Column(name = "metadata")
+    @Column(name = "metadata", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String metadata;
 

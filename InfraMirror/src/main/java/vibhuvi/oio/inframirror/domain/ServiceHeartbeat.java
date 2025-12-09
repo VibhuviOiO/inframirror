@@ -43,13 +43,11 @@ public class ServiceHeartbeat implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer responseTimeMs;
 
-    @Lob
-    @Column(name = "error_message")
+    @Column(name = "error_message", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String errorMessage;
 
-    @Lob
-    @Column(name = "metadata")
+    @Column(name = "metadata", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String metadata;
 

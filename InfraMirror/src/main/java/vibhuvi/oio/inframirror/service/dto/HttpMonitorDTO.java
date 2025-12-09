@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.service.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -11,7 +12,6 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class HttpMonitorDTO implements Serializable {
 
-    @NotNull
     private Long id;
 
     @NotNull
@@ -29,11 +29,9 @@ public class HttpMonitorDTO implements Serializable {
     @Lob
     private String url;
 
-    @Lob
-    private String headers;
+    private JsonNode headers;
 
-    @Lob
-    private String body;
+    private JsonNode body;
 
     @NotNull
     private Integer intervalSeconds;
@@ -86,7 +84,7 @@ public class HttpMonitorDTO implements Serializable {
 
     private Integer sizeBudgetKb;
 
-    private HttpMonitorDTO parent;
+    private Long parentId;
 
     public Long getId() {
         return id;
@@ -128,19 +126,19 @@ public class HttpMonitorDTO implements Serializable {
         this.url = url;
     }
 
-    public String getHeaders() {
+    public JsonNode getHeaders() {
         return headers;
     }
 
-    public void setHeaders(String headers) {
+    public void setHeaders(JsonNode headers) {
         this.headers = headers;
     }
 
-    public String getBody() {
+    public JsonNode getBody() {
         return body;
     }
 
-    public void setBody(String body) {
+    public void setBody(JsonNode body) {
         this.body = body;
     }
 
@@ -320,12 +318,12 @@ public class HttpMonitorDTO implements Serializable {
         this.sizeBudgetKb = sizeBudgetKb;
     }
 
-    public HttpMonitorDTO getParent() {
-        return parent;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public void setParent(HttpMonitorDTO parent) {
-        this.parent = parent;
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     @Override
@@ -382,7 +380,7 @@ public class HttpMonitorDTO implements Serializable {
             ", expectedStatusCodes='" + getExpectedStatusCodes() + "'" +
             ", performanceBudgetMs=" + getPerformanceBudgetMs() +
             ", sizeBudgetKb=" + getSizeBudgetKb() +
-            ", parent=" + getParent() +
+            ", parentId=" + getParentId() +
             "}";
     }
 }

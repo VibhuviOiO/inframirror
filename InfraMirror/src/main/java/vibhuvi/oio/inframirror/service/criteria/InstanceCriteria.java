@@ -6,6 +6,9 @@ import java.util.Optional;
 import org.springdoc.core.annotations.ParameterObject;
 import tech.jhipster.service.Criteria;
 import tech.jhipster.service.filter.*;
+import vibhuvi.oio.inframirror.domain.enumeration.InstanceType;
+import vibhuvi.oio.inframirror.domain.enumeration.MonitoringType;
+import vibhuvi.oio.inframirror.domain.enumeration.OperatingSystem;
 
 /**
  * Criteria class for the {@link vibhuvi.oio.inframirror.domain.Instance} entity. This class is used
@@ -30,11 +33,11 @@ public class InstanceCriteria implements Serializable, Criteria {
 
     private StringFilter description;
 
-    private StringFilter instanceType;
+    private Filter<InstanceType> instanceType;
 
-    private StringFilter monitoringType;
+    private Filter<MonitoringType> monitoringType;
 
-    private StringFilter operatingSystem;
+    private Filter<OperatingSystem> operatingSystem;
 
     private StringFilter platform;
 
@@ -91,9 +94,9 @@ public class InstanceCriteria implements Serializable, Criteria {
         this.name = other.optionalName().map(StringFilter::copy).orElse(null);
         this.hostname = other.optionalHostname().map(StringFilter::copy).orElse(null);
         this.description = other.optionalDescription().map(StringFilter::copy).orElse(null);
-        this.instanceType = other.optionalInstanceType().map(StringFilter::copy).orElse(null);
-        this.monitoringType = other.optionalMonitoringType().map(StringFilter::copy).orElse(null);
-        this.operatingSystem = other.optionalOperatingSystem().map(StringFilter::copy).orElse(null);
+        this.instanceType = other.optionalInstanceType().map(Filter::copy).orElse(null);
+        this.monitoringType = other.optionalMonitoringType().map(Filter::copy).orElse(null);
+        this.operatingSystem = other.optionalOperatingSystem().map(Filter::copy).orElse(null);
         this.platform = other.optionalPlatform().map(StringFilter::copy).orElse(null);
         this.privateIpAddress = other.optionalPrivateIpAddress().map(StringFilter::copy).orElse(null);
         this.publicIpAddress = other.optionalPublicIpAddress().map(StringFilter::copy).orElse(null);
@@ -201,60 +204,60 @@ public class InstanceCriteria implements Serializable, Criteria {
         this.description = description;
     }
 
-    public StringFilter getInstanceType() {
+    public Filter<InstanceType> getInstanceType() {
         return instanceType;
     }
 
-    public Optional<StringFilter> optionalInstanceType() {
+    public Optional<Filter<InstanceType>> optionalInstanceType() {
         return Optional.ofNullable(instanceType);
     }
 
-    public StringFilter instanceType() {
+    public Filter<InstanceType> instanceType() {
         if (instanceType == null) {
-            setInstanceType(new StringFilter());
+            setInstanceType(new Filter<>());
         }
         return instanceType;
     }
 
-    public void setInstanceType(StringFilter instanceType) {
+    public void setInstanceType(Filter<InstanceType> instanceType) {
         this.instanceType = instanceType;
     }
 
-    public StringFilter getMonitoringType() {
+    public Filter<MonitoringType> getMonitoringType() {
         return monitoringType;
     }
 
-    public Optional<StringFilter> optionalMonitoringType() {
+    public Optional<Filter<MonitoringType>> optionalMonitoringType() {
         return Optional.ofNullable(monitoringType);
     }
 
-    public StringFilter monitoringType() {
+    public Filter<MonitoringType> monitoringType() {
         if (monitoringType == null) {
-            setMonitoringType(new StringFilter());
+            setMonitoringType(new Filter<>());
         }
         return monitoringType;
     }
 
-    public void setMonitoringType(StringFilter monitoringType) {
+    public void setMonitoringType(Filter<MonitoringType> monitoringType) {
         this.monitoringType = monitoringType;
     }
 
-    public StringFilter getOperatingSystem() {
+    public Filter<OperatingSystem> getOperatingSystem() {
         return operatingSystem;
     }
 
-    public Optional<StringFilter> optionalOperatingSystem() {
+    public Optional<Filter<OperatingSystem>> optionalOperatingSystem() {
         return Optional.ofNullable(operatingSystem);
     }
 
-    public StringFilter operatingSystem() {
+    public Filter<OperatingSystem> operatingSystem() {
         if (operatingSystem == null) {
-            setOperatingSystem(new StringFilter());
+            setOperatingSystem(new Filter<>());
         }
         return operatingSystem;
     }
 
-    public void setOperatingSystem(StringFilter operatingSystem) {
+    public void setOperatingSystem(Filter<OperatingSystem> operatingSystem) {
         this.operatingSystem = operatingSystem;
     }
 

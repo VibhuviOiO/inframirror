@@ -4,10 +4,13 @@
       "home": {
         "title": "Agents",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Agent",
+        "createLabel": "Create",
         "createOrEditLabel": "Create or edit a Agent",
         "search": "Search for Agent",
-        "notFound": "No Agents found"
+        "searchButton": "Search",
+        "clearSearch": "Clear",
+        "notFound": "No Agents found",
+        "emptyState": "No agents available. Create your first agent to get started."
       },
       "created": "A new Agent is created with identifier {{ param }}",
       "updated": "A Agent is updated with identifier {{ param }}",

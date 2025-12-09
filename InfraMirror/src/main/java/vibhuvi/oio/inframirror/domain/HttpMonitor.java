@@ -1,11 +1,13 @@
 package vibhuvi.oio.inframirror.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import org.hibernate.annotations.Type;
 
 /**
  * A HttpMonitor.
@@ -43,20 +45,19 @@ public class HttpMonitor implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String type;
 
-    @Lob
-    @Column(name = "url")
+    @Column(name = "url", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String url;
 
-    @Lob
-    @Column(name = "headers")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String headers;
+    @Column(name = "headers", columnDefinition = "jsonb")
+    @Type(JsonNodeType.class)
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Object)
+    private JsonNode headers;
 
-    @Lob
-    @Column(name = "body")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
-    private String body;
+    @Column(name = "body", columnDefinition = "jsonb")
+    @Type(JsonNodeType.class)
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Object)
+    private JsonNode body;
 
     @NotNull
     @Column(name = "interval_seconds", nullable = false)
@@ -124,8 +125,7 @@ public class HttpMonitor implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer maxRedirects;
 
-    @Lob
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
 
@@ -232,29 +232,29 @@ public class HttpMonitor implements Serializable {
         this.url = url;
     }
 
-    public String getHeaders() {
+    public JsonNode getHeaders() {
         return this.headers;
     }
 
-    public HttpMonitor headers(String headers) {
+    public HttpMonitor headers(JsonNode headers) {
         this.setHeaders(headers);
         return this;
     }
 
-    public void setHeaders(String headers) {
+    public void setHeaders(JsonNode headers) {
         this.headers = headers;
     }
 
-    public String getBody() {
+    public JsonNode getBody() {
         return this.body;
     }
 
-    public HttpMonitor body(String body) {
+    public HttpMonitor body(JsonNode body) {
         this.setBody(body);
         return this;
     }
 
-    public void setBody(String body) {
+    public void setBody(JsonNode body) {
         this.body = body;
     }
 

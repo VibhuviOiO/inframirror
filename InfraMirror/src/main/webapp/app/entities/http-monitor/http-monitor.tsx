@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Col, Form, FormGroup, Input, InputGroup, Row, Table } from 'reactstrap';
+import { Badge, Button, Col, Input, Row, Table } from 'reactstrap';
 import { JhiItemCount, JhiPagination, Translate, getPaginationState, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { faSort, faSortDown, faSortUp, faGlobe, faPlus, faCode } from '@fortawesome/free-solid-svg-icons';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { HttpMonitorDeleteModal } from './http-monitor-delete-modal';
+import { HttpMonitorEditModal } from './http-monitor-edit-modal';
+import { HttpMonitorViewModal } from './http-monitor-view-modal';
 
 import { getEntities, searchEntities } from './http-monitor.reducer';
 
@@ -17,6 +20,12 @@ export const HttpMonitor = () => {
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [clickedHeaders, setClickedHeaders] = useState(null);
+  const [clickedBody, setClickedBody] = useState(null);
+  const [selectedMonitor, setSelectedMonitor] = useState(null);
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
@@ -129,274 +138,316 @@ export const HttpMonitor = () => {
     return order === ASC ? faSortUp : faSortDown;
   };
 
+  const handleDelete = monitor => {
+    setSelectedMonitor(monitor);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteSuccess = () => {
+    setDeleteModalOpen(false);
+    setSelectedMonitor(null);
+    sortEntities();
+  };
+
+  const handleCreate = () => {
+    setSelectedMonitor(null);
+    setEditModalOpen(true);
+  };
+
+  const handleEdit = monitor => {
+    setSelectedMonitor(monitor);
+    setEditModalOpen(true);
+  };
+
+  const handleSaveSuccess = () => {
+    setEditModalOpen(false);
+    setSelectedMonitor(null);
+    sortEntities();
+  };
+
+  const handleView = monitor => {
+    setSelectedMonitor(monitor);
+    setViewModalOpen(true);
+  };
+
   return (
-    <div>
-      <h2 id="http-monitor-heading" data-cy="HttpMonitorHeading">
-        <Translate contentKey="infraMirrorApp.httpMonitor.home.title">Http Monitors</Translate>
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
-            <Translate contentKey="infraMirrorApp.httpMonitor.home.refreshListLabel">Refresh List</Translate>
-          </Button>
-          <Link to="/http-monitor/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;
-            <Translate contentKey="infraMirrorApp.httpMonitor.home.createLabel">Create new Http Monitor</Translate>
-          </Link>
+    <div
+      className="row g-3"
+      onClick={() => {
+        setClickedHeaders(null);
+        setClickedBody(null);
+      }}
+    >
+      <div className={editModalOpen ? 'col-md-6' : 'col-md-12'}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="mb-0">
+            <FontAwesomeIcon icon={faGlobe} className="me-2" />
+            <Translate contentKey="infraMirrorApp.httpMonitor.home.title">Http Monitors</Translate>
+          </h5>
+          <div className="d-flex gap-2">
+            <Button color="info" size="sm" onClick={handleSyncList} disabled={loading}>
+              <FontAwesomeIcon icon="sync" spin={loading} />
+            </Button>
+            <Button color="primary" size="sm" onClick={handleCreate}>
+              <FontAwesomeIcon icon={faPlus} className="me-1" />
+              New Monitor
+            </Button>
+          </div>
         </div>
-      </h2>
-      <Row>
-        <Col sm="12">
-          <Form onSubmit={startSearching}>
-            <FormGroup>
-              <InputGroup>
-                <Input
-                  type="text"
-                  name="search"
-                  defaultValue={search}
-                  onChange={handleSearch}
-                  placeholder={translate('infraMirrorApp.httpMonitor.home.search')}
-                />
-                <Button className="input-group-addon">
-                  <FontAwesomeIcon icon="search" />
-                </Button>
-                <Button type="reset" className="input-group-addon" onClick={clear}>
-                  <FontAwesomeIcon icon="trash" />
-                </Button>
-              </InputGroup>
-            </FormGroup>
-          </Form>
-        </Col>
-      </Row>
-      <div className="table-responsive">
-        {httpMonitorList && httpMonitorList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.id">Id</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
-                </th>
-                <th className="hand" onClick={sort('name')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.name">Name</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
-                </th>
-                <th className="hand" onClick={sort('method')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.method">Method</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('method')} />
-                </th>
-                <th className="hand" onClick={sort('type')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.type">Type</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('type')} />
-                </th>
-                <th className="hand" onClick={sort('url')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.url">Url</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('url')} />
-                </th>
-                <th className="hand" onClick={sort('headers')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.headers">Headers</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('headers')} />
-                </th>
-                <th className="hand" onClick={sort('body')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.body">Body</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('body')} />
-                </th>
-                <th className="hand" onClick={sort('intervalSeconds')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.intervalSeconds">Interval Seconds</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('intervalSeconds')} />
-                </th>
-                <th className="hand" onClick={sort('timeoutSeconds')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.timeoutSeconds">Timeout Seconds</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('timeoutSeconds')} />
-                </th>
-                <th className="hand" onClick={sort('retryCount')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.retryCount">Retry Count</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('retryCount')} />
-                </th>
-                <th className="hand" onClick={sort('retryDelaySeconds')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.retryDelaySeconds">Retry Delay Seconds</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('retryDelaySeconds')} />
-                </th>
-                <th className="hand" onClick={sort('responseTimeWarningMs')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.responseTimeWarningMs">Response Time Warning Ms</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('responseTimeWarningMs')} />
-                </th>
-                <th className="hand" onClick={sort('responseTimeCriticalMs')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.responseTimeCriticalMs">Response Time Critical Ms</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('responseTimeCriticalMs')} />
-                </th>
-                <th className="hand" onClick={sort('uptimeWarningPercent')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.uptimeWarningPercent">Uptime Warning Percent</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('uptimeWarningPercent')} />
-                </th>
-                <th className="hand" onClick={sort('uptimeCriticalPercent')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.uptimeCriticalPercent">Uptime Critical Percent</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('uptimeCriticalPercent')} />
-                </th>
-                <th className="hand" onClick={sort('includeResponseBody')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.includeResponseBody">Include Response Body</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('includeResponseBody')} />
-                </th>
-                <th className="hand" onClick={sort('resendNotificationCount')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.resendNotificationCount">Resend Notification Count</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('resendNotificationCount')} />
-                </th>
-                <th className="hand" onClick={sort('certificateExpiryDays')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.certificateExpiryDays">Certificate Expiry Days</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('certificateExpiryDays')} />
-                </th>
-                <th className="hand" onClick={sort('ignoreTlsError')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.ignoreTlsError">Ignore Tls Error</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('ignoreTlsError')} />
-                </th>
-                <th className="hand" onClick={sort('checkSslCertificate')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.checkSslCertificate">Check Ssl Certificate</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('checkSslCertificate')} />
-                </th>
-                <th className="hand" onClick={sort('checkDnsResolution')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.checkDnsResolution">Check Dns Resolution</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('checkDnsResolution')} />
-                </th>
-                <th className="hand" onClick={sort('upsideDownMode')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.upsideDownMode">Upside Down Mode</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('upsideDownMode')} />
-                </th>
-                <th className="hand" onClick={sort('maxRedirects')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.maxRedirects">Max Redirects</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('maxRedirects')} />
-                </th>
-                <th className="hand" onClick={sort('description')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.description">Description</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
-                </th>
-                <th className="hand" onClick={sort('tags')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.tags">Tags</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('tags')} />
-                </th>
-                <th className="hand" onClick={sort('enabled')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.enabled">Enabled</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('enabled')} />
-                </th>
-                <th className="hand" onClick={sort('expectedStatusCodes')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.expectedStatusCodes">Expected Status Codes</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('expectedStatusCodes')} />
-                </th>
-                <th className="hand" onClick={sort('performanceBudgetMs')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.performanceBudgetMs">Performance Budget Ms</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('performanceBudgetMs')} />
-                </th>
-                <th className="hand" onClick={sort('sizeBudgetKb')}>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.sizeBudgetKb">Size Budget Kb</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('sizeBudgetKb')} />
-                </th>
-                <th>
-                  <Translate contentKey="infraMirrorApp.httpMonitor.parent">Parent</Translate> <FontAwesomeIcon icon="sort" />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {httpMonitorList.map((httpMonitor, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/http-monitor/${httpMonitor.id}`} color="link" size="sm">
-                      {httpMonitor.id}
-                    </Button>
-                  </td>
-                  <td>{httpMonitor.name}</td>
-                  <td>{httpMonitor.method}</td>
-                  <td>{httpMonitor.type}</td>
-                  <td>{httpMonitor.url}</td>
-                  <td>{httpMonitor.headers}</td>
-                  <td>{httpMonitor.body}</td>
-                  <td>{httpMonitor.intervalSeconds}</td>
-                  <td>{httpMonitor.timeoutSeconds}</td>
-                  <td>{httpMonitor.retryCount}</td>
-                  <td>{httpMonitor.retryDelaySeconds}</td>
-                  <td>{httpMonitor.responseTimeWarningMs}</td>
-                  <td>{httpMonitor.responseTimeCriticalMs}</td>
-                  <td>{httpMonitor.uptimeWarningPercent}</td>
-                  <td>{httpMonitor.uptimeCriticalPercent}</td>
-                  <td>{httpMonitor.includeResponseBody ? 'true' : 'false'}</td>
-                  <td>{httpMonitor.resendNotificationCount}</td>
-                  <td>{httpMonitor.certificateExpiryDays}</td>
-                  <td>{httpMonitor.ignoreTlsError ? 'true' : 'false'}</td>
-                  <td>{httpMonitor.checkSslCertificate ? 'true' : 'false'}</td>
-                  <td>{httpMonitor.checkDnsResolution ? 'true' : 'false'}</td>
-                  <td>{httpMonitor.upsideDownMode ? 'true' : 'false'}</td>
-                  <td>{httpMonitor.maxRedirects}</td>
-                  <td>{httpMonitor.description}</td>
-                  <td>{httpMonitor.tags}</td>
-                  <td>{httpMonitor.enabled ? 'true' : 'false'}</td>
-                  <td>{httpMonitor.expectedStatusCodes}</td>
-                  <td>{httpMonitor.performanceBudgetMs}</td>
-                  <td>{httpMonitor.sizeBudgetKb}</td>
-                  <td>{httpMonitor.parent ? <Link to={`/http-monitor/${httpMonitor.parent.id}`}>{httpMonitor.parent.id}</Link> : ''}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/http-monitor/${httpMonitor.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.view">View</Translate>
-                        </span>
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/http-monitor/${httpMonitor.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.edit">Edit</Translate>
-                        </span>
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (window.location.href = `/http-monitor/${httpMonitor.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.delete">Delete</Translate>
-                        </span>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        ) : (
-          !loading && (
-            <div className="alert alert-warning">
-              <Translate contentKey="infraMirrorApp.httpMonitor.home.notFound">No Http Monitors found</Translate>
+        <div className="mb-3">
+          <div className="d-flex gap-2">
+            <Input
+              type="text"
+              name="search"
+              value={search}
+              onChange={handleSearch}
+              placeholder={translate('infraMirrorApp.httpMonitor.home.search')}
+              style={{ flex: 1 }}
+            />
+            <Button color="primary" size="sm" onClick={startSearching} disabled={!search}>
+              <FontAwesomeIcon icon="search" />
+            </Button>
+            {search && (
+              <Button color="secondary" size="sm" onClick={clear}>
+                <FontAwesomeIcon icon="times" />
+              </Button>
+            )}
+          </div>
+        </div>
+        <div className="table-responsive" style={{ position: 'relative', minHeight: '200px' }}>
+          {loading && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+              }}
+            >
+              <FontAwesomeIcon icon="spinner" spin size="2x" />
             </div>
-          )
+          )}
+          {httpMonitorList && httpMonitorList.length > 0 ? (
+            <Table responsive striped hover>
+              <thead>
+                <tr>
+                  <th className="hand" onClick={sort('name')}>
+                    Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
+                  </th>
+                  <th>URL</th>
+                  <th>Interval</th>
+                  <th>Headers</th>
+                  <th>Body</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {httpMonitorList.map((httpMonitor, i) => (
+                  <tr key={`entity-${i}`}>
+                    <td>
+                      <div>
+                        <strong>{httpMonitor.name}</strong>
+                        <div className="d-flex gap-1 mt-1 flex-wrap">
+                          <Badge color="info" style={{ fontSize: '0.65rem' }}>
+                            {httpMonitor.method || 'GET'}
+                          </Badge>
+                          {httpMonitor.type && (
+                            <Badge color="secondary" style={{ fontSize: '0.65rem' }}>
+                              {httpMonitor.type}
+                            </Badge>
+                          )}
+                          {!httpMonitor.enabled && (
+                            <Badge color="warning" style={{ fontSize: '0.65rem' }}>
+                              Disabled
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      {httpMonitor.url ? (
+                        <a href={httpMonitor.url} target="_blank" rel="noopener noreferrer" title={httpMonitor.url}>
+                          {httpMonitor.url.length > 40 ? `${httpMonitor.url.substring(0, 40)}...` : httpMonitor.url}
+                        </a>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
+                    <td>
+                      <div style={{ fontSize: '0.85rem' }}>
+                        <div>Interval: {httpMonitor.intervalSeconds}s</div>
+                        <div style={{ fontSize: '0.75rem', color: '#6c757d' }}>Timeout: {httpMonitor.timeoutSeconds}s</div>
+                      </div>
+                    </td>
+                    <td>
+                      {httpMonitor.headers ? (
+                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                          <Button
+                            color="link"
+                            size="sm"
+                            onClick={e => {
+                              e.stopPropagation();
+                              setClickedHeaders(clickedHeaders === httpMonitor.id ? null : httpMonitor.id);
+                            }}
+                            title="View Headers"
+                            style={{ padding: 0 }}
+                          >
+                            <FontAwesomeIcon icon={faCode} />
+                          </Button>
+                          {clickedHeaders === httpMonitor.id && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                bottom: i > httpMonitorList.length / 2 ? '100%' : 'auto',
+                                top: i > httpMonitorList.length / 2 ? 'auto' : '100%',
+                                left: 0,
+                                zIndex: 1000,
+                                backgroundColor: '#fff',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                padding: '0.5rem',
+                                minWidth: '300px',
+                                maxWidth: '500px',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                                marginTop: i > httpMonitorList.length / 2 ? 0 : '4px',
+                                marginBottom: i > httpMonitorList.length / 2 ? '4px' : 0,
+                              }}
+                              onClick={e => e.stopPropagation()}
+                            >
+                              <pre style={{ margin: 0, fontSize: '0.75rem', maxHeight: '200px', overflow: 'auto' }}>
+                                {JSON.stringify(httpMonitor.headers, null, 2)}
+                              </pre>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
+                    <td>
+                      {httpMonitor.body ? (
+                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                          <Button
+                            color="link"
+                            size="sm"
+                            onClick={e => {
+                              e.stopPropagation();
+                              setClickedBody(clickedBody === httpMonitor.id ? null : httpMonitor.id);
+                            }}
+                            title="View Body"
+                            style={{ padding: 0, color: '#198754' }}
+                          >
+                            <FontAwesomeIcon icon={faCode} />
+                          </Button>
+                          {clickedBody === httpMonitor.id && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                bottom: i > httpMonitorList.length / 2 ? '100%' : 'auto',
+                                top: i > httpMonitorList.length / 2 ? 'auto' : '100%',
+                                left: 0,
+                                zIndex: 1000,
+                                backgroundColor: '#fff',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                padding: '0.5rem',
+                                minWidth: '300px',
+                                maxWidth: '500px',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                                marginTop: i > httpMonitorList.length / 2 ? 0 : '4px',
+                                marginBottom: i > httpMonitorList.length / 2 ? '4px' : 0,
+                              }}
+                              onClick={e => e.stopPropagation()}
+                            >
+                              <pre style={{ margin: 0, fontSize: '0.75rem', maxHeight: '200px', overflow: 'auto' }}>
+                                {JSON.stringify(httpMonitor.body, null, 2)}
+                              </pre>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
+                    <td>
+                      <div className="d-flex gap-1">
+                        <Button onClick={() => handleView(httpMonitor)} color="link" size="sm" title="View" style={{ padding: 0 }}>
+                          <FontAwesomeIcon icon="eye" />
+                        </Button>
+                        <Button onClick={() => handleEdit(httpMonitor)} color="link" size="sm" title="Edit" style={{ padding: 0 }}>
+                          <FontAwesomeIcon icon="pencil-alt" />
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(httpMonitor)}
+                          color="link"
+                          size="sm"
+                          title="Delete"
+                          style={{ padding: 0, color: '#dc3545', marginLeft: '0.5rem' }}
+                        >
+                          <FontAwesomeIcon icon="trash" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            !loading && (
+              <div className="text-center py-5">
+                <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
+                <h5 className="text-muted">No HTTP monitors available. Create your first monitor to get started.</h5>
+                <Button color="primary" className="mt-3" onClick={handleCreate}>
+                  <FontAwesomeIcon icon="plus" /> Create Monitor
+                </Button>
+              </div>
+            )
+          )}
+        </div>
+        {totalItems ? (
+          <div className={httpMonitorList && httpMonitorList.length > 0 ? 'd-flex justify-content-between align-items-center' : 'd-none'}>
+            <div>
+              <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
+            </div>
+            <div>
+              <JhiPagination
+                activePage={paginationState.activePage}
+                onSelect={handlePagination}
+                maxButtons={5}
+                itemsPerPage={paginationState.itemsPerPage}
+                totalItems={totalItems}
+              />
+            </div>
+          </div>
+        ) : (
+          ''
         )}
       </div>
-      {totalItems ? (
-        <div className={httpMonitorList && httpMonitorList.length > 0 ? '' : 'd-none'}>
-          <div className="justify-content-center d-flex">
-            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
-          </div>
-          <div className="justify-content-center d-flex">
-            <JhiPagination
-              activePage={paginationState.activePage}
-              onSelect={handlePagination}
-              maxButtons={5}
-              itemsPerPage={paginationState.itemsPerPage}
-              totalItems={totalItems}
-            />
-          </div>
+      {editModalOpen && (
+        <div className="col-md-6">
+          <HttpMonitorEditModal
+            isOpen={editModalOpen}
+            toggle={() => setEditModalOpen(false)}
+            monitor={selectedMonitor}
+            onSave={handleSaveSuccess}
+          />
         </div>
-      ) : (
-        ''
       )}
+
+      <HttpMonitorDeleteModal
+        isOpen={deleteModalOpen}
+        toggle={() => setDeleteModalOpen(false)}
+        monitor={selectedMonitor}
+        onDelete={handleDeleteSuccess}
+      />
+
+      <HttpMonitorViewModal isOpen={viewModalOpen} toggle={() => setViewModalOpen(false)} monitor={selectedMonitor} />
     </div>
   );
 };

@@ -49,6 +49,7 @@ public class Datacenter implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "datacenters", "agents" }, allowSetters = true)
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Object)
     private Region region;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

@@ -228,16 +228,6 @@ export const Region = () => {
                     <div className="btn-group flex-btn-group-container">
                       <Button
                         tag={Link}
-                        to={`/region/${region.id}`}
-                        color="info"
-                        size="sm"
-                        data-cy="entityDetailsButton"
-                        title={translate('entity.action.view')}
-                      >
-                        <FontAwesomeIcon icon="eye" size="sm" />
-                      </Button>
-                      <Button
-                        tag={Link}
                         to={`/region/${region.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="primary"
                         size="sm"

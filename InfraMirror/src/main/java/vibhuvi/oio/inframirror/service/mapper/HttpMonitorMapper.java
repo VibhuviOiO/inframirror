@@ -9,11 +9,18 @@ import vibhuvi.oio.inframirror.service.dto.HttpMonitorDTO;
  */
 @Mapper(componentModel = "spring")
 public interface HttpMonitorMapper extends EntityMapper<HttpMonitorDTO, HttpMonitor> {
-    @Mapping(target = "parent", source = "parent", qualifiedByName = "httpMonitorId")
+    @Mapping(target = "parentId", source = "parent.id")
     HttpMonitorDTO toDto(HttpMonitor s);
+
+    @Mapping(target = "parent", source = "parentId", qualifiedByName = "httpMonitorId")
+    @Mapping(target = "children", ignore = true)
+    @Mapping(target = "removeChildren", ignore = true)
+    @Mapping(target = "heartbeats", ignore = true)
+    @Mapping(target = "removeHeartbeat", ignore = true)
+    HttpMonitor toEntity(HttpMonitorDTO dto);
 
     @Named("httpMonitorId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
-    HttpMonitorDTO toDtoHttpMonitorId(HttpMonitor httpMonitor);
+    HttpMonitor fromId(Long id);
 }
