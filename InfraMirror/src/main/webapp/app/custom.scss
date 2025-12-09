@@ -134,21 +134,3 @@ button:active,
     }
   }
 }
-
-// Compact form styling for modals
-.form-label-sm {
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 0.25rem;
-}
-
-.form-control-sm {
-  font-size: 0.875rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--bs-border-radius) !important;
-}
-
-.form-control,
-.form-select {
-  border-radius: var(--bs-border-radius) !important;
-}

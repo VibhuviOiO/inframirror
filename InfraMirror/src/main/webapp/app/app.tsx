@@ -23,7 +23,7 @@ const baseHref = document.querySelector('base').getAttribute('href').replace(/\/
 
 export const App = () => {
   const dispatch = useAppDispatch();
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(true);
   const [hasSecondarySidebar, setHasSecondarySidebar] = React.useState(false);
 
   useEffect(() => {
