@@ -1,9 +1,11 @@
 package vibhuvi.oio.inframirror.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vibhuvi.oio.inframirror.service.dto.MonitoredServiceDTO;
+import vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO;
 
 /**
  * Service Interface for managing {@link vibhuvi.oio.inframirror.domain.MonitoredService}.
@@ -47,6 +49,23 @@ public interface MonitoredServiceService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    /**
+     * Get service instances for a monitored service.
+     *
+     * @param monitoredServiceId the id of the monitored service.
+     * @return the list of service instances.
+     */
+    List<ServiceInstanceDTO> findServiceInstances(Long monitoredServiceId);
+
+    /**
+     * Add a service instance to a monitored service.
+     *
+     * @param monitoredServiceId the id of the monitored service.
+     * @param serviceInstanceDTO the service instance to add.
+     * @return the persisted service instance.
+     */
+    ServiceInstanceDTO addServiceInstance(Long monitoredServiceId, ServiceInstanceDTO serviceInstanceDTO);
 
     /**
      * Search for the monitoredService corresponding to the query.

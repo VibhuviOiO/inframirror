@@ -206,6 +206,42 @@ public class MonitoredServiceResource {
     }
 
     /**
+     * {@code GET  /monitored-services/:id/instances} : get service instances for a monitored service.
+     *
+     * @param id the id of the monitoredService.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of service instances in body.
+     */
+    @GetMapping("/{id}/instances")
+    public ResponseEntity<List<vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO>> getServiceInstances(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get ServiceInstances for MonitoredService : {}", id);
+        List<vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO> instances = monitoredServiceService.findServiceInstances(id);
+        return ResponseEntity.ok().body(instances);
+    }
+
+    /**
+     * {@code POST  /monitored-services/:id/instances} : add a service instance to a monitored service.
+     *
+     * @param id the id of the monitoredService.
+     * @param serviceInstanceDTO the serviceInstanceDTO to add.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new serviceInstanceDTO.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PostMapping("/{id}/instances")
+    public ResponseEntity<vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO> addServiceInstance(
+        @PathVariable("id") Long id,
+        @RequestBody vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO serviceInstanceDTO
+    ) throws URISyntaxException {
+        LOG.debug("REST request to add ServiceInstance to MonitoredService : {}, {}", id, serviceInstanceDTO);
+        if (serviceInstanceDTO.getId() != null) {
+            throw new BadRequestAlertException("A new serviceInstance cannot already have an ID", "serviceInstance", "idexists");
+        }
+        serviceInstanceDTO = monitoredServiceService.addServiceInstance(id, serviceInstanceDTO);
+        return ResponseEntity.created(new URI("/api/service-instances/" + serviceInstanceDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "serviceInstance", serviceInstanceDTO.getId().toString()))
+            .body(serviceInstanceDTO);
+    }
+
+    /**
      * {@code SEARCH  /monitored-services/_search?query=:query} : search for the monitoredService corresponding
      * to the query.
      *

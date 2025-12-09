@@ -11,11 +11,16 @@ import vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO;
 /**
  * Mapper for the entity {@link ServiceInstance} and its DTO {@link ServiceInstanceDTO}.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {InstanceMapper.class})
 public interface ServiceInstanceMapper extends EntityMapper<ServiceInstanceDTO, ServiceInstance> {
     @Mapping(target = "instance", source = "instance", qualifiedByName = "instanceId")
     @Mapping(target = "monitoredService", source = "monitoredService", qualifiedByName = "monitoredServiceId")
     ServiceInstanceDTO toDto(ServiceInstance s);
+    
+    @Named("withFullInstance")
+    @Mapping(target = "instance", source = "instance")
+    @Mapping(target = "monitoredService", source = "monitoredService", qualifiedByName = "monitoredServiceId")
+    ServiceInstanceDTO toDtoWithFullInstance(ServiceInstance s);
 
     @Named("instanceId")
     @BeanMapping(ignoreByDefault = true)

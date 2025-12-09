@@ -15,7 +15,7 @@ import AgentMonitor from './agent-monitor';
 import AgentLock from './agent-lock';
 import Instance from './instance';
 import InstanceHeartbeat from './instance-heartbeat';
-import ServiceInstance from './service-instance';
+
 import ServiceHeartbeat from './service-heartbeat';
 import StatusPage from './status-page';
 import StatusPageItem from './status-page-item';
@@ -40,7 +40,7 @@ export default () => {
         <Route path="agent-lock/*" element={<AgentLock />} />
         <Route path="instance/*" element={<Instance />} />
         <Route path="instance-heartbeat/*" element={<InstanceHeartbeat />} />
-        <Route path="service-instance/*" element={<ServiceInstance />} />
+
         <Route path="service-heartbeat/*" element={<ServiceHeartbeat />} />
         <Route path="status-page/*" element={<StatusPage />} />
         <Route path="status-page-item/*" element={<StatusPageItem />} />

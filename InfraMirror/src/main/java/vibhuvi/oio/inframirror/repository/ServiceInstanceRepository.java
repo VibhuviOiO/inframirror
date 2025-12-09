@@ -1,6 +1,8 @@
 package vibhuvi.oio.inframirror.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vibhuvi.oio.inframirror.domain.ServiceInstance;
 
@@ -9,4 +11,11 @@ import vibhuvi.oio.inframirror.domain.ServiceInstance;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ServiceInstanceRepository extends JpaRepository<ServiceInstance, Long> {}
+public interface ServiceInstanceRepository extends JpaRepository<ServiceInstance, Long> {
+    List<ServiceInstance> findByMonitoredServiceId(Long monitoredServiceId);
+    
+    @Query("SELECT si FROM ServiceInstance si LEFT JOIN FETCH si.instance WHERE si.monitoredService.id = :monitoredServiceId")
+    List<ServiceInstance> findByMonitoredServiceIdWithInstance(@Param("monitoredServiceId") Long monitoredServiceId);
+    
+    void deleteByMonitoredServiceId(Long monitoredServiceId);
+}

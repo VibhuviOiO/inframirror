@@ -43,9 +43,10 @@ const EntitiesMenu = () => {
       <MenuItem icon="asterisk" to="/instance-heartbeat">
         <Translate contentKey="global.menu.entities.instanceHeartbeat" />
       </MenuItem>
-      <MenuItem icon="asterisk" to="/service-instance">
+      {/* ServiceInstance managed through MonitoredService */}
+      {/* <MenuItem icon="asterisk" to="/service-instance">
         <Translate contentKey="global.menu.entities.serviceInstance" />
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem icon="asterisk" to="/service-heartbeat">
         <Translate contentKey="global.menu.entities.serviceHeartbeat" />
       </MenuItem>

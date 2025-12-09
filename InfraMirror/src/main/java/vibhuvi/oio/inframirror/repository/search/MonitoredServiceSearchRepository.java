@@ -45,7 +45,7 @@ class MonitoredServiceSearchRepositoryInternalImpl implements MonitoredServiceSe
 
     @Override
     public Page<MonitoredService> search(String query, Pageable pageable) {
-        NativeQuery nativeQuery = new NativeQuery(QueryStringQuery.of(qs -> qs.query(query))._toQuery());
+        NativeQuery nativeQuery = new NativeQuery(QueryStringQuery.of(qs -> qs.query("*" + query + "*"))._toQuery());
         return search(nativeQuery.setPageable(pageable));
     }
 

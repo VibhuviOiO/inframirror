@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,10 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.MonitoredService;
 import vibhuvi.oio.inframirror.repository.MonitoredServiceRepository;
+import vibhuvi.oio.inframirror.repository.ServiceInstanceRepository;
 import vibhuvi.oio.inframirror.repository.search.MonitoredServiceSearchRepository;
 import vibhuvi.oio.inframirror.service.MonitoredServiceService;
 import vibhuvi.oio.inframirror.service.dto.MonitoredServiceDTO;
+import vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO;
 import vibhuvi.oio.inframirror.service.mapper.MonitoredServiceMapper;
+import vibhuvi.oio.inframirror.service.mapper.ServiceInstanceMapper;
 
 /**
  * Service Implementation for managing {@link vibhuvi.oio.inframirror.domain.MonitoredService}.
@@ -29,14 +33,22 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
 
     private final MonitoredServiceSearchRepository monitoredServiceSearchRepository;
 
+    private final ServiceInstanceRepository serviceInstanceRepository;
+
+    private final ServiceInstanceMapper serviceInstanceMapper;
+
     public MonitoredServiceServiceImpl(
         MonitoredServiceRepository monitoredServiceRepository,
         MonitoredServiceMapper monitoredServiceMapper,
-        MonitoredServiceSearchRepository monitoredServiceSearchRepository
+        MonitoredServiceSearchRepository monitoredServiceSearchRepository,
+        ServiceInstanceRepository serviceInstanceRepository,
+        ServiceInstanceMapper serviceInstanceMapper
     ) {
         this.monitoredServiceRepository = monitoredServiceRepository;
         this.monitoredServiceMapper = monitoredServiceMapper;
         this.monitoredServiceSearchRepository = monitoredServiceSearchRepository;
+        this.serviceInstanceRepository = serviceInstanceRepository;
+        this.serviceInstanceMapper = serviceInstanceMapper;
     }
 
     @Override
@@ -88,6 +100,31 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
         LOG.debug("Request to delete MonitoredService : {}", id);
         monitoredServiceRepository.deleteById(id);
         monitoredServiceSearchRepository.deleteFromIndexById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ServiceInstanceDTO> findServiceInstances(Long monitoredServiceId) {
+        LOG.debug("Request to get ServiceInstances for MonitoredService : {}", monitoredServiceId);
+        return serviceInstanceRepository.findByMonitoredServiceIdWithInstance(monitoredServiceId)
+            .stream()
+            .map(serviceInstanceMapper::toDtoWithFullInstance)
+            .toList();
+    }
+
+    @Override
+    public ServiceInstanceDTO addServiceInstance(Long monitoredServiceId, ServiceInstanceDTO serviceInstanceDTO) {
+        LOG.debug("Request to add ServiceInstance to MonitoredService : {}, {}", monitoredServiceId, serviceInstanceDTO);
+        
+        MonitoredService monitoredService = monitoredServiceRepository.findById(monitoredServiceId)
+            .orElseThrow(() -> new RuntimeException("MonitoredService not found with id: " + monitoredServiceId));
+        
+        serviceInstanceDTO.setMonitoredService(monitoredServiceMapper.toDto(monitoredService));
+        
+        var serviceInstance = serviceInstanceMapper.toEntity(serviceInstanceDTO);
+        serviceInstance = serviceInstanceRepository.save(serviceInstance);
+        
+        return serviceInstanceMapper.toDtoWithFullInstance(serviceInstance);
     }
 
     @Override

@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Col, Form, FormGroup, Input, InputGroup, Row, Table } from 'reactstrap';
-import { JhiItemCount, JhiPagination, TextFormat, Translate, getPaginationState, translate } from 'react-jhipster';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Badge, Button, Input, Table } from 'reactstrap';
+import { JhiItemCount, JhiPagination, Translate, getPaginationState, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import { APP_DATE_FORMAT } from 'app/config/constants';
+import { faSort, faSortDown, faSortUp, faServer, faPlus, faCaretRight, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { MonitoredServiceDeleteModal } from './monitored-service-delete-modal';
+import { MonitoredServiceEditModal } from './monitored-service-edit-modal';
+import { MonitoredServiceViewModal } from './monitored-service-view-modal';
+import { ServiceInstanceManager } from './service-instance-manager';
 
 import { getEntities, searchEntities } from './monitored-service.reducer';
 
 export const MonitoredService = () => {
   const dispatch = useAppDispatch();
-
   const pageLocation = useLocation();
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
@@ -49,14 +56,11 @@ export const MonitoredService = () => {
 
   const startSearching = e => {
     if (search) {
-      setPaginationState({
-        ...paginationState,
-        activePage: 1,
-      });
+      setPaginationState({ ...paginationState, activePage: 1 });
       dispatch(
         searchEntities({
           query: search,
-          page: paginationState.activePage - 1,
+          page: 0,
           size: paginationState.itemsPerPage,
           sort: `${paginationState.sort},${paginationState.order}`,
         }),
@@ -67,10 +71,7 @@ export const MonitoredService = () => {
 
   const clear = () => {
     setSearch('');
-    setPaginationState({
-      ...paginationState,
-      activePage: 1,
-    });
+    setPaginationState({ ...paginationState, activePage: 1 });
     dispatch(getEntities({}));
   };
 
@@ -130,37 +131,67 @@ export const MonitoredService = () => {
     return order === ASC ? faSortUp : faSortDown;
   };
 
+  const handleDelete = service => {
+    setSelectedService(service);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteSuccess = () => {
+    setDeleteModalOpen(false);
+    setSelectedService(null);
+    sortEntities();
+  };
+
+  const handleCreate = () => {
+    setSelectedService(null);
+    setEditModalOpen(true);
+  };
+
+  const handleEdit = service => {
+    setSelectedService(service);
+    setEditModalOpen(true);
+  };
+
+  const handleSaveSuccess = () => {
+    setEditModalOpen(false);
+    setSelectedService(null);
+    sortEntities();
+  };
+
+  const handleView = service => {
+    setSelectedService(service);
+    setViewModalOpen(true);
+  };
+
+  const toggleRow = (serviceId: number) => {
+    const newExpanded = new Set(expandedRows);
+    if (newExpanded.has(serviceId)) {
+      newExpanded.delete(serviceId);
+    } else {
+      newExpanded.add(serviceId);
+    }
+    setExpandedRows(newExpanded);
+  };
+
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4 id="monitored-service-heading" data-cy="MonitoredServiceHeading" className="mb-0">
-          <Translate contentKey="infraMirrorApp.monitoredService.home.title">Monitored Services</Translate>
-        </h4>
-        <div className="d-flex">
-          <Button
-            className="me-2"
-            color="info"
-            size="sm"
-            onClick={handleSyncList}
-            disabled={loading}
-            title={translate('infraMirrorApp.monitoredService.home.refreshListLabel')}
-          >
-            <FontAwesomeIcon icon="sync" spin={loading} />
-          </Button>
-          <Link
-            to="/monitored-service/new"
-            className="btn btn-primary btn-sm jh-create-entity"
-            id="jh-create-entity"
-            data-cy="entityCreateButton"
-            title={translate('infraMirrorApp.monitoredService.home.createLabel')}
-          >
-            <Translate contentKey="infraMirrorApp.monitoredService.home.createLabel">Create</Translate>
-          </Link>
+    <div className="row g-3">
+      <div className={editModalOpen ? 'col-md-6' : 'col-md-12'}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="mb-0">
+            <FontAwesomeIcon icon={faServer} className="me-2" />
+            <Translate contentKey="infraMirrorApp.monitoredService.home.title">Monitored Services</Translate>
+          </h5>
+          <div className="d-flex gap-2">
+            <Button color="info" size="sm" onClick={handleSyncList} disabled={loading}>
+              <FontAwesomeIcon icon="sync" spin={loading} />
+            </Button>
+            <Button color="primary" size="sm" onClick={handleCreate}>
+              <FontAwesomeIcon icon={faPlus} className="me-1" />
+              New Service
+            </Button>
+          </div>
         </div>
-      </div>
-      <hr />
-      <Row className="mb-3">
-        <Col sm="12">
+        <div className="mb-3">
           <div className="d-flex gap-2">
             <Input
               type="text"
@@ -171,215 +202,200 @@ export const MonitoredService = () => {
               style={{ flex: 1 }}
             />
             <Button color="primary" size="sm" onClick={startSearching} disabled={!search}>
-              <Translate contentKey="infraMirrorApp.monitoredService.home.searchButton">Search</Translate>
+              <FontAwesomeIcon icon="search" />
             </Button>
             {search && (
               <Button color="secondary" size="sm" onClick={clear}>
-                <Translate contentKey="infraMirrorApp.monitoredService.home.clearSearch">Clear</Translate>
+                <FontAwesomeIcon icon="times" />
               </Button>
             )}
           </div>
-        </Col>
-      </Row>
-      <div className="table-responsive" style={{ position: 'relative', minHeight: '200px' }}>
-        {loading && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 10,
-            }}
-          >
-            <FontAwesomeIcon icon="spinner" spin size="2x" />
-          </div>
-        )}
-        {monitoredServiceList && monitoredServiceList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('name')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.name">Name</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
-                </th>
-                <th className="hand" onClick={sort('description')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.description">Description</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
-                </th>
-                <th className="hand" onClick={sort('serviceType')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.serviceType">Service Type</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('serviceType')} />
-                </th>
-                <th className="hand" onClick={sort('environment')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.environment">Environment</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('environment')} />
-                </th>
-                <th className="hand" onClick={sort('monitoringEnabled')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.monitoringEnabled">Monitoring Enabled</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('monitoringEnabled')} />
-                </th>
-                <th className="hand" onClick={sort('clusterMonitoringEnabled')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.clusterMonitoringEnabled">Cluster Monitoring Enabled</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('clusterMonitoringEnabled')} />
-                </th>
-                <th className="hand" onClick={sort('intervalSeconds')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.intervalSeconds">Interval Seconds</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('intervalSeconds')} />
-                </th>
-                <th className="hand" onClick={sort('timeoutMs')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.timeoutMs">Timeout Ms</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('timeoutMs')} />
-                </th>
-                <th className="hand" onClick={sort('retryCount')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.retryCount">Retry Count</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('retryCount')} />
-                </th>
-                <th className="hand" onClick={sort('latencyWarningMs')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.latencyWarningMs">Latency Warning Ms</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('latencyWarningMs')} />
-                </th>
-                <th className="hand" onClick={sort('latencyCriticalMs')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.latencyCriticalMs">Latency Critical Ms</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('latencyCriticalMs')} />
-                </th>
-                <th className="hand" onClick={sort('advancedConfig')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.advancedConfig">Advanced Config</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('advancedConfig')} />
-                </th>
-                <th className="hand" onClick={sort('isActive')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.isActive">Is Active</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('isActive')} />
-                </th>
-                <th className="hand" onClick={sort('createdAt')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.createdAt">Created At</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('createdAt')} />
-                </th>
-                <th className="hand" onClick={sort('updatedAt')}>
-                  <Translate contentKey="infraMirrorApp.monitoredService.updatedAt">Updated At</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('updatedAt')} />
-                </th>
-                <th>
-                  <Translate contentKey="infraMirrorApp.monitoredService.datacenter">Datacenter</Translate> <FontAwesomeIcon icon="sort" />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {monitoredServiceList.map((monitoredService, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>{monitoredService.name}</td>
-                  <td>{monitoredService.description}</td>
-                  <td>{monitoredService.serviceType}</td>
-                  <td>{monitoredService.environment}</td>
-                  <td>{monitoredService.monitoringEnabled ? 'true' : 'false'}</td>
-                  <td>{monitoredService.clusterMonitoringEnabled ? 'true' : 'false'}</td>
-                  <td>{monitoredService.intervalSeconds}</td>
-                  <td>{monitoredService.timeoutMs}</td>
-                  <td>{monitoredService.retryCount}</td>
-                  <td>{monitoredService.latencyWarningMs}</td>
-                  <td>{monitoredService.latencyCriticalMs}</td>
-                  <td>{monitoredService.advancedConfig}</td>
-                  <td>{monitoredService.isActive ? 'true' : 'false'}</td>
-                  <td>
-                    {monitoredService.createdAt ? (
-                      <TextFormat type="date" value={monitoredService.createdAt} format={APP_DATE_FORMAT} />
-                    ) : null}
-                  </td>
-                  <td>
-                    {monitoredService.updatedAt ? (
-                      <TextFormat type="date" value={monitoredService.updatedAt} format={APP_DATE_FORMAT} />
-                    ) : null}
-                  </td>
-                  <td>
-                    {monitoredService.datacenter ? (
-                      <Link to={`/datacenter/${monitoredService.datacenter.id}`}>{monitoredService.datacenter.id}</Link>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button
-                        tag={Link}
-                        to={`/monitored-service/${monitoredService.id}`}
-                        color="info"
-                        size="sm"
-                        data-cy="entityDetailsButton"
-                        title={translate('entity.action.view')}
-                      >
-                        <FontAwesomeIcon icon="eye" size="sm" />
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/monitored-service/${monitoredService.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                        title={translate('entity.action.edit')}
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" size="sm" />
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (window.location.href = `/monitored-service/${monitoredService.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                        title={translate('entity.action.delete')}
-                      >
-                        <FontAwesomeIcon icon="trash" size="sm" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        ) : (
-          !loading && (
-            <div className="text-center py-5">
-              <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
-              <h5 className="text-muted">
-                <Translate contentKey="infraMirrorApp.monitoredService.home.emptyState">
-                  No monitored services available. Create your first service to get started.
-                </Translate>
-              </h5>
-              <Link to="/monitored-service/new" className="btn btn-primary mt-3">
-                <FontAwesomeIcon icon="plus" /> <Translate contentKey="infraMirrorApp.monitoredService.home.createLabel">Create</Translate>
-              </Link>
+        </div>
+        <div className="table-responsive" style={{ position: 'relative', minHeight: '200px' }}>
+          {loading && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+              }}
+            >
+              <FontAwesomeIcon icon="spinner" spin size="2x" />
             </div>
-          )
+          )}
+          {monitoredServiceList && monitoredServiceList.length > 0 ? (
+            <Table responsive striped hover>
+              <thead>
+                <tr>
+                  <th className="hand" onClick={sort('name')}>
+                    Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
+                  </th>
+                  <th>Type & Environment</th>
+                  <th>Configuration</th>
+                  <th>Instances</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {monitoredServiceList.map((service, i) => (
+                  <React.Fragment key={`entity-${i}`}>
+                    <tr>
+                      <td>
+                        <div>
+                          <strong>{service.name}</strong>
+                          {service.description && <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>{service.description}</div>}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="d-flex gap-1 flex-wrap">
+                          <Badge color="info" style={{ fontSize: '0.7rem' }}>
+                            {service.serviceType}
+                          </Badge>
+                          <Badge color="secondary" style={{ fontSize: '0.7rem' }}>
+                            {service.environment}
+                          </Badge>
+                          {service.datacenter && (
+                            <Badge color="light" style={{ fontSize: '0.7rem' }}>
+                              {service.datacenter.name}
+                            </Badge>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div style={{ fontSize: '0.85rem' }}>
+                          <div>Interval: {service.intervalSeconds}s</div>
+                          <div style={{ fontSize: '0.75rem', color: '#6c757d' }}>
+                            Timeout: {service.timeoutMs}ms | Retry: {service.retryCount}
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="d-flex gap-1">
+                          <Button
+                            color="link"
+                            size="sm"
+                            onClick={() => toggleRow(service.id)}
+                            title="Toggle instances"
+                            style={{ padding: 0 }}
+                          >
+                            <FontAwesomeIcon icon={expandedRows.has(service.id) ? faCaretDown : faCaretRight} />
+                          </Button>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="d-flex gap-1 flex-wrap">
+                          {service.monitoringEnabled ? (
+                            <Badge color="success" style={{ fontSize: '0.7rem' }}>
+                              Monitoring
+                            </Badge>
+                          ) : (
+                            <Badge color="secondary" style={{ fontSize: '0.7rem' }}>
+                              Disabled
+                            </Badge>
+                          )}
+                          {service.clusterMonitoringEnabled && (
+                            <Badge color="info" style={{ fontSize: '0.7rem' }}>
+                              Cluster
+                            </Badge>
+                          )}
+                          {!service.isActive && (
+                            <Badge color="warning" style={{ fontSize: '0.7rem' }}>
+                              Inactive
+                            </Badge>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="d-flex gap-1">
+                          <Button onClick={() => handleView(service)} color="link" size="sm" title="View" style={{ padding: 0 }}>
+                            <FontAwesomeIcon icon="eye" />
+                          </Button>
+                          <Button onClick={() => handleEdit(service)} color="link" size="sm" title="Edit" style={{ padding: 0 }}>
+                            <FontAwesomeIcon icon="pencil-alt" />
+                          </Button>
+                          <Button
+                            onClick={() => handleDelete(service)}
+                            color="link"
+                            size="sm"
+                            title="Delete"
+                            style={{ padding: 0, color: '#dc3545', marginLeft: '0.5rem' }}
+                          >
+                            <FontAwesomeIcon icon="trash" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                    {expandedRows.has(service.id) && (
+                      <tr>
+                        <td colSpan={6} style={{ padding: 0 }}>
+                          <ServiceInstanceManager serviceId={service.id} />
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            !loading && (
+              <div className="text-center py-5">
+                <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
+                <h5 className="text-muted">No monitored services available. Create your first service to get started.</h5>
+                <Button color="primary" className="mt-3" onClick={handleCreate}>
+                  <FontAwesomeIcon icon="plus" /> Create Service
+                </Button>
+              </div>
+            )
+          )}
+        </div>
+        {totalItems ? (
+          <div
+            className={
+              monitoredServiceList && monitoredServiceList.length > 0 ? 'd-flex justify-content-between align-items-center' : 'd-none'
+            }
+          >
+            <div>
+              <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
+            </div>
+            <div>
+              <JhiPagination
+                activePage={paginationState.activePage}
+                onSelect={handlePagination}
+                maxButtons={5}
+                itemsPerPage={paginationState.itemsPerPage}
+                totalItems={totalItems}
+              />
+            </div>
+          </div>
+        ) : (
+          ''
         )}
       </div>
-      {totalItems ? (
-        <div
-          className={
-            monitoredServiceList && monitoredServiceList.length > 0 ? 'd-flex justify-content-between align-items-center' : 'd-none'
-          }
-        >
-          <div>
-            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
-          </div>
-          <div>
-            <JhiPagination
-              activePage={paginationState.activePage}
-              onSelect={handlePagination}
-              maxButtons={5}
-              itemsPerPage={paginationState.itemsPerPage}
-              totalItems={totalItems}
-            />
-          </div>
-        </div>
-      ) : (
-        ''
-      )}
+      <div className="col-md-6">
+        <MonitoredServiceEditModal
+          isOpen={editModalOpen}
+          toggle={() => setEditModalOpen(false)}
+          service={selectedService}
+          onSave={handleSaveSuccess}
+        />
+      </div>
+
+      <MonitoredServiceDeleteModal
+        isOpen={deleteModalOpen}
+        toggle={() => setDeleteModalOpen(false)}
+        service={selectedService}
+        onDelete={handleDeleteSuccess}
+      />
+
+      <MonitoredServiceViewModal isOpen={viewModalOpen} toggle={() => setViewModalOpen(false)} service={selectedService} />
     </div>
   );
 };

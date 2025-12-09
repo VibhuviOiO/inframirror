@@ -61,7 +61,6 @@ const sidebarMenu: SidebarMenu[] = [
       { name: 'Instance', icon: FaDesktop, route: '/instance' },
       { name: 'HTTP Monitor', icon: FaNetworkWired, route: '/http-monitor' },
       { name: 'Monitored Service', icon: FaEye, route: '/monitored-service' },
-      { name: 'Service Instance', icon: FaTasks, route: '/service-instance' },
     ],
   },
   {
