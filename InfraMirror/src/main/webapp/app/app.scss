@@ -2,6 +2,8 @@
 @import 'bootstrap-variables';
 // Import Bootstrap source files from node_modules
 @import 'bootstrap/scss/bootstrap';
+// Import custom styles
+@import 'custom';
 
 :root {
   --theme-primary: #2c3e50;
@@ -322,3 +324,11 @@ http://stackoverflow.com/questions/23436430/bootstrap-3-input-group-100-width */
 }
 
 /* jhipster-needle-scss-add-main JHipster will add new css style */
+
+/* ==========================================================================
+Fix for Bootstrap row negative margins conflicting with app layout
+========================================================================== */
+.view-container .row {
+  margin-left: 0;
+  margin-right: 0;
+}

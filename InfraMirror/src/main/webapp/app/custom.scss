@@ -127,10 +127,22 @@ button:active,
 .table-responsive {
   tbody tr {
     transition: background-color 0.2s ease;
-    
+
     &:hover {
       background-color: #f8f9fa;
       cursor: pointer;
     }
   }
+}
+
+// Compact form styling for modals
+.form-label-sm {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.form-control-sm {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
 }
