@@ -11,7 +11,6 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ApiKeyDTO implements Serializable {
 
-    @NotNull
     private Long id;
 
     @NotNull
@@ -21,27 +20,13 @@ public class ApiKeyDTO implements Serializable {
     @Size(max = 500)
     private String description;
 
-    @NotNull
-    @Size(max = 500)
-    private String keyHash;
-
-    @NotNull
     private Boolean active;
 
     private Instant lastUsedDate;
 
     private Instant expiresAt;
 
-    @NotNull
-    @Size(max = 50)
-    private String createdBy;
-
-    private Instant createdDate;
-
-    @Size(max = 50)
-    private String lastModifiedBy;
-
-    private Instant lastModifiedDate;
+    private String plainTextKey;
 
     public Long getId() {
         return id;
@@ -65,14 +50,6 @@ public class ApiKeyDTO implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getKeyHash() {
-        return keyHash;
-    }
-
-    public void setKeyHash(String keyHash) {
-        this.keyHash = keyHash;
     }
 
     public Boolean getActive() {
@@ -99,36 +76,12 @@ public class ApiKeyDTO implements Serializable {
         this.expiresAt = expiresAt;
     }
 
-    public String getCreatedBy() {
-        return createdBy;
+    public String getPlainTextKey() {
+        return plainTextKey;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Instant getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Instant createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public String getLastModifiedBy() {
-        return lastModifiedBy;
-    }
-
-    public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
-
-    public Instant getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Instant lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+    public void setPlainTextKey(String plainTextKey) {
+        this.plainTextKey = plainTextKey;
     }
 
     @Override
@@ -159,14 +112,9 @@ public class ApiKeyDTO implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
-            ", keyHash='" + getKeyHash() + "'" +
             ", active='" + getActive() + "'" +
             ", lastUsedDate='" + getLastUsedDate() + "'" +
             ", expiresAt='" + getExpiresAt() + "'" +
-            ", createdBy='" + getCreatedBy() + "'" +
-            ", createdDate='" + getCreatedDate() + "'" +
-            ", lastModifiedBy='" + getLastModifiedBy() + "'" +
-            ", lastModifiedDate='" + getLastModifiedDate() + "'" +
             "}";
     }
 }

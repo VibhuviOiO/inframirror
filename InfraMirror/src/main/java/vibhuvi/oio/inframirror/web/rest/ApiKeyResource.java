@@ -164,6 +164,19 @@ public class ApiKeyResource {
     }
 
     /**
+     * {@code PUT  /api-keys/:id/deactivate} : Deactivate an API key.
+     *
+     * @param id the id of the apiKey to deactivate.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)}.
+     */
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivateApiKey(@PathVariable("id") Long id) {
+        LOG.debug("REST request to deactivate ApiKey : {}", id);
+        ((vibhuvi.oio.inframirror.service.impl.ApiKeyServiceImpl) apiKeyService).deactivate(id);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * {@code DELETE  /api-keys/:id} : delete the "id" apiKey.
      *
      * @param id the id of the apiKeyDTO to delete.

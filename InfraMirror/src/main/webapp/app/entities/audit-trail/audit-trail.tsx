@@ -5,6 +5,7 @@ import { JhiItemCount, JhiPagination, TextFormat, Translate, getPaginationState,
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import { APP_DATE_FORMAT } from 'app/config/constants';
+import dayjs from 'dayjs';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -136,27 +137,15 @@ export const AuditTrail = () => {
         <h4 id="audit-trail-heading" data-cy="AuditTrailHeading" className="mb-0">
           <Translate contentKey="infraMirrorApp.auditTrail.home.title">Audit Trails</Translate>
         </h4>
-        <div className="d-flex">
-          <Button
-            className="me-2"
-            color="info"
-            size="sm"
-            onClick={handleSyncList}
-            disabled={loading}
-            title={translate('infraMirrorApp.auditTrail.home.refreshListLabel')}
-          >
-            <FontAwesomeIcon icon="sync" spin={loading} />
-          </Button>
-          <Link
-            to="/audit-trail/new"
-            className="btn btn-primary btn-sm jh-create-entity"
-            id="jh-create-entity"
-            data-cy="entityCreateButton"
-            title={translate('infraMirrorApp.auditTrail.home.createLabel')}
-          >
-            <Translate contentKey="infraMirrorApp.auditTrail.home.createLabel">Create</Translate>
-          </Link>
-        </div>
+        <Button
+          color="info"
+          size="sm"
+          onClick={handleSyncList}
+          disabled={loading}
+          title={translate('infraMirrorApp.auditTrail.home.refreshListLabel')}
+        >
+          <FontAwesomeIcon icon="sync" spin={loading} />
+        </Button>
       </div>
       <hr />
       <Row className="mb-3">
@@ -204,86 +193,70 @@ export const AuditTrail = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('action')}>
-                  <Translate contentKey="infraMirrorApp.auditTrail.action">Action</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('action')} />
-                </th>
-                <th className="hand" onClick={sort('entityName')}>
-                  <Translate contentKey="infraMirrorApp.auditTrail.entityName">Entity Name</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('entityName')} />
-                </th>
-                <th className="hand" onClick={sort('entityId')}>
-                  <Translate contentKey="infraMirrorApp.auditTrail.entityId">Entity Id</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('entityId')} />
-                </th>
-                <th className="hand" onClick={sort('oldValue')}>
-                  <Translate contentKey="infraMirrorApp.auditTrail.oldValue">Old Value</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('oldValue')} />
-                </th>
-                <th className="hand" onClick={sort('newValue')}>
-                  <Translate contentKey="infraMirrorApp.auditTrail.newValue">New Value</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('newValue')} />
-                </th>
-                <th className="hand" onClick={sort('timestamp')}>
+                <th className="hand" onClick={sort('timestamp')} style={{ width: '150px' }}>
                   <Translate contentKey="infraMirrorApp.auditTrail.timestamp">Timestamp</Translate>{' '}
                   <FontAwesomeIcon icon={getSortIconByFieldName('timestamp')} />
                 </th>
-                <th className="hand" onClick={sort('ipAddress')}>
-                  <Translate contentKey="infraMirrorApp.auditTrail.ipAddress">Ip Address</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('ipAddress')} />
+                <th className="hand" onClick={sort('action')} style={{ width: '120px' }}>
+                  <Translate contentKey="infraMirrorApp.auditTrail.action">Action</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('action')} />
                 </th>
-                <th className="hand" onClick={sort('userAgent')}>
-                  <Translate contentKey="infraMirrorApp.auditTrail.userAgent">User Agent</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('userAgent')} />
+                <th className="hand" onClick={sort('entityName')} style={{ width: '120px' }}>
+                  <Translate contentKey="infraMirrorApp.auditTrail.entityName">Entity</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('entityName')} />
                 </th>
-                <th />
+                <th className="hand" onClick={sort('entityId')} style={{ width: '80px' }}>
+                  <Translate contentKey="infraMirrorApp.auditTrail.entityId">ID</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('entityId')} />
+                </th>
+                <th style={{ width: '150px' }}>
+                  <Translate contentKey="infraMirrorApp.auditTrail.oldValue">Old Value</Translate>
+                </th>
+                <th style={{ width: '150px' }}>
+                  <Translate contentKey="infraMirrorApp.auditTrail.newValue">New Value</Translate>
+                </th>
+                <th className="hand" onClick={sort('performedBy')} style={{ width: '120px' }}>
+                  <Translate contentKey="infraMirrorApp.auditTrail.performedBy">User</Translate>{' '}
+                  <FontAwesomeIcon icon={getSortIconByFieldName('performedBy')} />
+                </th>
+                <th style={{ width: '120px' }}>
+                  <Translate contentKey="infraMirrorApp.auditTrail.ipAddress">IP</Translate>
+                </th>
+                <th style={{ width: '180px' }}>
+                  <Translate contentKey="infraMirrorApp.auditTrail.userAgent">User Agent</Translate>
+                </th>
               </tr>
             </thead>
             <tbody>
               {auditTrailList.map((auditTrail, i) => (
                 <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>{auditTrail.action}</td>
+                  <td>{auditTrail.timestamp ? dayjs(auditTrail.timestamp).format('MMM DD, YYYY HH:mm') : '-'}</td>
+                  <td>
+                    <span className="badge bg-primary">{auditTrail.action}</span>
+                  </td>
                   <td>{auditTrail.entityName}</td>
                   <td>{auditTrail.entityId}</td>
-                  <td>{auditTrail.oldValue}</td>
-                  <td>{auditTrail.newValue}</td>
-                  <td>{auditTrail.timestamp ? <TextFormat type="date" value={auditTrail.timestamp} format={APP_DATE_FORMAT} /> : null}</td>
-                  <td>{auditTrail.ipAddress}</td>
-                  <td>{auditTrail.userAgent}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button
-                        tag={Link}
-                        to={`/audit-trail/${auditTrail.id}`}
-                        color="info"
-                        size="sm"
-                        data-cy="entityDetailsButton"
-                        title={translate('entity.action.view')}
-                      >
-                        <FontAwesomeIcon icon="eye" size="sm" />
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/audit-trail/${auditTrail.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                        title={translate('entity.action.edit')}
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" size="sm" />
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (window.location.href = `/audit-trail/${auditTrail.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                        title={translate('entity.action.delete')}
-                      >
-                        <FontAwesomeIcon icon="trash" size="sm" />
-                      </Button>
-                    </div>
+                  <td
+                    style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                    title={auditTrail.oldValue}
+                  >
+                    {auditTrail.oldValue || '-'}
+                  </td>
+                  <td
+                    style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                    title={auditTrail.newValue}
+                  >
+                    {auditTrail.newValue || '-'}
+                  </td>
+                  <td>{auditTrail.performedBy}</td>
+                  <td>
+                    <code style={{ fontSize: '0.85em' }}>{auditTrail.ipAddress}</code>
+                  </td>
+                  <td
+                    style={{ maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                    title={auditTrail.userAgent}
+                  >
+                    {auditTrail.userAgent ? auditTrail.userAgent.substring(0, 20) + (auditTrail.userAgent.length > 20 ? '...' : '') : '-'}
                   </td>
                 </tr>
               ))}
@@ -294,13 +267,8 @@ export const AuditTrail = () => {
             <div className="text-center py-5">
               <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
               <h5 className="text-muted">
-                <Translate contentKey="infraMirrorApp.auditTrail.home.emptyState">
-                  No audit trails available. Create your first audit trail to get started.
-                </Translate>
+                <Translate contentKey="infraMirrorApp.auditTrail.home.emptyState">No audit trails found.</Translate>
               </h5>
-              <Link to="/audit-trail/new" className="btn btn-primary mt-3">
-                <FontAwesomeIcon icon="plus" /> <Translate contentKey="infraMirrorApp.auditTrail.home.createLabel">Create</Translate>
-              </Link>
             </div>
           )
         )}

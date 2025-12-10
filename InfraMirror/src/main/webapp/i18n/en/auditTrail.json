@@ -28,6 +28,7 @@
       "oldValue": "Old Value",
       "newValue": "New Value",
       "timestamp": "Timestamp",
+      "performedBy": "Performed By",
       "ipAddress": "Ip Address",
       "userAgent": "User Agent"
     }

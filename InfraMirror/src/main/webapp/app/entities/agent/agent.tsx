@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Col, Form, FormGroup, Input, InputGroup, Row, Table } from 'reactstrap';
+import { Button, Input, Table } from 'reactstrap';
 import { JhiItemCount, JhiPagination, Translate, getPaginationState, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { faSort, faSortDown, faSortUp, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { AgentEditModal } from './agent-edit-modal';
+import { AgentDeleteModal } from './agent-delete-modal';
 
 import { getEntities, searchEntities } from './agent.reducer';
 
 export const Agent = () => {
   const dispatch = useAppDispatch();
-
   const pageLocation = useLocation();
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState(null);
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
@@ -48,14 +52,11 @@ export const Agent = () => {
 
   const startSearching = e => {
     if (search) {
-      setPaginationState({
-        ...paginationState,
-        activePage: 1,
-      });
+      setPaginationState({ ...paginationState, activePage: 1 });
       dispatch(
         searchEntities({
           query: search,
-          page: paginationState.activePage - 1,
+          page: 0,
           size: paginationState.itemsPerPage,
           sort: `${paginationState.sort},${paginationState.order}`,
         }),
@@ -66,10 +67,7 @@ export const Agent = () => {
 
   const clear = () => {
     setSearch('');
-    setPaginationState({
-      ...paginationState,
-      activePage: 1,
-    });
+    setPaginationState({ ...paginationState, activePage: 1 });
     dispatch(getEntities({}));
   };
 
@@ -129,37 +127,51 @@ export const Agent = () => {
     return order === ASC ? faSortUp : faSortDown;
   };
 
+  const handleDelete = agent => {
+    setSelectedAgent(agent);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteSuccess = () => {
+    setDeleteModalOpen(false);
+    setSelectedAgent(null);
+    sortEntities();
+  };
+
+  const handleCreate = () => {
+    setSelectedAgent(null);
+    setEditModalOpen(true);
+  };
+
+  const handleEdit = agent => {
+    setSelectedAgent(agent);
+    setEditModalOpen(true);
+  };
+
+  const handleSaveSuccess = () => {
+    setEditModalOpen(false);
+    setSelectedAgent(null);
+    sortEntities();
+  };
+
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4 id="agent-heading" data-cy="AgentHeading" className="mb-0">
-          <Translate contentKey="infraMirrorApp.agent.home.title">Agents</Translate>
-        </h4>
-        <div className="d-flex">
-          <Button
-            className="me-2"
-            color="info"
-            size="sm"
-            onClick={handleSyncList}
-            disabled={loading}
-            title={translate('infraMirrorApp.agent.home.refreshListLabel')}
-          >
-            <FontAwesomeIcon icon="sync" spin={loading} />
-          </Button>
-          <Link
-            to="/agent/new"
-            className="btn btn-primary btn-sm jh-create-entity"
-            id="jh-create-entity"
-            data-cy="entityCreateButton"
-            title={translate('infraMirrorApp.agent.home.createLabel')}
-          >
-            <Translate contentKey="infraMirrorApp.agent.home.createLabel">Create</Translate>
-          </Link>
+    <div className="row g-3">
+      <div className={editModalOpen ? 'col-md-6' : 'col-md-12'}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="mb-0">
+            <Translate contentKey="infraMirrorApp.agent.home.title">Agents</Translate>
+          </h5>
+          <div className="d-flex gap-2">
+            <Button color="info" size="sm" onClick={handleSyncList} disabled={loading}>
+              <FontAwesomeIcon icon="sync" spin={loading} />
+            </Button>
+            <Button color="primary" size="sm" onClick={handleCreate}>
+              <FontAwesomeIcon icon={faPlus} className="me-1" />
+              New Agent
+            </Button>
+          </div>
         </div>
-      </div>
-      <hr />
-      <Row className="mb-3">
-        <Col sm="12">
+        <div className="mb-3">
           <div className="d-flex gap-2">
             <Input
               type="text"
@@ -170,127 +182,111 @@ export const Agent = () => {
               style={{ flex: 1 }}
             />
             <Button color="primary" size="sm" onClick={startSearching} disabled={!search}>
-              <Translate contentKey="infraMirrorApp.agent.home.searchButton">Search</Translate>
+              <FontAwesomeIcon icon="search" />
             </Button>
             {search && (
               <Button color="secondary" size="sm" onClick={clear}>
-                <Translate contentKey="infraMirrorApp.agent.home.clearSearch">Clear</Translate>
+                <FontAwesomeIcon icon="times" />
               </Button>
             )}
           </div>
-        </Col>
-      </Row>
-      <div className="table-responsive" style={{ position: 'relative', minHeight: '200px' }}>
-        {loading && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 10,
-            }}
-          >
-            <FontAwesomeIcon icon="spinner" spin size="2x" />
-          </div>
-        )}
-        {agentList && agentList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('name')}>
-                  <Translate contentKey="infraMirrorApp.agent.name">Name</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
-                </th>
-                <th>
-                  <Translate contentKey="infraMirrorApp.agent.region">Region</Translate> <FontAwesomeIcon icon="sort" />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {agentList.map((agent, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>{agent.name}</td>
-                  <td>{agent.region ? <Link to={`/region/${agent.region.id}`}>{agent.region.id}</Link> : ''}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button
-                        tag={Link}
-                        to={`/agent/${agent.id}`}
-                        color="info"
-                        size="sm"
-                        data-cy="entityDetailsButton"
-                        title={translate('entity.action.view')}
-                      >
-                        <FontAwesomeIcon icon="eye" size="sm" />
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/agent/${agent.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                        title={translate('entity.action.edit')}
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" size="sm" />
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (window.location.href = `/agent/${agent.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                        title={translate('entity.action.delete')}
-                      >
-                        <FontAwesomeIcon icon="trash" size="sm" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        ) : (
-          !loading && (
-            <div className="text-center py-5">
-              <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
-              <h5 className="text-muted">
-                <Translate contentKey="infraMirrorApp.agent.home.emptyState">
-                  No agents available. Create your first agent to get started.
-                </Translate>
-              </h5>
-              <Link to="/agent/new" className="btn btn-primary mt-3">
-                <FontAwesomeIcon icon="plus" /> <Translate contentKey="infraMirrorApp.agent.home.createLabel">Create</Translate>
-              </Link>
+        </div>
+        <div className="table-responsive" style={{ position: 'relative', minHeight: '200px' }}>
+          {loading && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+              }}
+            >
+              <FontAwesomeIcon icon="spinner" spin size="2x" />
             </div>
-          )
+          )}
+          {agentList && agentList.length > 0 ? (
+            <Table responsive striped hover>
+              <thead>
+                <tr>
+                  <th className="hand" onClick={sort('name')}>
+                    Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
+                  </th>
+                  <th>Region</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {agentList.map((agent, i) => (
+                  <tr key={`entity-${i}`} data-cy="entityTable">
+                    <td>{agent.name}</td>
+                    <td>{agent.region ? <Link to={`/region/${agent.region.id}`}>{agent.region.name}</Link> : ''}</td>
+                    <td>
+                      <div className="d-flex gap-1">
+                        <Button onClick={() => handleEdit(agent)} color="link" size="sm" title="Edit" style={{ padding: 0 }}>
+                          <FontAwesomeIcon icon="pencil-alt" />
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(agent)}
+                          color="link"
+                          size="sm"
+                          title="Delete"
+                          style={{ padding: 0, color: '#dc3545', marginLeft: '0.5rem' }}
+                        >
+                          <FontAwesomeIcon icon="trash" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            !loading && (
+              <div className="text-center py-5">
+                <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
+                <h5 className="text-muted">No agents available. Create your first agent to get started.</h5>
+                <Button color="primary" className="mt-3" onClick={handleCreate}>
+                  <FontAwesomeIcon icon="plus" /> Create Agent
+                </Button>
+              </div>
+            )
+          )}
+        </div>
+        {totalItems ? (
+          <div className={agentList && agentList.length > 0 ? 'd-flex justify-content-between align-items-center' : 'd-none'}>
+            <div>
+              <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
+            </div>
+            <div>
+              <JhiPagination
+                activePage={paginationState.activePage}
+                onSelect={handlePagination}
+                maxButtons={5}
+                itemsPerPage={paginationState.itemsPerPage}
+                totalItems={totalItems}
+              />
+            </div>
+          </div>
+        ) : (
+          ''
         )}
       </div>
-      {totalItems ? (
-        <div className={agentList && agentList.length > 0 ? 'd-flex justify-content-between align-items-center' : 'd-none'}>
-          <div>
-            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
-          </div>
-          <div>
-            <JhiPagination
-              activePage={paginationState.activePage}
-              onSelect={handlePagination}
-              maxButtons={5}
-              itemsPerPage={paginationState.itemsPerPage}
-              totalItems={totalItems}
-            />
-          </div>
-        </div>
-      ) : (
-        ''
-      )}
+      <div className="col-md-6">
+        <AgentEditModal isOpen={editModalOpen} toggle={() => setEditModalOpen(false)} agent={selectedAgent} onSave={handleSaveSuccess} />
+      </div>
+
+      <AgentDeleteModal
+        isOpen={deleteModalOpen}
+        toggle={() => setDeleteModalOpen(false)}
+        agent={selectedAgent}
+        onDelete={handleDeleteSuccess}
+      />
     </div>
   );
 };

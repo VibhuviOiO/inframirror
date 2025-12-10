@@ -1,23 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Col, Form, FormGroup, Input, InputGroup, Row, Table } from 'reactstrap';
-import { JhiItemCount, JhiPagination, TextFormat, Translate, getPaginationState, translate } from 'react-jhipster';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Button, Input, Table, Badge } from 'reactstrap';
+import { JhiItemCount, JhiPagination, Translate, getPaginationState, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import { APP_DATE_FORMAT } from 'app/config/constants';
+import { faSort, faSortDown, faSortUp, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { ApiKeyCreateModal } from './api-key-create-modal';
+import { ApiKeyShowModal } from './api-key-show-modal';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 import { getEntities, searchEntities } from './api-key.reducer';
 
 export const ApiKey = () => {
   const dispatch = useAppDispatch();
-
   const pageLocation = useLocation();
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [newApiKey, setNewApiKey] = useState(null);
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
@@ -49,14 +54,11 @@ export const ApiKey = () => {
 
   const startSearching = e => {
     if (search) {
-      setPaginationState({
-        ...paginationState,
-        activePage: 1,
-      });
+      setPaginationState({ ...paginationState, activePage: 1 });
       dispatch(
         searchEntities({
           query: search,
-          page: paginationState.activePage - 1,
+          page: 0,
           size: paginationState.itemsPerPage,
           sort: `${paginationState.sort},${paginationState.order}`,
         }),
@@ -67,10 +69,7 @@ export const ApiKey = () => {
 
   const clear = () => {
     setSearch('');
-    setPaginationState({
-      ...paginationState,
-      activePage: 1,
-    });
+    setPaginationState({ ...paginationState, activePage: 1 });
     dispatch(getEntities({}));
   };
 
@@ -130,181 +129,184 @@ export const ApiKey = () => {
     return order === ASC ? faSortUp : faSortDown;
   };
 
+  const handleCreate = () => {
+    setCreateModalOpen(true);
+  };
+
+  const handleCreateSuccess = apiKey => {
+    setNewApiKey(apiKey);
+    setShowKeyModal(true);
+    sortEntities();
+  };
+
+  const handleDeactivate = async (id: number) => {
+    try {
+      await axios.put(`/api/api-keys/${id}/deactivate`);
+      toast.success('API Key deactivated successfully');
+      sortEntities();
+    } catch (error) {
+      toast.error('Failed to deactivate API key');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (window.confirm('Are you sure you want to delete this API key? This action cannot be undone.')) {
+      try {
+        await axios.delete(`/api/api-keys/${id}`);
+        toast.success('API Key deleted successfully');
+        sortEntities();
+      } catch (error) {
+        toast.error('Failed to delete API key');
+      }
+    }
+  };
+
   return (
-    <div>
-      <h2 id="api-key-heading" data-cy="ApiKeyHeading">
-        <Translate contentKey="infraMirrorApp.apiKey.home.title">Api Keys</Translate>
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
-            <Translate contentKey="infraMirrorApp.apiKey.home.refreshListLabel">Refresh List</Translate>
-          </Button>
-          <Link to="/api-key/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;
-            <Translate contentKey="infraMirrorApp.apiKey.home.createLabel">Create new Api Key</Translate>
-          </Link>
+    <div className="row g-3">
+      <div className={createModalOpen ? 'col-md-6' : 'col-md-12'}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="mb-0">
+            <Translate contentKey="infraMirrorApp.apiKey.home.title">API Keys</Translate>
+          </h5>
+          <div className="d-flex gap-2">
+            <Button color="info" size="sm" onClick={handleSyncList} disabled={loading}>
+              <FontAwesomeIcon icon="sync" spin={loading} />
+            </Button>
+            <Button color="primary" size="sm" onClick={handleCreate}>
+              <FontAwesomeIcon icon={faPlus} className="me-1" />
+              New API Key
+            </Button>
+          </div>
         </div>
-      </h2>
-      <Row>
-        <Col sm="12">
-          <Form onSubmit={startSearching}>
-            <FormGroup>
-              <InputGroup>
-                <Input
-                  type="text"
-                  name="search"
-                  defaultValue={search}
-                  onChange={handleSearch}
-                  placeholder={translate('infraMirrorApp.apiKey.home.search')}
-                />
-                <Button className="input-group-addon">
-                  <FontAwesomeIcon icon="search" />
-                </Button>
-                <Button type="reset" className="input-group-addon" onClick={clear}>
-                  <FontAwesomeIcon icon="trash" />
-                </Button>
-              </InputGroup>
-            </FormGroup>
-          </Form>
-        </Col>
-      </Row>
-      <div className="table-responsive">
-        {apiKeyList && apiKeyList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.id">Id</Translate> <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
-                </th>
-                <th className="hand" onClick={sort('name')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.name">Name</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
-                </th>
-                <th className="hand" onClick={sort('description')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.description">Description</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
-                </th>
-                <th className="hand" onClick={sort('keyHash')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.keyHash">Key Hash</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('keyHash')} />
-                </th>
-                <th className="hand" onClick={sort('active')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.active">Active</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('active')} />
-                </th>
-                <th className="hand" onClick={sort('lastUsedDate')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.lastUsedDate">Last Used Date</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('lastUsedDate')} />
-                </th>
-                <th className="hand" onClick={sort('expiresAt')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.expiresAt">Expires At</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('expiresAt')} />
-                </th>
-                <th className="hand" onClick={sort('createdBy')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.createdBy">Created By</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('createdBy')} />
-                </th>
-                <th className="hand" onClick={sort('createdDate')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.createdDate">Created Date</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('createdDate')} />
-                </th>
-                <th className="hand" onClick={sort('lastModifiedBy')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.lastModifiedBy">Last Modified By</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('lastModifiedBy')} />
-                </th>
-                <th className="hand" onClick={sort('lastModifiedDate')}>
-                  <Translate contentKey="infraMirrorApp.apiKey.lastModifiedDate">Last Modified Date</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('lastModifiedDate')} />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {apiKeyList.map((apiKey, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/api-key/${apiKey.id}`} color="link" size="sm">
-                      {apiKey.id}
-                    </Button>
-                  </td>
-                  <td>{apiKey.name}</td>
-                  <td>{apiKey.description}</td>
-                  <td>{apiKey.keyHash}</td>
-                  <td>{apiKey.active ? 'true' : 'false'}</td>
-                  <td>{apiKey.lastUsedDate ? <TextFormat type="date" value={apiKey.lastUsedDate} format={APP_DATE_FORMAT} /> : null}</td>
-                  <td>{apiKey.expiresAt ? <TextFormat type="date" value={apiKey.expiresAt} format={APP_DATE_FORMAT} /> : null}</td>
-                  <td>{apiKey.createdBy}</td>
-                  <td>{apiKey.createdDate ? <TextFormat type="date" value={apiKey.createdDate} format={APP_DATE_FORMAT} /> : null}</td>
-                  <td>{apiKey.lastModifiedBy}</td>
-                  <td>
-                    {apiKey.lastModifiedDate ? <TextFormat type="date" value={apiKey.lastModifiedDate} format={APP_DATE_FORMAT} /> : null}
-                  </td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/api-key/${apiKey.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.view">View</Translate>
-                        </span>
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/api-key/${apiKey.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.edit">Edit</Translate>
-                        </span>
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (window.location.href = `/api-key/${apiKey.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.delete">Delete</Translate>
-                        </span>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        ) : (
-          !loading && (
-            <div className="alert alert-warning">
-              <Translate contentKey="infraMirrorApp.apiKey.home.notFound">No Api Keys found</Translate>
+        <div className="mb-3">
+          <div className="d-flex gap-2">
+            <Input
+              type="text"
+              name="search"
+              value={search}
+              onChange={handleSearch}
+              placeholder={translate('infraMirrorApp.apiKey.home.search')}
+              style={{ flex: 1 }}
+            />
+            <Button color="primary" size="sm" onClick={startSearching} disabled={!search}>
+              <FontAwesomeIcon icon="search" />
+            </Button>
+            {search && (
+              <Button color="secondary" size="sm" onClick={clear}>
+                <FontAwesomeIcon icon="times" />
+              </Button>
+            )}
+          </div>
+        </div>
+        <div className="table-responsive" style={{ position: 'relative', minHeight: '200px' }}>
+          {loading && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+              }}
+            >
+              <FontAwesomeIcon icon="spinner" spin size="2x" />
             </div>
-          )
+          )}
+          {apiKeyList && apiKeyList.length > 0 ? (
+            <Table responsive striped hover>
+              <thead>
+                <tr>
+                  <th className="hand" onClick={sort('name')}>
+                    Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
+                  </th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Last Used</th>
+                  <th>Expires At</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {apiKeyList.map((apiKey, i) => (
+                  <tr key={`entity-${i}`} data-cy="entityTable">
+                    <td>
+                      <strong>{apiKey.name}</strong>
+                    </td>
+                    <td>{apiKey.description}</td>
+                    <td>
+                      <Badge color={apiKey.active ? 'success' : 'secondary'}>{apiKey.active ? 'Active' : 'Inactive'}</Badge>
+                    </td>
+                    <td>{apiKey.lastUsedDate ? new Date(apiKey.lastUsedDate).toLocaleString() : 'Never'}</td>
+                    <td>{apiKey.expiresAt ? new Date(apiKey.expiresAt).toLocaleString() : 'Never'}</td>
+                    <td>
+                      <div className="d-flex gap-1">
+                        {apiKey.active && (
+                          <Button
+                            onClick={() => handleDeactivate(apiKey.id)}
+                            color="link"
+                            size="sm"
+                            title="Deactivate"
+                            style={{ padding: 0, color: '#ffc107' }}
+                          >
+                            <FontAwesomeIcon icon="ban" />
+                          </Button>
+                        )}
+                        <Button
+                          onClick={() => handleDelete(apiKey.id)}
+                          color="link"
+                          size="sm"
+                          title="Delete"
+                          style={{ padding: 0, color: '#dc3545', marginLeft: '0.5rem' }}
+                        >
+                          <FontAwesomeIcon icon="trash" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            !loading && (
+              <div className="text-center py-5">
+                <FontAwesomeIcon icon="key" size="3x" className="text-muted mb-3" />
+                <h5 className="text-muted">No API keys available. Create your first API key to get started.</h5>
+                <Button color="primary" className="mt-3" onClick={handleCreate}>
+                  <FontAwesomeIcon icon="plus" /> Create API Key
+                </Button>
+              </div>
+            )
+          )}
+        </div>
+        {totalItems ? (
+          <div className={apiKeyList && apiKeyList.length > 0 ? 'd-flex justify-content-between align-items-center' : 'd-none'}>
+            <div>
+              <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
+            </div>
+            <div>
+              <JhiPagination
+                activePage={paginationState.activePage}
+                onSelect={handlePagination}
+                maxButtons={5}
+                itemsPerPage={paginationState.itemsPerPage}
+                totalItems={totalItems}
+              />
+            </div>
+          </div>
+        ) : (
+          ''
         )}
       </div>
-      {totalItems ? (
-        <div className={apiKeyList && apiKeyList.length > 0 ? '' : 'd-none'}>
-          <div className="justify-content-center d-flex">
-            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
-          </div>
-          <div className="justify-content-center d-flex">
-            <JhiPagination
-              activePage={paginationState.activePage}
-              onSelect={handlePagination}
-              maxButtons={5}
-              itemsPerPage={paginationState.itemsPerPage}
-              totalItems={totalItems}
-            />
-          </div>
-        </div>
-      ) : (
-        ''
-      )}
+      <div className="col-md-6">
+        <ApiKeyCreateModal isOpen={createModalOpen} toggle={() => setCreateModalOpen(false)} onSuccess={handleCreateSuccess} />
+      </div>
+
+      <ApiKeyShowModal isOpen={showKeyModal} toggle={() => setShowKeyModal(false)} apiKey={newApiKey} />
     </div>
   );
 };

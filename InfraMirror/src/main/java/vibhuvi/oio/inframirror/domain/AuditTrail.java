@@ -51,6 +51,12 @@ public class AuditTrail implements Serializable {
     @Column(name = "timestamp", nullable = false)
     private Instant timestamp;
 
+    @NotNull
+    @Size(max = 50)
+    @Column(name = "performed_by", length = 50, nullable = false)
+    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    private String performedBy;
+
     @Size(max = 45)
     @Column(name = "ip_address", length = 45)
     @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
@@ -153,6 +159,19 @@ public class AuditTrail implements Serializable {
         this.timestamp = timestamp;
     }
 
+    public String getPerformedBy() {
+        return this.performedBy;
+    }
+
+    public AuditTrail performedBy(String performedBy) {
+        this.setPerformedBy(performedBy);
+        return this;
+    }
+
+    public void setPerformedBy(String performedBy) {
+        this.performedBy = performedBy;
+    }
+
     public String getIpAddress() {
         return this.ipAddress;
     }
@@ -209,6 +228,7 @@ public class AuditTrail implements Serializable {
             ", oldValue='" + getOldValue() + "'" +
             ", newValue='" + getNewValue() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
+            ", performedBy='" + getPerformedBy() + "'" +
             ", ipAddress='" + getIpAddress() + "'" +
             ", userAgent='" + getUserAgent() + "'" +
             "}";

@@ -35,6 +35,10 @@ public class AuditTrailDTO implements Serializable {
     @NotNull
     private Instant timestamp;
 
+    @NotNull
+    @Size(max = 50)
+    private String performedBy;
+
     @Size(max = 45)
     private String ipAddress;
 
@@ -97,6 +101,14 @@ public class AuditTrailDTO implements Serializable {
         this.timestamp = timestamp;
     }
 
+    public String getPerformedBy() {
+        return performedBy;
+    }
+
+    public void setPerformedBy(String performedBy) {
+        this.performedBy = performedBy;
+    }
+
     public String getIpAddress() {
         return ipAddress;
     }
@@ -145,6 +157,7 @@ public class AuditTrailDTO implements Serializable {
             ", oldValue='" + getOldValue() + "'" +
             ", newValue='" + getNewValue() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
+            ", performedBy='" + getPerformedBy() + "'" +
             ", ipAddress='" + getIpAddress() + "'" +
             ", userAgent='" + getUserAgent() + "'" +
             "}";
