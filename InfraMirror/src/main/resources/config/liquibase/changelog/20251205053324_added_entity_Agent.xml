@@ -17,6 +17,33 @@
             <column name="name" type="varchar(50)">
                 <constraints nullable="false" />
             </column>
+            <column name="hostname" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="ip_address" type="varchar(45)">
+                <constraints nullable="true" />
+            </column>
+            <column name="os_type" type="varchar(50)">
+                <constraints nullable="true" />
+            </column>
+            <column name="os_version" type="varchar(100)">
+                <constraints nullable="true" />
+            </column>
+            <column name="agent_version" type="varchar(20)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_seen_at" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="status" type="varchar(20)" defaultValue="ACTIVE">
+                <constraints nullable="true" />
+            </column>
+            <column name="tags" type="${jsonType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="datacenter_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
             <column name="region_id" type="bigint">
                 <constraints nullable="true" />
             </column>

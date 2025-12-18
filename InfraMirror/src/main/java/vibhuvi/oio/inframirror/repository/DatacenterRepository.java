@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import vibhuvi.oio.inframirror.domain.Datacenter;
@@ -9,4 +10,6 @@ import vibhuvi.oio.inframirror.domain.Datacenter;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface DatacenterRepository extends JpaRepository<Datacenter, Long>, JpaSpecificationExecutor<Datacenter> {}
+public interface DatacenterRepository extends JpaRepository<Datacenter, Long>, JpaSpecificationExecutor<Datacenter> {
+    Optional<Datacenter> findByNameAndRegionId(String name, Long regionId);
+}

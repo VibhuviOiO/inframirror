@@ -51,6 +51,41 @@ public class Agent implements Serializable {
     @JsonIgnoreProperties(value = { "agent", "monitoredService", "serviceInstance" }, allowSetters = true)
     private Set<ServiceHeartbeat> serviceHeartbeats = new HashSet<>();
 
+    @Size(max = 255)
+    @Column(name = "hostname", length = 255)
+    private String hostname;
+
+    @Size(max = 45)
+    @Column(name = "ip_address", length = 45)
+    private String ipAddress;
+
+    @Size(max = 50)
+    @Column(name = "os_type", length = 50)
+    private String osType;
+
+    @Size(max = 100)
+    @Column(name = "os_version", length = 100)
+    private String osVersion;
+
+    @Size(max = 20)
+    @Column(name = "agent_version", length = 20)
+    private String agentVersion;
+
+    @Column(name = "last_seen_at")
+    private java.time.Instant lastSeenAt;
+
+    @Size(max = 20)
+    @Column(name = "status", length = 20)
+    private String status;
+
+    @Column(name = "tags", columnDefinition = "jsonb")
+    @org.hibernate.annotations.Type(JsonNodeType.class)
+    private com.fasterxml.jackson.databind.JsonNode tags;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "region", "instances" }, allowSetters = true)
+    private Datacenter datacenter;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "datacenters", "agents" }, allowSetters = true)
     private Region region;
@@ -217,6 +252,123 @@ public class Agent implements Serializable {
 
     public Agent region(Region region) {
         this.setRegion(region);
+        return this;
+    }
+
+    public String getHostname() {
+        return this.hostname;
+    }
+
+    public Agent hostname(String hostname) {
+        this.setHostname(hostname);
+        return this;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
+    public String getIpAddress() {
+        return this.ipAddress;
+    }
+
+    public Agent ipAddress(String ipAddress) {
+        this.setIpAddress(ipAddress);
+        return this;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public String getOsType() {
+        return this.osType;
+    }
+
+    public Agent osType(String osType) {
+        this.setOsType(osType);
+        return this;
+    }
+
+    public void setOsType(String osType) {
+        this.osType = osType;
+    }
+
+    public String getOsVersion() {
+        return this.osVersion;
+    }
+
+    public Agent osVersion(String osVersion) {
+        this.setOsVersion(osVersion);
+        return this;
+    }
+
+    public void setOsVersion(String osVersion) {
+        this.osVersion = osVersion;
+    }
+
+    public String getAgentVersion() {
+        return this.agentVersion;
+    }
+
+    public Agent agentVersion(String agentVersion) {
+        this.setAgentVersion(agentVersion);
+        return this;
+    }
+
+    public void setAgentVersion(String agentVersion) {
+        this.agentVersion = agentVersion;
+    }
+
+    public java.time.Instant getLastSeenAt() {
+        return this.lastSeenAt;
+    }
+
+    public Agent lastSeenAt(java.time.Instant lastSeenAt) {
+        this.setLastSeenAt(lastSeenAt);
+        return this;
+    }
+
+    public void setLastSeenAt(java.time.Instant lastSeenAt) {
+        this.lastSeenAt = lastSeenAt;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public Agent status(String status) {
+        this.setStatus(status);
+        return this;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public com.fasterxml.jackson.databind.JsonNode getTags() {
+        return this.tags;
+    }
+
+    public Agent tags(com.fasterxml.jackson.databind.JsonNode tags) {
+        this.setTags(tags);
+        return this;
+    }
+
+    public void setTags(com.fasterxml.jackson.databind.JsonNode tags) {
+        this.tags = tags;
+    }
+
+    public Datacenter getDatacenter() {
+        return this.datacenter;
+    }
+
+    public void setDatacenter(Datacenter datacenter) {
+        this.datacenter = datacenter;
+    }
+
+    public Agent datacenter(Datacenter datacenter) {
+        this.setDatacenter(datacenter);
         return this;
     }
 

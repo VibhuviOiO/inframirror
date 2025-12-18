@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import vibhuvi.oio.inframirror.domain.Region;
@@ -9,4 +10,6 @@ import vibhuvi.oio.inframirror.domain.Region;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface RegionRepository extends JpaRepository<Region, Long>, JpaSpecificationExecutor<Region> {}
+public interface RegionRepository extends JpaRepository<Region, Long>, JpaSpecificationExecutor<Region> {
+    Optional<Region> findByName(String name);
+}

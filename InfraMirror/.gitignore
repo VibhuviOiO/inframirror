@@ -152,4 +152,5 @@ Desktop.ini
 coverage/
 .nyc_output/
 .amazonq/
-uptime-o
+uptime-o/
+uptime-o-api-agent/
