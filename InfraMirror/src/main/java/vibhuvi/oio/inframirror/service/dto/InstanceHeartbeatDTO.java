@@ -12,7 +12,6 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class InstanceHeartbeatDTO implements Serializable {
 
-    @NotNull
     private Long id;
 
     @NotNull

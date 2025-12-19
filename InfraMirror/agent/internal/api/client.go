@@ -239,3 +239,30 @@ func (c *Client) CreateInstance(name, hostname, osType, platform, privateIP stri
 
 	return &result, nil
 }
+
+func (c *Client) SubmitInstanceHeartbeat(heartbeat map[string]interface{}) error {
+	data, err := json.Marshal(heartbeat)
+	if err != nil {
+		return err
+	}
+
+	httpReq, err := http.NewRequest("POST", c.baseURL+"/api/agent/instance-heartbeats", bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("X-API-Key", c.apiKey)
+
+	resp, err := c.client.Do(httpReq)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("submit heartbeat failed with status: %d", resp.StatusCode)
+	}
+
+	return nil
+}

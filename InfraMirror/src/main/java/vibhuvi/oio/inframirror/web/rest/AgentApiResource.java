@@ -18,7 +18,10 @@ import vibhuvi.oio.inframirror.service.RegionService;
 import vibhuvi.oio.inframirror.service.InstanceService;
 import vibhuvi.oio.inframirror.service.HttpMonitorService;
 import vibhuvi.oio.inframirror.service.MonitoredServiceService;
+import vibhuvi.oio.inframirror.service.InstanceHeartbeatService;
 import vibhuvi.oio.inframirror.service.dto.*;
+import java.time.Instant;
+import java.util.Map;
 
 /**
  * REST controller for agent operations.
@@ -39,6 +42,7 @@ public class AgentApiResource {
     private final InstanceService instanceService;
     private final HttpMonitorService httpMonitorService;
     private final MonitoredServiceService monitoredServiceService;
+    private final InstanceHeartbeatService instanceHeartbeatService;
 
     public AgentApiResource(
         AgentService agentService,
@@ -46,7 +50,8 @@ public class AgentApiResource {
         DatacenterService datacenterService,
         InstanceService instanceService,
         HttpMonitorService httpMonitorService,
-        MonitoredServiceService monitoredServiceService
+        MonitoredServiceService monitoredServiceService,
+        InstanceHeartbeatService instanceHeartbeatService
     ) {
         this.agentService = agentService;
         this.regionService = regionService;
@@ -54,6 +59,7 @@ public class AgentApiResource {
         this.instanceService = instanceService;
         this.httpMonitorService = httpMonitorService;
         this.monitoredServiceService = monitoredServiceService;
+        this.instanceHeartbeatService = instanceHeartbeatService;
     }
 
     /**
@@ -147,5 +153,120 @@ public class AgentApiResource {
         }
         
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Submit instance heartbeat
+     */
+    @PostMapping("/instance-heartbeats")
+    public ResponseEntity<Void> submitInstanceHeartbeat(@RequestBody Map<String, Object> heartbeatData, HttpServletRequest request) {
+        LOG.debug("Instance heartbeat received: {}", heartbeatData);
+        
+        try {
+            // Create InstanceHeartbeatDTO from the received data
+            InstanceHeartbeatDTO heartbeat = new InstanceHeartbeatDTO();
+            
+            // Set required fields
+            heartbeat.setExecutedAt(Instant.now());
+            heartbeat.setHeartbeatType((String) heartbeatData.get("heartbeatType"));
+            heartbeat.setSuccess((Boolean) heartbeatData.get("success"));
+            heartbeat.setStatus((String) heartbeatData.get("status"));
+            
+            // Set instance reference
+            InstanceDTO instance = new InstanceDTO();
+            Object instanceIdObj = heartbeatData.get("instanceId");
+            if (instanceIdObj instanceof Number) {
+                instance.setId(((Number) instanceIdObj).longValue());
+            }
+            heartbeat.setInstance(instance);
+            
+            // Set optional ping metrics
+            if (heartbeatData.containsKey("responseTimeMs")) {
+                Object responseTime = heartbeatData.get("responseTimeMs");
+                if (responseTime instanceof Number) {
+                    heartbeat.setResponseTimeMs(((Number) responseTime).intValue());
+                }
+            }
+            if (heartbeatData.containsKey("packetLoss")) {
+                Object packetLoss = heartbeatData.get("packetLoss");
+                if (packetLoss instanceof Number) {
+                    heartbeat.setPacketLoss(((Number) packetLoss).floatValue());
+                }
+            }
+            if (heartbeatData.containsKey("jitterMs")) {
+                Object jitter = heartbeatData.get("jitterMs");
+                if (jitter instanceof Number) {
+                    heartbeat.setJitterMs(((Number) jitter).intValue());
+                }
+            }
+            
+            // Set optional hardware metrics
+            if (heartbeatData.containsKey("cpuUsage")) {
+                Object cpuUsage = heartbeatData.get("cpuUsage");
+                if (cpuUsage instanceof Number) {
+                    heartbeat.setCpuUsage(((Number) cpuUsage).floatValue());
+                }
+            }
+            if (heartbeatData.containsKey("memoryUsage")) {
+                Object memoryUsage = heartbeatData.get("memoryUsage");
+                if (memoryUsage instanceof Number) {
+                    heartbeat.setMemoryUsage(((Number) memoryUsage).floatValue());
+                }
+            }
+            if (heartbeatData.containsKey("diskUsage")) {
+                Object diskUsage = heartbeatData.get("diskUsage");
+                if (diskUsage instanceof Number) {
+                    heartbeat.setDiskUsage(((Number) diskUsage).floatValue());
+                }
+            }
+            if (heartbeatData.containsKey("loadAverage")) {
+                Object loadAverage = heartbeatData.get("loadAverage");
+                if (loadAverage instanceof Number) {
+                    heartbeat.setLoadAverage(((Number) loadAverage).floatValue());
+                }
+            }
+            if (heartbeatData.containsKey("processCount")) {
+                Object processCount = heartbeatData.get("processCount");
+                if (processCount instanceof Number) {
+                    heartbeat.setProcessCount(((Number) processCount).intValue());
+                }
+            }
+            if (heartbeatData.containsKey("networkRxBytes")) {
+                Object networkRx = heartbeatData.get("networkRxBytes");
+                if (networkRx instanceof Number) {
+                    heartbeat.setNetworkRxBytes(((Number) networkRx).longValue());
+                }
+            }
+            if (heartbeatData.containsKey("networkTxBytes")) {
+                Object networkTx = heartbeatData.get("networkTxBytes");
+                if (networkTx instanceof Number) {
+                    heartbeat.setNetworkTxBytes(((Number) networkTx).longValue());
+                }
+            }
+            if (heartbeatData.containsKey("uptimeSeconds")) {
+                Object uptime = heartbeatData.get("uptimeSeconds");
+                if (uptime instanceof Number) {
+                    heartbeat.setUptimeSeconds(((Number) uptime).longValue());
+                }
+            }
+            
+            // Set error information if present
+            if (heartbeatData.containsKey("errorMessage")) {
+                heartbeat.setErrorMessage((String) heartbeatData.get("errorMessage"));
+            }
+            if (heartbeatData.containsKey("errorType")) {
+                heartbeat.setErrorType((String) heartbeatData.get("errorType"));
+            }
+            
+            // Save the heartbeat
+            instanceHeartbeatService.save(heartbeat);
+            
+            LOG.debug("Instance heartbeat saved successfully for instance {}", instance.getId());
+            return ResponseEntity.ok().build();
+            
+        } catch (Exception e) {
+            LOG.error("Failed to save instance heartbeat: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

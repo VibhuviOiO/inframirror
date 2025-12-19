@@ -1,4 +1,26 @@
-# infraMirror
+# InfraMirror
+
+Enterprise-grade infrastructure monitoring platform with distributed agent architecture for comprehensive uptime and performance monitoring.
+
+## Features
+
+- **Multi-Region HTTP Monitoring** - Monitor HTTP/HTTPS endpoints from multiple geographic locations
+- **Instance Health Monitoring** - Track server/VM health with ping checks and hardware metrics
+- **Service TCP Monitoring** - Monitor databases, message queues, and custom TCP services
+- **Distributed Agent Architecture** - Deploy lightweight Go agents across different datacenters
+- **Auto-Discovery** - Automatically discover and register infrastructure components
+- **Real-Time Status Pages** - Public and private status pages with live health indicators
+- **High Availability** - Leader election and failover for multi-agent deployments
+- **Performance Metrics** - Detailed timing breakdown (DNS, TCP, TLS, TTFB)
+- **Alert Management** - Configurable thresholds and notification channels
+- **Historical Analytics** - Store and analyze performance trends over time
+- **API-First Design** - Complete REST API for automation and integrations
+- **Enterprise Security** - OAuth2/OIDC authentication with role-based access control
+- **Scalable Storage** - PostgreSQL with JSONB for flexible data storage
+- **Docker Support** - Containerized deployment with Docker Compose
+- **Hot Reload Development** - Live code reloading for rapid development
+
+---
 
 This application was generated using JHipster 8.11.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.11.0](https://www.jhipster.tech/documentation-archive/v8.11.0).
 
