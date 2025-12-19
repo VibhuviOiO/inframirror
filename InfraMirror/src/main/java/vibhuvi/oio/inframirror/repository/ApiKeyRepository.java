@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import vibhuvi.oio.inframirror.domain.ApiKey;
@@ -9,4 +10,6 @@ import vibhuvi.oio.inframirror.domain.ApiKey;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ApiKeyRepository extends JpaRepository<ApiKey, Long> {}
+public interface ApiKeyRepository extends JpaRepository<ApiKey, Long> {
+    Optional<ApiKey> findByKeyHashAndActive(String keyHash, Boolean active);
+}

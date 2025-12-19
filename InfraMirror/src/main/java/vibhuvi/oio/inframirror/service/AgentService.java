@@ -57,4 +57,14 @@ public interface AgentService {
      * @return the list of entities.
      */
     Page<AgentDTO> search(String query, Pageable pageable);
+
+    /**
+     * Register a new agent with auto-creation of region and datacenter.
+     *
+     * @param request the registration request.
+     * @return the registration response.
+     */
+    vibhuvi.oio.inframirror.service.dto.AgentRegistrationResponseDTO registerAgent(
+        vibhuvi.oio.inframirror.service.dto.AgentRegistrationRequestDTO request
+    );
 }

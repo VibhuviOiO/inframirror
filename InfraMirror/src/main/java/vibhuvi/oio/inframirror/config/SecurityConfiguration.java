@@ -52,8 +52,13 @@ public class SecurityConfiguration {
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
-    public SecurityConfiguration(JHipsterProperties jHipsterProperties) {
+
+
+    private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
+
+    public SecurityConfiguration(JHipsterProperties jHipsterProperties, ApiKeyAuthenticationFilter apiKeyAuthenticationFilter) {
         this.jHipsterProperties = jHipsterProperties;
+        this.apiKeyAuthenticationFilter = apiKeyAuthenticationFilter;
     }
 
     @Bean
@@ -64,7 +69,9 @@ public class SecurityConfiguration {
                 csrf
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                     .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
+                    .ignoringRequestMatchers(mvc.pattern("/api/agent/**"))
             )
+            .addFilterBefore(apiKeyAuthenticationFilter, BasicAuthenticationFilter.class)
             .addFilterAfter(new SpaWebFilter(), BasicAuthenticationFilter.class)
             .headers(headers ->
                 headers

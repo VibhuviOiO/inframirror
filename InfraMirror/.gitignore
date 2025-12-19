@@ -151,6 +151,12 @@ Desktop.ini
 ######################
 coverage/
 .nyc_output/
+
+######################
+# Project specific
+######################
 .amazonq/
 uptime-o/
 uptime-o-api-agent/
+docs/
+.vscode/
