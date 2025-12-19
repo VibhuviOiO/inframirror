@@ -1,0 +1,18 @@
+api_key: "inframirror_uwlRT6E2om410ut0cmFBf4nWGzMmQ9sF3oK58UuGeIc"
+name: "agent-dev"
+region: "Development"
+datacenter: "Local DC"
+
+backend:
+  url: "http://inframirror-backend:8080"
+  timeout: "10s"
+
+instances:
+  enable: true
+  pingInterval: 30
+  pingTimeout: 3000
+  pingRetryCount: 2
+  
+  hardwareMonitoring:
+    enable: true
+    interval: 60  # More frequent for dev

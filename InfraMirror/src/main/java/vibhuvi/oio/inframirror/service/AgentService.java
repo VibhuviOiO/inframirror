@@ -67,4 +67,18 @@ public interface AgentService {
     vibhuvi.oio.inframirror.service.dto.AgentRegistrationResponseDTO registerAgent(
         vibhuvi.oio.inframirror.service.dto.AgentRegistrationRequestDTO request
     );
+
+    /**
+     * Update agent's last seen timestamp.
+     *
+     * @param agentId the agent ID.
+     */
+    void updateLastSeen(Long agentId);
+
+    /**
+     * Update agent's last seen timestamp by API key.
+     *
+     * @param apiKey the agent API key.
+     */
+    void updateLastSeenByApiKey(String apiKey);
 }

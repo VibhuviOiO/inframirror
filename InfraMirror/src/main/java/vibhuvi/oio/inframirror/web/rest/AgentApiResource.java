@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.web.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.ResponseUtil;
+import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
 import vibhuvi.oio.inframirror.service.AgentService;
 import vibhuvi.oio.inframirror.service.DatacenterService;
 import vibhuvi.oio.inframirror.service.RegionService;
@@ -96,6 +99,11 @@ public class AgentApiResource {
     @PostMapping("/instances")
     public ResponseEntity<InstanceDTO> createInstance(@Valid @RequestBody InstanceDTO instanceDTO) throws URISyntaxException {
         LOG.debug("REST request to save Instance : {}", instanceDTO);
+        
+        if (instanceDTO.getId() != null) {
+            throw new BadRequestAlertException("A new instance cannot already have an ID", "instance", "idexists");
+        }
+        
         InstanceDTO result = instanceService.save(instanceDTO);
         return ResponseEntity.created(new URI("/api/instances/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "instance", result.getId().toString()))
@@ -124,5 +132,20 @@ public class AgentApiResource {
         return ResponseEntity.created(new URI("/api/monitored-services/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "monitoredService", result.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * Agent heartbeat - updates lastSeenAt timestamp
+     */
+    @PostMapping("/heartbeat")
+    public ResponseEntity<Void> agentHeartbeat(HttpServletRequest request) {
+        LOG.debug("Agent heartbeat received");
+        
+        String apiKey = request.getHeader("X-API-Key");
+        if (apiKey != null) {
+            agentService.updateLastSeenByApiKey(apiKey);
+        }
+        
+        return ResponseEntity.ok().build();
     }
 }

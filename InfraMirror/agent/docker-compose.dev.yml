@@ -1,0 +1,18 @@
+services:
+  inframirror-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: inframirror-agent-dev
+    volumes:
+      - .:/app
+      - /app/tmp  # Exclude tmp directory
+    working_dir: /app
+    environment:
+      - CGO_ENABLED=0
+      - GOOS=linux
+    command: ["air", "-c", ".air.toml"]
+    network_mode: host  # Use host network to access backend on localhost:8080
+    restart: unless-stopped
+    profiles:
+      - dev

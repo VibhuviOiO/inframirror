@@ -1,0 +1,21 @@
+FROM golang:1.23-alpine
+
+# Install git and Air
+RUN apk add --no-cache git
+RUN go install github.com/air-verse/air@v1.61.1
+
+# Set working directory
+WORKDIR /app
+
+# Copy source code
+COPY . .
+
+# Initialize Go module if it doesn't exist and disable proxy for local development
+RUN if [ ! -f go.mod ]; then go mod init inframirror-agent; fi
+RUN GOPROXY=direct go mod tidy
+
+# Expose port (if needed)
+EXPOSE 8080
+
+# Command will be overridden by docker-compose
+CMD ["air", "-c", ".air.toml"]

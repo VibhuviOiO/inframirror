@@ -144,7 +144,12 @@ public class AgentServiceImpl implements AgentService {
             .orElseGet(() -> {
                 Datacenter newDatacenter = new Datacenter();
                 newDatacenter.setName(datacenterName);
-                newDatacenter.setCode(datacenterName.toLowerCase().replaceAll("\\s+", "-"));
+                // Generate shorter code (max 10 chars)
+                String code = datacenterName.toLowerCase()
+                    .replaceAll("\\s+", "")
+                    .replaceAll("[^a-z0-9]", "")
+                    .substring(0, Math.min(10, datacenterName.length()));
+                newDatacenter.setCode(code);
                 newDatacenter.setRegion(region);
                 return datacenterRepository.save(newDatacenter);
             });
@@ -159,6 +164,7 @@ public class AgentServiceImpl implements AgentService {
         agent.setStatus("ACTIVE");
         agent.setTags(objectMapper.valueToTree(request.getTags()));
         agent.setDatacenter(datacenter);
+        agent.setRegion(region);  // Set both datacenter and region
         agent = agentRepository.save(agent);
         agentSearchRepository.index(agent);
 
@@ -171,5 +177,23 @@ public class AgentServiceImpl implements AgentService {
         response.setMessage("Agent registered successfully");
 
         return response;
+    }
+
+    @Override
+    public void updateLastSeen(Long agentId) {
+        LOG.debug("Updating last seen for agent: {}", agentId);
+        agentRepository.findById(agentId).ifPresent(agent -> {
+            agent.setLastSeenAt(java.time.Instant.now());
+            agent.setStatus("ACTIVE");
+            agentRepository.save(agent);
+            agentSearchRepository.index(agent);
+        });
+    }
+
+    @Override
+    public void updateLastSeenByApiKey(String apiKey) {
+        LOG.debug("Updating last seen for agent with API key");
+        // For now, just log - would need to implement API key to agent mapping
+        // This is a simplified implementation
     }
 }

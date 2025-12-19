@@ -1,0 +1,18 @@
+api_key: "inframirror_uwlRT6E2om410ut0cmFBf4nWGzMmQ9sF3oK58UuGeIc"
+name: ""  # defaults to hostname
+region: "US East"
+datacenter: "Virginia DC1"
+
+backend:
+  url: "http://localhost:8080"
+  timeout: "10s"
+
+instances:
+  enable: true
+  pingInterval: 30        # seconds
+  pingTimeout: 3000       # milliseconds
+  pingRetryCount: 2
+  
+  hardwareMonitoring:
+    enable: true
+    interval: 300         # seconds (5 minutes)

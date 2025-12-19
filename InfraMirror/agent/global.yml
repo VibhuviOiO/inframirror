@@ -1,0 +1,12 @@
+api_key: "inframirror_uwlRT6E2om410ut0cmFBf4nWGzMmQ9sF3oK58UuGeIc"
+name: "" # defaults to hostname
+region: "US East"
+datacenter: "Virginia DC1"
+
+backend:
+  url: "http://host.docker.internal:8080"
+  timeout: "10s"
+
+# Agent heartbeat (self-monitoring)
+agent:
+  heartbeat_interval: 30 # seconds

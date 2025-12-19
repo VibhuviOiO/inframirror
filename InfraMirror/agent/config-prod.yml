@@ -1,0 +1,18 @@
+api_key: "${API_KEY}"
+name: "${AGENT_NAME}"
+region: "${AGENT_REGION}"
+datacenter: "${AGENT_DATACENTER}"
+
+backend:
+  url: "http://inframirror-backend:8080"
+  timeout: "30s"
+
+instances:
+  enable: true
+  pingInterval: 30
+  pingTimeout: 5000
+  pingRetryCount: 3
+  
+  hardwareMonitoring:
+    enable: true
+    interval: 300
