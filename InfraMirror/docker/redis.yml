@@ -2,5 +2,6 @@ name: inframirror
 services:
   redis:
     image: redis:8.0.0
+    container_name: redis
     ports:
     - 6379:6379

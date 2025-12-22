@@ -1,21 +1,21 @@
 # Instance monitoring configuration
-instance:
+instances:
   enable: true
   
-  # Ping monitoring (matches Instance entity)
-  ping_enabled: true
-  ping_interval: 30        # seconds (10-3600)
-  ping_timeout_ms: 3000    # milliseconds (500-30000)
-  ping_retry_count: 2      # retries (0-5)
+  # Ping monitoring
+  pingInterval: 30        # seconds
+  pingTimeout: 3000       # milliseconds
+  pingRetryCount: 2       # retries
   
-  # Hardware monitoring (matches Instance entity)
-  hardware_monitoring_enabled: true
-  hardware_monitoring_interval: 300  # seconds (60-3600)
+  # Hardware monitoring
+  hardwareMonitoring:
+    enable: true
+    interval: 60          # seconds (1 minute for testing)
   
-  # Thresholds (matches Instance entity)
-  cpu_warning_threshold: 70     # percent (0-100)
-  cpu_danger_threshold: 90      # percent (0-100)
-  memory_warning_threshold: 75  # percent (0-100)
-  memory_danger_threshold: 90   # percent (0-100)
-  disk_warning_threshold: 80    # percent (0-100)
-  disk_danger_threshold: 95     # percent (0-100)
+  # Thresholds
+  cpu_warning_threshold: 70     # percent
+  cpu_danger_threshold: 90      # percent
+  memory_warning_threshold: 75  # percent
+  memory_danger_threshold: 90   # percent
+  disk_warning_threshold: 80    # percent
+  disk_danger_threshold: 95     # percent

@@ -1,8 +1,8 @@
-# This configuration is intended for development purpose, it's **your** responsibility to harden it for production
 name: inframirror
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.2.3
+    container_name: keycloak
     command: 'start-dev --import-realm'
     volumes:
     - ./realm-config:/opt/keycloak/data/import

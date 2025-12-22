@@ -13,7 +13,7 @@ type Config struct {
 	Datacenter   string     `yaml:"datacenter"`
 	Backend      Backend    `yaml:"backend"`
 	Agent        Agent      `yaml:"agent"`
-	Instance     Instance   `yaml:"instance"`
+	Instances    Instance   `yaml:"instances"`
 	// Runtime fields populated after registration
 	AgentID      int64      `yaml:"-"`
 	RegionID     int64      `yaml:"-"`
@@ -30,19 +30,23 @@ type Agent struct {
 }
 
 type Instance struct {
-	Enable                        bool `yaml:"enable"`
-	PingEnabled                   bool `yaml:"ping_enabled"`
-	PingInterval                  int  `yaml:"ping_interval"`
-	PingTimeoutMs                 int  `yaml:"ping_timeout_ms"`
-	PingRetryCount                int  `yaml:"ping_retry_count"`
-	HardwareMonitoringEnabled     bool `yaml:"hardware_monitoring_enabled"`
-	HardwareMonitoringInterval    int  `yaml:"hardware_monitoring_interval"`
-	CPUWarningThreshold           int  `yaml:"cpu_warning_threshold"`
-	CPUDangerThreshold            int  `yaml:"cpu_danger_threshold"`
-	MemoryWarningThreshold        int  `yaml:"memory_warning_threshold"`
-	MemoryDangerThreshold         int  `yaml:"memory_danger_threshold"`
-	DiskWarningThreshold          int  `yaml:"disk_warning_threshold"`
-	DiskDangerThreshold           int  `yaml:"disk_danger_threshold"`
+	Enable                        bool                `yaml:"enable"`
+	PingEnabled                   bool                `yaml:"pingEnabled"`
+	PingInterval                  int                 `yaml:"pingInterval"`
+	PingTimeoutMs                 int                 `yaml:"pingTimeout"`
+	PingRetryCount                int                 `yaml:"pingRetryCount"`
+	HardwareMonitoring            HardwareMonitoring  `yaml:"hardwareMonitoring"`
+	CPUWarningThreshold           int                 `yaml:"cpu_warning_threshold"`
+	CPUDangerThreshold            int                 `yaml:"cpu_danger_threshold"`
+	MemoryWarningThreshold        int                 `yaml:"memory_warning_threshold"`
+	MemoryDangerThreshold         int                 `yaml:"memory_danger_threshold"`
+	DiskWarningThreshold          int                 `yaml:"disk_warning_threshold"`
+	DiskDangerThreshold           int                 `yaml:"disk_danger_threshold"`
+}
+
+type HardwareMonitoring struct {
+	Enable   bool `yaml:"enable"`
+	Interval int  `yaml:"interval"`
 }
 
 func LoadConfig(globalPath, instancePath string) (*Config, error) {
@@ -71,8 +75,8 @@ func LoadConfig(globalPath, instancePath string) (*Config, error) {
 			}
 
 			// Merge instance config into global config
-			if instanceConfig.Instance.Enable {
-				config.Instance = instanceConfig.Instance
+			if instanceConfig.Instances.Enable {
+				config.Instances = instanceConfig.Instances
 			}
 		}
 	}
@@ -96,35 +100,35 @@ func LoadConfig(globalPath, instancePath string) (*Config, error) {
 	}
 
 	// Instance defaults (matching Java entity defaults)
-	if config.Instance.PingInterval == 0 {
-		config.Instance.PingInterval = 30
+	if config.Instances.PingInterval == 0 {
+		config.Instances.PingInterval = 30
 	}
-	if config.Instance.PingTimeoutMs == 0 {
-		config.Instance.PingTimeoutMs = 3000
+	if config.Instances.PingTimeoutMs == 0 {
+		config.Instances.PingTimeoutMs = 3000
 	}
-	if config.Instance.PingRetryCount == 0 {
-		config.Instance.PingRetryCount = 2
+	if config.Instances.PingRetryCount == 0 {
+		config.Instances.PingRetryCount = 2
 	}
-	if config.Instance.HardwareMonitoringInterval == 0 {
-		config.Instance.HardwareMonitoringInterval = 300
+	if config.Instances.HardwareMonitoring.Interval == 0 {
+		config.Instances.HardwareMonitoring.Interval = 300
 	}
-	if config.Instance.CPUWarningThreshold == 0 {
-		config.Instance.CPUWarningThreshold = 70
+	if config.Instances.CPUWarningThreshold == 0 {
+		config.Instances.CPUWarningThreshold = 70
 	}
-	if config.Instance.CPUDangerThreshold == 0 {
-		config.Instance.CPUDangerThreshold = 90
+	if config.Instances.CPUDangerThreshold == 0 {
+		config.Instances.CPUDangerThreshold = 90
 	}
-	if config.Instance.MemoryWarningThreshold == 0 {
-		config.Instance.MemoryWarningThreshold = 75
+	if config.Instances.MemoryWarningThreshold == 0 {
+		config.Instances.MemoryWarningThreshold = 75
 	}
-	if config.Instance.MemoryDangerThreshold == 0 {
-		config.Instance.MemoryDangerThreshold = 90
+	if config.Instances.MemoryDangerThreshold == 0 {
+		config.Instances.MemoryDangerThreshold = 90
 	}
-	if config.Instance.DiskWarningThreshold == 0 {
-		config.Instance.DiskWarningThreshold = 80
+	if config.Instances.DiskWarningThreshold == 0 {
+		config.Instances.DiskWarningThreshold = 80
 	}
-	if config.Instance.DiskDangerThreshold == 0 {
-		config.Instance.DiskDangerThreshold = 95
+	if config.Instances.DiskDangerThreshold == 0 {
+		config.Instances.DiskDangerThreshold = 95
 	}
 
 	return &config, nil

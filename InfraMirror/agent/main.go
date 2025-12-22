@@ -87,9 +87,9 @@ func main() {
 	log.Println("Agent is now the leader, starting monitoring...")
 
 	// Start monitoring if instances are enabled
-	if cfg.Instance.Enable {
+	if cfg.Instances.Enable {
 		instanceManager := heartbeat.NewInstanceHeartbeatManager(apiClient, cacheManager, 
-			cfg.Instance.PingInterval, cfg.Instance.HardwareMonitoringInterval)
+			cfg.Instances.PingInterval, cfg.Instances.HardwareMonitoring.Interval, cfg.Instances.HardwareMonitoring.Enable)
 		if err := instanceManager.Start(); err != nil {
 			log.Fatalf("Failed to start instance monitoring: %v", err)
 		}

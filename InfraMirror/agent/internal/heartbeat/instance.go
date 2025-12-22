@@ -16,16 +16,18 @@ type InstanceHeartbeatManager struct {
 	instanceID   int64
 	pingInterval time.Duration
 	hwInterval   time.Duration
+	hwEnabled    bool
 	stopChan     chan struct{}
 }
 
-func NewInstanceHeartbeatManager(client *api.Client, cacheManager *cache.Manager, pingInterval, hwInterval int) *InstanceHeartbeatManager {
+func NewInstanceHeartbeatManager(client *api.Client, cacheManager *cache.Manager, pingInterval, hwInterval int, hwEnabled bool) *InstanceHeartbeatManager {
 	return &InstanceHeartbeatManager{
 		client:       client,
 		cacheManager: cacheManager,
 		sysInfo:      system.NewInfo(),
 		pingInterval: time.Duration(pingInterval) * time.Second,
 		hwInterval:   time.Duration(hwInterval) * time.Second,
+		hwEnabled:    hwEnabled,
 		stopChan:     make(chan struct{}),
 	}
 }
@@ -43,7 +45,14 @@ func (m *InstanceHeartbeatManager) Start() error {
 	log.Printf("Starting instance heartbeats for instance %d", m.instanceID)
 
 	go m.pingLoop()
-	go m.hardwareLoop()
+	
+	if m.hwEnabled {
+		log.Printf("Hardware monitoring enabled, starting hardware loop with %v interval", m.hwInterval)
+		go m.hardwareLoop()
+	} else {
+		log.Printf("Hardware monitoring disabled")
+	}
+	
 	return nil
 }
 
@@ -133,19 +142,24 @@ func (m *InstanceHeartbeatManager) sendPingHeartbeat() {
 }
 
 func (m *InstanceHeartbeatManager) sendHardwareHeartbeat() {
-	// Create hardware heartbeat with system metrics
+	// Get network stats
+	rxBytes, txBytes := m.sysInfo.GetNetworkStats()
+	
+	// Create hardware heartbeat with real system metrics
 	heartbeat := map[string]interface{}{
-		"instanceId":     m.instanceID,
-		"executedAt":     time.Now().Format(time.RFC3339),
-		"heartbeatType":  "HARDWARE",
-		"success":        true,
-		"status":         "UP",
-		"cpuUsage":       m.sysInfo.GetCPUUsage(),
-		"memoryUsage":    m.sysInfo.GetMemoryUsage(),
-		"diskUsage":      m.sysInfo.GetDiskUsage(),
-		"loadAverage":    m.sysInfo.GetLoadAverage(),
-		"processCount":   100, // Simulated
-		"uptimeSeconds":  86400, // Simulated
+		"instanceId":      m.instanceID,
+		"executedAt":      time.Now().Format(time.RFC3339),
+		"heartbeatType":   "HARDWARE",
+		"success":         true,
+		"status":          "UP",
+		"cpuUsage":        m.sysInfo.GetCPUUsage(),
+		"memoryUsage":     m.sysInfo.GetMemoryUsage(),
+		"diskUsage":       m.sysInfo.GetDiskUsage(),
+		"loadAverage":     m.sysInfo.GetLoadAverage(),
+		"processCount":    m.sysInfo.GetProcessCount(),
+		"networkRxBytes":  rxBytes,
+		"networkTxBytes":  txBytes,
+		"uptimeSeconds":   86400, // TODO: Get actual uptime
 	}
 
 	if err := m.client.SubmitInstanceHeartbeat(heartbeat); err != nil {

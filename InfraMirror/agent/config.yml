@@ -15,4 +15,4 @@ instances:
   
   hardwareMonitoring:
     enable: true
-    interval: 300         # seconds (5 minutes)
+    interval: 60          # seconds (1 minute for testing)
