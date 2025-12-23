@@ -42,6 +42,14 @@ public interface HttpMonitorService {
     Optional<HttpMonitorDTO> findOne(Long id);
 
     /**
+     * Find a httpMonitor by name.
+     *
+     * @param name the name of the entity.
+     * @return the entity.
+     */
+    Optional<HttpMonitorDTO> findByName(String name);
+
+    /**
      * Delete the "id" httpMonitor.
      *
      * @param id the id of the entity.

@@ -333,3 +333,15 @@ func (c *Client) SubmitHttpHeartbeat(heartbeat interface{}) error {
 
 	return nil
 }
+
+func (c *Client) Post(path string, body *bytes.Reader) (*http.Response, error) {
+	httpReq, err := http.NewRequest("POST", c.baseURL+path, body)
+	if err != nil {
+		return nil, err
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("X-API-Key", c.apiKey)
+
+	return c.client.Do(httpReq)
+}

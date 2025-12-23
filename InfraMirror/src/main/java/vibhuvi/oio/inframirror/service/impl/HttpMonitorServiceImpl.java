@@ -84,6 +84,12 @@ public class HttpMonitorServiceImpl implements HttpMonitorService {
     }
 
     @Override
+    public Optional<HttpMonitorDTO> findByName(String name) {
+        LOG.debug("Request to get HttpMonitor by name : {}", name);
+        return httpMonitorRepository.findByName(name).map(httpMonitorMapper::toDto);
+    }
+
+    @Override
     public void delete(Long id) {
         LOG.debug("Request to delete HttpMonitor : {}", id);
         httpMonitorRepository.deleteById(id);

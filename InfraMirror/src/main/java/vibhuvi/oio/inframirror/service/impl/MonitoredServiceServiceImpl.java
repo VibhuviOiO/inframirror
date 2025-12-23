@@ -96,6 +96,12 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
     }
 
     @Override
+    public Optional<MonitoredServiceDTO> findByName(String name) {
+        LOG.debug("Request to get MonitoredService by name : {}", name);
+        return monitoredServiceRepository.findFirstByName(name).map(monitoredServiceMapper::toDto);
+    }
+
+    @Override
     public void delete(Long id) {
         LOG.debug("Request to delete MonitoredService : {}", id);
         monitoredServiceRepository.deleteById(id);

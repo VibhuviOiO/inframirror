@@ -81,6 +81,9 @@ func (m *InstanceMonitor) ensureInstance() error {
 	log.Printf("Instance created with ID: %d", instance.ID)
 	m.instanceID = instance.ID
 
+	// Cache hostname to instance ID mapping
+	m.cacheManager.SetInstanceByHostname(hostname, instance.ID)
+
 	// Update cache with instance ID
 	if err := m.cacheManager.UpdateCache(
 		cachedData.AgentID,

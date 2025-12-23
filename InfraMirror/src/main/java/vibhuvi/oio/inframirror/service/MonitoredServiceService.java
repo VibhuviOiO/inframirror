@@ -44,6 +44,14 @@ public interface MonitoredServiceService {
     Optional<MonitoredServiceDTO> findOne(Long id);
 
     /**
+     * Find a monitoredService by name.
+     *
+     * @param name the name of the entity.
+     * @return the entity.
+     */
+    Optional<MonitoredServiceDTO> findByName(String name);
+
+    /**
      * Delete the "id" monitoredService.
      *
      * @param id the id of the entity.

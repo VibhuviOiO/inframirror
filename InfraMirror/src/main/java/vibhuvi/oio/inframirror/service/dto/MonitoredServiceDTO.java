@@ -12,7 +12,6 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class MonitoredServiceDTO implements Serializable {
 
-    @NotNull
     private Long id;
 
     @NotNull
@@ -58,7 +57,8 @@ public class MonitoredServiceDTO implements Serializable {
 
     private DatacenterDTO datacenter;
 
-    private java.util.List<ServiceInstanceDTO> serviceInstances;
+    // Removed serviceInstances to prevent circular reference
+    // private java.util.List<ServiceInstanceDTO> serviceInstances;
 
     public Long getId() {
         return id;
@@ -194,14 +194,6 @@ public class MonitoredServiceDTO implements Serializable {
 
     public void setDatacenter(DatacenterDTO datacenter) {
         this.datacenter = datacenter;
-    }
-
-    public java.util.List<ServiceInstanceDTO> getServiceInstances() {
-        return serviceInstances;
-    }
-
-    public void setServiceInstances(java.util.List<ServiceInstanceDTO> serviceInstances) {
-        this.serviceInstances = serviceInstances;
     }
 
     @Override

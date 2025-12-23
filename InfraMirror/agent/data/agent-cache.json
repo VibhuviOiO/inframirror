@@ -9,5 +9,17 @@
     "Backend Health Check": 2701,
     "ISRO Launchers API": 2702,
     "ISRO Satellites API": 2703
+  },
+  "cassandraServices": {
+    "Cassandra EU West Cluster": 4002,
+    "Cassandra US East Cluster": 4001
+  },
+  "serviceInstances": {
+    "4001:4051:9042": 5101,
+    "4002:4052:9045": 5102
+  },
+  "instancesByHost": {
+    "cassandra-eu-west-1": 4052,
+    "cassandra-us-east-1": 4051
   }
 }

@@ -8,13 +8,16 @@ import (
 )
 
 type AgentCache struct {
-	AgentID      int64            `json:"agentId"`
-	RegionID     int64            `json:"regionId"`
-	DatacenterID int64            `json:"datacenterId"`
-	InstanceID   int64            `json:"instanceId"`
-	Region       string           `json:"region"`
-	Datacenter   string           `json:"datacenter"`
-	HTTPMonitors map[string]int64 `json:"httpMonitors"`
+	AgentID           int64            `json:"agentId"`
+	RegionID          int64            `json:"regionId"`
+	DatacenterID      int64            `json:"datacenterId"`
+	InstanceID        int64            `json:"instanceId"`
+	Region            string           `json:"region"`
+	Datacenter        string           `json:"datacenter"`
+	HTTPMonitors      map[string]int64 `json:"httpMonitors"`
+	CassandraServices map[string]int64 `json:"cassandraServices"`
+	ServiceInstances  map[string]int64 `json:"serviceInstances"`
+	InstancesByHost   map[string]int64 `json:"instancesByHost"`
 }
 
 type Manager struct {
@@ -28,7 +31,12 @@ func NewManager(dataDir string) *Manager {
 	return &Manager{
 		dataDir:   dataDir,
 		cacheFile: cacheFile,
-		cache:     &AgentCache{HTTPMonitors: make(map[string]int64)},
+		cache: &AgentCache{
+			HTTPMonitors:      make(map[string]int64),
+			CassandraServices: make(map[string]int64),
+			ServiceInstances:  make(map[string]int64),
+			InstancesByHost:   make(map[string]int64),
+		},
 	}
 }
 
@@ -91,7 +99,12 @@ func (m *Manager) HasInstanceCache() bool {
 }
 
 func (m *Manager) ClearCache() error {
-	m.cache = &AgentCache{HTTPMonitors: make(map[string]int64)}
+	m.cache = &AgentCache{
+		HTTPMonitors:      make(map[string]int64),
+		CassandraServices: make(map[string]int64),
+		ServiceInstances:  make(map[string]int64),
+		InstancesByHost:   make(map[string]int64),
+	}
 	if err := os.Remove(m.cacheFile); err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("failed to remove cache file: %w", err)
 	}
@@ -112,4 +125,49 @@ func (m *Manager) GetHTTPMonitor(name string) (int64, bool) {
 	}
 	id, ok := m.cache.HTTPMonitors[name]
 	return id, ok
+}
+
+func (m *Manager) SetCassandraService(name string, id int64) {
+	if m.cache.CassandraServices == nil {
+		m.cache.CassandraServices = make(map[string]int64)
+	}
+	m.cache.CassandraServices[name] = id
+	m.Save()
+}
+
+func (m *Manager) GetCassandraService(name string) int64 {
+	if m.cache.CassandraServices == nil {
+		return 0
+	}
+	return m.cache.CassandraServices[name]
+}
+
+func (m *Manager) SetServiceInstance(key string, id int64) {
+	if m.cache.ServiceInstances == nil {
+		m.cache.ServiceInstances = make(map[string]int64)
+	}
+	m.cache.ServiceInstances[key] = id
+	m.Save()
+}
+
+func (m *Manager) GetServiceInstance(key string) int64 {
+	if m.cache.ServiceInstances == nil {
+		return 0
+	}
+	return m.cache.ServiceInstances[key]
+}
+
+func (m *Manager) SetInstanceByHostname(hostname string, id int64) {
+	if m.cache.InstancesByHost == nil {
+		m.cache.InstancesByHost = make(map[string]int64)
+	}
+	m.cache.InstancesByHost[hostname] = id
+	m.Save()
+}
+
+func (m *Manager) GetInstanceByHostname(hostname string) int64 {
+	if m.cache.InstancesByHost == nil {
+		return 0
+	}
+	return m.cache.InstancesByHost[hostname]
 }

@@ -17,6 +17,7 @@ import (
 	"inframirror-agent/internal/cache"
 	"inframirror-agent/internal/heartbeat"
 	"inframirror-agent/internal/lock"
+	"inframirror-agent/internal/monitor/cassandra"
 	"inframirror-agent/internal/monitor/http"
 	"inframirror-agent/internal/startup"
 )
@@ -64,6 +65,11 @@ func main() {
 		log.Printf("  ✓ HTTP Monitoring (%d monitors configured)", len(cfg.HTTP.Monitors))
 	} else {
 		log.Println("  ✗ HTTP Monitoring (disabled)")
+	}
+	if cfg.Cassandra != nil && cfg.Cassandra.Enable {
+		log.Printf("  ✓ Cassandra Monitoring (%d clusters configured)", len(cfg.Cassandra.Clusters))
+	} else {
+		log.Println("  ✗ Cassandra Monitoring (disabled)")
 	}
 	log.Println("=")
 
@@ -157,6 +163,14 @@ func main() {
 		}
 	}
 
+	// Create Cassandra services from configuration
+	if cfg.Cassandra != nil && cfg.Cassandra.Enable {
+		log.Println("  Creating Cassandra services from configuration...")
+		if err := cassandra.CreateCassandraServices(cfg, apiClient, cacheManager); err != nil {
+			log.Printf("  ⚠️  Failed to create Cassandra services: %v", err)
+		}
+	}
+
 	// Start monitoring if instances are enabled
 	if cfg.Instances.Enable {
 		instanceManager := heartbeat.NewInstanceHeartbeatManager(apiClient, cacheManager, 
@@ -177,6 +191,17 @@ func main() {
 	} else {
 		defer httpManager.Stop()
 		log.Println("  ✓ HTTP monitoring started")
+	}
+
+	// Start Cassandra monitoring
+	if cfg.Cassandra != nil && cfg.Cassandra.Enable {
+		cassandraManager := cassandra.NewHeartbeatManager(cfg, apiClient, cacheManager)
+		if err := cassandraManager.Start(); err != nil {
+			log.Printf("  ✗ Cassandra monitoring: %v", err)
+		} else {
+			defer cassandraManager.Stop()
+			log.Println("  ✓ Cassandra monitoring started")
+		}
 	}
 
 	// Start agent heartbeat

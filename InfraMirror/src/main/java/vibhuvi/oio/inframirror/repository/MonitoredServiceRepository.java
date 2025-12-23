@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import vibhuvi.oio.inframirror.domain.MonitoredService;
@@ -9,4 +10,6 @@ import vibhuvi.oio.inframirror.domain.MonitoredService;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface MonitoredServiceRepository extends JpaRepository<MonitoredService, Long>, JpaSpecificationExecutor<MonitoredService> {}
+public interface MonitoredServiceRepository extends JpaRepository<MonitoredService, Long>, JpaSpecificationExecutor<MonitoredService> {
+    Optional<MonitoredService> findFirstByName(String name);
+}

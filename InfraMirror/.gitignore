@@ -160,3 +160,4 @@ uptime-o/
 uptime-o-api-agent/
 docs/
 .vscode/
+docker/testing/

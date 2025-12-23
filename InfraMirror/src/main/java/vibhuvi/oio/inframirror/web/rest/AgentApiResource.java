@@ -19,10 +19,13 @@ import vibhuvi.oio.inframirror.service.InstanceService;
 import vibhuvi.oio.inframirror.service.HttpMonitorService;
 import vibhuvi.oio.inframirror.service.HttpHeartbeatService;
 import vibhuvi.oio.inframirror.service.MonitoredServiceService;
+import vibhuvi.oio.inframirror.service.ServiceInstanceService;
 import vibhuvi.oio.inframirror.service.InstanceHeartbeatService;
+import vibhuvi.oio.inframirror.service.ServiceHeartbeatService;
 import vibhuvi.oio.inframirror.service.dto.*;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * REST controller for agent operations.
@@ -43,8 +46,10 @@ public class AgentApiResource {
     private final InstanceService instanceService;
     private final HttpMonitorService httpMonitorService;
     private final MonitoredServiceService monitoredServiceService;
+    private final ServiceInstanceService serviceInstanceService;
     private final InstanceHeartbeatService instanceHeartbeatService;
     private final HttpHeartbeatService httpHeartbeatService;
+    private final ServiceHeartbeatService serviceHeartbeatService;
 
     public AgentApiResource(
         AgentService agentService,
@@ -53,8 +58,10 @@ public class AgentApiResource {
         InstanceService instanceService,
         HttpMonitorService httpMonitorService,
         MonitoredServiceService monitoredServiceService,
+        ServiceInstanceService serviceInstanceService,
         InstanceHeartbeatService instanceHeartbeatService,
-        HttpHeartbeatService httpHeartbeatService
+        HttpHeartbeatService httpHeartbeatService,
+        ServiceHeartbeatService serviceHeartbeatService
     ) {
         this.agentService = agentService;
         this.regionService = regionService;
@@ -62,8 +69,10 @@ public class AgentApiResource {
         this.instanceService = instanceService;
         this.httpMonitorService = httpMonitorService;
         this.monitoredServiceService = monitoredServiceService;
+        this.serviceInstanceService = serviceInstanceService;
         this.instanceHeartbeatService = instanceHeartbeatService;
         this.httpHeartbeatService = httpHeartbeatService;
+        this.serviceHeartbeatService = serviceHeartbeatService;
     }
 
     /**
@@ -119,11 +128,19 @@ public class AgentApiResource {
     }
 
     /**
-     * Create HTTP monitor
+     * Create HTTP monitor (find-or-create by name)
      */
     @PostMapping("/http-monitors")
     public ResponseEntity<HttpMonitorDTO> createHttpMonitor(@Valid @RequestBody HttpMonitorDTO httpMonitorDTO) throws URISyntaxException {
         LOG.debug("REST request to save HttpMonitor : {}", httpMonitorDTO);
+        
+        // Find existing monitor by name
+        Optional<HttpMonitorDTO> existing = httpMonitorService.findByName(httpMonitorDTO.getName());
+        if (existing.isPresent()) {
+            LOG.debug("HttpMonitor with name '{}' already exists, returning existing", httpMonitorDTO.getName());
+            return ResponseEntity.ok(existing.get());
+        }
+        
         HttpMonitorDTO result = httpMonitorService.save(httpMonitorDTO);
         return ResponseEntity.created(new URI("/api/http-monitors/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "httpMonitor", result.getId().toString()))
@@ -140,15 +157,100 @@ public class AgentApiResource {
     }
 
     /**
-     * Create monitored service
+     * Create monitored service (find-or-create by name)
      */
     @PostMapping("/monitored-services")
     public ResponseEntity<MonitoredServiceDTO> createMonitoredService(@Valid @RequestBody MonitoredServiceDTO monitoredServiceDTO) throws URISyntaxException {
         LOG.debug("REST request to save MonitoredService : {}", monitoredServiceDTO);
+        
+        // Find existing service by name
+        Optional<MonitoredServiceDTO> existing = monitoredServiceService.findByName(monitoredServiceDTO.getName());
+        if (existing.isPresent()) {
+            LOG.debug("MonitoredService with name '{}' already exists, returning existing", monitoredServiceDTO.getName());
+            return ResponseEntity.ok(existing.get());
+        }
+        
         MonitoredServiceDTO result = monitoredServiceService.save(monitoredServiceDTO);
         return ResponseEntity.created(new URI("/api/monitored-services/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "monitoredService", result.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * Create service instance
+     */
+    @PostMapping("/service-instances")
+    public ResponseEntity<ServiceInstanceDTO> createServiceInstance(@Valid @RequestBody ServiceInstanceDTO serviceInstanceDTO) throws URISyntaxException {
+        LOG.debug("REST request to save ServiceInstance : {}", serviceInstanceDTO);
+        ServiceInstanceDTO result = serviceInstanceService.save(serviceInstanceDTO);
+        return ResponseEntity.created(new URI("/api/service-instances/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "serviceInstance", result.getId().toString()))
+            .body(result);
+    }
+
+    /**
+     * Submit service heartbeat
+     */
+    @PostMapping("/service-heartbeats")
+    public ResponseEntity<ServiceHeartbeatDTO> submitServiceHeartbeat(@RequestBody Map<String, Object> heartbeatData) {
+        LOG.debug("Service heartbeat received: {}", heartbeatData);
+        
+        try {
+            ServiceHeartbeatDTO heartbeat = new ServiceHeartbeatDTO();
+            
+            // Set executedAt
+            if (heartbeatData.containsKey("executedAt")) {
+                heartbeat.setExecutedAt(Instant.parse((String) heartbeatData.get("executedAt")));
+            } else {
+                heartbeat.setExecutedAt(Instant.now());
+            }
+            
+            // Set required fields
+            heartbeat.setSuccess((Boolean) heartbeatData.get("success"));
+            heartbeat.setStatus((String) heartbeatData.get("status"));
+            
+            // Set monitored service reference
+            MonitoredServiceDTO service = new MonitoredServiceDTO();
+            Object serviceIdObj = heartbeatData.get("monitoredServiceId");
+            if (serviceIdObj instanceof Number) {
+                service.setId(((Number) serviceIdObj).longValue());
+            }
+            heartbeat.setMonitoredService(service);
+            
+            // Set service instance reference (nullable)
+            if (heartbeatData.containsKey("serviceInstanceId") && heartbeatData.get("serviceInstanceId") != null) {
+                ServiceInstanceDTO serviceInstance = new ServiceInstanceDTO();
+                Object instanceIdObj = heartbeatData.get("serviceInstanceId");
+                if (instanceIdObj instanceof Number) {
+                    serviceInstance.setId(((Number) instanceIdObj).longValue());
+                }
+                heartbeat.setServiceInstance(serviceInstance);
+            }
+            
+            // Set optional fields
+            if (heartbeatData.containsKey("responseTimeMs")) {
+                Object responseTime = heartbeatData.get("responseTimeMs");
+                if (responseTime instanceof Number) {
+                    heartbeat.setResponseTimeMs(((Number) responseTime).intValue());
+                }
+            }
+            if (heartbeatData.containsKey("errorMessage")) {
+                heartbeat.setErrorMessage((String) heartbeatData.get("errorMessage"));
+            }
+            if (heartbeatData.containsKey("metadata")) {
+                heartbeat.setMetadata((String) heartbeatData.get("metadata"));
+            }
+            
+            // Save the heartbeat
+            ServiceHeartbeatDTO result = serviceHeartbeatService.save(heartbeat);
+            
+            LOG.debug("Service heartbeat saved successfully: {}", result.getId());
+            return ResponseEntity.ok(result);
+            
+        } catch (Exception e) {
+            LOG.error("Failed to save service heartbeat: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**

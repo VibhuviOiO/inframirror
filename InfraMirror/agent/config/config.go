@@ -18,6 +18,7 @@ type Config struct {
 	API          API        `yaml:"api"`
 	Instances    Instance   `yaml:"instances"`
 	HTTP         *HTTPConfig `yaml:"http"`
+	Cassandra    *CassandraConfig `yaml:"cassandra"`
 	// Runtime fields populated after registration
 	AgentID      int64      `yaml:"-"`
 	RegionID     int64      `yaml:"-"`
@@ -100,6 +101,40 @@ type HTTPMonitorConfig struct {
 	UptimeCriticalPercent   float64           `yaml:"uptimeCriticalPercent"`
 	ResendNotificationCount int               `yaml:"resendNotificationCount"`
 	UpsideDownMode          *bool             `yaml:"upsideDownMode"`
+}
+
+type CassandraConfig struct {
+	Enable   bool              `yaml:"enable"`
+	Clusters []CassandraCluster `yaml:"clusters"`
+}
+
+type CassandraCluster struct {
+	Service   CassandraService   `yaml:"service"`
+	Instances []CassandraInstance `yaml:"instances"`
+}
+
+type CassandraService struct {
+	Name                     string                 `yaml:"name"`
+	Description              string                 `yaml:"description"`
+	ServiceType              string                 `yaml:"serviceType"`
+	Environment              string                 `yaml:"environment"`
+	MonitoringEnabled        bool                   `yaml:"monitoringEnabled"`
+	ClusterMonitoringEnabled bool                   `yaml:"clusterMonitoringEnabled"`
+	IntervalSeconds          int                    `yaml:"intervalSeconds"`
+	TimeoutMs                int                    `yaml:"timeoutMs"`
+	RetryCount               int                    `yaml:"retryCount"`
+	LatencyWarningMs         int                    `yaml:"latencyWarningMs"`
+	LatencyCriticalMs        int                    `yaml:"latencyCriticalMs"`
+	IsActive                 bool                   `yaml:"isActive"`
+	AdvancedConfig           map[string]interface{} `yaml:"advancedConfig"`
+}
+
+type CassandraInstance struct {
+	Name     string `yaml:"name"`
+	Hostname string `yaml:"hostname"`
+	IP       string `yaml:"ip"`
+	Port     int    `yaml:"port"`
+	IsActive bool   `yaml:"isActive"`
 }
 
 type Instance struct {
@@ -235,6 +270,10 @@ func loadConfigsRecursive(dir string, config *Config) error {
 		if moduleConfig.HTTP != nil && moduleConfig.HTTP.Enable {
 			config.HTTP = moduleConfig.HTTP
 			fmt.Printf("Loaded HTTP config from %s\n", path)
+		}
+		if moduleConfig.Cassandra != nil && moduleConfig.Cassandra.Enable {
+			config.Cassandra = moduleConfig.Cassandra
+			fmt.Printf("Loaded Cassandra config from %s\n", path)
 		}
 	}
 
