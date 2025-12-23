@@ -1,0 +1,16 @@
+api_key: "inframirror_QpHH8fZh_hvz9zWWvUAPDKQaq1GUvq7vgM6LiQkrKV8"
+name: "inframirror-agent"
+description: "InfraMirror Agent monitoring infrastructure health and performance"
+tags:
+  project: "inframirror"
+  ownertype: "organization"
+  owner: "inframirror"
+region: "US East"
+datacenter: "Virginia DC1"
+
+backend:
+  url: "http://host.docker.internal:8080"
+  timeout: "10s"
+
+agent:
+  heartbeat_interval: 30

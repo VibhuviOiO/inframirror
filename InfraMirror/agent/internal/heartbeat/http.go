@@ -6,6 +6,7 @@ import (
 
 	"inframirror-agent/internal/api"
 	"inframirror-agent/internal/cache"
+	"inframirror-agent/internal/monitor/http"
 )
 
 type HttpHeartbeatManager struct {
@@ -16,11 +17,15 @@ type HttpHeartbeatManager struct {
 }
 
 type HttpMonitorConfig struct {
-	ID       int64  `json:"id"`
-	Name     string `json:"name"`
-	URL      string `json:"url"`
-	Method   string `json:"method"`
-	Interval int    `json:"intervalSeconds"`
+	ID                int64             `json:"id"`
+	Name              string            `json:"name"`
+	URL               string            `json:"url"`
+	Method            string            `json:"method"`
+	Interval          int               `json:"intervalSeconds"`
+	TimeoutSeconds    int               `json:"timeoutSeconds"`
+	IgnoreTlsError    bool              `json:"ignoreTlsError"`
+	Headers           map[string]string `json:"headers"`
+	Body              string            `json:"body"`
 }
 
 func NewHttpHeartbeatManager(client *api.Client, cacheManager *cache.Manager) *HttpHeartbeatManager {
@@ -53,9 +58,36 @@ func (m *HttpHeartbeatManager) GetType() string {
 }
 
 func (m *HttpHeartbeatManager) loadMonitors() error {
-	// TODO: Load assigned HTTP monitors from backend
-	// GET /api/agents/{agentId}/http-monitors
-	log.Println("Loading HTTP monitors from backend...")
+	log.Println("Loading HTTP monitors from cache...")
+	
+	cache := m.cacheManager.GetCache()
+	if cache.HTTPMonitors == nil || len(cache.HTTPMonitors) == 0 {
+		log.Println("No HTTP monitors found in cache")
+		return nil
+	}
+	
+	// Load monitors from backend using cached IDs
+	for name, id := range cache.HTTPMonitors {
+		monitor, err := m.client.GetHTTPMonitor(id)
+		if err != nil {
+			log.Printf("Failed to load monitor %s (ID: %d): %v", name, id, err)
+			continue
+		}
+		
+		m.monitors = append(m.monitors, HttpMonitorConfig{
+			ID:             monitor.ID,
+			Name:           monitor.Name,
+			URL:            monitor.URL,
+			Method:         monitor.Method,
+			Interval:       monitor.IntervalSeconds,
+			TimeoutSeconds: monitor.TimeoutSeconds,
+			IgnoreTlsError: monitor.IgnoreTlsError,
+			Headers:        monitor.Headers,
+			Body:           monitor.Body,
+		})
+	}
+	
+	log.Printf("Loaded %d HTTP monitors", len(m.monitors))
 	return nil
 }
 
@@ -75,6 +107,41 @@ func (m *HttpHeartbeatManager) monitorLoop(monitor HttpMonitorConfig) {
 }
 
 func (m *HttpHeartbeatManager) executeHttpCheck(monitor HttpMonitorConfig) {
-	// TODO: Implement actual HTTP check and batch submission
-	log.Printf("HTTP check for monitor %s (%s)", monitor.Name, monitor.URL)
+	log.Printf("Executing HTTP check: %s (%s %s)", monitor.Name, monitor.Method, monitor.URL)
+	
+	// Execute HTTP check
+	result := http.ExecuteHTTPCheck(
+		monitor.URL,
+		monitor.Method,
+		monitor.Headers,
+		monitor.Body,
+		monitor.TimeoutSeconds,
+		monitor.IgnoreTlsError,
+	)
+	
+	// Submit heartbeat
+	heartbeat := &HttpHeartbeat{
+		MonitorID:         monitor.ID,
+		ExecutedAt:        time.Now(),
+		Success:           result.Success,
+		StatusCode:        result.StatusCode,
+		ResponseTimeMs:    result.ResponseTimeMs,
+		DnsLookupMs:       result.DnsLookupMs,
+		TcpConnectMs:      result.TcpConnectMs,
+		TlsHandshakeMs:    result.TlsHandshakeMs,
+		TimeToFirstByteMs: result.TimeToFirstByteMs,
+		ResponseSizeBytes: result.ResponseSizeBytes,
+		ErrorMessage:      result.ErrorMessage,
+		ErrorType:         result.ErrorType,
+	}
+	
+	if err := m.client.SubmitHttpHeartbeat(heartbeat); err != nil {
+		log.Printf("Failed to submit heartbeat for %s: %v", monitor.Name, err)
+	} else {
+		if result.Success {
+			log.Printf("✓ %s: %d (%dms)", monitor.Name, result.StatusCode, result.ResponseTimeMs)
+		} else {
+			log.Printf("✗ %s: %s", monitor.Name, result.ErrorMessage)
+		}
+	}
 }

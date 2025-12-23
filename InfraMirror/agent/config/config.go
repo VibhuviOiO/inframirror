@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
+	"time"
 	"gopkg.in/yaml.v2"
 )
 
@@ -13,7 +15,9 @@ type Config struct {
 	Datacenter   string     `yaml:"datacenter"`
 	Backend      Backend    `yaml:"backend"`
 	Agent        Agent      `yaml:"agent"`
+	API          API        `yaml:"api"`
 	Instances    Instance   `yaml:"instances"`
+	HTTP         *HTTPConfig `yaml:"http"`
 	// Runtime fields populated after registration
 	AgentID      int64      `yaml:"-"`
 	RegionID     int64      `yaml:"-"`
@@ -27,6 +31,75 @@ type Backend struct {
 
 type Agent struct {
 	HeartbeatInterval int `yaml:"heartbeat_interval"`
+}
+
+type API struct {
+	URL     string        `yaml:"url"`
+	Key     string        `yaml:"key"`
+	Timeout time.Duration `yaml:"timeout"`
+}
+
+type HTTPConfig struct {
+	Enable   bool                  `yaml:"enable"`
+	Defaults HTTPDefaults         `yaml:"defaults"`
+	Monitors []HTTPMonitorConfig  `yaml:"monitors"`
+}
+
+type HTTPDefaults struct {
+	Type                    string            `yaml:"type"`
+	Method                  string            `yaml:"method"`
+	IntervalSeconds         int               `yaml:"intervalSeconds"`
+	TimeoutSeconds          int               `yaml:"timeoutSeconds"`
+	RetryCount              int               `yaml:"retryCount"`
+	RetryDelaySeconds       int               `yaml:"retryDelaySeconds"`
+	Enabled                 bool              `yaml:"enabled"`
+	ExpectedStatusCodes     string            `yaml:"expectedStatusCodes"`
+	IncludeResponseBody     bool              `yaml:"includeResponseBody"`
+	CheckSslCertificate     bool              `yaml:"checkSslCertificate"`
+	IgnoreTlsError          bool              `yaml:"ignoreTlsError"`
+	CertificateExpiryDays   int               `yaml:"certificateExpiryDays"`
+	CheckDnsResolution      bool              `yaml:"checkDnsResolution"`
+	MaxRedirects            int               `yaml:"maxRedirects"`
+	ResponseTimeWarningMs   int               `yaml:"responseTimeWarningMs"`
+	ResponseTimeCriticalMs  int               `yaml:"responseTimeCriticalMs"`
+	PerformanceBudgetMs     int               `yaml:"performanceBudgetMs"`
+	SizeBudgetKb            int               `yaml:"sizeBudgetKb"`
+	UptimeWarningPercent    float64           `yaml:"uptimeWarningPercent"`
+	UptimeCriticalPercent   float64           `yaml:"uptimeCriticalPercent"`
+	ResendNotificationCount int               `yaml:"resendNotificationCount"`
+	UpsideDownMode          bool              `yaml:"upsideDownMode"`
+	Headers                 map[string]string `yaml:"headers"`
+}
+
+type HTTPMonitorConfig struct {
+	Name                    string            `yaml:"name"`
+	Type                    string            `yaml:"type"`
+	Method                  string            `yaml:"method"`
+	URL                     string            `yaml:"url"`
+	Description             string            `yaml:"description"`
+	Tags                    string            `yaml:"tags"`
+	Headers                 map[string]string `yaml:"headers"`
+	Body                    string            `yaml:"body"`
+	IntervalSeconds         int               `yaml:"intervalSeconds"`
+	TimeoutSeconds          int               `yaml:"timeoutSeconds"`
+	RetryCount              int               `yaml:"retryCount"`
+	RetryDelaySeconds       int               `yaml:"retryDelaySeconds"`
+	Enabled                 *bool             `yaml:"enabled"`
+	ExpectedStatusCodes     string            `yaml:"expectedStatusCodes"`
+	IncludeResponseBody     *bool             `yaml:"includeResponseBody"`
+	CheckSslCertificate     *bool             `yaml:"checkSslCertificate"`
+	IgnoreTlsError          *bool             `yaml:"ignoreTlsError"`
+	CertificateExpiryDays   int               `yaml:"certificateExpiryDays"`
+	CheckDnsResolution      *bool             `yaml:"checkDnsResolution"`
+	MaxRedirects            int               `yaml:"maxRedirects"`
+	ResponseTimeWarningMs   int               `yaml:"responseTimeWarningMs"`
+	ResponseTimeCriticalMs  int               `yaml:"responseTimeCriticalMs"`
+	PerformanceBudgetMs     int               `yaml:"performanceBudgetMs"`
+	SizeBudgetKb            int               `yaml:"sizeBudgetKb"`
+	UptimeWarningPercent    float64           `yaml:"uptimeWarningPercent"`
+	UptimeCriticalPercent   float64           `yaml:"uptimeCriticalPercent"`
+	ResendNotificationCount int               `yaml:"resendNotificationCount"`
+	UpsideDownMode          *bool             `yaml:"upsideDownMode"`
 }
 
 type Instance struct {
@@ -49,7 +122,7 @@ type HardwareMonitoring struct {
 	Interval int  `yaml:"interval"`
 }
 
-func LoadConfig(globalPath, instancePath string) (*Config, error) {
+func LoadConfig(globalPath, configDir string) (*Config, error) {
 	// Load global config
 	globalData, err := os.ReadFile(globalPath)
 	if err != nil {
@@ -61,23 +134,10 @@ func LoadConfig(globalPath, instancePath string) (*Config, error) {
 		return nil, fmt.Errorf("failed to parse global config: %w", err)
 	}
 
-	// Load instance config if exists
-	if instancePath != "" {
-		if _, err := os.Stat(instancePath); err == nil {
-			instanceData, err := os.ReadFile(instancePath)
-			if err != nil {
-				return nil, fmt.Errorf("failed to read instance config: %w", err)
-			}
-
-			var instanceConfig Config
-			if err := yaml.Unmarshal(instanceData, &instanceConfig); err != nil {
-				return nil, fmt.Errorf("failed to parse instance config: %w", err)
-			}
-
-			// Merge instance config into global config
-			if instanceConfig.Instances.Enable {
-				config.Instances = instanceConfig.Instances
-			}
+	// Load all config files from config directory (recursively)
+	if configDir != "" {
+		if err := loadConfigsRecursive(configDir, &config); err != nil {
+			fmt.Printf("Warning: failed to load configs from %s: %v\n", configDir, err)
 		}
 	}
 
@@ -132,4 +192,51 @@ func LoadConfig(globalPath, instancePath string) (*Config, error) {
 	}
 
 	return &config, nil
+}
+
+func loadConfigsRecursive(dir string, config *Config) error {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		path := fmt.Sprintf("%s/%s", dir, entry.Name())
+
+		if entry.IsDir() {
+			// Recursively load from subdirectories
+			if err := loadConfigsRecursive(path, config); err != nil {
+				fmt.Printf("Warning: failed to load configs from %s: %v\n", path, err)
+			}
+			continue
+		}
+
+		if !strings.HasSuffix(entry.Name(), ".yml") {
+			continue
+		}
+
+		configData, err := os.ReadFile(path)
+		if err != nil {
+			fmt.Printf("Warning: failed to read %s: %v\n", path, err)
+			continue
+		}
+
+		var moduleConfig Config
+		if err := yaml.Unmarshal(configData, &moduleConfig); err != nil {
+			fmt.Printf("Warning: failed to parse %s: %v\n", path, err)
+			continue
+		}
+
+		// Merge module config into global config
+		if moduleConfig.Instances.Enable {
+			config.Instances = moduleConfig.Instances
+			fmt.Printf("Loaded instance config from %s\n", path)
+		}
+		if moduleConfig.HTTP != nil && moduleConfig.HTTP.Enable {
+			config.HTTP = moduleConfig.HTTP
+			fmt.Printf("Loaded HTTP config from %s\n", path)
+		}
+	}
+
+	return nil
 }

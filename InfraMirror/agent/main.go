@@ -3,9 +3,12 @@ package main
 import (
 	"flag"
 	"log"
+	"net"
 	"os"
+	"os/exec"
 	"os/signal"
 	"runtime"
+	"strings"
 	"syscall"
 	"time"
 
@@ -14,17 +17,18 @@ import (
 	"inframirror-agent/internal/cache"
 	"inframirror-agent/internal/heartbeat"
 	"inframirror-agent/internal/lock"
+	"inframirror-agent/internal/monitor/http"
 	"inframirror-agent/internal/startup"
 )
 
 func main() {
-	globalConfig := flag.String("global", "global.yml", "Path to global configuration file")
-	instanceConfig := flag.String("instance", "example/instance/config.yml", "Path to instance configuration file")
+	globalConfig := flag.String("global", "conf/global.yml", "Path to global configuration file")
+	configDir := flag.String("config-dir", "./conf", "Directory containing configuration files")
 	dataDir := flag.String("data", "./data", "Data directory for persistent storage")
 	flag.Parse()
 
 	// Load configuration
-	cfg, err := config.LoadConfig(*globalConfig, *instanceConfig)
+	cfg, err := config.LoadConfig(*globalConfig, *configDir)
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
@@ -37,10 +41,47 @@ func main() {
 
 	log.Printf("Starting InfraMirror Agent: %s", cfg.Name)
 
+	// Display configuration
+	log.Println("=")
+	log.Println("Configuration Loaded:")
+	log.Printf("  Agent Name: %s", cfg.Name)
+	log.Printf("  Region: %s", cfg.Region)
+	log.Printf("  Datacenter: %s", cfg.Datacenter)
+	log.Printf("  Backend URL: %s", cfg.Backend.URL)
+	if len(cfg.APIKey) > 28 {
+		log.Printf("  API Key: %s...%s", cfg.APIKey[:20], cfg.APIKey[len(cfg.APIKey)-8:])
+	} else {
+		log.Printf("  API Key: %s", "***hidden***")
+	}
+	log.Println("=")
+	log.Println("Enabled Modules:")
+	if cfg.Instances.Enable {
+		log.Printf("  ✓ Instance Monitoring (ping: %ds, hardware: %ds)", cfg.Instances.PingInterval, cfg.Instances.HardwareMonitoring.Interval)
+	} else {
+		log.Println("  ✗ Instance Monitoring (disabled)")
+	}
+	if cfg.HTTP != nil && cfg.HTTP.Enable {
+		log.Printf("  ✓ HTTP Monitoring (%d monitors configured)", len(cfg.HTTP.Monitors))
+	} else {
+		log.Println("  ✗ HTTP Monitoring (disabled)")
+	}
+	log.Println("=")
+
 	// Parse timeout
 	timeout, err := time.ParseDuration(cfg.Backend.Timeout)
 	if err != nil {
 		timeout = 10 * time.Second
+	}
+
+	// Set API config from backend config
+	if cfg.API.URL == "" {
+		cfg.API.URL = cfg.Backend.URL
+	}
+	if cfg.API.Key == "" {
+		cfg.API.Key = cfg.APIKey
+	}
+	if cfg.API.Timeout == 0 {
+		cfg.API.Timeout = timeout
 	}
 
 	// Create API client
@@ -62,6 +103,8 @@ func main() {
 	// Step 3: Validate cached resources
 	log.Println("🔍 Step 3: Validating cached resources...")
 	cacheValid := validator.ValidateCachedResources()
+
+	log.Println("=")
 
 	if cacheValid {
 		cachedData := cacheManager.GetCache()
@@ -103,6 +146,17 @@ func main() {
 
 	log.Println("Agent is now the leader, starting monitoring...")
 
+	log.Println("=")
+	log.Println("Starting Monitoring Services:")
+
+	// Create HTTP monitors from configuration
+	if cfg.HTTP != nil && cfg.HTTP.Enable {
+		log.Println("  Creating HTTP monitors from configuration...")
+		if err := http.CreateHTTPMonitors(cfg, cacheManager); err != nil {
+			log.Printf("  ⚠️  Failed to create HTTP monitors: %v", err)
+		}
+	}
+
 	// Start monitoring if instances are enabled
 	if cfg.Instances.Enable {
 		instanceManager := heartbeat.NewInstanceHeartbeatManager(apiClient, cacheManager, 
@@ -111,23 +165,30 @@ func main() {
 			log.Fatalf("Failed to start instance monitoring: %v", err)
 		}
 		defer instanceManager.Stop()
-		log.Println("Instance monitoring started")
+		log.Println("  ✓ Instance monitoring started")
+	} else {
+		log.Println("  ✗ Instance monitoring disabled")
 	}
 
 	// Start HTTP monitoring
 	httpManager := heartbeat.NewHttpHeartbeatManager(apiClient, cacheManager)
 	if err := httpManager.Start(); err != nil {
-		log.Printf("Warning: Failed to start HTTP monitoring: %v", err)
+		log.Printf("  ✗ HTTP monitoring: %v", err)
 	} else {
 		defer httpManager.Stop()
-		log.Println("HTTP monitoring started")
+		log.Println("  ✓ HTTP monitoring started")
 	}
 
-	// Start agent heartbeat (every N seconds)
+	// Start agent heartbeat
+	log.Printf("  ✓ Agent heartbeat (every %ds)", cfg.Agent.HeartbeatInterval)
 	go startAgentHeartbeat(apiClient, cfg.Agent.HeartbeatInterval)
 
 	// Start backend health monitor
+	log.Println("  ✓ Backend health monitor (every 30s)")
 	go validator.WaitForBackend()
+
+	log.Println("=")
+	log.Println("✅ All services started successfully")
 
 	// Wait for shutdown signal
 	sigChan := make(chan os.Signal, 1)
@@ -158,8 +219,27 @@ func registerAgent(client *api.Client, cfg *config.Config) (*api.AgentRegistrati
 }
 
 func getOSVersion() string {
-	// TODO: Implement actual OS version detection
-	return "Unknown"
+	switch runtime.GOOS {
+	case "darwin":
+		out, err := exec.Command("sw_vers", "-productVersion").Output()
+		if err == nil {
+			return "macOS " + strings.TrimSpace(string(out))
+		}
+	case "linux":
+		if data, err := os.ReadFile("/etc/os-release"); err == nil {
+			for _, line := range strings.Split(string(data), "\n") {
+				if strings.HasPrefix(line, "PRETTY_NAME=") {
+					return strings.Trim(strings.TrimPrefix(line, "PRETTY_NAME="), `"`)
+				}
+			}
+		}
+	case "windows":
+		out, err := exec.Command("cmd", "/c", "ver").Output()
+		if err == nil {
+			return strings.TrimSpace(string(out))
+		}
+	}
+	return runtime.GOOS
 }
 
 func startAgentHeartbeat(client *api.Client, intervalSeconds int) {
@@ -176,6 +256,17 @@ func startAgentHeartbeat(client *api.Client, intervalSeconds int) {
 }
 
 func getLocalIP() string {
-	// TODO: Implement actual IP detection
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "127.0.0.1"
+	}
+
+	for _, addr := range addrs {
+		if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
 	return "127.0.0.1"
 }

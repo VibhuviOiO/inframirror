@@ -1,0 +1,23 @@
+# MongoDB Monitoring Configuration
+# Copy this file to config/mongo.yml to enable MongoDB monitoring
+
+mongo:
+  enable: true
+  host: "localhost"
+  port: 27017
+  
+  # Authentication (optional)
+  auth:
+    username: ""
+    password: ""
+    authDb: "admin"
+  
+  # Monitoring settings
+  interval: 60 # seconds
+  timeout: 5000 # milliseconds
+  
+  # Replica set monitoring
+  replicaSet:
+    enabled: false
+    name: ""
+    maxLagSeconds: 10

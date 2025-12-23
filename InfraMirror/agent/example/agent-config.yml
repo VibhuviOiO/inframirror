@@ -1,0 +1,15 @@
+# InfraMirror Agent Configuration Example
+# Copy this file to conf/global.yml and customize for your environment
+
+# Backend API configuration
+api_key: "your-api-key-here"  # Get from UI: Settings > API Keys
+name: "agent-prod-us-east-1"  # Unique agent name
+region: "US East"
+datacenter: "Virginia DC1"
+
+backend:
+  url: "https://inframirror.example.com"  # Backend URL
+  timeout: "10s"
+
+agent:
+  heartbeat_interval: 30  # seconds

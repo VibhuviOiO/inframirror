@@ -209,6 +209,8 @@ func (c *Client) CreateInstance(name, hostname, osType, platform, privateIP stri
 		"agent":                       map[string]int64{"id": agentID},
 	}
 
+	fmt.Printf("DEBUG: Creating instance with OS=%s, platform=%s\n", osType, platform)
+
 	data, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -262,6 +264,71 @@ func (c *Client) SubmitInstanceHeartbeat(heartbeat map[string]interface{}) error
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("submit heartbeat failed with status: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
+type HTTPMonitor struct {
+	ID                int64             `json:"id"`
+	Name              string            `json:"name"`
+	URL               string            `json:"url"`
+	Method            string            `json:"method"`
+	IntervalSeconds   int               `json:"intervalSeconds"`
+	TimeoutSeconds    int               `json:"timeoutSeconds"`
+	IgnoreTlsError    bool              `json:"ignoreTlsError"`
+	Headers           map[string]string `json:"headers"`
+	Body              string            `json:"body"`
+}
+
+func (c *Client) GetHTTPMonitor(id int64) (*HTTPMonitor, error) {
+	httpReq, err := http.NewRequest("GET", fmt.Sprintf("%s/api/agent/http-monitors/%d", c.baseURL, id), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	httpReq.Header.Set("X-API-Key", c.apiKey)
+
+	resp, err := c.client.Do(httpReq)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("get monitor failed with status: %d", resp.StatusCode)
+	}
+
+	var result HTTPMonitor
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (c *Client) SubmitHttpHeartbeat(heartbeat interface{}) error {
+	data, err := json.Marshal(heartbeat)
+	if err != nil {
+		return err
+	}
+
+	httpReq, err := http.NewRequest("POST", c.baseURL+"/api/agent/http-heartbeats", bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("X-API-Key", c.apiKey)
+
+	resp, err := c.client.Do(httpReq)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("submit http heartbeat failed with status: %d", resp.StatusCode)
 	}
 
 	return nil

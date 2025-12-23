@@ -69,11 +69,16 @@ type ServiceHeartbeat struct {
 }
 
 type HttpHeartbeat struct {
-	BaseHeartbeat
-	MonitorID      int64 `json:"monitorId"`
-	StatusCode     int   `json:"statusCode"`
-	ResponseTimeMs int   `json:"responseTimeMs"`
-	DNSLookupMs    int   `json:"dnsLookupMs"`
-	TCPConnectMs   int   `json:"tcpConnectMs"`
-	TLSHandshakeMs int   `json:"tlsHandshakeMs"`
+	MonitorID         int64     `json:"monitorId"`
+	ExecutedAt        time.Time `json:"executedAt"`
+	Success           bool      `json:"success"`
+	StatusCode        int       `json:"statusCode"`
+	ResponseTimeMs    int       `json:"responseTimeMs"`
+	DnsLookupMs       int       `json:"dnsLookupMs"`
+	TcpConnectMs      int       `json:"tcpConnectMs"`
+	TlsHandshakeMs    int       `json:"tlsHandshakeMs"`
+	TimeToFirstByteMs int       `json:"timeToFirstByteMs"`
+	ResponseSizeBytes int       `json:"responseSizeBytes"`
+	ErrorMessage      string    `json:"errorMessage,omitempty"`
+	ErrorType         string    `json:"errorType,omitempty"`
 }

@@ -17,6 +17,7 @@ import vibhuvi.oio.inframirror.service.DatacenterService;
 import vibhuvi.oio.inframirror.service.RegionService;
 import vibhuvi.oio.inframirror.service.InstanceService;
 import vibhuvi.oio.inframirror.service.HttpMonitorService;
+import vibhuvi.oio.inframirror.service.HttpHeartbeatService;
 import vibhuvi.oio.inframirror.service.MonitoredServiceService;
 import vibhuvi.oio.inframirror.service.InstanceHeartbeatService;
 import vibhuvi.oio.inframirror.service.dto.*;
@@ -43,6 +44,7 @@ public class AgentApiResource {
     private final HttpMonitorService httpMonitorService;
     private final MonitoredServiceService monitoredServiceService;
     private final InstanceHeartbeatService instanceHeartbeatService;
+    private final HttpHeartbeatService httpHeartbeatService;
 
     public AgentApiResource(
         AgentService agentService,
@@ -51,7 +53,8 @@ public class AgentApiResource {
         InstanceService instanceService,
         HttpMonitorService httpMonitorService,
         MonitoredServiceService monitoredServiceService,
-        InstanceHeartbeatService instanceHeartbeatService
+        InstanceHeartbeatService instanceHeartbeatService,
+        HttpHeartbeatService httpHeartbeatService
     ) {
         this.agentService = agentService;
         this.regionService = regionService;
@@ -60,6 +63,7 @@ public class AgentApiResource {
         this.httpMonitorService = httpMonitorService;
         this.monitoredServiceService = monitoredServiceService;
         this.instanceHeartbeatService = instanceHeartbeatService;
+        this.httpHeartbeatService = httpHeartbeatService;
     }
 
     /**
@@ -106,11 +110,9 @@ public class AgentApiResource {
     public ResponseEntity<InstanceDTO> createInstance(@Valid @RequestBody InstanceDTO instanceDTO) throws URISyntaxException {
         LOG.debug("REST request to save Instance : {}", instanceDTO);
         
-        if (instanceDTO.getId() != null) {
-            throw new BadRequestAlertException("A new instance cannot already have an ID", "instance", "idexists");
-        }
+        // Find or create instance by hostname
+        InstanceDTO result = instanceService.findOrCreate(instanceDTO);
         
-        InstanceDTO result = instanceService.save(instanceDTO);
         return ResponseEntity.created(new URI("/api/instances/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "instance", result.getId().toString()))
             .body(result);
@@ -126,6 +128,15 @@ public class AgentApiResource {
         return ResponseEntity.created(new URI("/api/http-monitors/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "httpMonitor", result.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * Get HTTP monitor by ID
+     */
+    @GetMapping("/http-monitors/{id}")
+    public ResponseEntity<HttpMonitorDTO> getHttpMonitor(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get HttpMonitor : {}", id);
+        return ResponseUtil.wrapOrNotFound(httpMonitorService.findOne(id));
     }
 
     /**
@@ -268,5 +279,15 @@ public class AgentApiResource {
             LOG.error("Failed to save instance heartbeat: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    /**
+     * Submit HTTP heartbeat
+     */
+    @PostMapping("/http-heartbeats")
+    public ResponseEntity<HttpHeartbeatDTO> submitHttpHeartbeat(@RequestBody HttpHeartbeatDTO heartbeat) {
+        LOG.debug("HTTP heartbeat received: {}", heartbeat);
+        HttpHeartbeatDTO result = httpHeartbeatService.save(heartbeat);
+        return ResponseEntity.ok(result);
     }
 }

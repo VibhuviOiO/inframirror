@@ -1,0 +1,25 @@
+# PostgreSQL Monitoring Configuration
+# Copy this file to config/postgres.yml to enable PostgreSQL monitoring
+
+postgres:
+  enable: true
+  host: "localhost"
+  port: 5432
+  database: "postgres"
+  
+  # Authentication
+  auth:
+    username: "postgres"
+    password: ""
+  
+  # Monitoring settings
+  interval: 60 # seconds
+  timeout: 5000 # milliseconds
+  
+  # Health checks
+  testQuery: "SELECT 1"
+  
+  # Replication monitoring
+  replication:
+    enabled: false
+    maxLagBytes: 10485760 # 10MB

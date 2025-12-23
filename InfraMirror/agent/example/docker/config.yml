@@ -1,0 +1,17 @@
+# Docker Monitoring Configuration
+# Copy this file to config/docker.yml to enable Docker monitoring
+
+docker:
+  enable: true
+  socket: "/var/run/docker.sock"
+  interval: 60 # seconds
+  
+  # Monitor specific containers (empty = all)
+  containers: []
+  
+  # Collect metrics
+  metrics:
+    cpu: true
+    memory: true
+    network: true
+    disk: true

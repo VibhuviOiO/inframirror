@@ -62,4 +62,12 @@ public interface InstanceService {
      * Reindex all instances from database to Elasticsearch.
      */
     void reindexAll();
+
+    /**
+     * Find or create instance by hostname.
+     *
+     * @param instanceDTO the instance to find or create.
+     * @return the persisted entity.
+     */
+    InstanceDTO findOrCreate(InstanceDTO instanceDTO);
 }

@@ -1,0 +1,6 @@
+# User configurations
+*.yml
+!global.yml
+
+# Keep directory structure
+!.gitkeep

@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import vibhuvi.oio.inframirror.domain.Instance;
@@ -9,4 +10,6 @@ import vibhuvi.oio.inframirror.domain.Instance;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface InstanceRepository extends JpaRepository<Instance, Long>, JpaSpecificationExecutor<Instance> {}
+public interface InstanceRepository extends JpaRepository<Instance, Long>, JpaSpecificationExecutor<Instance> {
+    Optional<Instance> findByHostname(String hostname);
+}

@@ -81,4 +81,12 @@ public interface AgentService {
      * @param apiKey the agent API key.
      */
     void updateLastSeenByApiKey(String apiKey);
+
+    /**
+     * Find agent by API key.
+     *
+     * @param apiKey the agent API key.
+     * @return the agent.
+     */
+    Optional<AgentDTO> findByApiKey(String apiKey);
 }

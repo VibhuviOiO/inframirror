@@ -1,0 +1,95 @@
+# HTTP Monitoring Configuration
+# Copy this file to conf/http/config.yml to enable HTTP monitoring
+
+http:
+  enable: true
+  
+  # Global defaults (applied to all monitors unless overridden)
+  defaults:
+    type: "HTTP"  # Required: HTTP or HTTPS
+    method: "GET"
+    intervalSeconds: 60
+    timeoutSeconds: 10
+    retryCount: 2
+    retryDelaySeconds: 5
+    enabled: true
+    
+    # Response validation
+    expectedStatusCodes: "200,201,202,204"  # Comma-separated
+    includeResponseBody: false
+    
+    # SSL/TLS settings
+    checkSslCertificate: true
+    ignoreTlsError: false
+    certificateExpiryDays: 30  # Warn if cert expires within N days
+    
+    # Network settings
+    checkDnsResolution: true
+    maxRedirects: 5
+    
+    # Performance thresholds
+    responseTimeWarningMs: 1000
+    responseTimeCriticalMs: 3000
+    performanceBudgetMs: 2000
+    sizeBudgetKb: 1024
+    
+    # Uptime thresholds
+    uptimeWarningPercent: 99.0
+    uptimeCriticalPercent: 95.0
+    
+    # Notifications
+    resendNotificationCount: 3
+    
+    # Advanced
+    upsideDownMode: false  # Expect failure (for testing)
+    
+    headers:
+      User-Agent: "InfraMirror-Agent/1.0"
+  
+  # List of HTTP monitors
+  monitors:
+    # Simple GET - Public API
+    - name: "ISRO Launchers API"
+      type: "HTTPS"
+      url: "https://isro.vercel.app/api/launchers"
+      description: "Monitor ISRO launchers API endpoint"
+      tags: "public,api,isro"
+      headers:
+        Accept: "application/json"
+    
+    # Simple GET - Public API
+    - name: "ISRO Satellites API"
+      type: "HTTPS"
+      url: "https://isro.vercel.app/api/customer_satellites"
+      intervalSeconds: 120
+      tags: "public,api,isro"
+    
+    # Backend health (no auth)
+    - name: "Backend Health"
+      type: "HTTP"
+      url: "http://host.docker.internal:8080/management/health"
+      intervalSeconds: 30
+      timeoutSeconds: 5
+      expectedStatusCodes: "200"
+      tags: "backend,health"
+    
+    # GET with API Key
+    - name: "Backend Agents API"
+      type: "HTTP"
+      url: "http://host.docker.internal:8080/api/agents"
+      description: "Monitor agents list endpoint"
+      tags: "backend,api,agents"
+      headers:
+        Accept: "application/json"
+        X-API-Key: "inframirror_QpHH8fZh_hvz9zWWvUAPDKQaq1GUvq7vgM6LiQkrKV8"
+    
+    # POST with API Key
+    - name: "Agent Heartbeat POST"
+      type: "HTTP"
+      url: "http://host.docker.internal:8080/api/agent/heartbeat"
+      method: "POST"
+      intervalSeconds: 120
+      description: "Test agent heartbeat endpoint"
+      tags: "backend,api,heartbeat"
+      headers:
+        X-API-Key: "inframirror_QpHH8fZh_hvz9zWWvUAPDKQaq1GUvq7vgM6LiQkrKV8"

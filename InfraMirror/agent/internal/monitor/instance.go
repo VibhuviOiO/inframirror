@@ -2,8 +2,11 @@ package monitor
 
 import (
 	"log"
+	"net"
 	"os"
+	"os/exec"
 	"runtime"
+	"strings"
 	"time"
 
 	"inframirror-agent/internal/api"
@@ -59,13 +62,13 @@ func (m *InstanceMonitor) ensureInstance() error {
 	
 	hostname := getHostname()
 	privateIP := getPrivateIP()
-	osType := runtime.GOOS
+	osType := getOSType()
 	platform := getPlatform()
 
 	instance, err := m.client.CreateInstance(
 		hostname,           // name
 		hostname,           // hostname
-		osType,            // osType
+		osType,            // osType (uppercase enum)
 		platform,          // platform
 		privateIP,         // privateIP
 		cachedData.DatacenterID,
@@ -140,11 +143,58 @@ func getHostname() string {
 }
 
 func getPrivateIP() string {
-	// TODO: Implement actual private IP detection
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "127.0.0.1"
+	}
+
+	for _, addr := range addrs {
+		if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
 	return "127.0.0.1"
 }
 
+func getOSType() string {
+	switch runtime.GOOS {
+	case "linux":
+		return "LINUX"
+	case "windows":
+		return "WINDOWS"
+	case "darwin":
+		return "MACOS"
+	case "freebsd", "openbsd", "netbsd":
+		return "BSD"
+	case "solaris", "aix":
+		return "UNIX"
+	default:
+		return "OTHER"
+	}
+}
+
 func getPlatform() string {
-	// TODO: Implement actual platform detection
-	return "Unknown"
+	switch runtime.GOOS {
+	case "darwin":
+		out, err := exec.Command("sw_vers", "-productVersion").Output()
+		if err == nil {
+			return "macOS " + strings.TrimSpace(string(out))
+		}
+	case "linux":
+		if data, err := os.ReadFile("/etc/os-release"); err == nil {
+			for _, line := range strings.Split(string(data), "\n") {
+				if strings.HasPrefix(line, "PRETTY_NAME=") {
+					return strings.Trim(strings.TrimPrefix(line, "PRETTY_NAME="), `"`)
+				}
+			}
+		}
+	case "windows":
+		out, err := exec.Command("cmd", "/c", "ver").Output()
+		if err == nil {
+			return strings.TrimSpace(string(out))
+		}
+	}
+	return runtime.GOOS + "/" + runtime.GOARCH
 }

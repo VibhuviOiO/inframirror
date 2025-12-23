@@ -1,21 +1,20 @@
-# Instance monitoring configuration
+# Instance Monitoring Configuration
+# Copy this file to config/instance.yml to enable instance monitoring
+
 instances:
   enable: true
-  
-  # Ping monitoring
-  pingInterval: 30        # seconds
-  pingTimeout: 3000       # milliseconds
-  pingRetryCount: 2       # retries
-  
-  # Hardware monitoring
+  pingInterval: 30 # seconds
+  pingTimeout: 3000 # milliseconds
+  pingRetryCount: 2
+
   hardwareMonitoring:
     enable: true
-    interval: 60          # seconds (1 minute for testing)
-  
-  # Thresholds
-  cpu_warning_threshold: 70     # percent
-  cpu_danger_threshold: 90      # percent
-  memory_warning_threshold: 75  # percent
-  memory_danger_threshold: 90   # percent
-  disk_warning_threshold: 80    # percent
-  disk_danger_threshold: 95     # percent
+    interval: 60 # seconds
+
+  # Thresholds (optional, defaults shown)
+  cpu_warning_threshold: 70
+  cpu_danger_threshold: 90
+  memory_warning_threshold: 75
+  memory_danger_threshold: 90
+  disk_warning_threshold: 80
+  disk_danger_threshold: 95

@@ -1,8 +1,13 @@
 {
-  "agentId": 1152,
+  "agentId": 2651,
   "regionId": 3,
   "datacenterId": 1101,
-  "instanceId": 1202,
+  "instanceId": 1201,
   "region": "US East",
-  "datacenter": "Virginia DC1"
+  "datacenter": "Virginia DC1",
+  "httpMonitors": {
+    "Backend Health Check": 2701,
+    "ISRO Launchers API": 2702,
+    "ISRO Satellites API": 2703
+  }
 }

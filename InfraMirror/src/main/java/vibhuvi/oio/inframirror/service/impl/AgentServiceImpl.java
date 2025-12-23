@@ -1,6 +1,7 @@
 package vibhuvi.oio.inframirror.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -144,7 +145,6 @@ public class AgentServiceImpl implements AgentService {
             .orElseGet(() -> {
                 Datacenter newDatacenter = new Datacenter();
                 newDatacenter.setName(datacenterName);
-                // Generate shorter code (max 10 chars)
                 String code = datacenterName.toLowerCase()
                     .replaceAll("\\s+", "")
                     .replaceAll("[^a-z0-9]", "")
@@ -154,8 +154,16 @@ public class AgentServiceImpl implements AgentService {
                 return datacenterRepository.save(newDatacenter);
             });
 
-        Agent agent = new Agent();
-        agent.setName(request.getName());
+        // Find or create agent by name
+        Agent agent = agentRepository
+            .findByName(request.getName())
+            .orElseGet(() -> {
+                Agent newAgent = new Agent();
+                newAgent.setName(request.getName());
+                return newAgent;
+            });
+
+        // Update agent properties
         agent.setHostname(request.getHostname());
         agent.setIpAddress(request.getIpAddress());
         agent.setOsType(request.getOsType());
@@ -164,7 +172,7 @@ public class AgentServiceImpl implements AgentService {
         agent.setStatus("ACTIVE");
         agent.setTags(objectMapper.valueToTree(request.getTags()));
         agent.setDatacenter(datacenter);
-        agent.setRegion(region);  // Set both datacenter and region
+        agent.setRegion(region);
         agent = agentRepository.save(agent);
         agentSearchRepository.index(agent);
 
@@ -183,7 +191,7 @@ public class AgentServiceImpl implements AgentService {
     public void updateLastSeen(Long agentId) {
         LOG.debug("Updating last seen for agent: {}", agentId);
         agentRepository.findById(agentId).ifPresent(agent -> {
-            agent.setLastSeenAt(java.time.Instant.now());
+            agent.setLastSeenAt(Instant.now());
             agent.setStatus("ACTIVE");
             agentRepository.save(agent);
             agentSearchRepository.index(agent);
@@ -193,7 +201,15 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public void updateLastSeenByApiKey(String apiKey) {
         LOG.debug("Updating last seen for agent with API key");
-        // For now, just log - would need to implement API key to agent mapping
-        // This is a simplified implementation
+        // API keys are managed separately - this is a no-op for now
+        // In production, you'd query api_keys table and find associated agent
+    }
+
+    @Override
+    public Optional<AgentDTO> findByApiKey(String apiKey) {
+        LOG.debug("Finding agent by API key");
+        // API keys are managed separately - return empty for now
+        // In production, you'd query api_keys table and find associated agent
+        return Optional.empty();
     }
 }

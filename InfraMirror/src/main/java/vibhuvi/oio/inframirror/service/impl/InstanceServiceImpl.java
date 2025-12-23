@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.Instance;
+import vibhuvi.oio.inframirror.domain.enumeration.OperatingSystem;
 import vibhuvi.oio.inframirror.repository.InstanceRepository;
 import vibhuvi.oio.inframirror.repository.search.InstanceSearchRepository;
 import vibhuvi.oio.inframirror.service.InstanceService;
@@ -102,5 +103,32 @@ public class InstanceServiceImpl implements InstanceService {
         LOG.info("Reindexing all instances to Elasticsearch");
         instanceRepository.findAll().forEach(instanceSearchRepository::index);
         LOG.info("Reindexing completed");
+    }
+
+    @Override
+    public InstanceDTO findOrCreate(InstanceDTO instanceDTO) {
+        LOG.debug("Request to find or create Instance by hostname: {}", instanceDTO.getHostname());
+        
+        Optional<Instance> existing = instanceRepository.findByHostname(instanceDTO.getHostname());
+        
+        if (existing.isPresent()) {
+            Instance instance = existing.get();
+            // Don't update agent or datacenter on existing instances
+            instanceDTO.setAgent(null);
+            instanceDTO.setDatacenter(null);
+            // Update other properties
+            instanceMapper.partialUpdate(instance, instanceDTO);
+            instance = instanceRepository.save(instance);
+            instanceSearchRepository.index(instance);
+            LOG.debug("Updated existing instance: {}", instance.getId());
+            return instanceMapper.toDto(instance);
+        } else {
+            // Create new
+            Instance instance = instanceMapper.toEntity(instanceDTO);
+            instance = instanceRepository.save(instance);
+            instanceSearchRepository.index(instance);
+            LOG.debug("Created new instance: {}", instance.getId());
+            return instanceMapper.toDto(instance);
+        }
     }
 }

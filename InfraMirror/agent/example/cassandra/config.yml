@@ -1,0 +1,70 @@
+# Cassandra 3-Node Cluster Monitoring Configuration
+
+cassandra:
+  enable: true
+
+  # MonitoredService properties
+  service:
+    name: "Cassandra Production Cluster"
+    description: "3-node Cassandra cluster for production workloads"
+    serviceType: "CASSANDRA"
+    environment: "PROD"
+    monitoringEnabled: true
+    clusterMonitoringEnabled: true
+    intervalSeconds: 30
+    timeoutMs: 5000
+    retryCount: 2
+    latencyWarningMs: 200
+    latencyCriticalMs: 600
+    isActive: true
+    
+    # Advanced Cassandra-specific configuration (stored as JSONB)
+    advancedConfig:
+      # CQL authentication
+      cql:
+        username: "monitor_user"
+        password: "encrypted_password"
+        consistencyLevel: "QUORUM"
+      
+      # Nodetool checks
+      nodetoolStatus: true
+      nodetoolPath: "/opt/cassandra/bin/nodetool"
+      
+      # Keyspace validation
+      keyspacesCheck: true
+      expectedKeyspaces:
+        - "system"
+        - "system_schema"
+        - "app_data"
+        - "user_sessions"
+      
+      # Cluster health thresholds
+      minQuorum: 2
+      maxReplicationLag: 10
+      maxPendingCompactions: 100
+      
+      # Performance thresholds
+      maxReadLatencyMs: 50
+      maxWriteLatencyMs: 100
+      maxHeapUsagePercent: 75
+      
+      # Monitoring options
+      checkReplication: true
+      checkCompaction: true
+      checkRepairStatus: true
+      checkGossip: true
+
+  # ServiceInstance properties (3 nodes)
+  instances:
+    - hostname: "cassandra-node-1.example.com"
+      port: 9042
+      isActive: true
+      # Instance will be looked up by hostname from Instance table
+      
+    - hostname: "cassandra-node-2.example.com"
+      port: 9042
+      isActive: true
+      
+    - hostname: "cassandra-node-3.example.com"
+      port: 9042
+      isActive: true

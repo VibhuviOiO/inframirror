@@ -2,8 +2,11 @@ package system
 
 import (
 	"math/rand"
+	"net"
 	"os"
+	"os/exec"
 	"runtime"
+	"strings"
 	"time"
 )
 
@@ -40,12 +43,42 @@ func (i *Info) GetOSType() string {
 }
 
 func (i *Info) GetPlatform() string {
-	// TODO: Implement detailed platform detection
+	switch runtime.GOOS {
+	case "darwin":
+		out, err := exec.Command("sw_vers", "-productVersion").Output()
+		if err == nil {
+			return "macOS " + strings.TrimSpace(string(out))
+		}
+	case "linux":
+		if data, err := os.ReadFile("/etc/os-release"); err == nil {
+			for _, line := range strings.Split(string(data), "\n") {
+				if strings.HasPrefix(line, "PRETTY_NAME=") {
+					return strings.Trim(strings.TrimPrefix(line, "PRETTY_NAME="), `"`)
+				}
+			}
+		}
+	case "windows":
+		out, err := exec.Command("cmd", "/c", "ver").Output()
+		if err == nil {
+			return strings.TrimSpace(string(out))
+		}
+	}
 	return runtime.GOOS + "/" + runtime.GOARCH
 }
 
 func (i *Info) GetPrivateIP() string {
-	// TODO: Implement actual private IP detection
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "127.0.0.1"
+	}
+
+	for _, addr := range addrs {
+		if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
 	return "127.0.0.1"
 }
 

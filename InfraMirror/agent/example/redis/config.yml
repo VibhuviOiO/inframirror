@@ -1,0 +1,19 @@
+# Redis Monitoring Configuration
+# Copy this file to config/redis.yml to enable Redis monitoring
+
+redis:
+  enable: true
+  host: "localhost"
+  port: 6379
+  
+  # Authentication (optional)
+  password: ""
+  
+  # Monitoring settings
+  interval: 60 # seconds
+  timeout: 5000 # milliseconds
+  
+  # Sentinel monitoring
+  sentinel:
+    enabled: false
+    masterName: ""

@@ -8,12 +8,13 @@ import (
 )
 
 type AgentCache struct {
-	AgentID      int64 `json:"agentId"`
-	RegionID     int64 `json:"regionId"`
-	DatacenterID int64 `json:"datacenterId"`
-	InstanceID   int64 `json:"instanceId"`
-	Region       string `json:"region"`
-	Datacenter   string `json:"datacenter"`
+	AgentID      int64            `json:"agentId"`
+	RegionID     int64            `json:"regionId"`
+	DatacenterID int64            `json:"datacenterId"`
+	InstanceID   int64            `json:"instanceId"`
+	Region       string           `json:"region"`
+	Datacenter   string           `json:"datacenter"`
+	HTTPMonitors map[string]int64 `json:"httpMonitors"`
 }
 
 type Manager struct {
@@ -27,7 +28,7 @@ func NewManager(dataDir string) *Manager {
 	return &Manager{
 		dataDir:   dataDir,
 		cacheFile: cacheFile,
-		cache:     &AgentCache{},
+		cache:     &AgentCache{HTTPMonitors: make(map[string]int64)},
 	}
 }
 
@@ -90,9 +91,25 @@ func (m *Manager) HasInstanceCache() bool {
 }
 
 func (m *Manager) ClearCache() error {
-	m.cache = &AgentCache{}
+	m.cache = &AgentCache{HTTPMonitors: make(map[string]int64)}
 	if err := os.Remove(m.cacheFile); err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("failed to remove cache file: %w", err)
 	}
 	return nil
+}
+
+func (m *Manager) SetHTTPMonitor(name string, id int64) {
+	if m.cache.HTTPMonitors == nil {
+		m.cache.HTTPMonitors = make(map[string]int64)
+	}
+	m.cache.HTTPMonitors[name] = id
+	m.Save()
+}
+
+func (m *Manager) GetHTTPMonitor(name string) (int64, bool) {
+	if m.cache.HTTPMonitors == nil {
+		return 0, false
+	}
+	id, ok := m.cache.HTTPMonitors[name]
+	return id, ok
 }

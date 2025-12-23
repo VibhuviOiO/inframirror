@@ -856,64 +856,22 @@ management:
 ### 9. Deployment Architecture
 
 #### Development Environment
-```
-docker-compose.yml
-├── inframirror-backend
-├── inframirror-frontend
-├── postgresql
-├── redis
-├── elasticsearch
-├── kafka
-└── keycloak
-```
 
-#### Production Environment (Kubernetes)
+**Starting Backend Services:**
+```bash
+# Start all backend services (PostgreSQL, Redis, Keycloak, Elasticsearch)
+docker compose -f docker/services.yml up -d
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: inframirror-backend
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: inframirror-backend
-  template:
-    metadata:
-      labels:
-        app: inframirror-backend
-    spec:
-      containers:
-      - name: backend
-        image: inframirror/backend:latest
-        ports:
-        - containerPort: 8080
-        env:
-        - name: SPRING_PROFILES_ACTIVE
-          value: "prod"
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-        livenessProbe:
-          httpGet:
-            path: /management/health/liveness
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /management/health/readiness
-            port: 8080
-          initialDelaySeconds: 20
-          periodSeconds: 5
+# Start Spring Boot application
+./mvnw
 ```
 
----
+**Services in docker/services.yml:**
+- PostgreSQL (Database)
+- Redis (Caching)
+- Keycloak (Authentication)
+- Elasticsearch (Logs & Search)
+
 
 ### 10. Scalability Considerations
 
