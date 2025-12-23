@@ -14,6 +14,7 @@ import (
 	"inframirror-agent/internal/cache"
 	"inframirror-agent/internal/heartbeat"
 	"inframirror-agent/internal/lock"
+	"inframirror-agent/internal/startup"
 )
 
 func main() {
@@ -45,9 +46,25 @@ func main() {
 	// Create API client
 	apiClient := api.NewClient(cfg.Backend.URL, cfg.APIKey, timeout)
 
-	// Check cache first
-	cachedData := cacheManager.GetCache()
-	if cacheManager.HasCache() {
+	// Create startup validator
+	validator := startup.NewValidator(cfg.Backend.URL, cfg.APIKey, apiClient, cacheManager)
+
+	// Step 1: Check backend health (blocks until backend is UP)
+	log.Println("🔍 Step 1: Checking backend health...")
+	validator.CheckBackendHealth()
+
+	// Step 2: Validate API key
+	log.Println("🔍 Step 2: Validating API key...")
+	if err := validator.ValidateAPIKey(); err != nil {
+		log.Fatalf("API key validation failed: %v", err)
+	}
+
+	// Step 3: Validate cached resources
+	log.Println("🔍 Step 3: Validating cached resources...")
+	cacheValid := validator.ValidateCachedResources()
+
+	if cacheValid {
+		cachedData := cacheManager.GetCache()
 		log.Printf("Using cached data - Agent: %d, Region: %d, Datacenter: %d", 
 			cachedData.AgentID, cachedData.RegionID, cachedData.DatacenterID)
 		cfg.AgentID = cachedData.AgentID
@@ -109,6 +126,9 @@ func main() {
 	// Start agent heartbeat (every N seconds)
 	go startAgentHeartbeat(apiClient, cfg.Agent.HeartbeatInterval)
 
+	// Start backend health monitor
+	go validator.WaitForBackend()
+
 	// Wait for shutdown signal
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -146,14 +166,11 @@ func startAgentHeartbeat(client *api.Client, intervalSeconds int) {
 	ticker := time.NewTicker(time.Duration(intervalSeconds) * time.Second)
 	defer ticker.Stop()
 
-	for {
-		select {
-		case <-ticker.C:
-			if err := client.SendHeartbeat(); err != nil {
-				log.Printf("Failed to send agent heartbeat: %v", err)
-			} else {
-				log.Println("Agent heartbeat sent successfully")
-			}
+	for range ticker.C {
+		if err := client.SendHeartbeat(); err != nil {
+			log.Printf("⚠️  Failed to send agent heartbeat: %v (will retry)", err)
+		} else {
+			log.Println("✅ Agent heartbeat sent successfully")
 		}
 	}
 }

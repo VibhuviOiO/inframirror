@@ -88,3 +88,11 @@ func (m *Manager) HasCache() bool {
 func (m *Manager) HasInstanceCache() bool {
 	return m.HasCache() && m.cache.InstanceID > 0
 }
+
+func (m *Manager) ClearCache() error {
+	m.cache = &AgentCache{}
+	if err := os.Remove(m.cacheFile); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("failed to remove cache file: %w", err)
+	}
+	return nil
+}

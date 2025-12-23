@@ -6,7 +6,7 @@ services:
     container_name: inframirror-agent-dev
     volumes:
       - .:/app
-      - /app/tmp  # Exclude tmp directory
+      - /app/tmp
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/host/root:ro
@@ -18,7 +18,7 @@ services:
       - HOST_SYS=/host/sys
       - HOST_ROOT=/host/root
     command: ["air", "-c", ".air.toml"]
-    network_mode: host  # Use host network to access backend on localhost:8080
+    network_mode: host
     restart: unless-stopped
     profiles:
       - dev

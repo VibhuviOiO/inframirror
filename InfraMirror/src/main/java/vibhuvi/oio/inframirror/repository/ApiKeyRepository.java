@@ -11,5 +11,5 @@ import vibhuvi.oio.inframirror.domain.ApiKey;
 @SuppressWarnings("unused")
 @Repository
 public interface ApiKeyRepository extends JpaRepository<ApiKey, Long> {
-    Optional<ApiKey> findByKeyHashAndActive(String keyHash, Boolean active);
+    Optional<ApiKey> findFirstByKeyHashAndActiveTrue(String keyHash);
 }

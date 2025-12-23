@@ -1,4 +1,4 @@
-api_key: "inframirror_uwlRT6E2om410ut0cmFBf4nWGzMmQ9sF3oK58UuGeIc"
+api_key: "inframirror_QpHH8fZh_hvz9zWWvUAPDKQaq1GUvq7vgM6LiQkrKV8"
 name: "agent-dev"
 region: "Development"
 datacenter: "Local DC"
@@ -12,7 +12,7 @@ instances:
   pingInterval: 30
   pingTimeout: 3000
   pingRetryCount: 2
-  
+
   hardwareMonitoring:
     enable: true
-    interval: 60  # More frequent for dev
+    interval: 60 # More frequent for dev

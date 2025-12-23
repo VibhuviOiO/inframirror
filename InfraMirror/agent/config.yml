@@ -1,5 +1,10 @@
-api_key: "inframirror_uwlRT6E2om410ut0cmFBf4nWGzMmQ9sF3oK58UuGeIc"
-name: ""  # defaults to hostname
+api_key: "inframirror_QpHH8fZh_hvz9zWWvUAPDKQaq1GUvq7vgM6LiQkrKV8"
+name: "inframirror-agent"
+description: "InfraMirror Agent monitoring infrastructure health and performance"
+tags:
+  project: "inframirror"
+  ownertype: "organization"
+  owner: "inframirror"
 region: "US East"
 datacenter: "Virginia DC1"
 
@@ -9,10 +14,10 @@ backend:
 
 instances:
   enable: true
-  pingInterval: 30        # seconds
-  pingTimeout: 3000       # milliseconds
+  pingInterval: 30 # seconds
+  pingTimeout: 3000 # milliseconds
   pingRetryCount: 2
-  
+
   hardwareMonitoring:
     enable: true
-    interval: 60          # seconds (1 minute for testing)
+    interval: 60 # seconds (1 minute for testing)
