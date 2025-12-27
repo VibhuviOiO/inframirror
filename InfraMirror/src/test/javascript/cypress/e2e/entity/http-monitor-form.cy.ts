@@ -1,4 +1,4 @@
-import { entityCreateButtonSelector, entityDetailsButtonSelector, entityTableSelector } from '../../support/entity';
+import { entityCreateButtonSelector } from '../../support/entity';
 
 describe('HttpMonitor Form E2E Test', () => {
   const httpMonitorPageUrl = '/http-monitor';

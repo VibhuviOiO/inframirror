@@ -60,7 +60,16 @@ const sidebarMenu: SidebarMenu[] = [
       { name: 'Datacenter', icon: FaServer, route: '/datacenter' },
       { name: 'Instance', icon: FaDesktop, route: '/instance' },
       { name: 'HTTP Monitor', icon: FaNetworkWired, route: '/http-monitor' },
-      { name: 'Monitored Service', icon: FaEye, route: '/monitored-service' },
+      { name: 'Service', icon: FaEye, route: '/monitored-service' },
+    ],
+  },
+  {
+    title: 'Agent',
+    icon: FaRobot,
+    items: [
+      { name: 'Agent', icon: FaUserSecret, route: '/agent' },
+      { name: 'Agent Monitor', icon: FaEye, route: '/agent-monitor' },
+      { name: 'Agent Lock', icon: FaLock, route: '/agent-lock' },
     ],
   },
   {
@@ -79,15 +88,6 @@ const sidebarMenu: SidebarMenu[] = [
       { name: 'Status Page', icon: FaSitemap, route: '/status-page' },
       { name: 'Status Page Items', icon: FaList, route: '/status-page-item' },
       { name: 'Status Page Dependencies', icon: FaSitemap, route: '/status-dependency' },
-    ],
-  },
-  {
-    title: 'Agent',
-    icon: FaRobot,
-    items: [
-      { name: 'Agent', icon: FaUserSecret, route: '/agent' },
-      { name: 'Agent Monitor', icon: FaEye, route: '/agent-monitor' },
-      { name: 'Agent Lock', icon: FaLock, route: '/agent-lock' },
     ],
   },
   {

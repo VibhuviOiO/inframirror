@@ -12,7 +12,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "region")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "region")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Region implements Serializable {
 
@@ -28,17 +27,14 @@ public class Region implements Serializable {
     @NotNull
     @Size(max = 50)
     @Column(name = "name", length = 50, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     @Size(max = 20)
     @Column(name = "region_code", length = 20)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String regionCode;
 
     @Size(max = 20)
     @Column(name = "group_name", length = 20)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String groupName;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region")

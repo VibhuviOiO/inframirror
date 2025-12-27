@@ -10,6 +10,13 @@
         <createSequence sequenceName="sequence_generator" startValue="1050" incrementBy="50"/>
     </changeSet>
 
+    <changeSet id="00000000000003" author="system">
+        <sql>
+            CREATE EXTENSION IF NOT EXISTS pg_trgm;
+            CREATE EXTENSION IF NOT EXISTS unaccent;
+        </sql>
+    </changeSet>
+
     <!--
         JHipster core tables.
         The initial schema has the '00000000000001' id, so that it is over-written if we re-generate it.

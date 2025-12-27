@@ -12,7 +12,6 @@ import tech.jhipster.service.QueryService;
 import vibhuvi.oio.inframirror.domain.*; // for static metamodels
 import vibhuvi.oio.inframirror.domain.Region;
 import vibhuvi.oio.inframirror.repository.RegionRepository;
-import vibhuvi.oio.inframirror.repository.search.RegionSearchRepository;
 import vibhuvi.oio.inframirror.service.criteria.RegionCriteria;
 import vibhuvi.oio.inframirror.service.dto.RegionDTO;
 import vibhuvi.oio.inframirror.service.mapper.RegionMapper;
@@ -33,12 +32,9 @@ public class RegionQueryService extends QueryService<Region> {
 
     private final RegionMapper regionMapper;
 
-    private final RegionSearchRepository regionSearchRepository;
-
-    public RegionQueryService(RegionRepository regionRepository, RegionMapper regionMapper, RegionSearchRepository regionSearchRepository) {
+    public RegionQueryService(RegionRepository regionRepository, RegionMapper regionMapper) {
         this.regionRepository = regionRepository;
         this.regionMapper = regionMapper;
-        this.regionSearchRepository = regionSearchRepository;
     }
 
     /**

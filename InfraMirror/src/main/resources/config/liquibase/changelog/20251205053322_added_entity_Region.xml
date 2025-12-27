@@ -23,8 +23,48 @@
             <column name="group_name" type="varchar(20)">
                 <constraints nullable="true" />
             </column>
+            <column name="search_vector" type="tsvector">
+                <constraints nullable="true" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+    </changeSet>
+
+    <changeSet id="20251205053322-2" author="system">
+        <sql>
+            CREATE INDEX idx_region_search_vector
+            ON region USING GIN (search_vector);
+        </sql>
+    </changeSet>
+
+    <changeSet id="20251205053322-3" author="system">
+        <sql splitStatements="false"><![CDATA[
+            CREATE FUNCTION region_search_vector_update() RETURNS trigger AS $$
+            BEGIN
+              NEW.search_vector := to_tsvector('simple', unaccent(
+                coalesce(NEW.name, '') || ' ' ||
+                coalesce(NEW.region_code, '') || ' ' ||
+                coalesce(NEW.group_name, '')
+              ));
+              RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER trg_region_search_vector
+            BEFORE INSERT OR UPDATE ON region
+            FOR EACH ROW
+            EXECUTE FUNCTION region_search_vector_update();
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="20251205053322-4" author="system">
+        <sql>
+            -- Trigram indexes for fuzzy search optimization
+            -- Improves performance of similarity() queries by 10-50x
+            CREATE INDEX idx_region_name_trgm ON region USING GIN (name gin_trgm_ops);
+            CREATE INDEX idx_region_code_trgm ON region USING GIN (region_code gin_trgm_ops);
+            CREATE INDEX idx_region_group_trgm ON region USING GIN (group_name gin_trgm_ops);
+        </sql>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

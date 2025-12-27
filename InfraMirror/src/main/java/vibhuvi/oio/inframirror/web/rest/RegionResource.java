@@ -24,8 +24,8 @@ import vibhuvi.oio.inframirror.service.RegionQueryService;
 import vibhuvi.oio.inframirror.service.RegionService;
 import vibhuvi.oio.inframirror.service.criteria.RegionCriteria;
 import vibhuvi.oio.inframirror.service.dto.RegionDTO;
+import vibhuvi.oio.inframirror.service.dto.RegionSearchResultDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.Region}.
@@ -213,13 +213,63 @@ public class RegionResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of Regions for query {}", query);
-        try {
-            Page<RegionDTO> page = regionService.search(query, pageable);
-            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-            return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
+        LOG.debug("REST request to search Regions : {}", query);
+        Page<RegionDTO> page = regionService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
+     * {@code SEARCH  /regions/_search/prefix?query=:query} : prefix search for autocomplete.
+     *
+     * @param query the prefix to search.
+     * @param pageable the pagination information.
+     * @return the result of the search.
+     */
+    @GetMapping("/_search/prefix")
+    public ResponseEntity<List<RegionDTO>> searchRegionsPrefix(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to prefix search Regions : {}", query);
+        Page<RegionDTO> page = regionService.searchPrefix(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
+     * {@code SEARCH  /regions/_search/fuzzy?query=:query} : fuzzy search with typo tolerance.
+     *
+     * @param query the query of the region search.
+     * @param pageable the pagination information.
+     * @return the result of the search.
+     */
+    @GetMapping("/_search/fuzzy")
+    public ResponseEntity<List<RegionDTO>> searchRegionsFuzzy(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to fuzzy search Regions : {}", query);
+        Page<RegionDTO> page = regionService.searchFuzzy(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
+     * {@code SEARCH  /regions/_search/highlight?query=:query} : search with highlighted results.
+     *
+     * @param query the query of the region search.
+     * @param pageable the pagination information.
+     * @return the result of the search with highlights.
+     */
+    @GetMapping("/_search/highlight")
+    public ResponseEntity<List<RegionSearchResultDTO>> searchRegionsWithHighlight(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to search Regions with highlight : {}", query);
+        Page<RegionSearchResultDTO> page = regionService.searchWithHighlight(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

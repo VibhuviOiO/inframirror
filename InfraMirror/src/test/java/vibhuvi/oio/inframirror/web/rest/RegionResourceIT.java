@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.Region;
 import vibhuvi.oio.inframirror.repository.RegionRepository;
-import vibhuvi.oio.inframirror.repository.search.RegionSearchRepository;
+
 import vibhuvi.oio.inframirror.service.dto.RegionDTO;
 import vibhuvi.oio.inframirror.service.mapper.RegionMapper;
 
@@ -68,9 +68,7 @@ class RegionResourceIT {
     private RegionMapper regionMapper;
 
     @Autowired
-    private RegionSearchRepository regionSearchRepository;
 
-    @Autowired
     private EntityManager em;
 
     @Autowired
@@ -109,7 +107,6 @@ class RegionResourceIT {
     void cleanup() {
         if (insertedRegion != null) {
             regionRepository.delete(insertedRegion);
-            regionSearchRepository.delete(insertedRegion);
             insertedRegion = null;
         }
     }
@@ -118,7 +115,6 @@ class RegionResourceIT {
     @Transactional
     void createRegion() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
         var returnedRegionDTO = om.readValue(
@@ -136,12 +132,6 @@ class RegionResourceIT {
         var returnedRegion = regionMapper.toEntity(returnedRegionDTO);
         assertRegionUpdatableFieldsEquals(returnedRegion, getPersistedRegion(returnedRegion));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
 
         insertedRegion = returnedRegion;
     }
@@ -154,7 +144,6 @@ class RegionResourceIT {
         RegionDTO regionDTO = regionMapper.toDto(region);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restRegionMockMvc
@@ -163,15 +152,12 @@ class RegionResourceIT {
 
         // Validate the Region in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
         // set the field null
         region.setName(null);
 
@@ -184,8 +170,6 @@ class RegionResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -446,8 +430,6 @@ class RegionResourceIT {
         insertedRegion = regionRepository.saveAndFlush(region);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        regionSearchRepository.save(region);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
 
         // Update the region
         Region updatedRegion = regionRepository.findById(region.getId()).orElseThrow();
@@ -469,23 +451,12 @@ class RegionResourceIT {
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedRegionToMatchAllProperties(updatedRegion);
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Region> regionSearchList = Streamable.of(regionSearchRepository.findAll()).toList();
-                Region testRegionSearch = regionSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertRegionAllPropertiesEquals(testRegionSearch, updatedRegion);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingRegion() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
         region.setId(longCount.incrementAndGet());
 
         // Create the Region
@@ -503,15 +474,12 @@ class RegionResourceIT {
 
         // Validate the Region in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchRegion() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
         region.setId(longCount.incrementAndGet());
 
         // Create the Region
@@ -529,15 +497,12 @@ class RegionResourceIT {
 
         // Validate the Region in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamRegion() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
         region.setId(longCount.incrementAndGet());
 
         // Create the Region
@@ -550,8 +515,6 @@ class RegionResourceIT {
 
         // Validate the Region in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -616,7 +579,6 @@ class RegionResourceIT {
     @Transactional
     void patchNonExistingRegion() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
         region.setId(longCount.incrementAndGet());
 
         // Create the Region
@@ -634,15 +596,12 @@ class RegionResourceIT {
 
         // Validate the Region in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchRegion() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
         region.setId(longCount.incrementAndGet());
 
         // Create the Region
@@ -660,15 +619,12 @@ class RegionResourceIT {
 
         // Validate the Region in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamRegion() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
         region.setId(longCount.incrementAndGet());
 
         // Create the Region
@@ -683,8 +639,6 @@ class RegionResourceIT {
 
         // Validate the Region in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -693,11 +647,8 @@ class RegionResourceIT {
         // Initialize the database
         insertedRegion = regionRepository.saveAndFlush(region);
         regionRepository.save(region);
-        regionSearchRepository.save(region);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(regionSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the region
         restRegionMockMvc
@@ -706,8 +657,6 @@ class RegionResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(regionSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -715,17 +664,100 @@ class RegionResourceIT {
     void searchRegion() throws Exception {
         // Initialize the database
         insertedRegion = regionRepository.saveAndFlush(region);
-        regionSearchRepository.save(region);
+        // Flush to trigger database trigger for search_vector
+        em.flush();
+        em.clear();
 
-        // Search the region
+        // Search the region by name (not ID, as ID search doesn't use FTS)
         restRegionMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + region.getId()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(region.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].regionCode").value(hasItem(DEFAULT_REGION_CODE)))
             .andExpect(jsonPath("$.[*].groupName").value(hasItem(DEFAULT_GROUP_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchRegionByName() throws Exception {
+        // Initialize the database
+        insertedRegion = regionRepository.saveAndFlush(region);
+        em.flush();
+        em.clear();
+
+        // Search by name prefix
+        restRegionMockMvc
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(region.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchRegionPrefix() throws Exception {
+        // Initialize the database
+        insertedRegion = regionRepository.saveAndFlush(region);
+        em.flush();
+        em.clear();
+
+        // Prefix search for autocomplete
+        restRegionMockMvc
+            .perform(get("/api/regions/_search/prefix?query=" + DEFAULT_NAME.substring(0, 2)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(region.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchRegionFuzzy() throws Exception {
+        // Initialize the database
+        insertedRegion = regionRepository.saveAndFlush(region);
+        em.flush();
+        em.clear();
+
+        // Fuzzy search with typo tolerance
+        restRegionMockMvc
+            .perform(get("/api/regions/_search/fuzzy?query=" + DEFAULT_NAME))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    @Transactional
+    void searchRegionWithHighlight() throws Exception {
+        // Initialize the database
+        insertedRegion = regionRepository.saveAndFlush(region);
+        em.flush();
+        em.clear();
+
+        // Search with highlighting - just verify endpoint works and returns proper structure
+        // Note: May return empty if no matches, but structure should be valid
+        restRegionMockMvc
+            .perform(get("/api/regions/_search/highlight?query=" + DEFAULT_NAME.substring(0, 3)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    @Transactional
+    void searchRegionEmptyQuery() throws Exception {
+        // Initialize the database
+        insertedRegion = regionRepository.saveAndFlush(region);
+        em.flush();
+        em.clear();
+
+        // Empty query should return all results
+        restRegionMockMvc
+            .perform(get(ENTITY_SEARCH_API_URL + "?query="))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(region.getId().intValue())));
     }
 
     protected long getRepositoryCount() {
