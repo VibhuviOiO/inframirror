@@ -16,7 +16,6 @@ import vibhuvi.oio.inframirror.domain.enumeration.OperatingSystem;
  */
 @Entity
 @Table(name = "instance")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "instance")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Instance implements Serializable {
 
@@ -32,134 +31,134 @@ public class Instance implements Serializable {
     @NotNull
     @Size(max = 255)
     @Column(name = "name", length = 255, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    
     private String name;
 
     @NotNull
     @Size(max = 255)
     @Column(name = "hostname", length = 255, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    
     private String hostname;
 
     @Size(max = 500)
     @Column(name = "description", length = 500)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    
     private String description;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "instance_type", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
+    
     private InstanceType instanceType;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "monitoring_type", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
+    
     private MonitoringType monitoringType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "operating_system")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Keyword)
+    
     private OperatingSystem operatingSystem;
 
     @Size(max = 100)
     @Column(name = "platform", length = 100)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    
     private String platform;
 
     @Size(max = 50)
     @Column(name = "private_ip_address", length = 50)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    
     private String privateIpAddress;
 
     @Size(max = 50)
     @Column(name = "public_ip_address", length = 50)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    
     private String publicIpAddress;
 
     @Column(name = "tags", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
+    
     private String tags;
 
     @NotNull
     @Column(name = "ping_enabled", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
+    
     private Boolean pingEnabled = true;
 
     @NotNull
     @Min(10)
     @Max(3600)
     @Column(name = "ping_interval", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    
     private Integer pingInterval = 30;
 
     @NotNull
     @Min(500)
     @Max(30000)
     @Column(name = "ping_timeout_ms", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    
     private Integer pingTimeoutMs = 3000;
 
     @NotNull
     @Min(0)
     @Max(5)
     @Column(name = "ping_retry_count", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    
     private Integer pingRetryCount = 2;
 
     @NotNull
     @Column(name = "hardware_monitoring_enabled", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
+    
     private Boolean hardwareMonitoringEnabled = false;
 
     @NotNull
     @Min(60)
     @Max(3600)
     @Column(name = "hardware_monitoring_interval", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    
     private Integer hardwareMonitoringInterval = 300;
 
     @NotNull
     @Min(0)
     @Max(100)
     @Column(name = "cpu_warning_threshold", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    
     private Integer cpuWarningThreshold = 70;
 
     @NotNull
     @Min(0)
     @Max(100)
     @Column(name = "cpu_danger_threshold", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    
     private Integer cpuDangerThreshold = 90;
 
     @NotNull
     @Min(0)
     @Max(100)
     @Column(name = "memory_warning_threshold", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    
     private Integer memoryWarningThreshold = 75;
 
     @NotNull
     @Min(0)
     @Max(100)
     @Column(name = "memory_danger_threshold", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    
     private Integer memoryDangerThreshold = 90;
 
     @NotNull
     @Min(0)
     @Max(100)
     @Column(name = "disk_warning_threshold", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    
     private Integer diskWarningThreshold = 80;
 
     @NotNull
     @Min(0)
     @Max(100)
     @Column(name = "disk_danger_threshold", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
+    
     private Integer diskDangerThreshold = 95;
 
     @Column(name = "created_at")
@@ -176,7 +175,7 @@ public class Instance implements Serializable {
 
     @NotNull
     @Column(name = "is_active", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
+    
     private Boolean isActive = true;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instance")

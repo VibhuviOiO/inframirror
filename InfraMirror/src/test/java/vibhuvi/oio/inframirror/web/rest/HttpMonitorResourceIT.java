@@ -1,9 +1,7 @@
 package vibhuvi.oio.inframirror.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -15,9 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,9 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.HttpMonitor;
-import vibhuvi.oio.inframirror.domain.HttpMonitor;
 import vibhuvi.oio.inframirror.repository.HttpMonitorRepository;
-import vibhuvi.oio.inframirror.repository.search.HttpMonitorSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.HttpMonitorDTO;
 import vibhuvi.oio.inframirror.service.mapper.HttpMonitorMapper;
 
@@ -170,9 +164,6 @@ class HttpMonitorResourceIT {
     private HttpMonitorMapper httpMonitorMapper;
 
     @Autowired
-    private HttpMonitorSearchRepository httpMonitorSearchRepository;
-
-    @Autowired
     private EntityManager em;
 
     @Autowired
@@ -267,7 +258,6 @@ class HttpMonitorResourceIT {
     void cleanup() {
         if (insertedHttpMonitor != null) {
             httpMonitorRepository.delete(insertedHttpMonitor);
-            httpMonitorSearchRepository.delete(insertedHttpMonitor);
             insertedHttpMonitor = null;
         }
     }
@@ -276,7 +266,6 @@ class HttpMonitorResourceIT {
     @Transactional
     void createHttpMonitor() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         // Create the HttpMonitor
         HttpMonitorDTO httpMonitorDTO = httpMonitorMapper.toDto(httpMonitor);
         var returnedHttpMonitorDTO = om.readValue(
@@ -296,13 +285,6 @@ class HttpMonitorResourceIT {
         var returnedHttpMonitor = httpMonitorMapper.toEntity(returnedHttpMonitorDTO);
         assertHttpMonitorUpdatableFieldsEquals(returnedHttpMonitor, getPersistedHttpMonitor(returnedHttpMonitor));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedHttpMonitor = returnedHttpMonitor;
     }
 
@@ -314,7 +296,6 @@ class HttpMonitorResourceIT {
         HttpMonitorDTO httpMonitorDTO = httpMonitorMapper.toDto(httpMonitor);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restHttpMonitorMockMvc
@@ -325,15 +306,12 @@ class HttpMonitorResourceIT {
 
         // Validate the HttpMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         // set the field null
         httpMonitor.setName(null);
 
@@ -347,16 +325,12 @@ class HttpMonitorResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkMethodIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         // set the field null
         httpMonitor.setMethod(null);
 
@@ -370,16 +344,12 @@ class HttpMonitorResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         // set the field null
         httpMonitor.setType(null);
 
@@ -393,16 +363,12 @@ class HttpMonitorResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkIntervalSecondsIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         // set the field null
         httpMonitor.setIntervalSeconds(null);
 
@@ -416,16 +382,12 @@ class HttpMonitorResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTimeoutSecondsIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         // set the field null
         httpMonitor.setTimeoutSeconds(null);
 
@@ -439,16 +401,12 @@ class HttpMonitorResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkRetryCountIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         // set the field null
         httpMonitor.setRetryCount(null);
 
@@ -462,16 +420,12 @@ class HttpMonitorResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkRetryDelaySecondsIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         // set the field null
         httpMonitor.setRetryDelaySeconds(null);
 
@@ -485,9 +439,6 @@ class HttpMonitorResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -2287,8 +2238,6 @@ class HttpMonitorResourceIT {
         insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        httpMonitorSearchRepository.save(httpMonitor);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
 
         // Update the httpMonitor
         HttpMonitor updatedHttpMonitor = httpMonitorRepository.findById(httpMonitor.getId()).orElseThrow();
@@ -2337,24 +2286,12 @@ class HttpMonitorResourceIT {
         // Validate the HttpMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedHttpMonitorToMatchAllProperties(updatedHttpMonitor);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<HttpMonitor> httpMonitorSearchList = Streamable.of(httpMonitorSearchRepository.findAll()).toList();
-                HttpMonitor testHttpMonitorSearch = httpMonitorSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertHttpMonitorAllPropertiesEquals(testHttpMonitorSearch, updatedHttpMonitor);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingHttpMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         httpMonitor.setId(longCount.incrementAndGet());
 
         // Create the HttpMonitor
@@ -2372,15 +2309,12 @@ class HttpMonitorResourceIT {
 
         // Validate the HttpMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchHttpMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         httpMonitor.setId(longCount.incrementAndGet());
 
         // Create the HttpMonitor
@@ -2398,15 +2332,12 @@ class HttpMonitorResourceIT {
 
         // Validate the HttpMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamHttpMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         httpMonitor.setId(longCount.incrementAndGet());
 
         // Create the HttpMonitor
@@ -2419,8 +2350,6 @@ class HttpMonitorResourceIT {
 
         // Validate the HttpMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -2528,7 +2457,6 @@ class HttpMonitorResourceIT {
     @Transactional
     void patchNonExistingHttpMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         httpMonitor.setId(longCount.incrementAndGet());
 
         // Create the HttpMonitor
@@ -2546,15 +2474,12 @@ class HttpMonitorResourceIT {
 
         // Validate the HttpMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchHttpMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         httpMonitor.setId(longCount.incrementAndGet());
 
         // Create the HttpMonitor
@@ -2572,15 +2497,12 @@ class HttpMonitorResourceIT {
 
         // Validate the HttpMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamHttpMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
         httpMonitor.setId(longCount.incrementAndGet());
 
         // Create the HttpMonitor
@@ -2595,8 +2517,6 @@ class HttpMonitorResourceIT {
 
         // Validate the HttpMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -2604,12 +2524,8 @@ class HttpMonitorResourceIT {
     void deleteHttpMonitor() throws Exception {
         // Initialize the database
         insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
-        httpMonitorRepository.save(httpMonitor);
-        httpMonitorSearchRepository.save(httpMonitor);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the httpMonitor
         restHttpMonitorMockMvc
@@ -2618,8 +2534,6 @@ class HttpMonitorResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(httpMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -2627,7 +2541,8 @@ class HttpMonitorResourceIT {
     void searchHttpMonitor() throws Exception {
         // Initialize the database
         insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
-        httpMonitorSearchRepository.save(httpMonitor);
+        em.flush();
+        em.clear();
 
         // Search the httpMonitor
         restHttpMonitorMockMvc
@@ -2638,9 +2553,9 @@ class HttpMonitorResourceIT {
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].method").value(hasItem(DEFAULT_METHOD)))
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)))
-            .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL.toString())))
-            .andExpect(jsonPath("$.[*].headers").value(hasItem(DEFAULT_HEADERS.toString())))
-            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY.toString())))
+            .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL)))
+            .andExpect(jsonPath("$.[*].headers").value(hasItem(DEFAULT_HEADERS)))
+            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY)))
             .andExpect(jsonPath("$.[*].intervalSeconds").value(hasItem(DEFAULT_INTERVAL_SECONDS)))
             .andExpect(jsonPath("$.[*].timeoutSeconds").value(hasItem(DEFAULT_TIMEOUT_SECONDS)))
             .andExpect(jsonPath("$.[*].retryCount").value(hasItem(DEFAULT_RETRY_COUNT)))
@@ -2657,7 +2572,7 @@ class HttpMonitorResourceIT {
             .andExpect(jsonPath("$.[*].checkDnsResolution").value(hasItem(DEFAULT_CHECK_DNS_RESOLUTION)))
             .andExpect(jsonPath("$.[*].upsideDownMode").value(hasItem(DEFAULT_UPSIDE_DOWN_MODE)))
             .andExpect(jsonPath("$.[*].maxRedirects").value(hasItem(DEFAULT_MAX_REDIRECTS)))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].tags").value(hasItem(DEFAULT_TAGS)))
             .andExpect(jsonPath("$.[*].enabled").value(hasItem(DEFAULT_ENABLED)))
             .andExpect(jsonPath("$.[*].expectedStatusCodes").value(hasItem(DEFAULT_EXPECTED_STATUS_CODES)))

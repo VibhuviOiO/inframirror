@@ -8,11 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.Instance;
-import vibhuvi.oio.inframirror.domain.enumeration.OperatingSystem;
 import vibhuvi.oio.inframirror.repository.InstanceRepository;
-import vibhuvi.oio.inframirror.repository.search.InstanceSearchRepository;
+import vibhuvi.oio.inframirror.service.FullTextSearchUtil;
 import vibhuvi.oio.inframirror.service.InstanceService;
 import vibhuvi.oio.inframirror.service.dto.InstanceDTO;
+import vibhuvi.oio.inframirror.service.dto.InstanceSearchResultDTO;
 import vibhuvi.oio.inframirror.service.mapper.InstanceMapper;
 
 /**
@@ -28,16 +28,9 @@ public class InstanceServiceImpl implements InstanceService {
 
     private final InstanceMapper instanceMapper;
 
-    private final InstanceSearchRepository instanceSearchRepository;
-
-    public InstanceServiceImpl(
-        InstanceRepository instanceRepository,
-        InstanceMapper instanceMapper,
-        InstanceSearchRepository instanceSearchRepository
-    ) {
+    public InstanceServiceImpl(InstanceRepository instanceRepository, InstanceMapper instanceMapper) {
         this.instanceRepository = instanceRepository;
         this.instanceMapper = instanceMapper;
-        this.instanceSearchRepository = instanceSearchRepository;
     }
 
     @Override
@@ -45,7 +38,6 @@ public class InstanceServiceImpl implements InstanceService {
         LOG.debug("Request to save Instance : {}", instanceDTO);
         Instance instance = instanceMapper.toEntity(instanceDTO);
         instance = instanceRepository.save(instance);
-        instanceSearchRepository.index(instance);
         return instanceMapper.toDto(instance);
     }
 
@@ -54,7 +46,6 @@ public class InstanceServiceImpl implements InstanceService {
         LOG.debug("Request to update Instance : {}", instanceDTO);
         Instance instance = instanceMapper.toEntity(instanceDTO);
         instance = instanceRepository.save(instance);
-        instanceSearchRepository.index(instance);
         return instanceMapper.toDto(instance);
     }
 
@@ -70,10 +61,6 @@ public class InstanceServiceImpl implements InstanceService {
                 return existingInstance;
             })
             .map(instanceRepository::save)
-            .map(savedInstance -> {
-                instanceSearchRepository.index(savedInstance);
-                return savedInstance;
-            })
             .map(instanceMapper::toDto);
     }
 
@@ -88,21 +75,74 @@ public class InstanceServiceImpl implements InstanceService {
     public void delete(Long id) {
         LOG.debug("Request to delete Instance : {}", id);
         instanceRepository.deleteById(id);
-        instanceSearchRepository.deleteFromIndexById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<InstanceDTO> search(String query, Pageable pageable) {
-        LOG.debug("Request to search for a page of Instances for query {}", query);
-        return instanceSearchRepository.search(query, pageable).map(instanceMapper::toDto);
+        LOG.debug("Request to search Instances for query {}", query);
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return instanceRepository.findAll(pageable).map(instanceMapper::toDto);
+        }
+
+        String searchTerm = FullTextSearchUtil.sanitizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return instanceRepository.searchFullText(searchTerm, limitedPageable).map(instanceMapper::toDto);
     }
 
     @Override
-    public void reindexAll() {
-        LOG.info("Reindexing all instances to Elasticsearch");
-        instanceRepository.findAll().forEach(instanceSearchRepository::index);
-        LOG.info("Reindexing completed");
+    @Transactional(readOnly = true)
+    public Page<InstanceDTO> searchPrefix(String query, Pageable pageable) {
+        LOG.debug("Request to prefix search Instances for query {}", query);
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return Page.empty(pageable);
+        }
+
+        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return instanceRepository.searchPrefix(normalizedQuery, limitedPageable).map(instanceMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<InstanceDTO> searchFuzzy(String query, Pageable pageable) {
+        LOG.debug("Request to fuzzy search Instances for query {}", query);
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return Page.empty(pageable);
+        }
+
+        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return instanceRepository.searchFuzzy(normalizedQuery, limitedPageable).map(instanceMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<InstanceSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        LOG.debug("Request to search Instances with highlight for query {}", query);
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return Page.empty(pageable);
+        }
+
+        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return instanceRepository
+            .searchWithHighlight(normalizedQuery, limitedPageable)
+            .map(row -> {
+                Long id = ((Number) row[0]).longValue();
+                String name = (String) row[1];
+                String hostname = (String) row[2];
+                String description = (String) row[3];
+                String privateIpAddress = (String) row[4];
+                String publicIpAddress = (String) row[5];
+                Float rank = ((Number) row[6]).floatValue();
+                String highlight = (String) row[7];
+                return new InstanceSearchResultDTO(id, name, hostname, description, privateIpAddress, publicIpAddress, rank, highlight);
+            });
     }
 
     @Override
@@ -113,20 +153,15 @@ public class InstanceServiceImpl implements InstanceService {
         
         if (existing.isPresent()) {
             Instance instance = existing.get();
-            // Don't update agent or datacenter on existing instances
             instanceDTO.setAgent(null);
             instanceDTO.setDatacenter(null);
-            // Update other properties
             instanceMapper.partialUpdate(instance, instanceDTO);
             instance = instanceRepository.save(instance);
-            instanceSearchRepository.index(instance);
             LOG.debug("Updated existing instance: {}", instance.getId());
             return instanceMapper.toDto(instance);
         } else {
-            // Create new
             Instance instance = instanceMapper.toEntity(instanceDTO);
             instance = instanceRepository.save(instance);
-            instanceSearchRepository.index(instance);
             LOG.debug("Created new instance: {}", instance.getId());
             return instanceMapper.toDto(instance);
         }

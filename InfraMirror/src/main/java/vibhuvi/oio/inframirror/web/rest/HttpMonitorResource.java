@@ -24,8 +24,8 @@ import vibhuvi.oio.inframirror.service.HttpMonitorQueryService;
 import vibhuvi.oio.inframirror.service.HttpMonitorService;
 import vibhuvi.oio.inframirror.service.criteria.HttpMonitorCriteria;
 import vibhuvi.oio.inframirror.service.dto.HttpMonitorDTO;
+import vibhuvi.oio.inframirror.service.dto.HttpMonitorSearchResultDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.HttpMonitor}.
@@ -218,12 +218,41 @@ public class HttpMonitorResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of HttpMonitors for query {}", query);
-        try {
-            Page<HttpMonitorDTO> page = httpMonitorService.search(query, pageable);
-            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-            return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
+        Page<HttpMonitorDTO> page = httpMonitorService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/prefix")
+    public ResponseEntity<List<HttpMonitorDTO>> searchHttpMonitorsPrefix(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to prefix search HttpMonitors for query {}", query);
+        Page<HttpMonitorDTO> page = httpMonitorService.searchPrefix(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/fuzzy")
+    public ResponseEntity<List<HttpMonitorDTO>> searchHttpMonitorsFuzzy(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to fuzzy search HttpMonitors for query {}", query);
+        Page<HttpMonitorDTO> page = httpMonitorService.searchFuzzy(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/highlight")
+    public ResponseEntity<List<HttpMonitorSearchResultDTO>> searchHttpMonitorsWithHighlight(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to search HttpMonitors with highlight for query {}", query);
+        Page<HttpMonitorSearchResultDTO> page = httpMonitorService.searchWithHighlight(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

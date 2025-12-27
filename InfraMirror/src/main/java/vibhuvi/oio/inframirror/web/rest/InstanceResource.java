@@ -24,8 +24,8 @@ import vibhuvi.oio.inframirror.service.InstanceQueryService;
 import vibhuvi.oio.inframirror.service.InstanceService;
 import vibhuvi.oio.inframirror.service.criteria.InstanceCriteria;
 import vibhuvi.oio.inframirror.service.dto.InstanceDTO;
+import vibhuvi.oio.inframirror.service.dto.InstanceSearchResultDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.Instance}.
@@ -218,24 +218,41 @@ public class InstanceResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of Instances for query {}", query);
-        try {
-            Page<InstanceDTO> page = instanceService.search(query, pageable);
-            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-            return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
+        Page<InstanceDTO> page = instanceService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    /**
-     * {@code POST  /instances/_reindex} : Reindex all instances to Elasticsearch.
-     *
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @PostMapping("/_reindex")
-    public ResponseEntity<Void> reindexInstances() {
-        LOG.info("REST request to reindex all Instances");
-        instanceService.reindexAll();
-        return ResponseEntity.noContent().build();
+    @GetMapping("/_search/prefix")
+    public ResponseEntity<List<InstanceDTO>> searchInstancesPrefix(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to prefix search Instances for query {}", query);
+        Page<InstanceDTO> page = instanceService.searchPrefix(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/fuzzy")
+    public ResponseEntity<List<InstanceDTO>> searchInstancesFuzzy(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to fuzzy search Instances for query {}", query);
+        Page<InstanceDTO> page = instanceService.searchFuzzy(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/highlight")
+    public ResponseEntity<List<InstanceSearchResultDTO>> searchInstancesWithHighlight(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to search Instances with highlight for query {}", query);
+        Page<InstanceSearchResultDTO> page = instanceService.searchWithHighlight(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

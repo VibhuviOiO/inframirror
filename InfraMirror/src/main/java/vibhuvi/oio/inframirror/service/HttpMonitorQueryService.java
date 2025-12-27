@@ -12,7 +12,6 @@ import tech.jhipster.service.QueryService;
 import vibhuvi.oio.inframirror.domain.*; // for static metamodels
 import vibhuvi.oio.inframirror.domain.HttpMonitor;
 import vibhuvi.oio.inframirror.repository.HttpMonitorRepository;
-import vibhuvi.oio.inframirror.repository.search.HttpMonitorSearchRepository;
 import vibhuvi.oio.inframirror.service.criteria.HttpMonitorCriteria;
 import vibhuvi.oio.inframirror.service.dto.HttpMonitorDTO;
 import vibhuvi.oio.inframirror.service.mapper.HttpMonitorMapper;
@@ -33,16 +32,9 @@ public class HttpMonitorQueryService extends QueryService<HttpMonitor> {
 
     private final HttpMonitorMapper httpMonitorMapper;
 
-    private final HttpMonitorSearchRepository httpMonitorSearchRepository;
-
-    public HttpMonitorQueryService(
-        HttpMonitorRepository httpMonitorRepository,
-        HttpMonitorMapper httpMonitorMapper,
-        HttpMonitorSearchRepository httpMonitorSearchRepository
-    ) {
+    public HttpMonitorQueryService(HttpMonitorRepository httpMonitorRepository, HttpMonitorMapper httpMonitorMapper) {
         this.httpMonitorRepository = httpMonitorRepository;
         this.httpMonitorMapper = httpMonitorMapper;
-        this.httpMonitorSearchRepository = httpMonitorSearchRepository;
     }
 
     /**

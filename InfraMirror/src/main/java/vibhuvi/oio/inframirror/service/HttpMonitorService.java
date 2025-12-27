@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vibhuvi.oio.inframirror.service.dto.HttpMonitorDTO;
+import vibhuvi.oio.inframirror.service.dto.HttpMonitorSearchResultDTO;
 
 /**
  * Service Interface for managing {@link vibhuvi.oio.inframirror.domain.HttpMonitor}.
@@ -60,9 +61,35 @@ public interface HttpMonitorService {
      * Search for the httpMonitor corresponding to the query.
      *
      * @param query the query of the search.
-     *
      * @param pageable the pagination information.
      * @return the list of entities.
      */
     Page<HttpMonitorDTO> search(String query, Pageable pageable);
+
+    /**
+     * Prefix search for httpMonitor.
+     *
+     * @param query the query of the search.
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    Page<HttpMonitorDTO> searchPrefix(String query, Pageable pageable);
+
+    /**
+     * Fuzzy search for httpMonitor.
+     *
+     * @param query the query of the search.
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    Page<HttpMonitorDTO> searchFuzzy(String query, Pageable pageable);
+
+    /**
+     * Search with highlighting for httpMonitor.
+     *
+     * @param query the query of the search.
+     * @param pageable the pagination information.
+     * @return the list of entities with highlights.
+     */
+    Page<HttpMonitorSearchResultDTO> searchWithHighlight(String query, Pageable pageable);
 }

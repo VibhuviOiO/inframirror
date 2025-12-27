@@ -12,7 +12,6 @@ import tech.jhipster.service.QueryService;
 import vibhuvi.oio.inframirror.domain.*; // for static metamodels
 import vibhuvi.oio.inframirror.domain.Instance;
 import vibhuvi.oio.inframirror.repository.InstanceRepository;
-import vibhuvi.oio.inframirror.repository.search.InstanceSearchRepository;
 import vibhuvi.oio.inframirror.service.criteria.InstanceCriteria;
 import vibhuvi.oio.inframirror.service.dto.InstanceDTO;
 import vibhuvi.oio.inframirror.service.mapper.InstanceMapper;
@@ -33,16 +32,9 @@ public class InstanceQueryService extends QueryService<Instance> {
 
     private final InstanceMapper instanceMapper;
 
-    private final InstanceSearchRepository instanceSearchRepository;
-
-    public InstanceQueryService(
-        InstanceRepository instanceRepository,
-        InstanceMapper instanceMapper,
-        InstanceSearchRepository instanceSearchRepository
-    ) {
+    public InstanceQueryService(InstanceRepository instanceRepository, InstanceMapper instanceMapper) {
         this.instanceRepository = instanceRepository;
         this.instanceMapper = instanceMapper;
-        this.instanceSearchRepository = instanceSearchRepository;
     }
 
     /**

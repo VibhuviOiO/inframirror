@@ -14,7 +14,6 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name = "http_monitor")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "httpmonitor")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class HttpMonitor implements Serializable {
 
@@ -30,61 +29,49 @@ public class HttpMonitor implements Serializable {
     @NotNull
     @Size(max = 100)
     @Column(name = "name", length = 100, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     @NotNull
     @Size(max = 10)
     @Column(name = "method", length = 10, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String method;
 
     @NotNull
     @Size(max = 10)
     @Column(name = "type", length = 10, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String type;
 
     @Column(name = "url", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String url;
 
     @Column(name = "headers", columnDefinition = "jsonb")
     @Type(JsonNodeType.class)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Object)
     private JsonNode headers;
 
     @Column(name = "body", columnDefinition = "jsonb")
     @Type(JsonNodeType.class)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Object)
     private JsonNode body;
 
     @NotNull
     @Column(name = "interval_seconds", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer intervalSeconds;
 
     @NotNull
     @Column(name = "timeout_seconds", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer timeoutSeconds;
 
     @NotNull
     @Column(name = "retry_count", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer retryCount;
 
     @NotNull
     @Column(name = "retry_delay_seconds", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer retryDelaySeconds;
 
     @Column(name = "response_time_warning_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer responseTimeWarningMs;
 
     @Column(name = "response_time_critical_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer responseTimeCriticalMs;
 
     @Column(name = "uptime_warning_percent")
@@ -94,61 +81,47 @@ public class HttpMonitor implements Serializable {
     private Float uptimeCriticalPercent;
 
     @Column(name = "include_response_body")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean includeResponseBody;
 
     @Column(name = "resend_notification_count")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer resendNotificationCount;
 
     @Column(name = "certificate_expiry_days")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer certificateExpiryDays;
 
     @Column(name = "ignore_tls_error")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean ignoreTlsError;
 
     @Column(name = "check_ssl_certificate")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean checkSslCertificate;
 
     @Column(name = "check_dns_resolution")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean checkDnsResolution;
 
     @Column(name = "upside_down_mode")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean upsideDownMode;
 
     @Column(name = "max_redirects")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer maxRedirects;
 
     @Column(name = "description", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
 
     @Size(max = 500)
     @Column(name = "tags", length = 500)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String tags;
 
     @Column(name = "enabled")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean enabled;
 
     @Size(max = 100)
     @Column(name = "expected_status_codes", length = 100)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String expectedStatusCodes;
 
     @Column(name = "performance_budget_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer performanceBudgetMs;
 
     @Column(name = "size_budget_kb")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer sizeBudgetKb;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vibhuvi.oio.inframirror.service.dto.InstanceDTO;
+import vibhuvi.oio.inframirror.service.dto.InstanceSearchResultDTO;
 
 /**
  * Service Interface for managing {@link vibhuvi.oio.inframirror.domain.Instance}.
@@ -52,16 +53,16 @@ public interface InstanceService {
      * Search for the instance corresponding to the query.
      *
      * @param query the query of the search.
-     *
      * @param pageable the pagination information.
      * @return the list of entities.
      */
     Page<InstanceDTO> search(String query, Pageable pageable);
 
-    /**
-     * Reindex all instances from database to Elasticsearch.
-     */
-    void reindexAll();
+    Page<InstanceDTO> searchPrefix(String query, Pageable pageable);
+
+    Page<InstanceDTO> searchFuzzy(String query, Pageable pageable);
+
+    Page<InstanceSearchResultDTO> searchWithHighlight(String query, Pageable pageable);
 
     /**
      * Find or create instance by hostname.

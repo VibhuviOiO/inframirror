@@ -1,9 +1,7 @@
 package vibhuvi.oio.inframirror.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -16,15 +14,12 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,7 +29,6 @@ import vibhuvi.oio.inframirror.domain.Agent;
 import vibhuvi.oio.inframirror.domain.Datacenter;
 import vibhuvi.oio.inframirror.domain.Instance;
 import vibhuvi.oio.inframirror.repository.InstanceRepository;
-import vibhuvi.oio.inframirror.repository.search.InstanceSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.InstanceDTO;
 import vibhuvi.oio.inframirror.service.mapper.InstanceMapper;
 import vibhuvi.oio.inframirror.domain.enumeration.InstanceType;
@@ -154,9 +148,6 @@ class InstanceResourceIT {
     private InstanceMapper instanceMapper;
 
     @Autowired
-    private InstanceSearchRepository instanceSearchRepository;
-
-    @Autowired
     private EntityManager em;
 
     @Autowired
@@ -269,7 +260,6 @@ class InstanceResourceIT {
     void cleanup() {
         if (insertedInstance != null) {
             instanceRepository.delete(insertedInstance);
-            instanceSearchRepository.delete(insertedInstance);
             insertedInstance = null;
         }
     }
@@ -278,7 +268,6 @@ class InstanceResourceIT {
     @Transactional
     void createInstance() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // Create the Instance
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
         var returnedInstanceDTO = om.readValue(
@@ -298,12 +287,6 @@ class InstanceResourceIT {
         var returnedInstance = instanceMapper.toEntity(returnedInstanceDTO);
         assertInstanceUpdatableFieldsEquals(returnedInstance, getPersistedInstance(returnedInstance));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
 
         insertedInstance = returnedInstance;
     }
@@ -316,7 +299,6 @@ class InstanceResourceIT {
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restInstanceMockMvc
@@ -325,15 +307,12 @@ class InstanceResourceIT {
 
         // Validate the Instance in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setName(null);
 
@@ -346,15 +325,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkHostnameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setHostname(null);
 
@@ -367,15 +343,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkInstanceTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setInstanceType(null);
 
@@ -388,15 +361,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkMonitoringTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setMonitoringType(null);
 
@@ -409,15 +379,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkPingEnabledIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setPingEnabled(null);
 
@@ -430,15 +397,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkPingIntervalIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setPingInterval(null);
 
@@ -451,15 +415,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkPingTimeoutMsIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setPingTimeoutMs(null);
 
@@ -472,15 +433,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkPingRetryCountIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setPingRetryCount(null);
 
@@ -493,15 +451,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkHardwareMonitoringEnabledIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setHardwareMonitoringEnabled(null);
 
@@ -514,15 +469,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkHardwareMonitoringIntervalIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setHardwareMonitoringInterval(null);
 
@@ -535,15 +487,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkCpuWarningThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setCpuWarningThreshold(null);
 
@@ -556,15 +505,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkCpuDangerThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setCpuDangerThreshold(null);
 
@@ -577,15 +523,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkMemoryWarningThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setMemoryWarningThreshold(null);
 
@@ -598,15 +541,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkMemoryDangerThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setMemoryDangerThreshold(null);
 
@@ -619,15 +559,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkDiskWarningThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setDiskWarningThreshold(null);
 
@@ -640,15 +577,12 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkDiskDangerThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         // set the field null
         instance.setDiskDangerThreshold(null);
 
@@ -661,8 +595,6 @@ class InstanceResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -2450,8 +2382,6 @@ class InstanceResourceIT {
         insertedInstance = instanceRepository.saveAndFlush(instance);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        instanceSearchRepository.save(instance);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
 
         // Update the instance
         Instance updatedInstance = instanceRepository.findById(instance.getId()).orElseThrow();
@@ -2499,23 +2429,12 @@ class InstanceResourceIT {
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedInstanceToMatchAllProperties(updatedInstance);
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Instance> instanceSearchList = Streamable.of(instanceSearchRepository.findAll()).toList();
-                Instance testInstanceSearch = instanceSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertInstanceAllPropertiesEquals(testInstanceSearch, updatedInstance);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         instance.setId(longCount.incrementAndGet());
 
         // Create the Instance
@@ -2533,15 +2452,12 @@ class InstanceResourceIT {
 
         // Validate the Instance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         instance.setId(longCount.incrementAndGet());
 
         // Create the Instance
@@ -2559,15 +2475,12 @@ class InstanceResourceIT {
 
         // Validate the Instance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         instance.setId(longCount.incrementAndGet());
 
         // Create the Instance
@@ -2580,8 +2493,6 @@ class InstanceResourceIT {
 
         // Validate the Instance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -2686,7 +2597,6 @@ class InstanceResourceIT {
     @Transactional
     void patchNonExistingInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         instance.setId(longCount.incrementAndGet());
 
         // Create the Instance
@@ -2704,15 +2614,12 @@ class InstanceResourceIT {
 
         // Validate the Instance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         instance.setId(longCount.incrementAndGet());
 
         // Create the Instance
@@ -2730,15 +2637,12 @@ class InstanceResourceIT {
 
         // Validate the Instance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
         instance.setId(longCount.incrementAndGet());
 
         // Create the Instance
@@ -2753,8 +2657,6 @@ class InstanceResourceIT {
 
         // Validate the Instance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -2763,11 +2665,8 @@ class InstanceResourceIT {
         // Initialize the database
         insertedInstance = instanceRepository.saveAndFlush(instance);
         instanceRepository.save(instance);
-        instanceSearchRepository.save(instance);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the instance
         restInstanceMockMvc
@@ -2776,49 +2675,91 @@ class InstanceResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
     @Transactional
     void searchInstance() throws Exception {
-        // Initialize the database
         insertedInstance = instanceRepository.saveAndFlush(instance);
-        instanceSearchRepository.save(instance);
+        em.flush();
+        em.clear();
 
-        // Search the instance
         restInstanceMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + instance.getId()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(instance.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].hostname").value(hasItem(DEFAULT_HOSTNAME)))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].instanceType").value(hasItem(DEFAULT_INSTANCE_TYPE)))
-            .andExpect(jsonPath("$.[*].monitoringType").value(hasItem(DEFAULT_MONITORING_TYPE)))
-            .andExpect(jsonPath("$.[*].operatingSystem").value(hasItem(DEFAULT_OPERATING_SYSTEM)))
-            .andExpect(jsonPath("$.[*].platform").value(hasItem(DEFAULT_PLATFORM)))
-            .andExpect(jsonPath("$.[*].privateIpAddress").value(hasItem(DEFAULT_PRIVATE_IP_ADDRESS)))
-            .andExpect(jsonPath("$.[*].publicIpAddress").value(hasItem(DEFAULT_PUBLIC_IP_ADDRESS)))
-            .andExpect(jsonPath("$.[*].tags").value(hasItem(DEFAULT_TAGS.toString())))
-            .andExpect(jsonPath("$.[*].pingEnabled").value(hasItem(DEFAULT_PING_ENABLED)))
-            .andExpect(jsonPath("$.[*].pingInterval").value(hasItem(DEFAULT_PING_INTERVAL)))
-            .andExpect(jsonPath("$.[*].pingTimeoutMs").value(hasItem(DEFAULT_PING_TIMEOUT_MS)))
-            .andExpect(jsonPath("$.[*].pingRetryCount").value(hasItem(DEFAULT_PING_RETRY_COUNT)))
-            .andExpect(jsonPath("$.[*].hardwareMonitoringEnabled").value(hasItem(DEFAULT_HARDWARE_MONITORING_ENABLED)))
-            .andExpect(jsonPath("$.[*].hardwareMonitoringInterval").value(hasItem(DEFAULT_HARDWARE_MONITORING_INTERVAL)))
-            .andExpect(jsonPath("$.[*].cpuWarningThreshold").value(hasItem(DEFAULT_CPU_WARNING_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].cpuDangerThreshold").value(hasItem(DEFAULT_CPU_DANGER_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].memoryWarningThreshold").value(hasItem(DEFAULT_MEMORY_WARNING_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].memoryDangerThreshold").value(hasItem(DEFAULT_MEMORY_DANGER_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].diskWarningThreshold").value(hasItem(DEFAULT_DISK_WARNING_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].diskDangerThreshold").value(hasItem(DEFAULT_DISK_DANGER_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
-            .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(DEFAULT_UPDATED_AT.toString())))
-            .andExpect(jsonPath("$.[*].lastPingAt").value(hasItem(DEFAULT_LAST_PING_AT.toString())))
-            .andExpect(jsonPath("$.[*].lastHardwareCheckAt").value(hasItem(DEFAULT_LAST_HARDWARE_CHECK_AT.toString())));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchInstanceByName() throws Exception {
+        insertedInstance = instanceRepository.saveAndFlush(instance);
+        em.flush();
+        em.clear();
+
+        restInstanceMockMvc
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(instance.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchInstancePrefix() throws Exception {
+        insertedInstance = instanceRepository.saveAndFlush(instance);
+        em.flush();
+        em.clear();
+
+        restInstanceMockMvc
+            .perform(get("/api/instances/_search/prefix?query=" + DEFAULT_NAME.substring(0, 2)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(instance.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchInstanceFuzzy() throws Exception {
+        insertedInstance = instanceRepository.saveAndFlush(instance);
+        em.flush();
+        em.clear();
+
+        restInstanceMockMvc
+            .perform(get("/api/instances/_search/fuzzy?query=" + DEFAULT_NAME))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    @Transactional
+    void searchInstanceWithHighlight() throws Exception {
+        insertedInstance = instanceRepository.saveAndFlush(instance);
+        em.flush();
+        em.clear();
+
+        restInstanceMockMvc
+            .perform(get("/api/instances/_search/highlight?query=" + DEFAULT_NAME.substring(0, 3)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    @Transactional
+    void searchInstanceEmptyQuery() throws Exception {
+        insertedInstance = instanceRepository.saveAndFlush(instance);
+        em.flush();
+        em.clear();
+
+        restInstanceMockMvc
+            .perform(get(ENTITY_SEARCH_API_URL + "?query="))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(instance.getId().intValue())));
     }
 
     protected long getRepositoryCount() {
