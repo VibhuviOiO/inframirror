@@ -1,7 +1,6 @@
 package vibhuvi.oio.inframirror.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -14,15 +13,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,7 +27,6 @@ import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.Datacenter;
 import vibhuvi.oio.inframirror.domain.Region;
 import vibhuvi.oio.inframirror.repository.DatacenterRepository;
-import vibhuvi.oio.inframirror.repository.search.DatacenterSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.DatacenterDTO;
 import vibhuvi.oio.inframirror.service.mapper.DatacenterMapper;
 
@@ -64,9 +59,6 @@ class DatacenterResourceIT {
 
     @Autowired
     private DatacenterMapper datacenterMapper;
-
-    @Autowired
-    private DatacenterSearchRepository datacenterSearchRepository;
 
     @Autowired
     private EntityManager em;
@@ -107,7 +99,6 @@ class DatacenterResourceIT {
     void cleanup() {
         if (insertedDatacenter != null) {
             datacenterRepository.delete(insertedDatacenter);
-            datacenterSearchRepository.delete(insertedDatacenter);
             insertedDatacenter = null;
         }
     }
@@ -116,7 +107,6 @@ class DatacenterResourceIT {
     @Transactional
     void createDatacenter() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
         // Create the Datacenter
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
         var returnedDatacenterDTO = om.readValue(
@@ -136,13 +126,6 @@ class DatacenterResourceIT {
         var returnedDatacenter = datacenterMapper.toEntity(returnedDatacenterDTO);
         assertDatacenterUpdatableFieldsEquals(returnedDatacenter, getPersistedDatacenter(returnedDatacenter));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedDatacenter = returnedDatacenter;
     }
 
@@ -154,7 +137,6 @@ class DatacenterResourceIT {
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restDatacenterMockMvc
@@ -163,15 +145,12 @@ class DatacenterResourceIT {
 
         // Validate the Datacenter in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkCodeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
         // set the field null
         datacenter.setCode(null);
 
@@ -183,16 +162,12 @@ class DatacenterResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
         // set the field null
         datacenter.setName(null);
 
@@ -204,9 +179,6 @@ class DatacenterResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -436,8 +408,6 @@ class DatacenterResourceIT {
         insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        datacenterSearchRepository.save(datacenter);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
 
         // Update the datacenter
         Datacenter updatedDatacenter = datacenterRepository.findById(datacenter.getId()).orElseThrow();
@@ -458,24 +428,12 @@ class DatacenterResourceIT {
         // Validate the Datacenter in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedDatacenterToMatchAllProperties(updatedDatacenter);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Datacenter> datacenterSearchList = Streamable.of(datacenterSearchRepository.findAll()).toList();
-                Datacenter testDatacenterSearch = datacenterSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertDatacenterAllPropertiesEquals(testDatacenterSearch, updatedDatacenter);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingDatacenter() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
         datacenter.setId(longCount.incrementAndGet());
 
         // Create the Datacenter
@@ -493,15 +451,12 @@ class DatacenterResourceIT {
 
         // Validate the Datacenter in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchDatacenter() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
         datacenter.setId(longCount.incrementAndGet());
 
         // Create the Datacenter
@@ -519,15 +474,12 @@ class DatacenterResourceIT {
 
         // Validate the Datacenter in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamDatacenter() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
         datacenter.setId(longCount.incrementAndGet());
 
         // Create the Datacenter
@@ -540,8 +492,6 @@ class DatacenterResourceIT {
 
         // Validate the Datacenter in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -609,7 +559,6 @@ class DatacenterResourceIT {
     @Transactional
     void patchNonExistingDatacenter() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
         datacenter.setId(longCount.incrementAndGet());
 
         // Create the Datacenter
@@ -627,15 +576,12 @@ class DatacenterResourceIT {
 
         // Validate the Datacenter in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchDatacenter() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
         datacenter.setId(longCount.incrementAndGet());
 
         // Create the Datacenter
@@ -653,15 +599,12 @@ class DatacenterResourceIT {
 
         // Validate the Datacenter in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamDatacenter() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
         datacenter.setId(longCount.incrementAndGet());
 
         // Create the Datacenter
@@ -676,8 +619,6 @@ class DatacenterResourceIT {
 
         // Validate the Datacenter in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -685,12 +626,8 @@ class DatacenterResourceIT {
     void deleteDatacenter() throws Exception {
         // Initialize the database
         insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
-        datacenterRepository.save(datacenter);
-        datacenterSearchRepository.save(datacenter);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the datacenter
         restDatacenterMockMvc
@@ -699,8 +636,6 @@ class DatacenterResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(datacenterSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -708,16 +643,97 @@ class DatacenterResourceIT {
     void searchDatacenter() throws Exception {
         // Initialize the database
         insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
-        datacenterSearchRepository.save(datacenter);
+        em.flush();
+        em.clear();
 
         // Search the datacenter
         restDatacenterMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + datacenter.getId()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(datacenter.getId().intValue())))
             .andExpect(jsonPath("$.[*].code").value(hasItem(DEFAULT_CODE)))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchDatacenterByName() throws Exception {
+        // Initialize the database
+        insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
+        em.flush();
+        em.clear();
+
+        // Search the datacenter by name
+        restDatacenterMockMvc
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(datacenter.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchDatacenterPrefix() throws Exception {
+        // Initialize the database
+        insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
+        em.flush();
+        em.clear();
+
+        // Prefix search
+        restDatacenterMockMvc
+            .perform(get("/api/datacenters/_search/prefix?query=" + DEFAULT_NAME.substring(0, 2)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(datacenter.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchDatacenterFuzzy() throws Exception {
+        // Initialize the database
+        insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
+        em.flush();
+        em.clear();
+
+        // Fuzzy search
+        restDatacenterMockMvc
+            .perform(get("/api/datacenters/_search/fuzzy?query=" + DEFAULT_NAME))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    @Transactional
+    void searchDatacenterWithHighlight() throws Exception {
+        // Initialize the database
+        insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
+        em.flush();
+        em.clear();
+
+        // Search with highlight
+        restDatacenterMockMvc
+            .perform(get("/api/datacenters/_search/highlight?query=" + DEFAULT_NAME.substring(0, 3)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    @Transactional
+    void searchDatacenterEmptyQuery() throws Exception {
+        // Initialize the database
+        insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
+        em.flush();
+        em.clear();
+
+        // Search with empty query
+        restDatacenterMockMvc
+            .perform(get(ENTITY_SEARCH_API_URL + "?query="))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(datacenter.getId().intValue())));
     }
 
     protected long getRepositoryCount() {

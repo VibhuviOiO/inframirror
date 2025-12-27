@@ -12,7 +12,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "datacenter")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "datacenter")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Datacenter implements Serializable {
 
@@ -28,13 +27,11 @@ public class Datacenter implements Serializable {
     @NotNull
     @Size(max = 10)
     @Column(name = "code", length = 10, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String code;
 
     @NotNull
     @Size(max = 50)
     @Column(name = "name", length = 50, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "datacenter")
@@ -49,7 +46,6 @@ public class Datacenter implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "datacenters", "agents" }, allowSetters = true)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Object)
     private Region region;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

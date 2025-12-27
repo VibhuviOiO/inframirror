@@ -12,7 +12,6 @@ import tech.jhipster.service.QueryService;
 import vibhuvi.oio.inframirror.domain.*; // for static metamodels
 import vibhuvi.oio.inframirror.domain.Datacenter;
 import vibhuvi.oio.inframirror.repository.DatacenterRepository;
-import vibhuvi.oio.inframirror.repository.search.DatacenterSearchRepository;
 import vibhuvi.oio.inframirror.service.criteria.DatacenterCriteria;
 import vibhuvi.oio.inframirror.service.dto.DatacenterDTO;
 import vibhuvi.oio.inframirror.service.mapper.DatacenterMapper;
@@ -33,16 +32,9 @@ public class DatacenterQueryService extends QueryService<Datacenter> {
 
     private final DatacenterMapper datacenterMapper;
 
-    private final DatacenterSearchRepository datacenterSearchRepository;
-
-    public DatacenterQueryService(
-        DatacenterRepository datacenterRepository,
-        DatacenterMapper datacenterMapper,
-        DatacenterSearchRepository datacenterSearchRepository
-    ) {
+    public DatacenterQueryService(DatacenterRepository datacenterRepository, DatacenterMapper datacenterMapper) {
         this.datacenterRepository = datacenterRepository;
         this.datacenterMapper = datacenterMapper;
-        this.datacenterSearchRepository = datacenterSearchRepository;
     }
 
     /**

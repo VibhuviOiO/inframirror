@@ -68,7 +68,15 @@ export const DatacenterEditModal: React.FC<DatacenterEditModalProps> = ({ isOpen
       onSave?.();
       toggle();
     } catch (error) {
-      toast.error('Failed to save datacenter');
+      if (axios.isAxiosError(error) && error.response?.data?.fieldErrors) {
+        const fieldErrors = error.response.data.fieldErrors;
+        const errorMessages = fieldErrors.map(fe => `${fe.field}: ${fe.message}`).join(', ');
+        toast.error(`Validation failed: ${errorMessages}`);
+      } else if (axios.isAxiosError(error) && error.response?.data?.detail) {
+        toast.error(error.response.data.detail);
+      } else {
+        toast.error('Failed to save datacenter');
+      }
     } finally {
       setSaving(false);
     }

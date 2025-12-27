@@ -24,8 +24,8 @@ import vibhuvi.oio.inframirror.service.DatacenterQueryService;
 import vibhuvi.oio.inframirror.service.DatacenterService;
 import vibhuvi.oio.inframirror.service.criteria.DatacenterCriteria;
 import vibhuvi.oio.inframirror.service.dto.DatacenterDTO;
+import vibhuvi.oio.inframirror.service.dto.DatacenterSearchResultDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.Datacenter}.
@@ -218,12 +218,41 @@ public class DatacenterResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of Datacenters for query {}", query);
-        try {
-            Page<DatacenterDTO> page = datacenterService.search(query, pageable);
-            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-            return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
+        Page<DatacenterDTO> page = datacenterService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/prefix")
+    public ResponseEntity<List<DatacenterDTO>> searchDatacentersPrefix(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to prefix search Datacenters for query {}", query);
+        Page<DatacenterDTO> page = datacenterService.searchPrefix(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/fuzzy")
+    public ResponseEntity<List<DatacenterDTO>> searchDatacentersFuzzy(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to fuzzy search Datacenters for query {}", query);
+        Page<DatacenterDTO> page = datacenterService.searchFuzzy(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/highlight")
+    public ResponseEntity<List<DatacenterSearchResultDTO>> searchDatacentersWithHighlight(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to search Datacenters with highlight for query {}", query);
+        Page<DatacenterSearchResultDTO> page = datacenterService.searchWithHighlight(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

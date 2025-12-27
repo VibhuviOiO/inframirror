@@ -23,8 +23,44 @@
             <column name="region_id" type="bigint">
                 <constraints nullable="true" />
             </column>
+            <column name="search_vector" type="tsvector">
+                <constraints nullable="true" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+    </changeSet>
+
+    <changeSet id="20251205053323-2" author="system">
+        <sql>
+            CREATE INDEX idx_datacenter_search_vector
+            ON datacenter USING GIN (search_vector);
+        </sql>
+    </changeSet>
+
+    <changeSet id="20251205053323-3" author="system">
+        <sql splitStatements="false"><![CDATA[
+            CREATE FUNCTION datacenter_search_vector_update() RETURNS trigger AS $$
+            BEGIN
+              NEW.search_vector := to_tsvector('simple', unaccent(
+                coalesce(NEW.name, '') || ' ' ||
+                coalesce(NEW.code, '')
+              ));
+              RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER trg_datacenter_search_vector
+            BEFORE INSERT OR UPDATE ON datacenter
+            FOR EACH ROW
+            EXECUTE FUNCTION datacenter_search_vector_update();
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="20251205053323-4" author="system">
+        <sql>
+            CREATE INDEX idx_datacenter_name_trgm ON datacenter USING GIN (name gin_trgm_ops);
+            CREATE INDEX idx_datacenter_code_trgm ON datacenter USING GIN (code gin_trgm_ops);
+        </sql>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
