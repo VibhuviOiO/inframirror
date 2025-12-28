@@ -1,272 +1,75 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Col, Form, FormGroup, Input, InputGroup, Row, Table } from 'reactstrap';
-import { JhiItemCount, JhiPagination, TextFormat, Translate, getPaginationState, translate } from 'react-jhipster';
+import { Table, Badge } from 'reactstrap';
+import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import { APP_DATE_FORMAT } from 'app/config/constants';
-import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
-import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
-import { useAppDispatch, useAppSelector } from 'app/config/store';
-
-import { getEntities, searchEntities } from './agent-lock.reducer';
+import { APP_TIMESTAMP_FORMAT } from 'app/config/constants';
+import axios from 'axios';
 
 export const AgentLock = () => {
-  const dispatch = useAppDispatch();
+  const [locks, setLocks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const pageLocation = useLocation();
-  const navigate = useNavigate();
-
-  const [search, setSearch] = useState('');
-  const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
-  );
-
-  const agentLockList = useAppSelector(state => state.agentLock.entities);
-  const loading = useAppSelector(state => state.agentLock.loading);
-  const totalItems = useAppSelector(state => state.agentLock.totalItems);
-
-  const getAllEntities = () => {
-    if (search) {
-      dispatch(
-        searchEntities({
-          query: search,
-          page: paginationState.activePage - 1,
-          size: paginationState.itemsPerPage,
-          sort: `${paginationState.sort},${paginationState.order}`,
-        }),
-      );
-    } else {
-      dispatch(
-        getEntities({
-          page: paginationState.activePage - 1,
-          size: paginationState.itemsPerPage,
-          sort: `${paginationState.sort},${paginationState.order}`,
-        }),
-      );
-    }
-  };
-
-  const startSearching = e => {
-    if (search) {
-      setPaginationState({
-        ...paginationState,
-        activePage: 1,
-      });
-      dispatch(
-        searchEntities({
-          query: search,
-          page: paginationState.activePage - 1,
-          size: paginationState.itemsPerPage,
-          sort: `${paginationState.sort},${paginationState.order}`,
-        }),
-      );
-    }
-    e.preventDefault();
-  };
-
-  const clear = () => {
-    setSearch('');
-    setPaginationState({
-      ...paginationState,
-      activePage: 1,
-    });
-    dispatch(getEntities({}));
-  };
-
-  const handleSearch = event => setSearch(event.target.value);
-
-  const sortEntities = () => {
-    getAllEntities();
-    const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
-    if (pageLocation.search !== endURL) {
-      navigate(`${pageLocation.pathname}${endURL}`);
+  const fetchLocks = async () => {
+    try {
+      const response = await axios.get('/api/agent-locks');
+      setLocks(response.data);
+    } catch (error) {
+      console.error('Error fetching agent locks:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    sortEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort, search]);
+    fetchLocks();
+    const interval = setInterval(fetchLocks, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
-  useEffect(() => {
-    const params = new URLSearchParams(pageLocation.search);
-    const page = params.get('page');
-    const sort = params.get(SORT);
-    if (page && sort) {
-      const sortSplit = sort.split(',');
-      setPaginationState({
-        ...paginationState,
-        activePage: +page,
-        sort: sortSplit[0],
-        order: sortSplit[1],
-      });
-    }
-  }, [pageLocation.search]);
-
-  const sort = p => () => {
-    setPaginationState({
-      ...paginationState,
-      order: paginationState.order === ASC ? DESC : ASC,
-      sort: p,
-    });
-  };
-
-  const handlePagination = currentPage =>
-    setPaginationState({
-      ...paginationState,
-      activePage: currentPage,
-    });
-
-  const handleSyncList = () => {
-    sortEntities();
-  };
-
-  const getSortIconByFieldName = (fieldName: string) => {
-    const sortFieldName = paginationState.sort;
-    const order = paginationState.order;
-    if (sortFieldName !== fieldName) {
-      return faSort;
-    }
-    return order === ASC ? faSortUp : faSortDown;
-  };
+  const isExpired = lock => new Date(lock.expiresAt) < new Date();
 
   return (
     <div>
-      <h2 id="agent-lock-heading" data-cy="AgentLockHeading">
-        <Translate contentKey="infraMirrorApp.agentLock.home.title">Agent Locks</Translate>
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
-            <Translate contentKey="infraMirrorApp.agentLock.home.refreshListLabel">Refresh List</Translate>
-          </Button>
-          <Link to="/agent-lock/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;
-            <Translate contentKey="infraMirrorApp.agentLock.home.createLabel">Create new Agent Lock</Translate>
-          </Link>
-        </div>
-      </h2>
-      <Row>
-        <Col sm="12">
-          <Form onSubmit={startSearching}>
-            <FormGroup>
-              <InputGroup>
-                <Input
-                  type="text"
-                  name="search"
-                  defaultValue={search}
-                  onChange={handleSearch}
-                  placeholder={translate('infraMirrorApp.agentLock.home.search')}
-                />
-                <Button className="input-group-addon">
-                  <FontAwesomeIcon icon="search" />
-                </Button>
-                <Button type="reset" className="input-group-addon" onClick={clear}>
-                  <FontAwesomeIcon icon="trash" />
-                </Button>
-              </InputGroup>
-            </FormGroup>
-          </Form>
-        </Col>
-      </Row>
-      <div className="table-responsive">
-        {agentLockList && agentLockList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="infraMirrorApp.agentLock.id">ID</Translate> <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
-                </th>
-                <th className="hand" onClick={sort('agentId')}>
-                  <Translate contentKey="infraMirrorApp.agentLock.agentId">Agent Id</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('agentId')} />
-                </th>
-                <th className="hand" onClick={sort('acquiredAt')}>
-                  <Translate contentKey="infraMirrorApp.agentLock.acquiredAt">Acquired At</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('acquiredAt')} />
-                </th>
-                <th className="hand" onClick={sort('expiresAt')}>
-                  <Translate contentKey="infraMirrorApp.agentLock.expiresAt">Expires At</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('expiresAt')} />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {agentLockList.map((agentLock, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/agent-lock/${agentLock.id}`} color="link" size="sm">
-                      {agentLock.id}
-                    </Button>
-                  </td>
-                  <td>{agentLock.agentId}</td>
-                  <td>{agentLock.acquiredAt ? <TextFormat type="date" value={agentLock.acquiredAt} format={APP_DATE_FORMAT} /> : null}</td>
-                  <td>{agentLock.expiresAt ? <TextFormat type="date" value={agentLock.expiresAt} format={APP_DATE_FORMAT} /> : null}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/agent-lock/${agentLock.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.view">View</Translate>
-                        </span>
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/agent-lock/${agentLock.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.edit">Edit</Translate>
-                        </span>
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (window.location.href = `/agent-lock/${agentLock.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.delete">Delete</Translate>
-                        </span>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        ) : (
-          !loading && (
-            <div className="alert alert-warning">
-              <Translate contentKey="infraMirrorApp.agentLock.home.notFound">No Agent Locks found</Translate>
-            </div>
-          )
-        )}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h5 className="mb-0">Agent Locks (HA Status)</h5>
+        <FontAwesomeIcon icon="sync" spin={loading} className="text-muted" />
       </div>
-      {totalItems ? (
-        <div className={agentLockList && agentLockList.length > 0 ? '' : 'd-none'}>
-          <div className="justify-content-center d-flex">
-            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
-          </div>
-          <div className="justify-content-center d-flex">
-            <JhiPagination
-              activePage={paginationState.activePage}
-              onSelect={handlePagination}
-              maxButtons={5}
-              itemsPerPage={paginationState.itemsPerPage}
-              totalItems={totalItems}
-            />
-          </div>
-        </div>
+
+      {locks.length > 0 ? (
+        <Table responsive striped>
+          <thead>
+            <tr>
+              <th>Agent ID</th>
+              <th>Lock ID</th>
+              <th>Acquired At</th>
+              <th>Expires At</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {locks.map(lock => (
+              <tr key={lock.id}>
+                <td>
+                  <strong>Agent #{lock.agentId}</strong>
+                </td>
+                <td>{lock.id}</td>
+                <td>
+                  <TextFormat type="date" value={lock.acquiredAt} format={APP_TIMESTAMP_FORMAT} />
+                </td>
+                <td>
+                  <TextFormat type="date" value={lock.expiresAt} format={APP_TIMESTAMP_FORMAT} />
+                </td>
+                <td>{isExpired(lock) ? <Badge color="danger">Expired</Badge> : <Badge color="success">Active</Badge>}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       ) : (
-        ''
+        <div className="text-center py-5 text-muted">
+          <FontAwesomeIcon icon="lock" size="3x" className="mb-3" />
+          <h5>No active agent locks</h5>
+          <p>Locks will appear when agents acquire them for monitoring</p>
+        </div>
       )}
     </div>
   );

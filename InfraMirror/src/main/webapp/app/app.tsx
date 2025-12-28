@@ -11,7 +11,6 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getSession } from 'app/shared/reducers/authentication';
 import { getProfile } from 'app/shared/reducers/application-profile';
 import Header from 'app/shared/layout/header/header';
-import Footer from 'app/shared/layout/footer/footer';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import ErrorBoundary from 'app/shared/error/error-boundary';
 import { AUTHORITIES } from 'app/config/constants';
@@ -62,14 +61,13 @@ export const App = () => {
           <Sidebar isAuthenticated={isAuthenticated} isAdmin={isAdmin} isCollapsed={sidebarCollapsed} />
           <div
             style={{
-              marginLeft: sidebarCollapsed ? (hasSecondarySidebar ? '310px' : '60px') : '250px',
+              marginLeft: isAuthenticated ? (sidebarCollapsed ? (hasSecondarySidebar ? '310px' : '60px') : '250px') : '0',
               transition: 'margin-left 0.3s ease',
             }}
           >
             <ErrorBoundary>
               <AppRoutes />
             </ErrorBoundary>
-            <Footer />
           </div>
         </div>
       </div>
