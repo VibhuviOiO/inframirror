@@ -217,13 +217,8 @@ export const Agent = () => {
                   <th className="hand" onClick={sort('name')}>
                     Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
                   </th>
-                  <th>Hostname</th>
-                  <th>IP Address</th>
-                  <th>OS</th>
-                  <th>Version</th>
                   <th>Status</th>
-                  <th>Datacenter</th>
-                  <th>Region</th>
+                  <th>Last Seen</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -234,40 +229,13 @@ export const Agent = () => {
                       <strong>{agent.name}</strong>
                     </td>
                     <td>
-                      <small className="text-muted">{agent.hostname || '-'}</small>
-                    </td>
-                    <td>
-                      <small className="text-muted">{agent.ipAddress || '-'}</small>
-                    </td>
-                    <td>
-                      <small>{agent.osType || '-'}</small>
-                    </td>
-                    <td>
-                      <small className="text-muted">{agent.agentVersion || '-'}</small>
-                    </td>
-                    <td>
                       {agent.status === 'ACTIVE' && <span className="badge bg-success">Active</span>}
                       {agent.status === 'INACTIVE' && <span className="badge bg-warning">Inactive</span>}
                       {agent.status === 'OFFLINE' && <span className="badge bg-danger">Offline</span>}
                       {!agent.status && <span className="badge bg-secondary">Unknown</span>}
                     </td>
                     <td>
-                      {agent.datacenter ? (
-                        <Link to={`/datacenter/${agent.datacenter.id}`}>
-                          <small>{agent.datacenter.name}</small>
-                        </Link>
-                      ) : (
-                        '-'
-                      )}
-                    </td>
-                    <td>
-                      {agent.region ? (
-                        <Link to={`/region/${agent.region.id}`}>
-                          <small>{agent.region.name}</small>
-                        </Link>
-                      ) : (
-                        '-'
-                      )}
+                      <small className="text-muted">{agent.lastSeenAt || '-'}</small>
                     </td>
                     <td>
                       <div className="d-flex gap-1">

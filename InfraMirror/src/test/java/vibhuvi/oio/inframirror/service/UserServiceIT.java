@@ -25,7 +25,6 @@ import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.config.Constants;
 import vibhuvi.oio.inframirror.domain.User;
 import vibhuvi.oio.inframirror.repository.UserRepository;
-import vibhuvi.oio.inframirror.repository.search.UserSearchRepository;
 import vibhuvi.oio.inframirror.security.AuthoritiesConstants;
 import vibhuvi.oio.inframirror.service.dto.AdminUserDTO;
 
@@ -56,14 +55,6 @@ class UserServiceIT {
 
     @Autowired
     private UserService userService;
-
-    /**
-     * This repository is mocked in the vibhuvi.oio.inframirror.repository.search test package.
-     *
-     * @see vibhuvi.oio.inframirror.repository.search.UserSearchRepositoryMockConfiguration
-     */
-    @MockitoSpyBean
-    private UserSearchRepository spiedUserSearchRepository;
 
     private User user;
 

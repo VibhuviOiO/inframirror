@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.ServiceInstance;
 import vibhuvi.oio.inframirror.repository.ServiceInstanceRepository;
-import vibhuvi.oio.inframirror.repository.search.ServiceInstanceSearchRepository;
 import vibhuvi.oio.inframirror.service.ServiceInstanceService;
 import vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO;
 import vibhuvi.oio.inframirror.service.mapper.ServiceInstanceMapper;
@@ -27,16 +26,12 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
 
     private final ServiceInstanceMapper serviceInstanceMapper;
 
-    private final ServiceInstanceSearchRepository serviceInstanceSearchRepository;
-
     public ServiceInstanceServiceImpl(
         ServiceInstanceRepository serviceInstanceRepository,
-        ServiceInstanceMapper serviceInstanceMapper,
-        ServiceInstanceSearchRepository serviceInstanceSearchRepository
+        ServiceInstanceMapper serviceInstanceMapper
     ) {
         this.serviceInstanceRepository = serviceInstanceRepository;
         this.serviceInstanceMapper = serviceInstanceMapper;
-        this.serviceInstanceSearchRepository = serviceInstanceSearchRepository;
     }
 
     @Override
@@ -44,7 +39,6 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
         LOG.debug("Request to save ServiceInstance : {}", serviceInstanceDTO);
         ServiceInstance serviceInstance = serviceInstanceMapper.toEntity(serviceInstanceDTO);
         serviceInstance = serviceInstanceRepository.save(serviceInstance);
-        serviceInstanceSearchRepository.index(serviceInstance);
         return serviceInstanceMapper.toDto(serviceInstance);
     }
 
@@ -53,7 +47,6 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
         LOG.debug("Request to update ServiceInstance : {}", serviceInstanceDTO);
         ServiceInstance serviceInstance = serviceInstanceMapper.toEntity(serviceInstanceDTO);
         serviceInstance = serviceInstanceRepository.save(serviceInstance);
-        serviceInstanceSearchRepository.index(serviceInstance);
         return serviceInstanceMapper.toDto(serviceInstance);
     }
 
@@ -69,10 +62,6 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
                 return existingServiceInstance;
             })
             .map(serviceInstanceRepository::save)
-            .map(savedServiceInstance -> {
-                serviceInstanceSearchRepository.index(savedServiceInstance);
-                return savedServiceInstance;
-            })
             .map(serviceInstanceMapper::toDto);
     }
 
@@ -94,13 +83,12 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
     public void delete(Long id) {
         LOG.debug("Request to delete ServiceInstance : {}", id);
         serviceInstanceRepository.deleteById(id);
-        serviceInstanceSearchRepository.deleteFromIndexById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<ServiceInstanceDTO> search(String query, Pageable pageable) {
         LOG.debug("Request to search for a page of ServiceInstances for query {}", query);
-        return serviceInstanceSearchRepository.search(query, pageable).map(serviceInstanceMapper::toDto);
+        return Page.empty(pageable);
     }
 }

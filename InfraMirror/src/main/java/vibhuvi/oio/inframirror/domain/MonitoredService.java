@@ -13,7 +13,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "monitored_service")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "monitoredservice")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class MonitoredService implements Serializable {
 
@@ -29,63 +28,50 @@ public class MonitoredService implements Serializable {
     @NotNull
     @Size(max = 200)
     @Column(name = "name", length = 200, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     @Size(max = 500)
     @Column(name = "description", length = 500)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
 
     @NotNull
     @Size(max = 50)
     @Column(name = "service_type", length = 50, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String serviceType;
 
     @NotNull
     @Size(max = 20)
     @Column(name = "environment", length = 20, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String environment;
 
     @Column(name = "monitoring_enabled")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean monitoringEnabled;
 
     @Column(name = "cluster_monitoring_enabled")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean clusterMonitoringEnabled;
 
     @NotNull
     @Column(name = "interval_seconds", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer intervalSeconds;
 
     @NotNull
     @Column(name = "timeout_ms", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer timeoutMs;
 
     @NotNull
     @Column(name = "retry_count", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer retryCount;
 
     @Column(name = "latency_warning_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer latencyWarningMs;
 
     @Column(name = "latency_critical_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer latencyCriticalMs;
 
     @Column(name = "advanced_config", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String advancedConfig;
 
     @Column(name = "is_active")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isActive;
 
     @Column(name = "created_at")

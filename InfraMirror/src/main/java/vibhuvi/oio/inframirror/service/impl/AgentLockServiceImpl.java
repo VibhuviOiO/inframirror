@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.AgentLock;
 import vibhuvi.oio.inframirror.repository.AgentLockRepository;
-import vibhuvi.oio.inframirror.repository.search.AgentLockSearchRepository;
 import vibhuvi.oio.inframirror.service.AgentLockService;
 import vibhuvi.oio.inframirror.service.dto.AgentLockDTO;
 import vibhuvi.oio.inframirror.service.mapper.AgentLockMapper;
@@ -27,16 +26,13 @@ public class AgentLockServiceImpl implements AgentLockService {
 
     private final AgentLockMapper agentLockMapper;
 
-    private final AgentLockSearchRepository agentLockSearchRepository;
 
     public AgentLockServiceImpl(
         AgentLockRepository agentLockRepository,
-        AgentLockMapper agentLockMapper,
-        AgentLockSearchRepository agentLockSearchRepository
+        AgentLockMapper agentLockMapper
     ) {
         this.agentLockRepository = agentLockRepository;
         this.agentLockMapper = agentLockMapper;
-        this.agentLockSearchRepository = agentLockSearchRepository;
     }
 
     @Override
@@ -44,7 +40,6 @@ public class AgentLockServiceImpl implements AgentLockService {
         LOG.debug("Request to save AgentLock : {}", agentLockDTO);
         AgentLock agentLock = agentLockMapper.toEntity(agentLockDTO);
         agentLock = agentLockRepository.save(agentLock);
-        agentLockSearchRepository.index(agentLock);
         return agentLockMapper.toDto(agentLock);
     }
 
@@ -53,7 +48,6 @@ public class AgentLockServiceImpl implements AgentLockService {
         LOG.debug("Request to update AgentLock : {}", agentLockDTO);
         AgentLock agentLock = agentLockMapper.toEntity(agentLockDTO);
         agentLock = agentLockRepository.save(agentLock);
-        agentLockSearchRepository.index(agentLock);
         return agentLockMapper.toDto(agentLock);
     }
 
@@ -69,10 +63,6 @@ public class AgentLockServiceImpl implements AgentLockService {
                 return existingAgentLock;
             })
             .map(agentLockRepository::save)
-            .map(savedAgentLock -> {
-                agentLockSearchRepository.index(savedAgentLock);
-                return savedAgentLock;
-            })
             .map(agentLockMapper::toDto);
     }
 
@@ -94,13 +84,12 @@ public class AgentLockServiceImpl implements AgentLockService {
     public void delete(Long id) {
         LOG.debug("Request to delete AgentLock : {}", id);
         agentLockRepository.deleteById(id);
-        agentLockSearchRepository.deleteFromIndexById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<AgentLockDTO> search(String query, Pageable pageable) {
         LOG.debug("Request to search for a page of AgentLocks for query {}", query);
-        return agentLockSearchRepository.search(query, pageable).map(agentLockMapper::toDto);
+        return agentLockRepository.findAll(pageable).map(agentLockMapper::toDto);
     }
 }

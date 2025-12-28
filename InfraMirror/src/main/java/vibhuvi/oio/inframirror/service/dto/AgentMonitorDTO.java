@@ -11,7 +11,6 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class AgentMonitorDTO implements Serializable {
 
-    @NotNull
     private Long id;
 
     @NotNull

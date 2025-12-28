@@ -60,14 +60,12 @@ class RegionResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private RegionRepository regionRepository;
 
     @Autowired
     private RegionMapper regionMapper;
-
-    @Autowired
+    
 
     private EntityManager em;
 

@@ -1,7 +1,6 @@
 package vibhuvi.oio.inframirror.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -16,15 +15,12 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,7 +29,6 @@ import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.Datacenter;
 import vibhuvi.oio.inframirror.domain.MonitoredService;
 import vibhuvi.oio.inframirror.repository.MonitoredServiceRepository;
-import vibhuvi.oio.inframirror.repository.search.MonitoredServiceSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.MonitoredServiceDTO;
 import vibhuvi.oio.inframirror.service.mapper.MonitoredServiceMapper;
 
@@ -104,17 +99,12 @@ class MonitoredServiceResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private MonitoredServiceRepository monitoredServiceRepository;
 
     @Autowired
     private MonitoredServiceMapper monitoredServiceMapper;
-
-    @Autowired
-    private MonitoredServiceSearchRepository monitoredServiceSearchRepository;
-
-    @Autowired
+    
     private EntityManager em;
 
     @Autowired
@@ -183,7 +173,6 @@ class MonitoredServiceResourceIT {
     void cleanup() {
         if (insertedMonitoredService != null) {
             monitoredServiceRepository.delete(insertedMonitoredService);
-            monitoredServiceSearchRepository.delete(insertedMonitoredService);
             insertedMonitoredService = null;
         }
     }
@@ -192,7 +181,6 @@ class MonitoredServiceResourceIT {
     @Transactional
     void createMonitoredService() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         // Create the MonitoredService
         MonitoredServiceDTO monitoredServiceDTO = monitoredServiceMapper.toDto(monitoredService);
         var returnedMonitoredServiceDTO = om.readValue(
@@ -215,13 +203,6 @@ class MonitoredServiceResourceIT {
         var returnedMonitoredService = monitoredServiceMapper.toEntity(returnedMonitoredServiceDTO);
         assertMonitoredServiceUpdatableFieldsEquals(returnedMonitoredService, getPersistedMonitoredService(returnedMonitoredService));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedMonitoredService = returnedMonitoredService;
     }
 
@@ -233,7 +214,6 @@ class MonitoredServiceResourceIT {
         MonitoredServiceDTO monitoredServiceDTO = monitoredServiceMapper.toDto(monitoredService);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restMonitoredServiceMockMvc
@@ -244,15 +224,12 @@ class MonitoredServiceResourceIT {
 
         // Validate the MonitoredService in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         // set the field null
         monitoredService.setName(null);
 
@@ -266,16 +243,12 @@ class MonitoredServiceResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkServiceTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         // set the field null
         monitoredService.setServiceType(null);
 
@@ -289,16 +262,12 @@ class MonitoredServiceResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkEnvironmentIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         // set the field null
         monitoredService.setEnvironment(null);
 
@@ -312,16 +281,12 @@ class MonitoredServiceResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkIntervalSecondsIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         // set the field null
         monitoredService.setIntervalSeconds(null);
 
@@ -335,16 +300,12 @@ class MonitoredServiceResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTimeoutMsIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         // set the field null
         monitoredService.setTimeoutMs(null);
 
@@ -358,16 +319,12 @@ class MonitoredServiceResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkRetryCountIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         // set the field null
         monitoredService.setRetryCount(null);
 
@@ -381,9 +338,6 @@ class MonitoredServiceResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -1360,8 +1314,6 @@ class MonitoredServiceResourceIT {
         insertedMonitoredService = monitoredServiceRepository.saveAndFlush(monitoredService);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        monitoredServiceSearchRepository.save(monitoredService);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
 
         // Update the monitoredService
         MonitoredService updatedMonitoredService = monitoredServiceRepository.findById(monitoredService.getId()).orElseThrow();
@@ -1397,24 +1349,12 @@ class MonitoredServiceResourceIT {
         // Validate the MonitoredService in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedMonitoredServiceToMatchAllProperties(updatedMonitoredService);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<MonitoredService> monitoredServiceSearchList = Streamable.of(monitoredServiceSearchRepository.findAll()).toList();
-                MonitoredService testMonitoredServiceSearch = monitoredServiceSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertMonitoredServiceAllPropertiesEquals(testMonitoredServiceSearch, updatedMonitoredService);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingMonitoredService() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         monitoredService.setId(longCount.incrementAndGet());
 
         // Create the MonitoredService
@@ -1432,15 +1372,12 @@ class MonitoredServiceResourceIT {
 
         // Validate the MonitoredService in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchMonitoredService() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         monitoredService.setId(longCount.incrementAndGet());
 
         // Create the MonitoredService
@@ -1458,15 +1395,12 @@ class MonitoredServiceResourceIT {
 
         // Validate the MonitoredService in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamMonitoredService() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         monitoredService.setId(longCount.incrementAndGet());
 
         // Create the MonitoredService
@@ -1481,8 +1415,6 @@ class MonitoredServiceResourceIT {
 
         // Validate the MonitoredService in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -1574,7 +1506,6 @@ class MonitoredServiceResourceIT {
     @Transactional
     void patchNonExistingMonitoredService() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         monitoredService.setId(longCount.incrementAndGet());
 
         // Create the MonitoredService
@@ -1592,15 +1523,12 @@ class MonitoredServiceResourceIT {
 
         // Validate the MonitoredService in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchMonitoredService() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         monitoredService.setId(longCount.incrementAndGet());
 
         // Create the MonitoredService
@@ -1618,15 +1546,12 @@ class MonitoredServiceResourceIT {
 
         // Validate the MonitoredService in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamMonitoredService() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
         monitoredService.setId(longCount.incrementAndGet());
 
         // Create the MonitoredService
@@ -1644,8 +1569,6 @@ class MonitoredServiceResourceIT {
 
         // Validate the MonitoredService in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -1654,11 +1577,8 @@ class MonitoredServiceResourceIT {
         // Initialize the database
         insertedMonitoredService = monitoredServiceRepository.saveAndFlush(monitoredService);
         monitoredServiceRepository.save(monitoredService);
-        monitoredServiceSearchRepository.save(monitoredService);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the monitoredService
         restMonitoredServiceMockMvc
@@ -1667,39 +1587,23 @@ class MonitoredServiceResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(monitoredServiceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
     @Transactional
     void searchMonitoredService() throws Exception {
-        // Initialize the database
         insertedMonitoredService = monitoredServiceRepository.saveAndFlush(monitoredService);
-        monitoredServiceSearchRepository.save(monitoredService);
+        em.flush();
+        em.clear();
 
-        // Search the monitoredService
         restMonitoredServiceMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + monitoredService.getId()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(monitoredService.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].serviceType").value(hasItem(DEFAULT_SERVICE_TYPE)))
-            .andExpect(jsonPath("$.[*].environment").value(hasItem(DEFAULT_ENVIRONMENT)))
-            .andExpect(jsonPath("$.[*].monitoringEnabled").value(hasItem(DEFAULT_MONITORING_ENABLED)))
-            .andExpect(jsonPath("$.[*].clusterMonitoringEnabled").value(hasItem(DEFAULT_CLUSTER_MONITORING_ENABLED)))
-            .andExpect(jsonPath("$.[*].intervalSeconds").value(hasItem(DEFAULT_INTERVAL_SECONDS)))
-            .andExpect(jsonPath("$.[*].timeoutMs").value(hasItem(DEFAULT_TIMEOUT_MS)))
-            .andExpect(jsonPath("$.[*].retryCount").value(hasItem(DEFAULT_RETRY_COUNT)))
-            .andExpect(jsonPath("$.[*].latencyWarningMs").value(hasItem(DEFAULT_LATENCY_WARNING_MS)))
-            .andExpect(jsonPath("$.[*].latencyCriticalMs").value(hasItem(DEFAULT_LATENCY_CRITICAL_MS)))
-            .andExpect(jsonPath("$.[*].advancedConfig").value(hasItem(DEFAULT_ADVANCED_CONFIG.toString())))
-            .andExpect(jsonPath("$.[*].isActive").value(hasItem(DEFAULT_IS_ACTIVE)))
-            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
-            .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(DEFAULT_UPDATED_AT.toString())));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
     }
+
 
     protected long getRepositoryCount() {
         return monitoredServiceRepository.count();

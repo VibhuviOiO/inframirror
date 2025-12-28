@@ -23,7 +23,6 @@ import vibhuvi.oio.inframirror.repository.StatusDependencyRepository;
 import vibhuvi.oio.inframirror.service.StatusDependencyService;
 import vibhuvi.oio.inframirror.service.dto.StatusDependencyDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.StatusDependency}.
@@ -198,12 +197,8 @@ public class StatusDependencyResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of StatusDependencies for query {}", query);
-        try {
             Page<StatusDependencyDTO> page = statusDependencyService.search(query, pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
             return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
         }
-    }
 }

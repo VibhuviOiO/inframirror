@@ -11,7 +11,6 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "status_dependency")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "statusdependency")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class StatusDependency implements Serializable {
 
@@ -26,7 +25,6 @@ public class StatusDependency implements Serializable {
 
     @NotNull
     @Column(name = "parent_type", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String parentType;
 
     @NotNull
@@ -35,7 +33,6 @@ public class StatusDependency implements Serializable {
 
     @NotNull
     @Column(name = "child_type", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String childType;
 
     @NotNull
@@ -43,7 +40,6 @@ public class StatusDependency implements Serializable {
     private Long childId;
 
     @Column(name = "metadata", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String metadata;
 
     @NotNull

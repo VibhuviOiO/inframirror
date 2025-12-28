@@ -18,54 +18,21 @@ export const AgentEditModal: React.FC<AgentEditModalProps> = ({ isOpen, toggle, 
 
   const [formData, setFormData] = useState<any>({
     name: '',
-    hostname: '',
-    ipAddress: '',
-    osType: '',
-    osVersion: '',
-    agentVersion: '',
     status: 'ACTIVE',
-    tags: '',
-    datacenterId: null,
-    regionId: null,
   });
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [regions, setRegions] = useState([]);
-  const [datacenters, setDatacenters] = useState([]);
-
-  useEffect(() => {
-    if (isOpen) {
-      axios.get('/api/regions?size=1000').then(res => setRegions(res.data));
-      axios.get('/api/datacenters?size=1000').then(res => setDatacenters(res.data));
-    }
-  }, [isOpen]);
 
   useEffect(() => {
     if (agent) {
       setFormData({
         name: agent.name || '',
-        hostname: agent.hostname || '',
-        ipAddress: agent.ipAddress || '',
-        osType: agent.osType || '',
-        osVersion: agent.osVersion || '',
-        agentVersion: agent.agentVersion || '',
         status: agent.status || 'ACTIVE',
-        tags: agent.tags ? JSON.stringify(agent.tags, null, 2) : '',
-        datacenterId: agent.datacenter?.id || null,
-        regionId: agent.region?.id || null,
       });
     } else {
       setFormData({
         name: '',
-        hostname: '',
-        ipAddress: '',
-        osType: '',
-        osVersion: '',
-        agentVersion: '',
         status: 'ACTIVE',
-        tags: '',
-        datacenterId: null,
-        regionId: null,
       });
     }
     setErrors({});
@@ -84,20 +51,11 @@ export const AgentEditModal: React.FC<AgentEditModalProps> = ({ isOpen, toggle, 
 
     setSaving(true);
     try {
-      const data = {
-        ...formData,
-        tags: formData.tags ? JSON.parse(formData.tags) : null,
-        datacenter: formData.datacenterId ? { id: formData.datacenterId } : null,
-        region: formData.regionId ? { id: formData.regionId } : null,
-      };
-      delete data.datacenterId;
-      delete data.regionId;
-
       if (agent?.id) {
-        await axios.put(`/api/agents/${agent.id}`, { ...data, id: agent.id });
+        await axios.put(`/api/agents/${agent.id}`, { ...formData, id: agent.id });
         toast.success('Agent updated successfully');
       } else {
-        await axios.post('/api/agents', data);
+        await axios.post('/api/agents', formData);
         toast.success('Agent created successfully');
       }
       onSave?.();
@@ -117,155 +75,28 @@ export const AgentEditModal: React.FC<AgentEditModalProps> = ({ isOpen, toggle, 
           <Button close onClick={toggle} />
         </div>
         <div className="card-body" style={{ maxHeight: 'calc(100vh - 250px)', overflowY: 'auto' }}>
-          <div className="row">
-            <div className="col-md-6">
-              <FormGroup className="mb-3">
-                <Label for="name">
-                  Name <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  type="text"
-                  id="name"
-                  value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  invalid={!!errors.name}
-                  placeholder="agent-aws-us-east-1"
-                />
-                <FormFeedback>{errors.name}</FormFeedback>
-              </FormGroup>
-            </div>
-            <div className="col-md-6">
-              <FormGroup className="mb-3">
-                <Label for="hostname">Hostname</Label>
-                <Input
-                  type="text"
-                  id="hostname"
-                  value={formData.hostname}
-                  onChange={e => setFormData({ ...formData, hostname: e.target.value })}
-                  placeholder="ip-10-0-1-5.ec2.internal"
-                />
-              </FormGroup>
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-md-6">
-              <FormGroup className="mb-3">
-                <Label for="ipAddress">IP Address</Label>
-                <Input
-                  type="text"
-                  id="ipAddress"
-                  value={formData.ipAddress}
-                  onChange={e => setFormData({ ...formData, ipAddress: e.target.value })}
-                  placeholder="10.0.1.5"
-                />
-              </FormGroup>
-            </div>
-            <div className="col-md-6">
-              <FormGroup className="mb-3">
-                <Label for="osType">OS Type</Label>
-                <Input
-                  type="text"
-                  id="osType"
-                  value={formData.osType}
-                  onChange={e => setFormData({ ...formData, osType: e.target.value })}
-                  placeholder="Linux"
-                />
-              </FormGroup>
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-md-6">
-              <FormGroup className="mb-3">
-                <Label for="osVersion">OS Version</Label>
-                <Input
-                  type="text"
-                  id="osVersion"
-                  value={formData.osVersion}
-                  onChange={e => setFormData({ ...formData, osVersion: e.target.value })}
-                  placeholder="Ubuntu 22.04"
-                />
-              </FormGroup>
-            </div>
-            <div className="col-md-6">
-              <FormGroup className="mb-3">
-                <Label for="agentVersion">Agent Version</Label>
-                <Input
-                  type="text"
-                  id="agentVersion"
-                  value={formData.agentVersion}
-                  onChange={e => setFormData({ ...formData, agentVersion: e.target.value })}
-                  placeholder="1.0.0"
-                />
-              </FormGroup>
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-md-6">
-              <FormGroup className="mb-3">
-                <Label for="status">Status</Label>
-                <Input
-                  type="select"
-                  id="status"
-                  value={formData.status}
-                  onChange={e => setFormData({ ...formData, status: e.target.value })}
-                >
-                  <option value="ACTIVE">Active</option>
-                  <option value="INACTIVE">Inactive</option>
-                  <option value="OFFLINE">Offline</option>
-                </Input>
-              </FormGroup>
-            </div>
-            <div className="col-md-6">
-              <FormGroup className="mb-3">
-                <Label for="datacenterId">Datacenter</Label>
-                <Input
-                  type="select"
-                  id="datacenterId"
-                  value={formData.datacenterId || ''}
-                  onChange={e => setFormData({ ...formData, datacenterId: e.target.value ? Number(e.target.value) : null })}
-                >
-                  <option value="">Select Datacenter</option>
-                  {datacenters.map(dc => (
-                    <option key={dc.id} value={dc.id}>
-                      {dc.name}
-                    </option>
-                  ))}
-                </Input>
-              </FormGroup>
-            </div>
-          </div>
-
           <FormGroup className="mb-3">
-            <Label for="regionId">Region</Label>
+            <Label for="name">
+              Name <span className="text-danger">*</span>
+            </Label>
             <Input
-              type="select"
-              id="regionId"
-              value={formData.regionId || ''}
-              onChange={e => setFormData({ ...formData, regionId: e.target.value ? Number(e.target.value) : null })}
-            >
-              <option value="">Select Region</option>
-              {regions.map(region => (
-                <option key={region.id} value={region.id}>
-                  {region.name}
-                </option>
-              ))}
-            </Input>
+              type="text"
+              id="name"
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              invalid={!!errors.name}
+              placeholder="agent aws us east 1"
+            />
+            <FormFeedback>{errors.name}</FormFeedback>
           </FormGroup>
 
           <FormGroup className="mb-3">
-            <Label for="tags">Tags (JSON)</Label>
-            <Input
-              type="textarea"
-              id="tags"
-              value={formData.tags}
-              onChange={e => setFormData({ ...formData, tags: e.target.value })}
-              rows={4}
-              placeholder={'{\n  "environment": "production",\n  "team": "platform"\n}'}
-            />
-            <small className="text-muted">Enter valid JSON format</small>
+            <Label for="status">Status</Label>
+            <Input type="select" id="status" value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })}>
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+              <option value="OFFLINE">Offline</option>
+            </Input>
           </FormGroup>
         </div>
         <div className="card-footer d-flex justify-content-end gap-2 py-2">

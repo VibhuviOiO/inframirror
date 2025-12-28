@@ -23,7 +23,6 @@ import vibhuvi.oio.inframirror.repository.AuditTrailRepository;
 import vibhuvi.oio.inframirror.service.AuditTrailService;
 import vibhuvi.oio.inframirror.service.dto.AuditTrailDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.AuditTrail}.
@@ -192,12 +191,8 @@ public class AuditTrailResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of AuditTrails for query {}", query);
-        try {
             Page<AuditTrailDTO> page = auditTrailService.search(query, pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
             return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
         }
-    }
 }

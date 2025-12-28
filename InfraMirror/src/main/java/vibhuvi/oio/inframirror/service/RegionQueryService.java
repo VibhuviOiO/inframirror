@@ -77,8 +77,7 @@ public class RegionQueryService extends QueryService<Region> {
                 buildStringSpecification(criteria.getName(), Region_.name),
                 buildStringSpecification(criteria.getRegionCode(), Region_.regionCode),
                 buildStringSpecification(criteria.getGroupName(), Region_.groupName),
-                buildSpecification(criteria.getDatacenterId(), root -> root.join(Region_.datacenters, JoinType.LEFT).get(Datacenter_.id)),
-                buildSpecification(criteria.getAgentId(), root -> root.join(Region_.agents, JoinType.LEFT).get(Agent_.id))
+                buildSpecification(criteria.getDatacenterId(), root -> root.join(Region_.datacenters, JoinType.LEFT).get(Datacenter_.id))
             );
         }
         return specification;

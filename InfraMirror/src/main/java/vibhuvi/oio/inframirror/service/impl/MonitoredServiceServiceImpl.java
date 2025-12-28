@@ -11,9 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.MonitoredService;
 import vibhuvi.oio.inframirror.repository.MonitoredServiceRepository;
 import vibhuvi.oio.inframirror.repository.ServiceInstanceRepository;
-import vibhuvi.oio.inframirror.repository.search.MonitoredServiceSearchRepository;
+import vibhuvi.oio.inframirror.service.FullTextSearchUtil;
 import vibhuvi.oio.inframirror.service.MonitoredServiceService;
 import vibhuvi.oio.inframirror.service.dto.MonitoredServiceDTO;
+import vibhuvi.oio.inframirror.service.dto.MonitoredServiceSearchResultDTO;
 import vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO;
 import vibhuvi.oio.inframirror.service.mapper.MonitoredServiceMapper;
 import vibhuvi.oio.inframirror.service.mapper.ServiceInstanceMapper;
@@ -31,8 +32,6 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
 
     private final MonitoredServiceMapper monitoredServiceMapper;
 
-    private final MonitoredServiceSearchRepository monitoredServiceSearchRepository;
-
     private final ServiceInstanceRepository serviceInstanceRepository;
 
     private final ServiceInstanceMapper serviceInstanceMapper;
@@ -40,13 +39,11 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
     public MonitoredServiceServiceImpl(
         MonitoredServiceRepository monitoredServiceRepository,
         MonitoredServiceMapper monitoredServiceMapper,
-        MonitoredServiceSearchRepository monitoredServiceSearchRepository,
         ServiceInstanceRepository serviceInstanceRepository,
         ServiceInstanceMapper serviceInstanceMapper
     ) {
         this.monitoredServiceRepository = monitoredServiceRepository;
         this.monitoredServiceMapper = monitoredServiceMapper;
-        this.monitoredServiceSearchRepository = monitoredServiceSearchRepository;
         this.serviceInstanceRepository = serviceInstanceRepository;
         this.serviceInstanceMapper = serviceInstanceMapper;
     }
@@ -56,7 +53,6 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
         LOG.debug("Request to save MonitoredService : {}", monitoredServiceDTO);
         MonitoredService monitoredService = monitoredServiceMapper.toEntity(monitoredServiceDTO);
         monitoredService = monitoredServiceRepository.save(monitoredService);
-        monitoredServiceSearchRepository.index(monitoredService);
         return monitoredServiceMapper.toDto(monitoredService);
     }
 
@@ -65,7 +61,6 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
         LOG.debug("Request to update MonitoredService : {}", monitoredServiceDTO);
         MonitoredService monitoredService = monitoredServiceMapper.toEntity(monitoredServiceDTO);
         monitoredService = monitoredServiceRepository.save(monitoredService);
-        monitoredServiceSearchRepository.index(monitoredService);
         return monitoredServiceMapper.toDto(monitoredService);
     }
 
@@ -81,10 +76,6 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
                 return existingMonitoredService;
             })
             .map(monitoredServiceRepository::save)
-            .map(savedMonitoredService -> {
-                monitoredServiceSearchRepository.index(savedMonitoredService);
-                return savedMonitoredService;
-            })
             .map(monitoredServiceMapper::toDto);
     }
 
@@ -105,7 +96,6 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
     public void delete(Long id) {
         LOG.debug("Request to delete MonitoredService : {}", id);
         monitoredServiceRepository.deleteById(id);
-        monitoredServiceSearchRepository.deleteFromIndexById(id);
     }
 
     @Override
@@ -137,6 +127,65 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
     @Transactional(readOnly = true)
     public Page<MonitoredServiceDTO> search(String query, Pageable pageable) {
         LOG.debug("Request to search for a page of MonitoredServices for query {}", query);
-        return monitoredServiceSearchRepository.search(query, pageable).map(monitoredServiceMapper::toDto);
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return monitoredServiceRepository.findAll(pageable).map(monitoredServiceMapper::toDto);
+        }
+
+        String searchTerm = FullTextSearchUtil.sanitizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return monitoredServiceRepository.searchFullText(searchTerm, limitedPageable)
+            .map(monitoredServiceMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MonitoredServiceDTO> searchPrefix(String query, Pageable pageable) {
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return Page.empty(pageable);
+        }
+
+        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return monitoredServiceRepository.searchPrefix(normalizedQuery, limitedPageable)
+            .map(monitoredServiceMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MonitoredServiceDTO> searchFuzzy(String query, Pageable pageable) {
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return Page.empty(pageable);
+        }
+
+        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return monitoredServiceRepository.searchFuzzy(normalizedQuery, limitedPageable)
+            .map(monitoredServiceMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MonitoredServiceSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return Page.empty(pageable);
+        }
+
+        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return monitoredServiceRepository.searchWithHighlight(normalizedQuery, limitedPageable)
+            .map(row -> {
+                Long id = ((Number) row[0]).longValue();
+                String name = (String) row[1];
+                String description = (String) row[2];
+                String serviceType = (String) row[3];
+                String environment = (String) row[4];
+                Float rank = ((Number) row[5]).floatValue();
+                String highlight = (String) row[6];
+                return new MonitoredServiceSearchResultDTO(id, name, description, serviceType, environment, rank, highlight);
+            });
     }
 }

@@ -11,7 +11,6 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "status_page_item")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "statuspageitem")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class StatusPageItem implements Serializable {
 
@@ -27,7 +26,6 @@ public class StatusPageItem implements Serializable {
     @NotNull
     @Size(max = 50)
     @Column(name = "item_type", length = 50, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String itemType;
 
     @NotNull
@@ -35,7 +33,6 @@ public class StatusPageItem implements Serializable {
     private Long itemId;
 
     @Column(name = "display_order")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer displayOrder;
 
     @Column(name = "created_at")

@@ -13,7 +13,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "status_page")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "statuspage")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class StatusPage implements Serializable {
 
@@ -29,76 +28,60 @@ public class StatusPage implements Serializable {
     @NotNull
     @Size(max = 200)
     @Column(name = "name", length = 200, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     @NotNull
     @Size(max = 100)
     @Column(name = "slug", length = 100, nullable = false, unique = true)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String slug;
 
     @Size(max = 500)
     @Column(name = "description", length = 500)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
 
     @NotNull
     @Column(name = "is_public", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isPublic;
 
     @Size(max = 255)
     @Column(name = "custom_domain", length = 255)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String customDomain;
 
     @Size(max = 500)
     @Column(name = "logo_url", length = 500)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String logoUrl;
 
     @Size(max = 7)
     @Column(name = "theme_color", length = 7)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String themeColor;
 
     @Size(max = 500)
     @Column(name = "header_text", length = 500)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String headerText;
 
     @Size(max = 500)
     @Column(name = "footer_text", length = 500)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String footerText;
 
     @Column(name = "show_response_times")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean showResponseTimes;
 
     @Column(name = "show_uptime_percentage")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean showUptimePercentage;
 
     @Column(name = "auto_refresh_seconds")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer autoRefreshSeconds;
 
     @Column(name = "monitor_selection", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String monitorSelection;
 
     @Column(name = "is_active")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isActive;
 
     @Column(name = "is_home_page")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isHomePage;
 
     @Column(name = "allowed_roles", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String allowedRoles;
 
     @NotNull

@@ -34,7 +34,6 @@ import vibhuvi.oio.inframirror.domain.Agent;
 import vibhuvi.oio.inframirror.domain.AgentMonitor;
 import vibhuvi.oio.inframirror.domain.HttpMonitor;
 import vibhuvi.oio.inframirror.repository.AgentMonitorRepository;
-import vibhuvi.oio.inframirror.repository.search.AgentMonitorSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.AgentMonitorDTO;
 import vibhuvi.oio.inframirror.service.mapper.AgentMonitorMapper;
 
@@ -70,20 +69,16 @@ class AgentMonitorResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private AgentMonitorRepository agentMonitorRepository;
 
     @Autowired
     private AgentMonitorMapper agentMonitorMapper;
-
-    @Autowired
-    private AgentMonitorSearchRepository agentMonitorSearchRepository;
+    
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restAgentMonitorMockMvc;
 
     private AgentMonitor agentMonitor;
@@ -171,7 +166,6 @@ class AgentMonitorResourceIT {
     void cleanup() {
         if (insertedAgentMonitor != null) {
             agentMonitorRepository.delete(insertedAgentMonitor);
-            agentMonitorSearchRepository.delete(insertedAgentMonitor);
             insertedAgentMonitor = null;
         }
     }
@@ -180,7 +174,6 @@ class AgentMonitorResourceIT {
     @Transactional
     void createAgentMonitor() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
         // Create the AgentMonitor
         AgentMonitorDTO agentMonitorDTO = agentMonitorMapper.toDto(agentMonitor);
         var returnedAgentMonitorDTO = om.readValue(
@@ -198,16 +191,7 @@ class AgentMonitorResourceIT {
         // Validate the AgentMonitor in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedAgentMonitor = agentMonitorMapper.toEntity(returnedAgentMonitorDTO);
-        assertAgentMonitorUpdatableFieldsEquals(returnedAgentMonitor, getPersistedAgentMonitor(returnedAgentMonitor));
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
-        insertedAgentMonitor = returnedAgentMonitor;
+        assertAgentMonitorUpdatableFieldsEquals(returnedAgentMonitor, getPersistedAgentMonitor(returnedAgentMonitor));        insertedAgentMonitor = returnedAgentMonitor;
     }
 
     @Test
@@ -218,7 +202,6 @@ class AgentMonitorResourceIT {
         AgentMonitorDTO agentMonitorDTO = agentMonitorMapper.toDto(agentMonitor);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restAgentMonitorMockMvc
@@ -229,15 +212,12 @@ class AgentMonitorResourceIT {
 
         // Validate the AgentMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkActiveIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
         // set the field null
         agentMonitor.setActive(null);
 
@@ -252,15 +232,12 @@ class AgentMonitorResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkCreatedByIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
         // set the field null
         agentMonitor.setCreatedBy(null);
 
@@ -275,8 +252,6 @@ class AgentMonitorResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -331,8 +306,6 @@ class AgentMonitorResourceIT {
         insertedAgentMonitor = agentMonitorRepository.saveAndFlush(agentMonitor);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        agentMonitorSearchRepository.save(agentMonitor);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
 
         // Update the agentMonitor
         AgentMonitor updatedAgentMonitor = agentMonitorRepository.findById(agentMonitor.getId()).orElseThrow();
@@ -357,25 +330,12 @@ class AgentMonitorResourceIT {
 
         // Validate the AgentMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedAgentMonitorToMatchAllProperties(updatedAgentMonitor);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<AgentMonitor> agentMonitorSearchList = Streamable.of(agentMonitorSearchRepository.findAll()).toList();
-                AgentMonitor testAgentMonitorSearch = agentMonitorSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertAgentMonitorAllPropertiesEquals(testAgentMonitorSearch, updatedAgentMonitor);
-            });
-    }
+        assertPersistedAgentMonitorToMatchAllProperties(updatedAgentMonitor);    }
 
     @Test
     @Transactional
     void putNonExistingAgentMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
         agentMonitor.setId(longCount.incrementAndGet());
 
         // Create the AgentMonitor
@@ -393,15 +353,12 @@ class AgentMonitorResourceIT {
 
         // Validate the AgentMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchAgentMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
         agentMonitor.setId(longCount.incrementAndGet());
 
         // Create the AgentMonitor
@@ -419,15 +376,12 @@ class AgentMonitorResourceIT {
 
         // Validate the AgentMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamAgentMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
         agentMonitor.setId(longCount.incrementAndGet());
 
         // Create the AgentMonitor
@@ -442,8 +396,6 @@ class AgentMonitorResourceIT {
 
         // Validate the AgentMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -516,7 +468,6 @@ class AgentMonitorResourceIT {
     @Transactional
     void patchNonExistingAgentMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
         agentMonitor.setId(longCount.incrementAndGet());
 
         // Create the AgentMonitor
@@ -534,15 +485,12 @@ class AgentMonitorResourceIT {
 
         // Validate the AgentMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchAgentMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
         agentMonitor.setId(longCount.incrementAndGet());
 
         // Create the AgentMonitor
@@ -560,15 +508,12 @@ class AgentMonitorResourceIT {
 
         // Validate the AgentMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamAgentMonitor() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
         agentMonitor.setId(longCount.incrementAndGet());
 
         // Create the AgentMonitor
@@ -586,8 +531,6 @@ class AgentMonitorResourceIT {
 
         // Validate the AgentMonitor in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -596,11 +539,8 @@ class AgentMonitorResourceIT {
         // Initialize the database
         insertedAgentMonitor = agentMonitorRepository.saveAndFlush(agentMonitor);
         agentMonitorRepository.save(agentMonitor);
-        agentMonitorSearchRepository.save(agentMonitor);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the agentMonitor
         restAgentMonitorMockMvc
@@ -609,8 +549,6 @@ class AgentMonitorResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentMonitorSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -618,7 +556,6 @@ class AgentMonitorResourceIT {
     void searchAgentMonitor() throws Exception {
         // Initialize the database
         insertedAgentMonitor = agentMonitorRepository.saveAndFlush(agentMonitor);
-        agentMonitorSearchRepository.save(agentMonitor);
 
         // Search the agentMonitor
         restAgentMonitorMockMvc

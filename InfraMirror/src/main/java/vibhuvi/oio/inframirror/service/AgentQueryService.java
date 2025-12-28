@@ -12,7 +12,6 @@ import tech.jhipster.service.QueryService;
 import vibhuvi.oio.inframirror.domain.*; // for static metamodels
 import vibhuvi.oio.inframirror.domain.Agent;
 import vibhuvi.oio.inframirror.repository.AgentRepository;
-import vibhuvi.oio.inframirror.repository.search.AgentSearchRepository;
 import vibhuvi.oio.inframirror.service.criteria.AgentCriteria;
 import vibhuvi.oio.inframirror.service.dto.AgentDTO;
 import vibhuvi.oio.inframirror.service.mapper.AgentMapper;
@@ -33,12 +32,9 @@ public class AgentQueryService extends QueryService<Agent> {
 
     private final AgentMapper agentMapper;
 
-    private final AgentSearchRepository agentSearchRepository;
-
-    public AgentQueryService(AgentRepository agentRepository, AgentMapper agentMapper, AgentSearchRepository agentSearchRepository) {
+    public AgentQueryService(AgentRepository agentRepository, AgentMapper agentMapper) {
         this.agentRepository = agentRepository;
         this.agentMapper = agentMapper;
-        this.agentSearchRepository = agentSearchRepository;
     }
 
     /**
@@ -88,8 +84,7 @@ public class AgentQueryService extends QueryService<Agent> {
                 ),
                 buildSpecification(criteria.getServiceHeartbeatId(), root ->
                     root.join(Agent_.serviceHeartbeats, JoinType.LEFT).get(ServiceHeartbeat_.id)
-                ),
-                buildSpecification(criteria.getRegionId(), root -> root.join(Agent_.region, JoinType.LEFT).get(Region_.id))
+                )
             );
         }
         return specification;

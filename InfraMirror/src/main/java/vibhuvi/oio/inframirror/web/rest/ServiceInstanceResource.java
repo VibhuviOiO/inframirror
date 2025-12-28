@@ -23,7 +23,6 @@ import vibhuvi.oio.inframirror.repository.ServiceInstanceRepository;
 import vibhuvi.oio.inframirror.service.ServiceInstanceService;
 import vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.ServiceInstance}.
@@ -195,12 +194,8 @@ public class ServiceInstanceResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of ServiceInstances for query {}", query);
-        try {
-            Page<ServiceInstanceDTO> page = serviceInstanceService.search(query, pageable);
-            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-            return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
+        Page<ServiceInstanceDTO> page = serviceInstanceService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

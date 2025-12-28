@@ -19,7 +19,6 @@ import vibhuvi.oio.inframirror.domain.Authority;
 import vibhuvi.oio.inframirror.domain.User;
 import vibhuvi.oio.inframirror.repository.AuthorityRepository;
 import vibhuvi.oio.inframirror.repository.UserRepository;
-import vibhuvi.oio.inframirror.repository.search.UserSearchRepository;
 import vibhuvi.oio.inframirror.security.SecurityUtils;
 import vibhuvi.oio.inframirror.service.dto.AdminUserDTO;
 import vibhuvi.oio.inframirror.service.dto.UserDTO;
@@ -35,20 +34,16 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final UserSearchRepository userSearchRepository;
-
     private final AuthorityRepository authorityRepository;
 
     private final CacheManager cacheManager;
 
     public UserService(
         UserRepository userRepository,
-        UserSearchRepository userSearchRepository,
         AuthorityRepository authorityRepository,
         CacheManager cacheManager
     ) {
         this.userRepository = userRepository;
-        this.userSearchRepository = userSearchRepository;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
     }
@@ -74,7 +69,6 @@ public class UserService {
                 user.setLangKey(langKey);
                 user.setImageUrl(imageUrl);
                 userRepository.save(user);
-                userSearchRepository.index(user);
                 this.clearUserCaches(user);
                 LOG.debug("Changed Information for User: {}", user);
             });

@@ -55,10 +55,34 @@ public interface AgentMonitorService {
     void delete(Long id);
 
     /**
-     * Search for the agentMonitor corresponding to the query.
+     * Search for agentMonitors by agent or monitor name.
      *
      * @param query the query of the search.
      * @return the list of entities.
      */
     List<AgentMonitorDTO> search(String query);
+    
+    /**
+     * Find agentMonitors by agent ID.
+     *
+     * @param agentId the agent ID.
+     * @return the list of entities.
+     */
+    List<AgentMonitorDTO> findByAgentId(Long agentId);
+    
+    /**
+     * Find agentMonitors by monitor ID.
+     *
+     * @param monitorId the monitor ID.
+     * @return the list of entities.
+     */
+    List<AgentMonitorDTO> findByMonitorId(Long monitorId);
+    
+    /**
+     * Find agentMonitors by active status.
+     *
+     * @param active the active status.
+     * @return the list of entities.
+     */
+    List<AgentMonitorDTO> findByActive(Boolean active);
 }

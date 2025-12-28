@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.User;
 import vibhuvi.oio.inframirror.repository.UserRepository;
-import vibhuvi.oio.inframirror.repository.search.UserSearchRepository;
 import vibhuvi.oio.inframirror.security.AuthoritiesConstants;
 import vibhuvi.oio.inframirror.service.mapper.UserMapper;
 
@@ -49,23 +48,17 @@ class UserResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private UserRepository userRepository;
 
     @Autowired
-    private UserSearchRepository userSearchRepository;
-
-    @Autowired
     private UserMapper userMapper;
-
-    @Autowired
+    
     private EntityManager em;
 
     @Autowired
     private CacheManager cacheManager;
-
-    @Autowired
+    
     private MockMvc restUserMockMvc;
 
     private User user;

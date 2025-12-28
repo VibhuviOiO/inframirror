@@ -16,11 +16,12 @@ import vibhuvi.oio.inframirror.domain.Region;
 import vibhuvi.oio.inframirror.repository.AgentRepository;
 import vibhuvi.oio.inframirror.repository.DatacenterRepository;
 import vibhuvi.oio.inframirror.repository.RegionRepository;
-import vibhuvi.oio.inframirror.repository.search.AgentSearchRepository;
 import vibhuvi.oio.inframirror.service.AgentService;
+import vibhuvi.oio.inframirror.service.FullTextSearchUtil;
 import vibhuvi.oio.inframirror.service.dto.AgentDTO;
 import vibhuvi.oio.inframirror.service.dto.AgentRegistrationRequestDTO;
 import vibhuvi.oio.inframirror.service.dto.AgentRegistrationResponseDTO;
+import vibhuvi.oio.inframirror.service.dto.AgentSearchResultDTO;
 import vibhuvi.oio.inframirror.service.mapper.AgentMapper;
 import vibhuvi.oio.inframirror.service.mapper.DatacenterMapper;
 import vibhuvi.oio.inframirror.service.mapper.RegionMapper;
@@ -36,7 +37,6 @@ public class AgentServiceImpl implements AgentService {
 
     private final AgentRepository agentRepository;
     private final AgentMapper agentMapper;
-    private final AgentSearchRepository agentSearchRepository;
     private final RegionRepository regionRepository;
     private final DatacenterRepository datacenterRepository;
     private final RegionMapper regionMapper;
@@ -46,7 +46,6 @@ public class AgentServiceImpl implements AgentService {
     public AgentServiceImpl(
         AgentRepository agentRepository,
         AgentMapper agentMapper,
-        AgentSearchRepository agentSearchRepository,
         RegionRepository regionRepository,
         DatacenterRepository datacenterRepository,
         RegionMapper regionMapper,
@@ -55,7 +54,6 @@ public class AgentServiceImpl implements AgentService {
     ) {
         this.agentRepository = agentRepository;
         this.agentMapper = agentMapper;
-        this.agentSearchRepository = agentSearchRepository;
         this.regionRepository = regionRepository;
         this.datacenterRepository = datacenterRepository;
         this.regionMapper = regionMapper;
@@ -68,7 +66,6 @@ public class AgentServiceImpl implements AgentService {
         LOG.debug("Request to save Agent : {}", agentDTO);
         Agent agent = agentMapper.toEntity(agentDTO);
         agent = agentRepository.save(agent);
-        agentSearchRepository.index(agent);
         return agentMapper.toDto(agent);
     }
 
@@ -77,7 +74,6 @@ public class AgentServiceImpl implements AgentService {
         LOG.debug("Request to update Agent : {}", agentDTO);
         Agent agent = agentMapper.toEntity(agentDTO);
         agent = agentRepository.save(agent);
-        agentSearchRepository.index(agent);
         return agentMapper.toDto(agent);
     }
 
@@ -93,10 +89,6 @@ public class AgentServiceImpl implements AgentService {
                 return existingAgent;
             })
             .map(agentRepository::save)
-            .map(savedAgent -> {
-                agentSearchRepository.index(savedAgent);
-                return savedAgent;
-            })
             .map(agentMapper::toDto);
     }
 
@@ -111,14 +103,71 @@ public class AgentServiceImpl implements AgentService {
     public void delete(Long id) {
         LOG.debug("Request to delete Agent : {}", id);
         agentRepository.deleteById(id);
-        agentSearchRepository.deleteFromIndexById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<AgentDTO> search(String query, Pageable pageable) {
         LOG.debug("Request to search for a page of Agents for query {}", query);
-        return agentSearchRepository.search(query, pageable).map(agentMapper::toDto);
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return agentRepository.findAll(pageable).map(agentMapper::toDto);
+        }
+
+        String searchTerm = FullTextSearchUtil.sanitizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return agentRepository.searchFullText(searchTerm, limitedPageable)
+            .map(agentMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AgentDTO> searchPrefix(String query, Pageable pageable) {
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return Page.empty(pageable);
+        }
+
+        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return agentRepository.searchPrefix(normalizedQuery, limitedPageable)
+            .map(agentMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AgentDTO> searchFuzzy(String query, Pageable pageable) {
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return Page.empty(pageable);
+        }
+
+        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return agentRepository.searchFuzzy(normalizedQuery, limitedPageable)
+            .map(agentMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AgentSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        if (FullTextSearchUtil.isEmptyQuery(query)) {
+            return Page.empty(pageable);
+        }
+
+        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
+        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
+
+        return agentRepository.searchWithHighlight(normalizedQuery, limitedPageable)
+            .map(row -> {
+                Long id = ((Number) row[0]).longValue();
+                String name = (String) row[1];
+                java.time.Instant lastSeenAt = row[2] != null ? ((java.sql.Timestamp) row[2]).toInstant() : null;
+                String status = (String) row[3];
+                Float rank = ((Number) row[4]).floatValue();
+                String highlight = (String) row[5];
+                return new AgentSearchResultDTO(id, name, rank, highlight);
+            });
     }
 
     @Override
@@ -164,17 +213,9 @@ public class AgentServiceImpl implements AgentService {
             });
 
         // Update agent properties
-        agent.setHostname(request.getHostname());
-        agent.setIpAddress(request.getIpAddress());
-        agent.setOsType(request.getOsType());
-        agent.setOsVersion(request.getOsVersion());
-        agent.setAgentVersion(request.getAgentVersion());
         agent.setStatus("ACTIVE");
-        agent.setTags(objectMapper.valueToTree(request.getTags()));
-        agent.setDatacenter(datacenter);
-        agent.setRegion(region);
+        agent.setLastSeenAt(java.time.Instant.now());
         agent = agentRepository.save(agent);
-        agentSearchRepository.index(agent);
 
         AgentRegistrationResponseDTO response = new AgentRegistrationResponseDTO();
         response.setAgentId(agent.getId());
@@ -194,7 +235,6 @@ public class AgentServiceImpl implements AgentService {
             agent.setLastSeenAt(Instant.now());
             agent.setStatus("ACTIVE");
             agentRepository.save(agent);
-            agentSearchRepository.index(agent);
         });
     }
 

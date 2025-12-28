@@ -11,7 +11,6 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "agent_monitor")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "agentmonitor")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class AgentMonitor implements Serializable {
 
@@ -26,13 +25,11 @@ public class AgentMonitor implements Serializable {
 
     @NotNull
     @Column(name = "active", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean active;
 
     @NotNull
     @Size(max = 50)
     @Column(name = "created_by", length = 50, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String createdBy;
 
     @Column(name = "created_date")
@@ -40,7 +37,6 @@ public class AgentMonitor implements Serializable {
 
     @Size(max = 50)
     @Column(name = "last_modified_by", length = 50)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String lastModifiedBy;
 
     @Column(name = "last_modified_date")

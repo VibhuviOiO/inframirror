@@ -11,7 +11,6 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "instance_heartbeat")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "instanceheartbeat")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class InstanceHeartbeat implements Serializable {
 
@@ -31,23 +30,19 @@ public class InstanceHeartbeat implements Serializable {
     @NotNull
     @Size(max = 20)
     @Column(name = "heartbeat_type", length = 20, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String heartbeatType;
 
     @NotNull
     @Column(name = "success", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean success;
 
     @Column(name = "response_time_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer responseTimeMs;
 
     @Column(name = "packet_loss")
     private Float packetLoss;
 
     @Column(name = "jitter_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer jitterMs;
 
     @Column(name = "cpu_usage")
@@ -63,7 +58,6 @@ public class InstanceHeartbeat implements Serializable {
     private Float loadAverage;
 
     @Column(name = "process_count")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer processCount;
 
     @Column(name = "network_rx_bytes")
@@ -78,20 +72,16 @@ public class InstanceHeartbeat implements Serializable {
     @NotNull
     @Size(max = 20)
     @Column(name = "status", length = 20, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String status;
 
     @Column(name = "error_message", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String errorMessage;
 
     @Size(max = 100)
     @Column(name = "error_type", length = 100)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String errorType;
 
     @Column(name = "metadata", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String metadata;
 
     @ManyToOne(fetch = FetchType.LAZY)

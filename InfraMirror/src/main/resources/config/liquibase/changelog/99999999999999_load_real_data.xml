@@ -216,7 +216,6 @@
         <insert tableName="agent">
             <column name="id" valueNumeric="1"/>
             <column name="name" value="Global Agent"/>
-            <column name="region_id" valueNumeric="2"/>
         </insert>
 
         <!-- Agent Monitors -->

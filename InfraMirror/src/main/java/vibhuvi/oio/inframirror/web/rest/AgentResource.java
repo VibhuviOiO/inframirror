@@ -24,8 +24,8 @@ import vibhuvi.oio.inframirror.service.AgentQueryService;
 import vibhuvi.oio.inframirror.service.AgentService;
 import vibhuvi.oio.inframirror.service.criteria.AgentCriteria;
 import vibhuvi.oio.inframirror.service.dto.AgentDTO;
+import vibhuvi.oio.inframirror.service.dto.AgentSearchResultDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.Agent}.
@@ -214,12 +214,38 @@ public class AgentResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of Agents for query {}", query);
-        try {
-            Page<AgentDTO> page = agentService.search(query, pageable);
-            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-            return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
+        Page<AgentDTO> page = agentService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/prefix")
+    public ResponseEntity<List<AgentDTO>> searchAgentsPrefix(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<AgentDTO> page = agentService.searchPrefix(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/fuzzy")
+    public ResponseEntity<List<AgentDTO>> searchAgentsFuzzy(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<AgentDTO> page = agentService.searchFuzzy(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/highlight")
+    public ResponseEntity<List<AgentSearchResultDTO>> searchAgentsWithHighlight(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<AgentSearchResultDTO> page = agentService.searchWithHighlight(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

@@ -10,7 +10,6 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "api_key")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "apikey")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ApiKey implements Serializable {
 
@@ -26,23 +25,19 @@ public class ApiKey implements Serializable {
     @NotNull
     @Size(max = 100)
     @Column(name = "name", length = 100, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String name;
 
     @Size(max = 500)
     @Column(name = "description", length = 500)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
 
     @NotNull
     @Size(max = 500)
     @Column(name = "key_hash", length = 500, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String keyHash;
 
     @NotNull
     @Column(name = "active", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean active;
 
     @Column(name = "last_used_date")
@@ -54,7 +49,6 @@ public class ApiKey implements Serializable {
     @NotNull
     @Size(max = 50)
     @Column(name = "created_by", length = 50, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String createdBy;
 
     @Column(name = "created_date")
@@ -62,7 +56,6 @@ public class ApiKey implements Serializable {
 
     @Size(max = 50)
     @Column(name = "last_modified_by", length = 50)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String lastModifiedBy;
 
     @Column(name = "last_modified_date")

@@ -24,8 +24,8 @@ import vibhuvi.oio.inframirror.service.MonitoredServiceQueryService;
 import vibhuvi.oio.inframirror.service.MonitoredServiceService;
 import vibhuvi.oio.inframirror.service.criteria.MonitoredServiceCriteria;
 import vibhuvi.oio.inframirror.service.dto.MonitoredServiceDTO;
+import vibhuvi.oio.inframirror.service.dto.MonitoredServiceSearchResultDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.MonitoredService}.
@@ -255,12 +255,38 @@ public class MonitoredServiceResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of MonitoredServices for query {}", query);
-        try {
-            Page<MonitoredServiceDTO> page = monitoredServiceService.search(query, pageable);
-            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-            return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
+        Page<MonitoredServiceDTO> page = monitoredServiceService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/prefix")
+    public ResponseEntity<List<MonitoredServiceDTO>> searchMonitoredServicesPrefix(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<MonitoredServiceDTO> page = monitoredServiceService.searchPrefix(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/fuzzy")
+    public ResponseEntity<List<MonitoredServiceDTO>> searchMonitoredServicesFuzzy(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<MonitoredServiceDTO> page = monitoredServiceService.searchFuzzy(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/_search/highlight")
+    public ResponseEntity<List<MonitoredServiceSearchResultDTO>> searchMonitoredServicesWithHighlight(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<MonitoredServiceSearchResultDTO> page = monitoredServiceService.searchWithHighlight(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

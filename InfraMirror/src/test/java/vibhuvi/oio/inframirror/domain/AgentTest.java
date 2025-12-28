@@ -120,12 +120,5 @@ class AgentTest {
     @Test
     void regionTest() {
         Agent agent = getAgentRandomSampleGenerator();
-        Region regionBack = getRegionRandomSampleGenerator();
-
-        agent.setRegion(regionBack);
-        assertThat(agent.getRegion()).isEqualTo(regionBack);
-
-        agent.region(null);
-        assertThat(agent.getRegion()).isNull();
-    }
+}
 }

@@ -37,10 +37,6 @@ export const AgentDetail = () => {
             </span>
           </dt>
           <dd>{agentEntity.name}</dd>
-          <dt>
-            <Translate contentKey="infraMirrorApp.agent.region">Region</Translate>
-          </dt>
-          <dd>{agentEntity.region ? agentEntity.region.id : ''}</dd>
         </dl>
         <Button tag={Link} to="/agent" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}

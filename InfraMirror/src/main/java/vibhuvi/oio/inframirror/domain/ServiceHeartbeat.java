@@ -11,7 +11,6 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "service_heartbeat")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "serviceheartbeat")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ServiceHeartbeat implements Serializable {
 
@@ -30,25 +29,20 @@ public class ServiceHeartbeat implements Serializable {
 
     @NotNull
     @Column(name = "success", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean success;
 
     @NotNull
     @Size(max = 20)
     @Column(name = "status", length = 20, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String status;
 
     @Column(name = "response_time_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer responseTimeMs;
 
     @Column(name = "error_message", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String errorMessage;
 
     @Column(name = "metadata", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String metadata;
 
     @ManyToOne(fetch = FetchType.LAZY)

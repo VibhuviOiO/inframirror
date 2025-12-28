@@ -53,14 +53,12 @@ class DatacenterResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private DatacenterRepository datacenterRepository;
 
     @Autowired
     private DatacenterMapper datacenterMapper;
-
-    @Autowired
+    
     private EntityManager em;
 
     @Autowired

@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.AgentLock;
 import vibhuvi.oio.inframirror.repository.AgentLockRepository;
-import vibhuvi.oio.inframirror.repository.search.AgentLockSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.AgentLockDTO;
 import vibhuvi.oio.inframirror.service.mapper.AgentLockMapper;
 
@@ -62,20 +61,16 @@ class AgentLockResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private AgentLockRepository agentLockRepository;
 
     @Autowired
     private AgentLockMapper agentLockMapper;
-
-    @Autowired
-    private AgentLockSearchRepository agentLockSearchRepository;
+    
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restAgentLockMockMvc;
 
     private AgentLock agentLock;
@@ -111,7 +106,6 @@ class AgentLockResourceIT {
     void cleanup() {
         if (insertedAgentLock != null) {
             agentLockRepository.delete(insertedAgentLock);
-            agentLockSearchRepository.delete(insertedAgentLock);
             insertedAgentLock = null;
         }
     }
@@ -120,7 +114,6 @@ class AgentLockResourceIT {
     @Transactional
     void createAgentLock() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
         // Create the AgentLock
         AgentLockDTO agentLockDTO = agentLockMapper.toDto(agentLock);
         var returnedAgentLockDTO = om.readValue(
@@ -138,16 +131,7 @@ class AgentLockResourceIT {
         // Validate the AgentLock in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedAgentLock = agentLockMapper.toEntity(returnedAgentLockDTO);
-        assertAgentLockUpdatableFieldsEquals(returnedAgentLock, getPersistedAgentLock(returnedAgentLock));
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
-        insertedAgentLock = returnedAgentLock;
+        assertAgentLockUpdatableFieldsEquals(returnedAgentLock, getPersistedAgentLock(returnedAgentLock));        insertedAgentLock = returnedAgentLock;
     }
 
     @Test
@@ -158,7 +142,6 @@ class AgentLockResourceIT {
         AgentLockDTO agentLockDTO = agentLockMapper.toDto(agentLock);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restAgentLockMockMvc
@@ -167,15 +150,12 @@ class AgentLockResourceIT {
 
         // Validate the AgentLock in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkAgentIdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
         // set the field null
         agentLock.setAgentId(null);
 
@@ -188,15 +168,12 @@ class AgentLockResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkAcquiredAtIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
         // set the field null
         agentLock.setAcquiredAt(null);
 
@@ -209,15 +186,12 @@ class AgentLockResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkExpiresAtIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
         // set the field null
         agentLock.setExpiresAt(null);
 
@@ -230,8 +204,6 @@ class AgentLockResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -282,8 +254,6 @@ class AgentLockResourceIT {
         insertedAgentLock = agentLockRepository.saveAndFlush(agentLock);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        agentLockSearchRepository.save(agentLock);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
 
         // Update the agentLock
         AgentLock updatedAgentLock = agentLockRepository.findById(agentLock.getId()).orElseThrow();
@@ -303,25 +273,12 @@ class AgentLockResourceIT {
 
         // Validate the AgentLock in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedAgentLockToMatchAllProperties(updatedAgentLock);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<AgentLock> agentLockSearchList = Streamable.of(agentLockSearchRepository.findAll()).toList();
-                AgentLock testAgentLockSearch = agentLockSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertAgentLockAllPropertiesEquals(testAgentLockSearch, updatedAgentLock);
-            });
-    }
+        assertPersistedAgentLockToMatchAllProperties(updatedAgentLock);    }
 
     @Test
     @Transactional
     void putNonExistingAgentLock() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
         agentLock.setId(longCount.incrementAndGet());
 
         // Create the AgentLock
@@ -339,15 +296,12 @@ class AgentLockResourceIT {
 
         // Validate the AgentLock in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchAgentLock() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
         agentLock.setId(longCount.incrementAndGet());
 
         // Create the AgentLock
@@ -365,15 +319,12 @@ class AgentLockResourceIT {
 
         // Validate the AgentLock in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamAgentLock() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
         agentLock.setId(longCount.incrementAndGet());
 
         // Create the AgentLock
@@ -386,8 +337,6 @@ class AgentLockResourceIT {
 
         // Validate the AgentLock in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -455,7 +404,6 @@ class AgentLockResourceIT {
     @Transactional
     void patchNonExistingAgentLock() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
         agentLock.setId(longCount.incrementAndGet());
 
         // Create the AgentLock
@@ -473,15 +421,12 @@ class AgentLockResourceIT {
 
         // Validate the AgentLock in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchAgentLock() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
         agentLock.setId(longCount.incrementAndGet());
 
         // Create the AgentLock
@@ -499,15 +444,12 @@ class AgentLockResourceIT {
 
         // Validate the AgentLock in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamAgentLock() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
         agentLock.setId(longCount.incrementAndGet());
 
         // Create the AgentLock
@@ -522,8 +464,6 @@ class AgentLockResourceIT {
 
         // Validate the AgentLock in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -532,11 +472,8 @@ class AgentLockResourceIT {
         // Initialize the database
         insertedAgentLock = agentLockRepository.saveAndFlush(agentLock);
         agentLockRepository.save(agentLock);
-        agentLockSearchRepository.save(agentLock);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the agentLock
         restAgentLockMockMvc
@@ -545,8 +482,6 @@ class AgentLockResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentLockSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -554,7 +489,6 @@ class AgentLockResourceIT {
     void searchAgentLock() throws Exception {
         // Initialize the database
         insertedAgentLock = agentLockRepository.saveAndFlush(agentLock);
-        agentLockSearchRepository.save(agentLock);
 
         // Search the agentLock
         restAgentLockMockMvc

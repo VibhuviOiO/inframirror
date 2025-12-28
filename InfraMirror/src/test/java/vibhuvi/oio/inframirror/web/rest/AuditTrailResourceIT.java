@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.AuditTrail;
 import vibhuvi.oio.inframirror.repository.AuditTrailRepository;
-import vibhuvi.oio.inframirror.repository.search.AuditTrailSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.AuditTrailDTO;
 import vibhuvi.oio.inframirror.service.mapper.AuditTrailMapper;
 
@@ -77,20 +76,16 @@ class AuditTrailResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private AuditTrailRepository auditTrailRepository;
 
     @Autowired
     private AuditTrailMapper auditTrailMapper;
-
-    @Autowired
-    private AuditTrailSearchRepository auditTrailSearchRepository;
+    
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restAuditTrailMockMvc;
 
     private AuditTrail auditTrail;
@@ -142,7 +137,6 @@ class AuditTrailResourceIT {
     void cleanup() {
         if (insertedAuditTrail != null) {
             auditTrailRepository.delete(insertedAuditTrail);
-            auditTrailSearchRepository.delete(insertedAuditTrail);
             insertedAuditTrail = null;
         }
     }
@@ -151,7 +145,6 @@ class AuditTrailResourceIT {
     @Transactional
     void createAuditTrail() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         // Create the AuditTrail
         AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
         var returnedAuditTrailDTO = om.readValue(
@@ -169,16 +162,7 @@ class AuditTrailResourceIT {
         // Validate the AuditTrail in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedAuditTrail = auditTrailMapper.toEntity(returnedAuditTrailDTO);
-        assertAuditTrailUpdatableFieldsEquals(returnedAuditTrail, getPersistedAuditTrail(returnedAuditTrail));
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
-        insertedAuditTrail = returnedAuditTrail;
+        assertAuditTrailUpdatableFieldsEquals(returnedAuditTrail, getPersistedAuditTrail(returnedAuditTrail));        insertedAuditTrail = returnedAuditTrail;
     }
 
     @Test
@@ -189,7 +173,6 @@ class AuditTrailResourceIT {
         AuditTrailDTO auditTrailDTO = auditTrailMapper.toDto(auditTrail);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restAuditTrailMockMvc
@@ -198,15 +181,12 @@ class AuditTrailResourceIT {
 
         // Validate the AuditTrail in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkActionIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         // set the field null
         auditTrail.setAction(null);
 
@@ -219,15 +199,12 @@ class AuditTrailResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkEntityNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         // set the field null
         auditTrail.setEntityName(null);
 
@@ -240,15 +217,12 @@ class AuditTrailResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkEntityIdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         // set the field null
         auditTrail.setEntityId(null);
 
@@ -261,15 +235,12 @@ class AuditTrailResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTimestampIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         // set the field null
         auditTrail.setTimestamp(null);
 
@@ -282,8 +253,6 @@ class AuditTrailResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -344,8 +313,6 @@ class AuditTrailResourceIT {
         insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        auditTrailSearchRepository.save(auditTrail);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
 
         // Update the auditTrail
         AuditTrail updatedAuditTrail = auditTrailRepository.findById(auditTrail.getId()).orElseThrow();
@@ -373,25 +340,12 @@ class AuditTrailResourceIT {
 
         // Validate the AuditTrail in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedAuditTrailToMatchAllProperties(updatedAuditTrail);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<AuditTrail> auditTrailSearchList = Streamable.of(auditTrailSearchRepository.findAll()).toList();
-                AuditTrail testAuditTrailSearch = auditTrailSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertAuditTrailAllPropertiesEquals(testAuditTrailSearch, updatedAuditTrail);
-            });
-    }
+        assertPersistedAuditTrailToMatchAllProperties(updatedAuditTrail);    }
 
     @Test
     @Transactional
     void putNonExistingAuditTrail() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         auditTrail.setId(longCount.incrementAndGet());
 
         // Create the AuditTrail
@@ -409,15 +363,12 @@ class AuditTrailResourceIT {
 
         // Validate the AuditTrail in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchAuditTrail() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         auditTrail.setId(longCount.incrementAndGet());
 
         // Create the AuditTrail
@@ -435,15 +386,12 @@ class AuditTrailResourceIT {
 
         // Validate the AuditTrail in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamAuditTrail() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         auditTrail.setId(longCount.incrementAndGet());
 
         // Create the AuditTrail
@@ -456,8 +404,6 @@ class AuditTrailResourceIT {
 
         // Validate the AuditTrail in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -538,7 +484,6 @@ class AuditTrailResourceIT {
     @Transactional
     void patchNonExistingAuditTrail() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         auditTrail.setId(longCount.incrementAndGet());
 
         // Create the AuditTrail
@@ -556,15 +501,12 @@ class AuditTrailResourceIT {
 
         // Validate the AuditTrail in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchAuditTrail() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         auditTrail.setId(longCount.incrementAndGet());
 
         // Create the AuditTrail
@@ -582,15 +524,12 @@ class AuditTrailResourceIT {
 
         // Validate the AuditTrail in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamAuditTrail() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
         auditTrail.setId(longCount.incrementAndGet());
 
         // Create the AuditTrail
@@ -605,8 +544,6 @@ class AuditTrailResourceIT {
 
         // Validate the AuditTrail in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -615,11 +552,8 @@ class AuditTrailResourceIT {
         // Initialize the database
         insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
         auditTrailRepository.save(auditTrail);
-        auditTrailSearchRepository.save(auditTrail);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the auditTrail
         restAuditTrailMockMvc
@@ -628,8 +562,6 @@ class AuditTrailResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(auditTrailSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -637,7 +569,6 @@ class AuditTrailResourceIT {
     void searchAuditTrail() throws Exception {
         // Initialize the database
         insertedAuditTrail = auditTrailRepository.saveAndFlush(auditTrail);
-        auditTrailSearchRepository.save(auditTrail);
 
         // Search the auditTrail
         restAuditTrailMockMvc

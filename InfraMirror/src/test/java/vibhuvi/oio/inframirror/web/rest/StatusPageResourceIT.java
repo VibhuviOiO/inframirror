@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.StatusPage;
 import vibhuvi.oio.inframirror.repository.StatusPageRepository;
-import vibhuvi.oio.inframirror.repository.search.StatusPageSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.StatusPageDTO;
 import vibhuvi.oio.inframirror.service.mapper.StatusPageMapper;
 
@@ -108,20 +107,16 @@ class StatusPageResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private StatusPageRepository statusPageRepository;
 
     @Autowired
     private StatusPageMapper statusPageMapper;
-
-    @Autowired
-    private StatusPageSearchRepository statusPageSearchRepository;
+    
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restStatusPageMockMvc;
 
     private StatusPage statusPage;
@@ -193,7 +188,6 @@ class StatusPageResourceIT {
     void cleanup() {
         if (insertedStatusPage != null) {
             statusPageRepository.delete(insertedStatusPage);
-            statusPageSearchRepository.delete(insertedStatusPage);
             insertedStatusPage = null;
         }
     }
@@ -202,7 +196,6 @@ class StatusPageResourceIT {
     @Transactional
     void createStatusPage() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         // Create the StatusPage
         StatusPageDTO statusPageDTO = statusPageMapper.toDto(statusPage);
         var returnedStatusPageDTO = om.readValue(
@@ -220,16 +213,7 @@ class StatusPageResourceIT {
         // Validate the StatusPage in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedStatusPage = statusPageMapper.toEntity(returnedStatusPageDTO);
-        assertStatusPageUpdatableFieldsEquals(returnedStatusPage, getPersistedStatusPage(returnedStatusPage));
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
-        insertedStatusPage = returnedStatusPage;
+        assertStatusPageUpdatableFieldsEquals(returnedStatusPage, getPersistedStatusPage(returnedStatusPage));        insertedStatusPage = returnedStatusPage;
     }
 
     @Test
@@ -240,7 +224,6 @@ class StatusPageResourceIT {
         StatusPageDTO statusPageDTO = statusPageMapper.toDto(statusPage);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restStatusPageMockMvc
@@ -249,15 +232,12 @@ class StatusPageResourceIT {
 
         // Validate the StatusPage in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         // set the field null
         statusPage.setName(null);
 
@@ -270,15 +250,12 @@ class StatusPageResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkSlugIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         // set the field null
         statusPage.setSlug(null);
 
@@ -291,15 +268,12 @@ class StatusPageResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkIsPublicIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         // set the field null
         statusPage.setIsPublic(null);
 
@@ -312,15 +286,12 @@ class StatusPageResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkCreatedAtIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         // set the field null
         statusPage.setCreatedAt(null);
 
@@ -333,15 +304,12 @@ class StatusPageResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkUpdatedAtIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         // set the field null
         statusPage.setUpdatedAt(null);
 
@@ -354,8 +322,6 @@ class StatusPageResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -1245,8 +1211,6 @@ class StatusPageResourceIT {
         insertedStatusPage = statusPageRepository.saveAndFlush(statusPage);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        statusPageSearchRepository.save(statusPage);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
 
         // Update the statusPage
         StatusPage updatedStatusPage = statusPageRepository.findById(statusPage.getId()).orElseThrow();
@@ -1284,25 +1248,12 @@ class StatusPageResourceIT {
 
         // Validate the StatusPage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedStatusPageToMatchAllProperties(updatedStatusPage);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<StatusPage> statusPageSearchList = Streamable.of(statusPageSearchRepository.findAll()).toList();
-                StatusPage testStatusPageSearch = statusPageSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertStatusPageAllPropertiesEquals(testStatusPageSearch, updatedStatusPage);
-            });
-    }
+        assertPersistedStatusPageToMatchAllProperties(updatedStatusPage);    }
 
     @Test
     @Transactional
     void putNonExistingStatusPage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         statusPage.setId(longCount.incrementAndGet());
 
         // Create the StatusPage
@@ -1320,15 +1271,12 @@ class StatusPageResourceIT {
 
         // Validate the StatusPage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchStatusPage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         statusPage.setId(longCount.incrementAndGet());
 
         // Create the StatusPage
@@ -1346,15 +1294,12 @@ class StatusPageResourceIT {
 
         // Validate the StatusPage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamStatusPage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         statusPage.setId(longCount.incrementAndGet());
 
         // Create the StatusPage
@@ -1367,8 +1312,6 @@ class StatusPageResourceIT {
 
         // Validate the StatusPage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -1460,7 +1403,6 @@ class StatusPageResourceIT {
     @Transactional
     void patchNonExistingStatusPage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         statusPage.setId(longCount.incrementAndGet());
 
         // Create the StatusPage
@@ -1478,15 +1420,12 @@ class StatusPageResourceIT {
 
         // Validate the StatusPage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchStatusPage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         statusPage.setId(longCount.incrementAndGet());
 
         // Create the StatusPage
@@ -1504,15 +1443,12 @@ class StatusPageResourceIT {
 
         // Validate the StatusPage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamStatusPage() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
         statusPage.setId(longCount.incrementAndGet());
 
         // Create the StatusPage
@@ -1527,8 +1463,6 @@ class StatusPageResourceIT {
 
         // Validate the StatusPage in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -1537,11 +1471,8 @@ class StatusPageResourceIT {
         // Initialize the database
         insertedStatusPage = statusPageRepository.saveAndFlush(statusPage);
         statusPageRepository.save(statusPage);
-        statusPageSearchRepository.save(statusPage);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the statusPage
         restStatusPageMockMvc
@@ -1550,41 +1481,61 @@ class StatusPageResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
     @Transactional
     void searchStatusPage() throws Exception {
-        // Initialize the database
         insertedStatusPage = statusPageRepository.saveAndFlush(statusPage);
-        statusPageSearchRepository.save(statusPage);
+        em.flush();
+        em.clear();
 
-        // Search the statusPage
         restStatusPageMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + statusPage.getId()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(statusPage.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].slug").value(hasItem(DEFAULT_SLUG)))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].isPublic").value(hasItem(DEFAULT_IS_PUBLIC)))
-            .andExpect(jsonPath("$.[*].customDomain").value(hasItem(DEFAULT_CUSTOM_DOMAIN)))
-            .andExpect(jsonPath("$.[*].logoUrl").value(hasItem(DEFAULT_LOGO_URL)))
-            .andExpect(jsonPath("$.[*].themeColor").value(hasItem(DEFAULT_THEME_COLOR)))
-            .andExpect(jsonPath("$.[*].headerText").value(hasItem(DEFAULT_HEADER_TEXT)))
-            .andExpect(jsonPath("$.[*].footerText").value(hasItem(DEFAULT_FOOTER_TEXT)))
-            .andExpect(jsonPath("$.[*].showResponseTimes").value(hasItem(DEFAULT_SHOW_RESPONSE_TIMES)))
-            .andExpect(jsonPath("$.[*].showUptimePercentage").value(hasItem(DEFAULT_SHOW_UPTIME_PERCENTAGE)))
-            .andExpect(jsonPath("$.[*].autoRefreshSeconds").value(hasItem(DEFAULT_AUTO_REFRESH_SECONDS)))
-            .andExpect(jsonPath("$.[*].monitorSelection").value(hasItem(DEFAULT_MONITOR_SELECTION.toString())))
-            .andExpect(jsonPath("$.[*].isActive").value(hasItem(DEFAULT_IS_ACTIVE)))
-            .andExpect(jsonPath("$.[*].isHomePage").value(hasItem(DEFAULT_IS_HOME_PAGE)))
-            .andExpect(jsonPath("$.[*].allowedRoles").value(hasItem(DEFAULT_ALLOWED_ROLES.toString())))
-            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
-            .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(DEFAULT_UPDATED_AT.toString())));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchStatusPagePrefix() throws Exception {
+        insertedStatusPage = statusPageRepository.saveAndFlush(statusPage);
+        em.flush();
+        em.clear();
+
+        restStatusPageMockMvc
+            .perform(get("/api/status-pages/_search/prefix?query=" + DEFAULT_NAME.substring(0, 2)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(statusPage.getId().intValue())));
+    }
+
+    @Test
+    @Transactional
+    void searchStatusPageFuzzy() throws Exception {
+        insertedStatusPage = statusPageRepository.saveAndFlush(statusPage);
+        em.flush();
+        em.clear();
+
+        restStatusPageMockMvc
+            .perform(get("/api/status-pages/_search/fuzzy?query=" + DEFAULT_NAME))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    @Transactional
+    void searchStatusPageWithHighlight() throws Exception {
+        insertedStatusPage = statusPageRepository.saveAndFlush(statusPage);
+        em.flush();
+        em.clear();
+
+        restStatusPageMockMvc
+            .perform(get("/api/status-pages/_search/highlight?query=" + DEFAULT_NAME.substring(0, 3)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     protected long getRepositoryCount() {

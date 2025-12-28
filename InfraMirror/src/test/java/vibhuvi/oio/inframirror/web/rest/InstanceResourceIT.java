@@ -76,13 +76,13 @@ class InstanceResourceIT {
     private static final Boolean DEFAULT_PING_ENABLED = false;
     private static final Boolean UPDATED_PING_ENABLED = true;
 
-    private static final Integer DEFAULT_PING_INTERVAL = 1;
-    private static final Integer UPDATED_PING_INTERVAL = 2;
-    private static final Integer SMALLER_PING_INTERVAL = 1 - 1;
+    private static final Integer DEFAULT_PING_INTERVAL = 10;
+    private static final Integer UPDATED_PING_INTERVAL = 20;
+    private static final Integer SMALLER_PING_INTERVAL = 9;
 
-    private static final Integer DEFAULT_PING_TIMEOUT_MS = 1;
-    private static final Integer UPDATED_PING_TIMEOUT_MS = 2;
-    private static final Integer SMALLER_PING_TIMEOUT_MS = 1 - 1;
+    private static final Integer DEFAULT_PING_TIMEOUT_MS = 500;
+    private static final Integer UPDATED_PING_TIMEOUT_MS = 600;
+    private static final Integer SMALLER_PING_TIMEOUT_MS = 499;
 
     private static final Integer DEFAULT_PING_RETRY_COUNT = 1;
     private static final Integer UPDATED_PING_RETRY_COUNT = 2;
@@ -91,9 +91,9 @@ class InstanceResourceIT {
     private static final Boolean DEFAULT_HARDWARE_MONITORING_ENABLED = false;
     private static final Boolean UPDATED_HARDWARE_MONITORING_ENABLED = true;
 
-    private static final Integer DEFAULT_HARDWARE_MONITORING_INTERVAL = 1;
-    private static final Integer UPDATED_HARDWARE_MONITORING_INTERVAL = 2;
-    private static final Integer SMALLER_HARDWARE_MONITORING_INTERVAL = 1 - 1;
+    private static final Integer DEFAULT_HARDWARE_MONITORING_INTERVAL = 60;
+    private static final Integer UPDATED_HARDWARE_MONITORING_INTERVAL = 120;
+    private static final Integer SMALLER_HARDWARE_MONITORING_INTERVAL = 59;
 
     private static final Integer DEFAULT_CPU_WARNING_THRESHOLD = 1;
     private static final Integer UPDATED_CPU_WARNING_THRESHOLD = 2;
@@ -140,14 +140,12 @@ class InstanceResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private InstanceRepository instanceRepository;
 
     @Autowired
     private InstanceMapper instanceMapper;
-
-    @Autowired
+    
     private EntityManager em;
 
     @Autowired
@@ -612,9 +610,9 @@ class InstanceResourceIT {
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].hostname").value(hasItem(DEFAULT_HOSTNAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].instanceType").value(hasItem(DEFAULT_INSTANCE_TYPE)))
-            .andExpect(jsonPath("$.[*].monitoringType").value(hasItem(DEFAULT_MONITORING_TYPE)))
-            .andExpect(jsonPath("$.[*].operatingSystem").value(hasItem(DEFAULT_OPERATING_SYSTEM)))
+            .andExpect(jsonPath("$.[*].instanceType").value(hasItem(DEFAULT_INSTANCE_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].monitoringType").value(hasItem(DEFAULT_MONITORING_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].operatingSystem").value(hasItem(DEFAULT_OPERATING_SYSTEM.toString())))
             .andExpect(jsonPath("$.[*].platform").value(hasItem(DEFAULT_PLATFORM)))
             .andExpect(jsonPath("$.[*].privateIpAddress").value(hasItem(DEFAULT_PRIVATE_IP_ADDRESS)))
             .andExpect(jsonPath("$.[*].publicIpAddress").value(hasItem(DEFAULT_PUBLIC_IP_ADDRESS)))
@@ -652,9 +650,9 @@ class InstanceResourceIT {
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.hostname").value(DEFAULT_HOSTNAME))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
-            .andExpect(jsonPath("$.instanceType").value(DEFAULT_INSTANCE_TYPE))
-            .andExpect(jsonPath("$.monitoringType").value(DEFAULT_MONITORING_TYPE))
-            .andExpect(jsonPath("$.operatingSystem").value(DEFAULT_OPERATING_SYSTEM))
+            .andExpect(jsonPath("$.instanceType").value(DEFAULT_INSTANCE_TYPE.toString()))
+            .andExpect(jsonPath("$.monitoringType").value(DEFAULT_MONITORING_TYPE.toString()))
+            .andExpect(jsonPath("$.operatingSystem").value(DEFAULT_OPERATING_SYSTEM.toString()))
             .andExpect(jsonPath("$.platform").value(DEFAULT_PLATFORM))
             .andExpect(jsonPath("$.privateIpAddress").value(DEFAULT_PRIVATE_IP_ADDRESS))
             .andExpect(jsonPath("$.publicIpAddress").value(DEFAULT_PUBLIC_IP_ADDRESS))
@@ -884,8 +882,8 @@ class InstanceResourceIT {
         // Initialize the database
         insertedInstance = instanceRepository.saveAndFlush(instance);
 
-        // Get all the instanceList where instanceType contains
-        defaultInstanceFiltering("instanceType.contains=" + DEFAULT_INSTANCE_TYPE, "instanceType.contains=" + UPDATED_INSTANCE_TYPE);
+        // Enum fields don't support contains operation, use equals instead
+        defaultInstanceFiltering("instanceType.equals=" + DEFAULT_INSTANCE_TYPE, "instanceType.equals=" + UPDATED_INSTANCE_TYPE);
     }
 
     @Test
@@ -894,10 +892,10 @@ class InstanceResourceIT {
         // Initialize the database
         insertedInstance = instanceRepository.saveAndFlush(instance);
 
-        // Get all the instanceList where instanceType does not contain
+        // Enum fields don't support doesNotContain operation, use notEquals instead
         defaultInstanceFiltering(
-            "instanceType.doesNotContain=" + UPDATED_INSTANCE_TYPE,
-            "instanceType.doesNotContain=" + DEFAULT_INSTANCE_TYPE
+            "instanceType.notEquals=" + UPDATED_INSTANCE_TYPE,
+            "instanceType.notEquals=" + DEFAULT_INSTANCE_TYPE
         );
     }
 
@@ -940,10 +938,10 @@ class InstanceResourceIT {
         // Initialize the database
         insertedInstance = instanceRepository.saveAndFlush(instance);
 
-        // Get all the instanceList where monitoringType contains
+        // Enum fields don't support contains operation, use equals instead
         defaultInstanceFiltering(
-            "monitoringType.contains=" + DEFAULT_MONITORING_TYPE,
-            "monitoringType.contains=" + UPDATED_MONITORING_TYPE
+            "monitoringType.equals=" + DEFAULT_MONITORING_TYPE,
+            "monitoringType.equals=" + UPDATED_MONITORING_TYPE
         );
     }
 
@@ -953,10 +951,10 @@ class InstanceResourceIT {
         // Initialize the database
         insertedInstance = instanceRepository.saveAndFlush(instance);
 
-        // Get all the instanceList where monitoringType does not contain
+        // Enum fields don't support doesNotContain operation, use notEquals instead
         defaultInstanceFiltering(
-            "monitoringType.doesNotContain=" + UPDATED_MONITORING_TYPE,
-            "monitoringType.doesNotContain=" + DEFAULT_MONITORING_TYPE
+            "monitoringType.notEquals=" + UPDATED_MONITORING_TYPE,
+            "monitoringType.notEquals=" + DEFAULT_MONITORING_TYPE
         );
     }
 
@@ -1002,10 +1000,10 @@ class InstanceResourceIT {
         // Initialize the database
         insertedInstance = instanceRepository.saveAndFlush(instance);
 
-        // Get all the instanceList where operatingSystem contains
+        // Enum fields don't support contains operation, use equals instead
         defaultInstanceFiltering(
-            "operatingSystem.contains=" + DEFAULT_OPERATING_SYSTEM,
-            "operatingSystem.contains=" + UPDATED_OPERATING_SYSTEM
+            "operatingSystem.equals=" + DEFAULT_OPERATING_SYSTEM,
+            "operatingSystem.equals=" + UPDATED_OPERATING_SYSTEM
         );
     }
 
@@ -1015,10 +1013,10 @@ class InstanceResourceIT {
         // Initialize the database
         insertedInstance = instanceRepository.saveAndFlush(instance);
 
-        // Get all the instanceList where operatingSystem does not contain
+        // Enum fields don't support doesNotContain operation, use notEquals instead
         defaultInstanceFiltering(
-            "operatingSystem.doesNotContain=" + UPDATED_OPERATING_SYSTEM,
-            "operatingSystem.doesNotContain=" + DEFAULT_OPERATING_SYSTEM
+            "operatingSystem.notEquals=" + UPDATED_OPERATING_SYSTEM,
+            "operatingSystem.notEquals=" + DEFAULT_OPERATING_SYSTEM
         );
     }
 
@@ -2317,9 +2315,9 @@ class InstanceResourceIT {
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].hostname").value(hasItem(DEFAULT_HOSTNAME)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].instanceType").value(hasItem(DEFAULT_INSTANCE_TYPE)))
-            .andExpect(jsonPath("$.[*].monitoringType").value(hasItem(DEFAULT_MONITORING_TYPE)))
-            .andExpect(jsonPath("$.[*].operatingSystem").value(hasItem(DEFAULT_OPERATING_SYSTEM)))
+            .andExpect(jsonPath("$.[*].instanceType").value(hasItem(DEFAULT_INSTANCE_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].monitoringType").value(hasItem(DEFAULT_MONITORING_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].operatingSystem").value(hasItem(DEFAULT_OPERATING_SYSTEM.toString())))
             .andExpect(jsonPath("$.[*].platform").value(hasItem(DEFAULT_PLATFORM)))
             .andExpect(jsonPath("$.[*].privateIpAddress").value(hasItem(DEFAULT_PRIVATE_IP_ADDRESS)))
             .andExpect(jsonPath("$.[*].publicIpAddress").value(hasItem(DEFAULT_PUBLIC_IP_ADDRESS)))

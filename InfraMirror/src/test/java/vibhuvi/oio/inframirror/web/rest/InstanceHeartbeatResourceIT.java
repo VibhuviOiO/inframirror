@@ -33,7 +33,6 @@ import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.Instance;
 import vibhuvi.oio.inframirror.domain.InstanceHeartbeat;
 import vibhuvi.oio.inframirror.repository.InstanceHeartbeatRepository;
-import vibhuvi.oio.inframirror.repository.search.InstanceHeartbeatSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.InstanceHeartbeatDTO;
 import vibhuvi.oio.inframirror.service.mapper.InstanceHeartbeatMapper;
 
@@ -108,20 +107,16 @@ class InstanceHeartbeatResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private InstanceHeartbeatRepository instanceHeartbeatRepository;
 
     @Autowired
     private InstanceHeartbeatMapper instanceHeartbeatMapper;
-
-    @Autowired
-    private InstanceHeartbeatSearchRepository instanceHeartbeatSearchRepository;
+    
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restInstanceHeartbeatMockMvc;
 
     private InstanceHeartbeat instanceHeartbeat;
@@ -215,7 +210,6 @@ class InstanceHeartbeatResourceIT {
     void cleanup() {
         if (insertedInstanceHeartbeat != null) {
             instanceHeartbeatRepository.delete(insertedInstanceHeartbeat);
-            instanceHeartbeatSearchRepository.delete(insertedInstanceHeartbeat);
             insertedInstanceHeartbeat = null;
         }
     }
@@ -224,7 +218,6 @@ class InstanceHeartbeatResourceIT {
     @Transactional
     void createInstanceHeartbeat() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         // Create the InstanceHeartbeat
         InstanceHeartbeatDTO instanceHeartbeatDTO = instanceHeartbeatMapper.toDto(instanceHeartbeat);
         var returnedInstanceHeartbeatDTO = om.readValue(
@@ -245,16 +238,7 @@ class InstanceHeartbeatResourceIT {
         // Validate the InstanceHeartbeat in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedInstanceHeartbeat = instanceHeartbeatMapper.toEntity(returnedInstanceHeartbeatDTO);
-        assertInstanceHeartbeatUpdatableFieldsEquals(returnedInstanceHeartbeat, getPersistedInstanceHeartbeat(returnedInstanceHeartbeat));
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
-        insertedInstanceHeartbeat = returnedInstanceHeartbeat;
+        assertInstanceHeartbeatUpdatableFieldsEquals(returnedInstanceHeartbeat, getPersistedInstanceHeartbeat(returnedInstanceHeartbeat));        insertedInstanceHeartbeat = returnedInstanceHeartbeat;
     }
 
     @Test
@@ -265,7 +249,6 @@ class InstanceHeartbeatResourceIT {
         InstanceHeartbeatDTO instanceHeartbeatDTO = instanceHeartbeatMapper.toDto(instanceHeartbeat);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restInstanceHeartbeatMockMvc
@@ -279,15 +262,12 @@ class InstanceHeartbeatResourceIT {
 
         // Validate the InstanceHeartbeat in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkExecutedAtIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         // set the field null
         instanceHeartbeat.setExecutedAt(null);
 
@@ -305,15 +285,12 @@ class InstanceHeartbeatResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkHeartbeatTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         // set the field null
         instanceHeartbeat.setHeartbeatType(null);
 
@@ -331,15 +308,12 @@ class InstanceHeartbeatResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkSuccessIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         // set the field null
         instanceHeartbeat.setSuccess(null);
 
@@ -357,15 +331,12 @@ class InstanceHeartbeatResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkStatusIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         // set the field null
         instanceHeartbeat.setStatus(null);
 
@@ -383,8 +354,6 @@ class InstanceHeartbeatResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -465,8 +434,6 @@ class InstanceHeartbeatResourceIT {
         insertedInstanceHeartbeat = instanceHeartbeatRepository.saveAndFlush(instanceHeartbeat);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        instanceHeartbeatSearchRepository.save(instanceHeartbeat);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
 
         // Update the instanceHeartbeat
         InstanceHeartbeat updatedInstanceHeartbeat = instanceHeartbeatRepository.findById(instanceHeartbeat.getId()).orElseThrow();
@@ -504,25 +471,12 @@ class InstanceHeartbeatResourceIT {
 
         // Validate the InstanceHeartbeat in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedInstanceHeartbeatToMatchAllProperties(updatedInstanceHeartbeat);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<InstanceHeartbeat> instanceHeartbeatSearchList = Streamable.of(instanceHeartbeatSearchRepository.findAll()).toList();
-                InstanceHeartbeat testInstanceHeartbeatSearch = instanceHeartbeatSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertInstanceHeartbeatAllPropertiesEquals(testInstanceHeartbeatSearch, updatedInstanceHeartbeat);
-            });
-    }
+        assertPersistedInstanceHeartbeatToMatchAllProperties(updatedInstanceHeartbeat);    }
 
     @Test
     @Transactional
     void putNonExistingInstanceHeartbeat() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         instanceHeartbeat.setId(longCount.incrementAndGet());
 
         // Create the InstanceHeartbeat
@@ -540,15 +494,12 @@ class InstanceHeartbeatResourceIT {
 
         // Validate the InstanceHeartbeat in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchInstanceHeartbeat() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         instanceHeartbeat.setId(longCount.incrementAndGet());
 
         // Create the InstanceHeartbeat
@@ -566,15 +517,12 @@ class InstanceHeartbeatResourceIT {
 
         // Validate the InstanceHeartbeat in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamInstanceHeartbeat() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         instanceHeartbeat.setId(longCount.incrementAndGet());
 
         // Create the InstanceHeartbeat
@@ -589,8 +537,6 @@ class InstanceHeartbeatResourceIT {
 
         // Validate the InstanceHeartbeat in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -688,7 +634,6 @@ class InstanceHeartbeatResourceIT {
     @Transactional
     void patchNonExistingInstanceHeartbeat() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         instanceHeartbeat.setId(longCount.incrementAndGet());
 
         // Create the InstanceHeartbeat
@@ -706,15 +651,12 @@ class InstanceHeartbeatResourceIT {
 
         // Validate the InstanceHeartbeat in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchInstanceHeartbeat() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         instanceHeartbeat.setId(longCount.incrementAndGet());
 
         // Create the InstanceHeartbeat
@@ -732,15 +674,12 @@ class InstanceHeartbeatResourceIT {
 
         // Validate the InstanceHeartbeat in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamInstanceHeartbeat() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
         instanceHeartbeat.setId(longCount.incrementAndGet());
 
         // Create the InstanceHeartbeat
@@ -758,8 +697,6 @@ class InstanceHeartbeatResourceIT {
 
         // Validate the InstanceHeartbeat in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -768,11 +705,8 @@ class InstanceHeartbeatResourceIT {
         // Initialize the database
         insertedInstanceHeartbeat = instanceHeartbeatRepository.saveAndFlush(instanceHeartbeat);
         instanceHeartbeatRepository.save(instanceHeartbeat);
-        instanceHeartbeatSearchRepository.save(instanceHeartbeat);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the instanceHeartbeat
         restInstanceHeartbeatMockMvc
@@ -781,8 +715,6 @@ class InstanceHeartbeatResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(instanceHeartbeatSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -790,7 +722,6 @@ class InstanceHeartbeatResourceIT {
     void searchInstanceHeartbeat() throws Exception {
         // Initialize the database
         insertedInstanceHeartbeat = instanceHeartbeatRepository.saveAndFlush(instanceHeartbeat);
-        instanceHeartbeatSearchRepository.save(instanceHeartbeat);
 
         // Search the instanceHeartbeat
         restInstanceHeartbeatMockMvc

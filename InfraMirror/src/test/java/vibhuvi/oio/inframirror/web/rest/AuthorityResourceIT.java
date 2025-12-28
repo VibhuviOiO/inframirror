@@ -36,14 +36,12 @@ class AuthorityResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private AuthorityRepository authorityRepository;
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restAuthorityMockMvc;
 
     private Authority authority;

@@ -73,21 +73,21 @@ const sidebarMenu: SidebarMenu[] = [
     ],
   },
   {
-    title: 'Monitoring',
-    icon: FaChartBar,
-    items: [
-      { name: 'HTTP Heartbeat', icon: FaHeartbeat, route: '/http-heartbeat' },
-      { name: 'Service Heartbeat', icon: FaHeartbeat, route: '/service-heartbeat' },
-      { name: 'Instance Heartbeat', icon: FaHeartbeat, route: '/instance-heartbeat' },
-    ],
-  },
-  {
     title: 'Status Page',
     icon: FaClipboardList,
     items: [
       { name: 'Status Page', icon: FaSitemap, route: '/status-page' },
       { name: 'Status Page Items', icon: FaList, route: '/status-page-item' },
       { name: 'Status Page Dependencies', icon: FaSitemap, route: '/status-dependency' },
+    ],
+  },
+  {
+    title: 'Monitoring',
+    icon: FaChartBar,
+    items: [
+      { name: 'HTTP Heartbeat', icon: FaHeartbeat, route: '/http-heartbeat' },
+      { name: 'Service Heartbeat', icon: FaHeartbeat, route: '/service-heartbeat' },
+      { name: 'Instance Heartbeat', icon: FaHeartbeat, route: '/instance-heartbeat' },
     ],
   },
   {

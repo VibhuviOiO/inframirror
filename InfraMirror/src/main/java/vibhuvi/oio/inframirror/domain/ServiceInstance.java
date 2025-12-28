@@ -13,7 +13,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "service_instance")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "serviceinstance")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ServiceInstance implements Serializable {
 
@@ -28,11 +27,9 @@ public class ServiceInstance implements Serializable {
 
     @NotNull
     @Column(name = "port", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer port;
 
     @Column(name = "is_active")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isActive;
 
     @Column(name = "created_at")

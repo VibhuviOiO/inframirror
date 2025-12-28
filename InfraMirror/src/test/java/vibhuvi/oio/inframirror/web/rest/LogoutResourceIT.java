@@ -33,14 +33,12 @@ class LogoutResourceIT {
 
     @Autowired
     private ClientRegistrationRepository registrations;
-
-    @Autowired
+    
     private WebApplicationContext context;
 
     @Autowired
     private OAuth2AuthorizedClientService authorizedClientService;
-
-    @Autowired
+    
     private ClientRegistration clientRegistration;
 
     private MockMvc restLogoutMockMvc;

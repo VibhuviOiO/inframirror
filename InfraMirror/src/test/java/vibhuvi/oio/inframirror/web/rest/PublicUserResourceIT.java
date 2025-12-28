@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.User;
 import vibhuvi.oio.inframirror.repository.UserRepository;
-import vibhuvi.oio.inframirror.repository.search.UserSearchRepository;
 import vibhuvi.oio.inframirror.security.AuthoritiesConstants;
 
 /**
@@ -33,17 +32,9 @@ class PublicUserResourceIT {
     @Autowired
     private UserRepository userRepository;
 
-    /**
-     * This repository is mocked in the vibhuvi.oio.inframirror.repository.search test package.
-     *
-     * @see vibhuvi.oio.inframirror.repository.search.UserSearchRepositoryMockConfiguration
-     */
-    @Autowired
-    private UserSearchRepository mockUserSearchRepository;
-
     @Autowired
     private CacheManager cacheManager;
-
+    
     @Autowired
     private MockMvc restUserMockMvc;
 

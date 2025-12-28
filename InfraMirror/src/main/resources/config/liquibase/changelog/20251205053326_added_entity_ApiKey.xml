@@ -44,12 +44,48 @@
             <column name="last_modified_date" type="${datetimeType}">
                 <constraints nullable="true" />
             </column>
+            <column name="search_vector" type="tsvector">
+                <constraints nullable="true" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
         <dropDefaultValue tableName="api_key" columnName="last_used_date" columnDataType="${datetimeType}"/>
         <dropDefaultValue tableName="api_key" columnName="expires_at" columnDataType="${datetimeType}"/>
         <dropDefaultValue tableName="api_key" columnName="created_date" columnDataType="${datetimeType}"/>
         <dropDefaultValue tableName="api_key" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+    </changeSet>
+
+    <changeSet id="20251205053326-2" author="system">
+        <sql>
+            CREATE INDEX idx_api_key_search_vector
+            ON api_key USING GIN (search_vector);
+        </sql>
+    </changeSet>
+
+    <changeSet id="20251205053326-3" author="system">
+        <sql splitStatements="false"><![CDATA[
+            CREATE FUNCTION api_key_search_vector_update() RETURNS trigger AS $$
+            BEGIN
+              NEW.search_vector := to_tsvector('simple', unaccent(
+                coalesce(NEW.name, '') || ' ' ||
+                coalesce(NEW.description, '')
+              ));
+              RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER trg_api_key_search_vector
+            BEFORE INSERT OR UPDATE ON api_key
+            FOR EACH ROW
+            EXECUTE FUNCTION api_key_search_vector_update();
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="20251205053326-4" author="system">
+        <sql>
+            CREATE INDEX idx_api_key_name_trgm ON api_key USING GIN (name gin_trgm_ops);
+            CREATE INDEX idx_api_key_description_trgm ON api_key USING GIN (description gin_trgm_ops);
+        </sql>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

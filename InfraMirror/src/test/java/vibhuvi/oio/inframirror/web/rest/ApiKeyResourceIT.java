@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.ApiKey;
 import vibhuvi.oio.inframirror.repository.ApiKeyRepository;
-import vibhuvi.oio.inframirror.repository.search.ApiKeySearchRepository;
 import vibhuvi.oio.inframirror.service.dto.ApiKeyDTO;
 import vibhuvi.oio.inframirror.service.mapper.ApiKeyMapper;
 
@@ -83,20 +82,16 @@ class ApiKeyResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private ApiKeyRepository apiKeyRepository;
 
     @Autowired
     private ApiKeyMapper apiKeyMapper;
-
-    @Autowired
-    private ApiKeySearchRepository apiKeySearchRepository;
+    
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restApiKeyMockMvc;
 
     private ApiKey apiKey;
@@ -152,7 +147,6 @@ class ApiKeyResourceIT {
     void cleanup() {
         if (insertedApiKey != null) {
             apiKeyRepository.delete(insertedApiKey);
-            apiKeySearchRepository.delete(insertedApiKey);
             insertedApiKey = null;
         }
     }
@@ -161,7 +155,6 @@ class ApiKeyResourceIT {
     @Transactional
     void createApiKey() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         // Create the ApiKey
         ApiKeyDTO apiKeyDTO = apiKeyMapper.toDto(apiKey);
         var returnedApiKeyDTO = om.readValue(
@@ -177,16 +170,7 @@ class ApiKeyResourceIT {
         // Validate the ApiKey in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedApiKey = apiKeyMapper.toEntity(returnedApiKeyDTO);
-        assertApiKeyUpdatableFieldsEquals(returnedApiKey, getPersistedApiKey(returnedApiKey));
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
-        insertedApiKey = returnedApiKey;
+        assertApiKeyUpdatableFieldsEquals(returnedApiKey, getPersistedApiKey(returnedApiKey));        insertedApiKey = returnedApiKey;
     }
 
     @Test
@@ -197,7 +181,6 @@ class ApiKeyResourceIT {
         ApiKeyDTO apiKeyDTO = apiKeyMapper.toDto(apiKey);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restApiKeyMockMvc
@@ -206,15 +189,12 @@ class ApiKeyResourceIT {
 
         // Validate the ApiKey in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         // set the field null
         apiKey.setName(null);
 
@@ -227,15 +207,12 @@ class ApiKeyResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkKeyHashIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         // set the field null
         apiKey.setKeyHash(null);
 
@@ -248,15 +225,12 @@ class ApiKeyResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkActiveIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         // set the field null
         apiKey.setActive(null);
 
@@ -269,15 +243,12 @@ class ApiKeyResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkCreatedByIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         // set the field null
         apiKey.setCreatedBy(null);
 
@@ -290,8 +261,6 @@ class ApiKeyResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -356,8 +325,6 @@ class ApiKeyResourceIT {
         insertedApiKey = apiKeyRepository.saveAndFlush(apiKey);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        apiKeySearchRepository.save(apiKey);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
 
         // Update the apiKey
         ApiKey updatedApiKey = apiKeyRepository.findById(apiKey.getId()).orElseThrow();
@@ -387,25 +354,12 @@ class ApiKeyResourceIT {
 
         // Validate the ApiKey in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedApiKeyToMatchAllProperties(updatedApiKey);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<ApiKey> apiKeySearchList = Streamable.of(apiKeySearchRepository.findAll()).toList();
-                ApiKey testApiKeySearch = apiKeySearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertApiKeyAllPropertiesEquals(testApiKeySearch, updatedApiKey);
-            });
-    }
+        assertPersistedApiKeyToMatchAllProperties(updatedApiKey);    }
 
     @Test
     @Transactional
     void putNonExistingApiKey() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         apiKey.setId(longCount.incrementAndGet());
 
         // Create the ApiKey
@@ -423,15 +377,12 @@ class ApiKeyResourceIT {
 
         // Validate the ApiKey in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchApiKey() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         apiKey.setId(longCount.incrementAndGet());
 
         // Create the ApiKey
@@ -449,15 +400,12 @@ class ApiKeyResourceIT {
 
         // Validate the ApiKey in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamApiKey() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         apiKey.setId(longCount.incrementAndGet());
 
         // Create the ApiKey
@@ -470,8 +418,6 @@ class ApiKeyResourceIT {
 
         // Validate the ApiKey in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -553,7 +499,6 @@ class ApiKeyResourceIT {
     @Transactional
     void patchNonExistingApiKey() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         apiKey.setId(longCount.incrementAndGet());
 
         // Create the ApiKey
@@ -571,15 +516,12 @@ class ApiKeyResourceIT {
 
         // Validate the ApiKey in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchApiKey() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         apiKey.setId(longCount.incrementAndGet());
 
         // Create the ApiKey
@@ -597,15 +539,12 @@ class ApiKeyResourceIT {
 
         // Validate the ApiKey in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamApiKey() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
         apiKey.setId(longCount.incrementAndGet());
 
         // Create the ApiKey
@@ -620,8 +559,6 @@ class ApiKeyResourceIT {
 
         // Validate the ApiKey in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -630,11 +567,8 @@ class ApiKeyResourceIT {
         // Initialize the database
         insertedApiKey = apiKeyRepository.saveAndFlush(apiKey);
         apiKeyRepository.save(apiKey);
-        apiKeySearchRepository.save(apiKey);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the apiKey
         restApiKeyMockMvc
@@ -643,33 +577,61 @@ class ApiKeyResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(apiKeySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
     @Transactional
     void searchApiKey() throws Exception {
-        // Initialize the database
         insertedApiKey = apiKeyRepository.saveAndFlush(apiKey);
-        apiKeySearchRepository.save(apiKey);
+        em.flush();
+        em.clear();
 
-        // Search the apiKey
         restApiKeyMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + apiKey.getId()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(apiKey.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].keyHash").value(hasItem(DEFAULT_KEY_HASH)))
-            .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE)))
-            .andExpect(jsonPath("$.[*].lastUsedDate").value(hasItem(DEFAULT_LAST_USED_DATE.toString())))
-            .andExpect(jsonPath("$.[*].expiresAt").value(hasItem(DEFAULT_EXPIRES_AT.toString())))
-            .andExpect(jsonPath("$.[*].createdBy").value(hasItem(DEFAULT_CREATED_BY)))
-            .andExpect(jsonPath("$.[*].createdDate").value(hasItem(DEFAULT_CREATED_DATE.toString())))
-            .andExpect(jsonPath("$.[*].lastModifiedBy").value(hasItem(DEFAULT_LAST_MODIFIED_BY)))
-            .andExpect(jsonPath("$.[*].lastModifiedDate").value(hasItem(DEFAULT_LAST_MODIFIED_DATE.toString())));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchApiKeyPrefix() throws Exception {
+        insertedApiKey = apiKeyRepository.saveAndFlush(apiKey);
+        em.flush();
+        em.clear();
+
+        restApiKeyMockMvc
+            .perform(get("/api/api-keys/_search/prefix?query=" + DEFAULT_NAME.substring(0, 2)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(apiKey.getId().intValue())));
+    }
+
+    @Test
+    @Transactional
+    void searchApiKeyFuzzy() throws Exception {
+        insertedApiKey = apiKeyRepository.saveAndFlush(apiKey);
+        em.flush();
+        em.clear();
+
+        restApiKeyMockMvc
+            .perform(get("/api/api-keys/_search/fuzzy?query=" + DEFAULT_NAME))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    @Transactional
+    void searchApiKeyWithHighlight() throws Exception {
+        insertedApiKey = apiKeyRepository.saveAndFlush(apiKey);
+        em.flush();
+        em.clear();
+
+        restApiKeyMockMvc
+            .perform(get("/api/api-keys/_search/highlight?query=" + DEFAULT_NAME.substring(0, 3)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     protected long getRepositoryCount() {

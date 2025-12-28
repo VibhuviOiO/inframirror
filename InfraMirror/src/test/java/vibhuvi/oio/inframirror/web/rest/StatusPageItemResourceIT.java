@@ -33,7 +33,6 @@ import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.StatusPage;
 import vibhuvi.oio.inframirror.domain.StatusPageItem;
 import vibhuvi.oio.inframirror.repository.StatusPageItemRepository;
-import vibhuvi.oio.inframirror.repository.search.StatusPageItemSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.StatusPageItemDTO;
 import vibhuvi.oio.inframirror.service.mapper.StatusPageItemMapper;
 
@@ -66,20 +65,16 @@ class StatusPageItemResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private StatusPageItemRepository statusPageItemRepository;
 
     @Autowired
     private StatusPageItemMapper statusPageItemMapper;
-
-    @Autowired
-    private StatusPageItemSearchRepository statusPageItemSearchRepository;
+    
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restStatusPageItemMockMvc;
 
     private StatusPageItem statusPageItem;
@@ -145,7 +140,6 @@ class StatusPageItemResourceIT {
     void cleanup() {
         if (insertedStatusPageItem != null) {
             statusPageItemRepository.delete(insertedStatusPageItem);
-            statusPageItemSearchRepository.delete(insertedStatusPageItem);
             insertedStatusPageItem = null;
         }
     }
@@ -154,7 +148,6 @@ class StatusPageItemResourceIT {
     @Transactional
     void createStatusPageItem() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
         // Create the StatusPageItem
         StatusPageItemDTO statusPageItemDTO = statusPageItemMapper.toDto(statusPageItem);
         var returnedStatusPageItemDTO = om.readValue(
@@ -175,16 +168,7 @@ class StatusPageItemResourceIT {
         // Validate the StatusPageItem in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedStatusPageItem = statusPageItemMapper.toEntity(returnedStatusPageItemDTO);
-        assertStatusPageItemUpdatableFieldsEquals(returnedStatusPageItem, getPersistedStatusPageItem(returnedStatusPageItem));
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
-        insertedStatusPageItem = returnedStatusPageItem;
+        assertStatusPageItemUpdatableFieldsEquals(returnedStatusPageItem, getPersistedStatusPageItem(returnedStatusPageItem));        insertedStatusPageItem = returnedStatusPageItem;
     }
 
     @Test
@@ -195,7 +179,6 @@ class StatusPageItemResourceIT {
         StatusPageItemDTO statusPageItemDTO = statusPageItemMapper.toDto(statusPageItem);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restStatusPageItemMockMvc
@@ -206,15 +189,12 @@ class StatusPageItemResourceIT {
 
         // Validate the StatusPageItem in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkItemTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
         // set the field null
         statusPageItem.setItemType(null);
 
@@ -229,15 +209,12 @@ class StatusPageItemResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkItemIdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
         // set the field null
         statusPageItem.setItemId(null);
 
@@ -252,8 +229,6 @@ class StatusPageItemResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -306,8 +281,6 @@ class StatusPageItemResourceIT {
         insertedStatusPageItem = statusPageItemRepository.saveAndFlush(statusPageItem);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        statusPageItemSearchRepository.save(statusPageItem);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
 
         // Update the statusPageItem
         StatusPageItem updatedStatusPageItem = statusPageItemRepository.findById(statusPageItem.getId()).orElseThrow();
@@ -331,25 +304,12 @@ class StatusPageItemResourceIT {
 
         // Validate the StatusPageItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedStatusPageItemToMatchAllProperties(updatedStatusPageItem);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<StatusPageItem> statusPageItemSearchList = Streamable.of(statusPageItemSearchRepository.findAll()).toList();
-                StatusPageItem testStatusPageItemSearch = statusPageItemSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertStatusPageItemAllPropertiesEquals(testStatusPageItemSearch, updatedStatusPageItem);
-            });
-    }
+        assertPersistedStatusPageItemToMatchAllProperties(updatedStatusPageItem);    }
 
     @Test
     @Transactional
     void putNonExistingStatusPageItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
         statusPageItem.setId(longCount.incrementAndGet());
 
         // Create the StatusPageItem
@@ -367,15 +327,12 @@ class StatusPageItemResourceIT {
 
         // Validate the StatusPageItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchStatusPageItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
         statusPageItem.setId(longCount.incrementAndGet());
 
         // Create the StatusPageItem
@@ -393,15 +350,12 @@ class StatusPageItemResourceIT {
 
         // Validate the StatusPageItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamStatusPageItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
         statusPageItem.setId(longCount.incrementAndGet());
 
         // Create the StatusPageItem
@@ -416,8 +370,6 @@ class StatusPageItemResourceIT {
 
         // Validate the StatusPageItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -493,7 +445,6 @@ class StatusPageItemResourceIT {
     @Transactional
     void patchNonExistingStatusPageItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
         statusPageItem.setId(longCount.incrementAndGet());
 
         // Create the StatusPageItem
@@ -511,15 +462,12 @@ class StatusPageItemResourceIT {
 
         // Validate the StatusPageItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchStatusPageItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
         statusPageItem.setId(longCount.incrementAndGet());
 
         // Create the StatusPageItem
@@ -537,15 +485,12 @@ class StatusPageItemResourceIT {
 
         // Validate the StatusPageItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamStatusPageItem() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
         statusPageItem.setId(longCount.incrementAndGet());
 
         // Create the StatusPageItem
@@ -563,8 +508,6 @@ class StatusPageItemResourceIT {
 
         // Validate the StatusPageItem in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -573,11 +516,8 @@ class StatusPageItemResourceIT {
         // Initialize the database
         insertedStatusPageItem = statusPageItemRepository.saveAndFlush(statusPageItem);
         statusPageItemRepository.save(statusPageItem);
-        statusPageItemSearchRepository.save(statusPageItem);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the statusPageItem
         restStatusPageItemMockMvc
@@ -586,8 +526,6 @@ class StatusPageItemResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusPageItemSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -595,7 +533,6 @@ class StatusPageItemResourceIT {
     void searchStatusPageItem() throws Exception {
         // Initialize the database
         insertedStatusPageItem = statusPageItemRepository.saveAndFlush(statusPageItem);
-        statusPageItemSearchRepository.save(statusPageItem);
 
         // Search the statusPageItem
         restStatusPageItemMockMvc

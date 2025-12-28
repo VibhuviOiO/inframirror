@@ -62,10 +62,50 @@
             <column name="datacenter_id" type="bigint">
                 <constraints nullable="true" />
             </column>
+            <column name="search_vector" type="tsvector">
+                <constraints nullable="true" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
         <dropDefaultValue tableName="monitored_service" columnName="created_at" columnDataType="${datetimeType}"/>
         <dropDefaultValue tableName="monitored_service" columnName="updated_at" columnDataType="${datetimeType}"/>
+    </changeSet>
+
+    <changeSet id="20251205054618-2" author="system">
+        <sql>
+            CREATE INDEX idx_monitored_service_search_vector
+            ON monitored_service USING GIN (search_vector);
+        </sql>
+    </changeSet>
+
+    <changeSet id="20251205054618-3" author="system">
+        <sql splitStatements="false"><![CDATA[
+            CREATE FUNCTION monitored_service_search_vector_update() RETURNS trigger AS $$
+            BEGIN
+              NEW.search_vector := to_tsvector('simple', unaccent(
+                coalesce(NEW.name, '') || ' ' ||
+                coalesce(NEW.description, '') || ' ' ||
+                coalesce(NEW.service_type, '') || ' ' ||
+                coalesce(NEW.environment, '')
+              ));
+              RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER trg_monitored_service_search_vector
+            BEFORE INSERT OR UPDATE ON monitored_service
+            FOR EACH ROW
+            EXECUTE FUNCTION monitored_service_search_vector_update();
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="20251205054618-4" author="system">
+        <sql>
+            CREATE INDEX idx_monitored_service_name_trgm ON monitored_service USING GIN (name gin_trgm_ops);
+            CREATE INDEX idx_monitored_service_description_trgm ON monitored_service USING GIN (description gin_trgm_ops);
+            CREATE INDEX idx_monitored_service_service_type_trgm ON monitored_service USING GIN (service_type gin_trgm_ops);
+            CREATE INDEX idx_monitored_service_environment_trgm ON monitored_service USING GIN (environment gin_trgm_ops);
+        </sql>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

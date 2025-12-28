@@ -12,7 +12,6 @@ import tech.jhipster.service.QueryService;
 import vibhuvi.oio.inframirror.domain.*; // for static metamodels
 import vibhuvi.oio.inframirror.domain.StatusPage;
 import vibhuvi.oio.inframirror.repository.StatusPageRepository;
-import vibhuvi.oio.inframirror.repository.search.StatusPageSearchRepository;
 import vibhuvi.oio.inframirror.service.criteria.StatusPageCriteria;
 import vibhuvi.oio.inframirror.service.dto.StatusPageDTO;
 import vibhuvi.oio.inframirror.service.mapper.StatusPageMapper;
@@ -33,16 +32,12 @@ public class StatusPageQueryService extends QueryService<StatusPage> {
 
     private final StatusPageMapper statusPageMapper;
 
-    private final StatusPageSearchRepository statusPageSearchRepository;
-
     public StatusPageQueryService(
         StatusPageRepository statusPageRepository,
-        StatusPageMapper statusPageMapper,
-        StatusPageSearchRepository statusPageSearchRepository
+        StatusPageMapper statusPageMapper
     ) {
         this.statusPageRepository = statusPageRepository;
         this.statusPageMapper = statusPageMapper;
-        this.statusPageSearchRepository = statusPageSearchRepository;
     }
 
     /**

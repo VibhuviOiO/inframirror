@@ -31,8 +31,7 @@ class AccountResourceIT {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
+    
     private MockMvc restAccountMockMvc;
 
     @Autowired

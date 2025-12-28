@@ -10,7 +10,6 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "audit_trail")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "audittrail")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class AuditTrail implements Serializable {
 
@@ -26,13 +25,11 @@ public class AuditTrail implements Serializable {
     @NotNull
     @Size(max = 100)
     @Column(name = "action", length = 100, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String action;
 
     @NotNull
     @Size(max = 100)
     @Column(name = "entity_name", length = 100, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String entityName;
 
     @NotNull
@@ -40,11 +37,9 @@ public class AuditTrail implements Serializable {
     private Long entityId;
 
     @Column(name = "old_value", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String oldValue;
 
     @Column(name = "new_value", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String newValue;
 
     @NotNull
@@ -54,16 +49,13 @@ public class AuditTrail implements Serializable {
     @NotNull
     @Size(max = 50)
     @Column(name = "performed_by", length = 50, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String performedBy;
 
     @Size(max = 45)
     @Column(name = "ip_address", length = 45)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String ipAddress;
 
     @Column(name = "user_agent", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String userAgent;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

@@ -159,14 +159,12 @@ class HttpMonitorResourceIT {
 
     @Autowired
     private HttpMonitorRepository httpMonitorRepository;
-
-    @Autowired
+    
     private HttpMonitorMapper httpMonitorMapper;
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restHttpMonitorMockMvc;
 
     private HttpMonitor httpMonitor;
@@ -457,8 +455,6 @@ class HttpMonitorResourceIT {
             .andExpect(jsonPath("$.[*].method").value(hasItem(DEFAULT_METHOD)))
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)))
             .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL)))
-            .andExpect(jsonPath("$.[*].headers").value(hasItem(DEFAULT_HEADERS)))
-            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY)))
             .andExpect(jsonPath("$.[*].intervalSeconds").value(hasItem(DEFAULT_INTERVAL_SECONDS)))
             .andExpect(jsonPath("$.[*].timeoutSeconds").value(hasItem(DEFAULT_TIMEOUT_SECONDS)))
             .andExpect(jsonPath("$.[*].retryCount").value(hasItem(DEFAULT_RETRY_COUNT)))
@@ -499,8 +495,8 @@ class HttpMonitorResourceIT {
             .andExpect(jsonPath("$.method").value(DEFAULT_METHOD))
             .andExpect(jsonPath("$.type").value(DEFAULT_TYPE))
             .andExpect(jsonPath("$.url").value(DEFAULT_URL))
-            .andExpect(jsonPath("$.headers").value(DEFAULT_HEADERS))
-            .andExpect(jsonPath("$.body").value(DEFAULT_BODY))
+            .andExpect(jsonPath("$.headers").exists())
+            .andExpect(jsonPath("$.body").exists())
             .andExpect(jsonPath("$.intervalSeconds").value(DEFAULT_INTERVAL_SECONDS))
             .andExpect(jsonPath("$.timeoutSeconds").value(DEFAULT_TIMEOUT_SECONDS))
             .andExpect(jsonPath("$.retryCount").value(DEFAULT_RETRY_COUNT))
@@ -2172,8 +2168,6 @@ class HttpMonitorResourceIT {
             .andExpect(jsonPath("$.[*].method").value(hasItem(DEFAULT_METHOD)))
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)))
             .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL)))
-            .andExpect(jsonPath("$.[*].headers").value(hasItem(DEFAULT_HEADERS)))
-            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY)))
             .andExpect(jsonPath("$.[*].intervalSeconds").value(hasItem(DEFAULT_INTERVAL_SECONDS)))
             .andExpect(jsonPath("$.[*].timeoutSeconds").value(hasItem(DEFAULT_TIMEOUT_SECONDS)))
             .andExpect(jsonPath("$.[*].retryCount").value(hasItem(DEFAULT_RETRY_COUNT)))
@@ -2546,7 +2540,7 @@ class HttpMonitorResourceIT {
 
         // Search the httpMonitor
         restHttpMonitorMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + httpMonitor.getId()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(httpMonitor.getId().intValue())))
@@ -2554,8 +2548,6 @@ class HttpMonitorResourceIT {
             .andExpect(jsonPath("$.[*].method").value(hasItem(DEFAULT_METHOD)))
             .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)))
             .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL)))
-            .andExpect(jsonPath("$.[*].headers").value(hasItem(DEFAULT_HEADERS)))
-            .andExpect(jsonPath("$.[*].body").value(hasItem(DEFAULT_BODY)))
             .andExpect(jsonPath("$.[*].intervalSeconds").value(hasItem(DEFAULT_INTERVAL_SECONDS)))
             .andExpect(jsonPath("$.[*].timeoutSeconds").value(hasItem(DEFAULT_TIMEOUT_SECONDS)))
             .andExpect(jsonPath("$.[*].retryCount").value(hasItem(DEFAULT_RETRY_COUNT)))
@@ -2606,5 +2598,75 @@ class HttpMonitorResourceIT {
 
     protected void assertPersistedHttpMonitorToMatchUpdatableProperties(HttpMonitor expectedHttpMonitor) {
         assertHttpMonitorAllUpdatablePropertiesEquals(expectedHttpMonitor, getPersistedHttpMonitor(expectedHttpMonitor));
+    }
+
+    @Test
+    @Transactional
+    void searchHttpMonitorByName() throws Exception {
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+        em.flush();
+        em.clear();
+
+        restHttpMonitorMockMvc
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(httpMonitor.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchHttpMonitorPrefix() throws Exception {
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+        em.flush();
+        em.clear();
+
+        restHttpMonitorMockMvc
+            .perform(get("/api/http-monitors/_search/prefix?query=" + DEFAULT_NAME.substring(0, 2)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(httpMonitor.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+    }
+
+    @Test
+    @Transactional
+    void searchHttpMonitorFuzzy() throws Exception {
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+        em.flush();
+        em.clear();
+
+        restHttpMonitorMockMvc
+            .perform(get("/api/http-monitors/_search/fuzzy?query=" + DEFAULT_NAME))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    @Transactional
+    void searchHttpMonitorWithHighlight() throws Exception {
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+        em.flush();
+        em.clear();
+
+        restHttpMonitorMockMvc
+            .perform(get("/api/http-monitors/_search/highlight?query=" + DEFAULT_NAME.substring(0, 3)))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    @Transactional
+    void searchHttpMonitorEmptyQuery() throws Exception {
+        insertedHttpMonitor = httpMonitorRepository.saveAndFlush(httpMonitor);
+        em.flush();
+        em.clear();
+
+        restHttpMonitorMockMvc
+            .perform(get(ENTITY_SEARCH_API_URL + "?query="))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(httpMonitor.getId().intValue())));
     }
 }

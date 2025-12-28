@@ -11,7 +11,6 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "http_heartbeat")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "httpheartbeat")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class HttpHeartbeat implements Serializable {
 
@@ -29,55 +28,43 @@ public class HttpHeartbeat implements Serializable {
     private Instant executedAt;
 
     @Column(name = "success")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean success;
 
     @Column(name = "response_time_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer responseTimeMs;
 
     @Column(name = "response_size_bytes")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer responseSizeBytes;
 
     @Column(name = "response_status_code")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer responseStatusCode;
 
     @Size(max = 50)
     @Column(name = "response_content_type", length = 50)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String responseContentType;
 
     @Size(max = 50)
     @Column(name = "response_server", length = 50)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String responseServer;
 
     @Size(max = 50)
     @Column(name = "response_cache_status", length = 50)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String responseCacheStatus;
 
     @Column(name = "dns_lookup_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer dnsLookupMs;
 
     @Size(max = 100)
     @Column(name = "dns_resolved_ip", length = 100)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String dnsResolvedIp;
 
     @Column(name = "tcp_connect_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer tcpConnectMs;
 
     @Column(name = "tls_handshake_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer tlsHandshakeMs;
 
     @Column(name = "ssl_certificate_valid")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean sslCertificateValid;
 
     @Column(name = "ssl_certificate_expiry")
@@ -85,62 +72,48 @@ public class HttpHeartbeat implements Serializable {
 
     @Size(max = 500)
     @Column(name = "ssl_certificate_issuer", length = 500)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String sslCertificateIssuer;
 
     @Column(name = "ssl_days_until_expiry")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer sslDaysUntilExpiry;
 
     @Column(name = "time_to_first_byte_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer timeToFirstByteMs;
 
     @Column(name = "warning_threshold_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer warningThresholdMs;
 
     @Column(name = "critical_threshold_ms")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer criticalThresholdMs;
 
     @Size(max = 50)
     @Column(name = "error_type", length = 50)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String errorType;
 
     @Column(name = "error_message", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String errorMessage;
 
     @Column(name = "raw_request_headers", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String rawRequestHeaders;
 
     @Column(name = "raw_response_headers", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String rawResponseHeaders;
 
     @Column(name = "raw_response_body", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String rawResponseBody;
 
     @Column(name = "dns_details", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String dnsDetails;
 
     @Column(name = "tls_details", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String tlsDetails;
 
     @Size(max = 10)
     @Column(name = "http_version", length = 10)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String httpVersion;
 
     @Size(max = 20)
     @Column(name = "content_encoding", length = 20)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String contentEncoding;
 
     @Column(name = "compression_ratio")
@@ -148,68 +121,53 @@ public class HttpHeartbeat implements Serializable {
 
     @Size(max = 20)
     @Column(name = "transfer_encoding", length = 20)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String transferEncoding;
 
     @Size(max = 64)
     @Column(name = "response_body_hash", length = 64)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String responseBodyHash;
 
     @Column(name = "response_body_sample", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String responseBodySample;
 
     @Column(name = "response_body_valid")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean responseBodyValid;
 
     @Column(name = "response_body_uncompressed_bytes")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer responseBodyUncompressedBytes;
 
     @Column(name = "redirect_details", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String redirectDetails;
 
     @Size(max = 255)
     @Column(name = "cache_control", length = 255)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String cacheControl;
 
     @Size(max = 255)
     @Column(name = "etag", length = 255)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String etag;
 
     @Column(name = "cache_age")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer cacheAge;
 
     @Size(max = 50)
     @Column(name = "cdn_provider", length = 50)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String cdnProvider;
 
     @Size(max = 10)
     @Column(name = "cdn_pop", length = 10)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String cdnPop;
 
     @Column(name = "rate_limit_details", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String rateLimitDetails;
 
     @Column(name = "network_path", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String networkPath;
 
     @Column(name = "agent_metrics", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String agentMetrics;
 
     @Column(name = "phase_latencies", columnDefinition = "TEXT")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String phaseLatencies;
 
     @ManyToOne(fetch = FetchType.LAZY)

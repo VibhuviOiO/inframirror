@@ -22,8 +22,8 @@ import tech.jhipster.web.util.ResponseUtil;
 import vibhuvi.oio.inframirror.repository.ApiKeyRepository;
 import vibhuvi.oio.inframirror.service.ApiKeyService;
 import vibhuvi.oio.inframirror.service.dto.ApiKeyDTO;
+import vibhuvi.oio.inframirror.service.dto.ApiKeySearchResultDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.ApiKey}.
@@ -205,12 +205,38 @@ public class ApiKeyResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of ApiKeys for query {}", query);
-        try {
-            Page<ApiKeyDTO> page = apiKeyService.search(query, pageable);
-            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-            return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
+        Page<ApiKeyDTO> page = apiKeyService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    @GetMapping("/_search/prefix")
+    public ResponseEntity<List<ApiKeyDTO>> searchApiKeysPrefix(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<ApiKeyDTO> page = apiKeyService.searchPrefix(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    @GetMapping("/_search/fuzzy")
+    public ResponseEntity<List<ApiKeyDTO>> searchApiKeysFuzzy(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<ApiKeyDTO> page = apiKeyService.searchFuzzy(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    @GetMapping("/_search/highlight")
+    public ResponseEntity<List<ApiKeySearchResultDTO>> searchApiKeysWithHighlight(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<ApiKeySearchResultDTO> page = apiKeyService.searchWithHighlight(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

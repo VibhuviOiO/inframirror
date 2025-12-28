@@ -1,7 +1,6 @@
 package vibhuvi.oio.inframirror.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -16,15 +15,12 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.assertj.core.util.IterableUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.util.Streamable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,7 +30,6 @@ import vibhuvi.oio.inframirror.domain.Instance;
 import vibhuvi.oio.inframirror.domain.MonitoredService;
 import vibhuvi.oio.inframirror.domain.ServiceInstance;
 import vibhuvi.oio.inframirror.repository.ServiceInstanceRepository;
-import vibhuvi.oio.inframirror.repository.search.ServiceInstanceSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO;
 import vibhuvi.oio.inframirror.service.mapper.ServiceInstanceMapper;
 
@@ -67,17 +62,12 @@ class ServiceInstanceResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private ServiceInstanceRepository serviceInstanceRepository;
 
     @Autowired
     private ServiceInstanceMapper serviceInstanceMapper;
-
-    @Autowired
-    private ServiceInstanceSearchRepository serviceInstanceSearchRepository;
-
-    @Autowired
+    
     private EntityManager em;
 
     @Autowired
@@ -166,7 +156,6 @@ class ServiceInstanceResourceIT {
     void cleanup() {
         if (insertedServiceInstance != null) {
             serviceInstanceRepository.delete(insertedServiceInstance);
-            serviceInstanceSearchRepository.delete(insertedServiceInstance);
             insertedServiceInstance = null;
         }
     }
@@ -175,7 +164,6 @@ class ServiceInstanceResourceIT {
     @Transactional
     void createServiceInstance() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
         // Create the ServiceInstance
         ServiceInstanceDTO serviceInstanceDTO = serviceInstanceMapper.toDto(serviceInstance);
         var returnedServiceInstanceDTO = om.readValue(
@@ -198,13 +186,6 @@ class ServiceInstanceResourceIT {
         var returnedServiceInstance = serviceInstanceMapper.toEntity(returnedServiceInstanceDTO);
         assertServiceInstanceUpdatableFieldsEquals(returnedServiceInstance, getPersistedServiceInstance(returnedServiceInstance));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedServiceInstance = returnedServiceInstance;
     }
 
@@ -216,7 +197,6 @@ class ServiceInstanceResourceIT {
         ServiceInstanceDTO serviceInstanceDTO = serviceInstanceMapper.toDto(serviceInstance);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restServiceInstanceMockMvc
@@ -227,15 +207,12 @@ class ServiceInstanceResourceIT {
 
         // Validate the ServiceInstance in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkPortIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
         // set the field null
         serviceInstance.setPort(null);
 
@@ -249,9 +226,6 @@ class ServiceInstanceResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -304,8 +278,6 @@ class ServiceInstanceResourceIT {
         insertedServiceInstance = serviceInstanceRepository.saveAndFlush(serviceInstance);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        serviceInstanceSearchRepository.save(serviceInstance);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
 
         // Update the serviceInstance
         ServiceInstance updatedServiceInstance = serviceInstanceRepository.findById(serviceInstance.getId()).orElseThrow();
@@ -326,24 +298,12 @@ class ServiceInstanceResourceIT {
         // Validate the ServiceInstance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedServiceInstanceToMatchAllProperties(updatedServiceInstance);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<ServiceInstance> serviceInstanceSearchList = Streamable.of(serviceInstanceSearchRepository.findAll()).toList();
-                ServiceInstance testServiceInstanceSearch = serviceInstanceSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertServiceInstanceAllPropertiesEquals(testServiceInstanceSearch, updatedServiceInstance);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingServiceInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
         serviceInstance.setId(longCount.incrementAndGet());
 
         // Create the ServiceInstance
@@ -361,15 +321,12 @@ class ServiceInstanceResourceIT {
 
         // Validate the ServiceInstance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchServiceInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
         serviceInstance.setId(longCount.incrementAndGet());
 
         // Create the ServiceInstance
@@ -387,15 +344,12 @@ class ServiceInstanceResourceIT {
 
         // Validate the ServiceInstance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamServiceInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
         serviceInstance.setId(longCount.incrementAndGet());
 
         // Create the ServiceInstance
@@ -410,8 +364,6 @@ class ServiceInstanceResourceIT {
 
         // Validate the ServiceInstance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -486,7 +438,6 @@ class ServiceInstanceResourceIT {
     @Transactional
     void patchNonExistingServiceInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
         serviceInstance.setId(longCount.incrementAndGet());
 
         // Create the ServiceInstance
@@ -504,15 +455,12 @@ class ServiceInstanceResourceIT {
 
         // Validate the ServiceInstance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchServiceInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
         serviceInstance.setId(longCount.incrementAndGet());
 
         // Create the ServiceInstance
@@ -530,15 +478,12 @@ class ServiceInstanceResourceIT {
 
         // Validate the ServiceInstance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamServiceInstance() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
         serviceInstance.setId(longCount.incrementAndGet());
 
         // Create the ServiceInstance
@@ -556,8 +501,6 @@ class ServiceInstanceResourceIT {
 
         // Validate the ServiceInstance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -566,11 +509,8 @@ class ServiceInstanceResourceIT {
         // Initialize the database
         insertedServiceInstance = serviceInstanceRepository.saveAndFlush(serviceInstance);
         serviceInstanceRepository.save(serviceInstance);
-        serviceInstanceSearchRepository.save(serviceInstance);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the serviceInstance
         restServiceInstanceMockMvc
@@ -579,8 +519,6 @@ class ServiceInstanceResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(serviceInstanceSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -588,18 +526,14 @@ class ServiceInstanceResourceIT {
     void searchServiceInstance() throws Exception {
         // Initialize the database
         insertedServiceInstance = serviceInstanceRepository.saveAndFlush(serviceInstance);
-        serviceInstanceSearchRepository.save(serviceInstance);
 
-        // Search the serviceInstance
+        // Search returns empty as ServiceInstance has no FTS implementation
         restServiceInstanceMockMvc
             .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + serviceInstance.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(serviceInstance.getId().intValue())))
-            .andExpect(jsonPath("$.[*].port").value(hasItem(DEFAULT_PORT)))
-            .andExpect(jsonPath("$.[*].isActive").value(hasItem(DEFAULT_IS_ACTIVE)))
-            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
-            .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(DEFAULT_UPDATED_AT.toString())));
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
     }
 
     protected long getRepositoryCount() {

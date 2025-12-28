@@ -10,7 +10,6 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "agent_lock")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "agentlock")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class AgentLock implements Serializable {
 

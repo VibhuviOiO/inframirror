@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vibhuvi.oio.inframirror.service.dto.AgentDTO;
+import vibhuvi.oio.inframirror.service.dto.AgentSearchResultDTO;
 
 /**
  * Service Interface for managing {@link vibhuvi.oio.inframirror.domain.Agent}.
@@ -52,11 +53,37 @@ public interface AgentService {
      * Search for the agent corresponding to the query.
      *
      * @param query the query of the search.
-     *
      * @param pageable the pagination information.
      * @return the list of entities.
      */
     Page<AgentDTO> search(String query, Pageable pageable);
+
+    /**
+     * Search with prefix matching.
+     *
+     * @param query the query of the search.
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    Page<AgentDTO> searchPrefix(String query, Pageable pageable);
+
+    /**
+     * Search with fuzzy matching.
+     *
+     * @param query the query of the search.
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    Page<AgentDTO> searchFuzzy(String query, Pageable pageable);
+
+    /**
+     * Search with highlighting.
+     *
+     * @param query the query of the search.
+     * @param pageable the pagination information.
+     * @return the list of entities with highlights.
+     */
+    Page<AgentSearchResultDTO> searchWithHighlight(String query, Pageable pageable);
 
     /**
      * Register a new agent with auto-creation of region and datacenter.

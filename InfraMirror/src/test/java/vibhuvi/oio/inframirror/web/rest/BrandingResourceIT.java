@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.Branding;
 import vibhuvi.oio.inframirror.repository.BrandingRepository;
-import vibhuvi.oio.inframirror.repository.search.BrandingSearchRepository;
 import vibhuvi.oio.inframirror.service.dto.BrandingDTO;
 import vibhuvi.oio.inframirror.service.mapper.BrandingMapper;
 
@@ -89,20 +88,16 @@ class BrandingResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private BrandingRepository brandingRepository;
 
     @Autowired
     private BrandingMapper brandingMapper;
-
-    @Autowired
-    private BrandingSearchRepository brandingSearchRepository;
+    
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restBrandingMockMvc;
 
     private Branding branding;
@@ -162,7 +157,6 @@ class BrandingResourceIT {
     void cleanup() {
         if (insertedBranding != null) {
             brandingRepository.delete(insertedBranding);
-            brandingSearchRepository.delete(insertedBranding);
             insertedBranding = null;
         }
     }
@@ -171,7 +165,6 @@ class BrandingResourceIT {
     @Transactional
     void createBranding() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
         // Create the Branding
         BrandingDTO brandingDTO = brandingMapper.toDto(branding);
         var returnedBrandingDTO = om.readValue(
@@ -189,16 +182,7 @@ class BrandingResourceIT {
         // Validate the Branding in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedBranding = brandingMapper.toEntity(returnedBrandingDTO);
-        assertBrandingUpdatableFieldsEquals(returnedBranding, getPersistedBranding(returnedBranding));
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
-        insertedBranding = returnedBranding;
+        assertBrandingUpdatableFieldsEquals(returnedBranding, getPersistedBranding(returnedBranding));        insertedBranding = returnedBranding;
     }
 
     @Test
@@ -209,7 +193,6 @@ class BrandingResourceIT {
         BrandingDTO brandingDTO = brandingMapper.toDto(branding);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restBrandingMockMvc
@@ -218,15 +201,12 @@ class BrandingResourceIT {
 
         // Validate the Branding in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkTitleIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
         // set the field null
         branding.setTitle(null);
 
@@ -239,15 +219,12 @@ class BrandingResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkIsActiveIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
         // set the field null
         branding.setIsActive(null);
 
@@ -260,8 +237,6 @@ class BrandingResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -330,8 +305,6 @@ class BrandingResourceIT {
         insertedBranding = brandingRepository.saveAndFlush(branding);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        brandingSearchRepository.save(branding);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
 
         // Update the branding
         Branding updatedBranding = brandingRepository.findById(branding.getId()).orElseThrow();
@@ -363,25 +336,12 @@ class BrandingResourceIT {
 
         // Validate the Branding in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedBrandingToMatchAllProperties(updatedBranding);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Branding> brandingSearchList = Streamable.of(brandingSearchRepository.findAll()).toList();
-                Branding testBrandingSearch = brandingSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertBrandingAllPropertiesEquals(testBrandingSearch, updatedBranding);
-            });
-    }
+        assertPersistedBrandingToMatchAllProperties(updatedBranding);    }
 
     @Test
     @Transactional
     void putNonExistingBranding() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
         branding.setId(longCount.incrementAndGet());
 
         // Create the Branding
@@ -399,15 +359,12 @@ class BrandingResourceIT {
 
         // Validate the Branding in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchBranding() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
         branding.setId(longCount.incrementAndGet());
 
         // Create the Branding
@@ -425,15 +382,12 @@ class BrandingResourceIT {
 
         // Validate the Branding in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamBranding() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
         branding.setId(longCount.incrementAndGet());
 
         // Create the Branding
@@ -446,8 +400,6 @@ class BrandingResourceIT {
 
         // Validate the Branding in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -524,7 +476,6 @@ class BrandingResourceIT {
     @Transactional
     void patchNonExistingBranding() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
         branding.setId(longCount.incrementAndGet());
 
         // Create the Branding
@@ -542,15 +493,12 @@ class BrandingResourceIT {
 
         // Validate the Branding in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchBranding() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
         branding.setId(longCount.incrementAndGet());
 
         // Create the Branding
@@ -568,15 +516,12 @@ class BrandingResourceIT {
 
         // Validate the Branding in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamBranding() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
         branding.setId(longCount.incrementAndGet());
 
         // Create the Branding
@@ -591,8 +536,6 @@ class BrandingResourceIT {
 
         // Validate the Branding in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -601,11 +544,8 @@ class BrandingResourceIT {
         // Initialize the database
         insertedBranding = brandingRepository.saveAndFlush(branding);
         brandingRepository.save(branding);
-        brandingSearchRepository.save(branding);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the branding
         restBrandingMockMvc
@@ -614,8 +554,6 @@ class BrandingResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(brandingSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -623,7 +561,6 @@ class BrandingResourceIT {
     void searchBranding() throws Exception {
         // Initialize the database
         insertedBranding = brandingRepository.saveAndFlush(branding);
-        brandingSearchRepository.save(branding);
 
         // Search the branding
         restBrandingMockMvc

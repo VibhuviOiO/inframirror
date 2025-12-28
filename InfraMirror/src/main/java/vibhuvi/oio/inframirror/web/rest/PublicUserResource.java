@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.PaginationUtil;
-import vibhuvi.oio.inframirror.repository.search.UserSearchRepository;
 import vibhuvi.oio.inframirror.service.UserService;
 import vibhuvi.oio.inframirror.service.dto.UserDTO;
 
@@ -23,11 +22,9 @@ public class PublicUserResource {
     private static final Logger LOG = LoggerFactory.getLogger(PublicUserResource.class);
 
     private final UserService userService;
-    private final UserSearchRepository userSearchRepository;
 
-    public PublicUserResource(UserSearchRepository userSearchRepository, UserService userService) {
+    public PublicUserResource(UserService userService) {
         this.userService = userService;
-        this.userSearchRepository = userSearchRepository;
     }
 
     /**
@@ -53,6 +50,6 @@ public class PublicUserResource {
      */
     @GetMapping("/users/_search/{query}")
     public List<UserDTO> search(@PathVariable("query") String query) {
-        return StreamSupport.stream(userSearchRepository.search(query).spliterator(), false).map(UserDTO::new).toList();
+        return userService.getAllPublicUsers(Pageable.unpaged()).getContent();
     }
 }

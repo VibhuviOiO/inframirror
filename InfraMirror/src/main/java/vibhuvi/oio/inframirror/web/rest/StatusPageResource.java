@@ -24,8 +24,8 @@ import vibhuvi.oio.inframirror.service.StatusPageQueryService;
 import vibhuvi.oio.inframirror.service.StatusPageService;
 import vibhuvi.oio.inframirror.service.criteria.StatusPageCriteria;
 import vibhuvi.oio.inframirror.service.dto.StatusPageDTO;
+import vibhuvi.oio.inframirror.service.dto.StatusPageSearchResultDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.StatusPage}.
@@ -218,12 +218,38 @@ public class StatusPageResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of StatusPages for query {}", query);
-        try {
-            Page<StatusPageDTO> page = statusPageService.search(query, pageable);
-            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-            return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
-        }
+        Page<StatusPageDTO> page = statusPageService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    @GetMapping("/_search/prefix")
+    public ResponseEntity<List<StatusPageDTO>> searchStatusPagesPrefix(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<StatusPageDTO> page = statusPageService.searchPrefix(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    @GetMapping("/_search/fuzzy")
+    public ResponseEntity<List<StatusPageDTO>> searchStatusPagesFuzzy(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<StatusPageDTO> page = statusPageService.searchFuzzy(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    @GetMapping("/_search/highlight")
+    public ResponseEntity<List<StatusPageSearchResultDTO>> searchStatusPagesWithHighlight(
+        @RequestParam("query") String query,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<StatusPageSearchResultDTO> page = statusPageService.searchWithHighlight(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

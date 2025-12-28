@@ -1,7 +1,7 @@
 package vibhuvi.oio.inframirror.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
+
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -14,24 +14,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
+
 import java.util.concurrent.atomic.AtomicLong;
-import org.assertj.core.util.IterableUtil;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.util.Streamable;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.Agent;
-import vibhuvi.oio.inframirror.domain.Region;
 import vibhuvi.oio.inframirror.repository.AgentRepository;
-import vibhuvi.oio.inframirror.repository.search.AgentSearchRepository;
+
 import vibhuvi.oio.inframirror.service.dto.AgentDTO;
 import vibhuvi.oio.inframirror.service.mapper.AgentMapper;
 
@@ -55,17 +54,12 @@ class AgentResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private AgentRepository agentRepository;
 
     @Autowired
     private AgentMapper agentMapper;
-
-    @Autowired
-    private AgentSearchRepository agentSearchRepository;
-
-    @Autowired
+    
     private EntityManager em;
 
     @Autowired
@@ -104,7 +98,6 @@ class AgentResourceIT {
     void cleanup() {
         if (insertedAgent != null) {
             agentRepository.delete(insertedAgent);
-            agentSearchRepository.delete(insertedAgent);
             insertedAgent = null;
         }
     }
@@ -113,7 +106,6 @@ class AgentResourceIT {
     @Transactional
     void createAgent() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
         // Create the Agent
         AgentDTO agentDTO = agentMapper.toDto(agent);
         var returnedAgentDTO = om.readValue(
@@ -131,13 +123,6 @@ class AgentResourceIT {
         var returnedAgent = agentMapper.toEntity(returnedAgentDTO);
         assertAgentUpdatableFieldsEquals(returnedAgent, getPersistedAgent(returnedAgent));
 
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
         insertedAgent = returnedAgent;
     }
 
@@ -149,7 +134,6 @@ class AgentResourceIT {
         AgentDTO agentDTO = agentMapper.toDto(agent);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restAgentMockMvc
@@ -158,15 +142,12 @@ class AgentResourceIT {
 
         // Validate the Agent in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkNameIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
         // set the field null
         agent.setName(null);
 
@@ -178,9 +159,6 @@ class AgentResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
-
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -278,27 +256,6 @@ class AgentResourceIT {
         defaultAgentFiltering("name.doesNotContain=" + UPDATED_NAME, "name.doesNotContain=" + DEFAULT_NAME);
     }
 
-    @Test
-    @Transactional
-    void getAllAgentsByRegionIsEqualToSomething() throws Exception {
-        Region region;
-        if (TestUtil.findAll(em, Region.class).isEmpty()) {
-            agentRepository.saveAndFlush(agent);
-            region = RegionResourceIT.createEntity();
-        } else {
-            region = TestUtil.findAll(em, Region.class).get(0);
-        }
-        em.persist(region);
-        em.flush();
-        agent.setRegion(region);
-        agentRepository.saveAndFlush(agent);
-        Long regionId = region.getId();
-        // Get all the agentList where region equals to regionId
-        defaultAgentShouldBeFound("regionId.equals=" + regionId);
-
-        // Get all the agentList where region equals to (regionId + 1)
-        defaultAgentShouldNotBeFound("regionId.equals=" + (regionId + 1));
-    }
 
     private void defaultAgentFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
         defaultAgentShouldBeFound(shouldBeFound);
@@ -357,8 +314,6 @@ class AgentResourceIT {
         insertedAgent = agentRepository.saveAndFlush(agent);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        agentSearchRepository.save(agent);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
 
         // Update the agent
         Agent updatedAgent = agentRepository.findById(agent.getId()).orElseThrow();
@@ -379,24 +334,12 @@ class AgentResourceIT {
         // Validate the Agent in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertPersistedAgentToMatchAllProperties(updatedAgent);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<Agent> agentSearchList = Streamable.of(agentSearchRepository.findAll()).toList();
-                Agent testAgentSearch = agentSearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertAgentAllPropertiesEquals(testAgentSearch, updatedAgent);
-            });
     }
 
     @Test
     @Transactional
     void putNonExistingAgent() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
         agent.setId(longCount.incrementAndGet());
 
         // Create the Agent
@@ -414,15 +357,12 @@ class AgentResourceIT {
 
         // Validate the Agent in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchAgent() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
         agent.setId(longCount.incrementAndGet());
 
         // Create the Agent
@@ -440,15 +380,12 @@ class AgentResourceIT {
 
         // Validate the Agent in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamAgent() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
         agent.setId(longCount.incrementAndGet());
 
         // Create the Agent
@@ -461,8 +398,6 @@ class AgentResourceIT {
 
         // Validate the Agent in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -525,7 +460,6 @@ class AgentResourceIT {
     @Transactional
     void patchNonExistingAgent() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
         agent.setId(longCount.incrementAndGet());
 
         // Create the Agent
@@ -543,15 +477,12 @@ class AgentResourceIT {
 
         // Validate the Agent in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchAgent() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
         agent.setId(longCount.incrementAndGet());
 
         // Create the Agent
@@ -569,15 +500,12 @@ class AgentResourceIT {
 
         // Validate the Agent in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamAgent() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
         agent.setId(longCount.incrementAndGet());
 
         // Create the Agent
@@ -590,8 +518,6 @@ class AgentResourceIT {
 
         // Validate the Agent in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -599,12 +525,8 @@ class AgentResourceIT {
     void deleteAgent() throws Exception {
         // Initialize the database
         insertedAgent = agentRepository.saveAndFlush(agent);
-        agentRepository.save(agent);
-        agentSearchRepository.save(agent);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(agentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the agent
         restAgentMockMvc
@@ -613,8 +535,6 @@ class AgentResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(agentSearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -622,11 +542,12 @@ class AgentResourceIT {
     void searchAgent() throws Exception {
         // Initialize the database
         insertedAgent = agentRepository.saveAndFlush(agent);
-        agentSearchRepository.save(agent);
+        em.flush();
+        em.clear();
 
         // Search the agent
         restAgentMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=id:" + agent.getId()))
+            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(agent.getId().intValue())))

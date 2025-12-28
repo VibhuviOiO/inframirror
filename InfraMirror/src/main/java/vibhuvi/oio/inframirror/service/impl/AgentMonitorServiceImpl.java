@@ -4,14 +4,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.AgentMonitor;
 import vibhuvi.oio.inframirror.repository.AgentMonitorRepository;
-import vibhuvi.oio.inframirror.repository.search.AgentMonitorSearchRepository;
 import vibhuvi.oio.inframirror.service.AgentMonitorService;
 import vibhuvi.oio.inframirror.service.dto.AgentMonitorDTO;
 import vibhuvi.oio.inframirror.service.mapper.AgentMonitorMapper;
@@ -29,16 +27,12 @@ public class AgentMonitorServiceImpl implements AgentMonitorService {
 
     private final AgentMonitorMapper agentMonitorMapper;
 
-    private final AgentMonitorSearchRepository agentMonitorSearchRepository;
-
     public AgentMonitorServiceImpl(
         AgentMonitorRepository agentMonitorRepository,
-        AgentMonitorMapper agentMonitorMapper,
-        AgentMonitorSearchRepository agentMonitorSearchRepository
+        AgentMonitorMapper agentMonitorMapper
     ) {
         this.agentMonitorRepository = agentMonitorRepository;
         this.agentMonitorMapper = agentMonitorMapper;
-        this.agentMonitorSearchRepository = agentMonitorSearchRepository;
     }
 
     @Override
@@ -46,7 +40,6 @@ public class AgentMonitorServiceImpl implements AgentMonitorService {
         LOG.debug("Request to save AgentMonitor : {}", agentMonitorDTO);
         AgentMonitor agentMonitor = agentMonitorMapper.toEntity(agentMonitorDTO);
         agentMonitor = agentMonitorRepository.save(agentMonitor);
-        agentMonitorSearchRepository.index(agentMonitor);
         return agentMonitorMapper.toDto(agentMonitor);
     }
 
@@ -55,7 +48,6 @@ public class AgentMonitorServiceImpl implements AgentMonitorService {
         LOG.debug("Request to update AgentMonitor : {}", agentMonitorDTO);
         AgentMonitor agentMonitor = agentMonitorMapper.toEntity(agentMonitorDTO);
         agentMonitor = agentMonitorRepository.save(agentMonitor);
-        agentMonitorSearchRepository.index(agentMonitor);
         return agentMonitorMapper.toDto(agentMonitor);
     }
 
@@ -71,10 +63,6 @@ public class AgentMonitorServiceImpl implements AgentMonitorService {
                 return existingAgentMonitor;
             })
             .map(agentMonitorRepository::save)
-            .map(savedAgentMonitor -> {
-                agentMonitorSearchRepository.index(savedAgentMonitor);
-                return savedAgentMonitor;
-            })
             .map(agentMonitorMapper::toDto);
     }
 
@@ -96,19 +84,45 @@ public class AgentMonitorServiceImpl implements AgentMonitorService {
     public void delete(Long id) {
         LOG.debug("Request to delete AgentMonitor : {}", id);
         agentMonitorRepository.deleteById(id);
-        agentMonitorSearchRepository.deleteFromIndexById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<AgentMonitorDTO> search(String query) {
         LOG.debug("Request to search AgentMonitors for query {}", query);
-        try {
-            return StreamSupport.stream(agentMonitorSearchRepository.search(query).spliterator(), false)
-                .map(agentMonitorMapper::toDto)
-                .toList();
-        } catch (RuntimeException e) {
-            throw e;
-        }
+        return agentMonitorRepository.searchByAgentOrMonitorName(query, query)
+            .stream()
+            .map(agentMonitorMapper::toDto)
+            .toList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<AgentMonitorDTO> findByAgentId(Long agentId) {
+        LOG.debug("Request to get AgentMonitors by agent ID : {}", agentId);
+        return agentMonitorRepository.findByAgentId(agentId)
+            .stream()
+            .map(agentMonitorMapper::toDto)
+            .toList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<AgentMonitorDTO> findByMonitorId(Long monitorId) {
+        LOG.debug("Request to get AgentMonitors by monitor ID : {}", monitorId);
+        return agentMonitorRepository.findByMonitorId(monitorId)
+            .stream()
+            .map(agentMonitorMapper::toDto)
+            .toList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<AgentMonitorDTO> findByActive(Boolean active) {
+        LOG.debug("Request to get AgentMonitors by active status : {}", active);
+        return agentMonitorRepository.findByActive(active)
+            .stream()
+            .map(agentMonitorMapper::toDto)
+            .toList();
     }
 }

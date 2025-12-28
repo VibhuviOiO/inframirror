@@ -51,22 +51,5 @@ class RegionTest {
     @Test
     void agentTest() {
         Region region = getRegionRandomSampleGenerator();
-        Agent agentBack = getAgentRandomSampleGenerator();
-
-        region.addAgent(agentBack);
-        assertThat(region.getAgents()).containsOnly(agentBack);
-        assertThat(agentBack.getRegion()).isEqualTo(region);
-
-        region.removeAgent(agentBack);
-        assertThat(region.getAgents()).doesNotContain(agentBack);
-        assertThat(agentBack.getRegion()).isNull();
-
-        region.agents(new HashSet<>(Set.of(agentBack)));
-        assertThat(region.getAgents()).containsOnly(agentBack);
-        assertThat(agentBack.getRegion()).isEqualTo(region);
-
-        region.setAgents(new HashSet<>());
-        assertThat(region.getAgents()).doesNotContain(agentBack);
-        assertThat(agentBack.getRegion()).isNull();
     }
 }

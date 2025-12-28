@@ -12,7 +12,6 @@ import tech.jhipster.service.QueryService;
 import vibhuvi.oio.inframirror.domain.*; // for static metamodels
 import vibhuvi.oio.inframirror.domain.MonitoredService;
 import vibhuvi.oio.inframirror.repository.MonitoredServiceRepository;
-import vibhuvi.oio.inframirror.repository.search.MonitoredServiceSearchRepository;
 import vibhuvi.oio.inframirror.service.criteria.MonitoredServiceCriteria;
 import vibhuvi.oio.inframirror.service.dto.MonitoredServiceDTO;
 import vibhuvi.oio.inframirror.service.mapper.MonitoredServiceMapper;
@@ -33,16 +32,12 @@ public class MonitoredServiceQueryService extends QueryService<MonitoredService>
 
     private final MonitoredServiceMapper monitoredServiceMapper;
 
-    private final MonitoredServiceSearchRepository monitoredServiceSearchRepository;
-
     public MonitoredServiceQueryService(
         MonitoredServiceRepository monitoredServiceRepository,
-        MonitoredServiceMapper monitoredServiceMapper,
-        MonitoredServiceSearchRepository monitoredServiceSearchRepository
+        MonitoredServiceMapper monitoredServiceMapper
     ) {
         this.monitoredServiceRepository = monitoredServiceRepository;
         this.monitoredServiceMapper = monitoredServiceMapper;
-        this.monitoredServiceSearchRepository = monitoredServiceSearchRepository;
     }
 
     /**

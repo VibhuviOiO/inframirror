@@ -23,7 +23,6 @@ import vibhuvi.oio.inframirror.repository.HttpHeartbeatRepository;
 import vibhuvi.oio.inframirror.service.HttpHeartbeatService;
 import vibhuvi.oio.inframirror.service.dto.HttpHeartbeatDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
-import vibhuvi.oio.inframirror.web.rest.errors.ElasticsearchExceptionMapper;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.HttpHeartbeat}.
@@ -193,12 +192,8 @@ public class HttpHeartbeatResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of HttpHeartbeats for query {}", query);
-        try {
             Page<HttpHeartbeatDTO> page = httpHeartbeatService.search(query, pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
             return ResponseEntity.ok().headers(headers).body(page.getContent());
-        } catch (RuntimeException e) {
-            throw ElasticsearchExceptionMapper.mapException(e);
         }
-    }
 }

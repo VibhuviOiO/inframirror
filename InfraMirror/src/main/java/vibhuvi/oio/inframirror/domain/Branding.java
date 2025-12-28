@@ -10,7 +10,6 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "branding")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "branding")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Branding implements Serializable {
 
@@ -25,50 +24,40 @@ public class Branding implements Serializable {
     @NotNull
     @Size(max = 200)
     @Column(name = "title", length = 200, nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String title;
 
     @Size(max = 500)
     @Column(name = "description", length = 500)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String description;
 
     @Size(max = 300)
     @Column(name = "keywords", length = 300)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String keywords;
 
     @Size(max = 100)
     @Column(name = "author", length = 100)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String author;
 
     @Size(max = 255)
     @Column(name = "favicon_path", length = 255)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String faviconPath;
 
     @Size(max = 255)
     @Column(name = "logo_path", length = 255)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String logoPath;
 
     @Column(name = "logo_width")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer logoWidth;
 
     @Column(name = "logo_height")
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Integer)
     private Integer logoHeight;
 
     @Size(max = 200)
     @Column(name = "footer_title", length = 200)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Text)
     private String footerTitle;
 
     @NotNull
     @Column(name = "is_active", nullable = false)
-    @org.springframework.data.elasticsearch.annotations.Field(type = org.springframework.data.elasticsearch.annotations.FieldType.Boolean)
     private Boolean isActive;
 
     @Column(name = "created_at")

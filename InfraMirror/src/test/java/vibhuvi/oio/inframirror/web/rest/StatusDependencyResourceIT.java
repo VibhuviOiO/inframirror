@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.IntegrationTest;
 import vibhuvi.oio.inframirror.domain.StatusDependency;
 import vibhuvi.oio.inframirror.repository.StatusDependencyRepository;
-import vibhuvi.oio.inframirror.repository.search.StatusDependencySearchRepository;
 import vibhuvi.oio.inframirror.service.dto.StatusDependencyDTO;
 import vibhuvi.oio.inframirror.service.mapper.StatusDependencyMapper;
 
@@ -71,20 +70,16 @@ class StatusDependencyResourceIT {
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
+    
     private StatusDependencyRepository statusDependencyRepository;
 
     @Autowired
     private StatusDependencyMapper statusDependencyMapper;
-
-    @Autowired
-    private StatusDependencySearchRepository statusDependencySearchRepository;
+    
 
     @Autowired
     private EntityManager em;
-
-    @Autowired
+    
     private MockMvc restStatusDependencyMockMvc;
 
     private StatusDependency statusDependency;
@@ -132,7 +127,6 @@ class StatusDependencyResourceIT {
     void cleanup() {
         if (insertedStatusDependency != null) {
             statusDependencyRepository.delete(insertedStatusDependency);
-            statusDependencySearchRepository.delete(insertedStatusDependency);
             insertedStatusDependency = null;
         }
     }
@@ -141,7 +135,6 @@ class StatusDependencyResourceIT {
     @Transactional
     void createStatusDependency() throws Exception {
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         // Create the StatusDependency
         StatusDependencyDTO statusDependencyDTO = statusDependencyMapper.toDto(statusDependency);
         var returnedStatusDependencyDTO = om.readValue(
@@ -162,16 +155,7 @@ class StatusDependencyResourceIT {
         // Validate the StatusDependency in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedStatusDependency = statusDependencyMapper.toEntity(returnedStatusDependencyDTO);
-        assertStatusDependencyUpdatableFieldsEquals(returnedStatusDependency, getPersistedStatusDependency(returnedStatusDependency));
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore + 1);
-            });
-
-        insertedStatusDependency = returnedStatusDependency;
+        assertStatusDependencyUpdatableFieldsEquals(returnedStatusDependency, getPersistedStatusDependency(returnedStatusDependency));        insertedStatusDependency = returnedStatusDependency;
     }
 
     @Test
@@ -182,7 +166,6 @@ class StatusDependencyResourceIT {
         StatusDependencyDTO statusDependencyDTO = statusDependencyMapper.toDto(statusDependency);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restStatusDependencyMockMvc
@@ -193,15 +176,12 @@ class StatusDependencyResourceIT {
 
         // Validate the StatusDependency in the database
         assertSameRepositoryCount(databaseSizeBeforeCreate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkParentTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         // set the field null
         statusDependency.setParentType(null);
 
@@ -216,15 +196,12 @@ class StatusDependencyResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkParentIdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         // set the field null
         statusDependency.setParentId(null);
 
@@ -239,15 +216,12 @@ class StatusDependencyResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkChildTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         // set the field null
         statusDependency.setChildType(null);
 
@@ -262,15 +236,12 @@ class StatusDependencyResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkChildIdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         // set the field null
         statusDependency.setChildId(null);
 
@@ -285,15 +256,12 @@ class StatusDependencyResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void checkCreatedAtIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         // set the field null
         statusDependency.setCreatedAt(null);
 
@@ -308,8 +276,6 @@ class StatusDependencyResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -366,8 +332,6 @@ class StatusDependencyResourceIT {
         insertedStatusDependency = statusDependencyRepository.saveAndFlush(statusDependency);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        statusDependencySearchRepository.save(statusDependency);
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
 
         // Update the statusDependency
         StatusDependency updatedStatusDependency = statusDependencyRepository.findById(statusDependency.getId()).orElseThrow();
@@ -393,25 +357,12 @@ class StatusDependencyResourceIT {
 
         // Validate the StatusDependency in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedStatusDependencyToMatchAllProperties(updatedStatusDependency);
-
-        await()
-            .atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-                assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
-                List<StatusDependency> statusDependencySearchList = Streamable.of(statusDependencySearchRepository.findAll()).toList();
-                StatusDependency testStatusDependencySearch = statusDependencySearchList.get(searchDatabaseSizeAfter - 1);
-
-                assertStatusDependencyAllPropertiesEquals(testStatusDependencySearch, updatedStatusDependency);
-            });
-    }
+        assertPersistedStatusDependencyToMatchAllProperties(updatedStatusDependency);    }
 
     @Test
     @Transactional
     void putNonExistingStatusDependency() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         statusDependency.setId(longCount.incrementAndGet());
 
         // Create the StatusDependency
@@ -429,15 +380,12 @@ class StatusDependencyResourceIT {
 
         // Validate the StatusDependency in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchStatusDependency() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         statusDependency.setId(longCount.incrementAndGet());
 
         // Create the StatusDependency
@@ -455,15 +403,12 @@ class StatusDependencyResourceIT {
 
         // Validate the StatusDependency in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamStatusDependency() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         statusDependency.setId(longCount.incrementAndGet());
 
         // Create the StatusDependency
@@ -478,8 +423,6 @@ class StatusDependencyResourceIT {
 
         // Validate the StatusDependency in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -556,7 +499,6 @@ class StatusDependencyResourceIT {
     @Transactional
     void patchNonExistingStatusDependency() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         statusDependency.setId(longCount.incrementAndGet());
 
         // Create the StatusDependency
@@ -574,15 +516,12 @@ class StatusDependencyResourceIT {
 
         // Validate the StatusDependency in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchStatusDependency() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         statusDependency.setId(longCount.incrementAndGet());
 
         // Create the StatusDependency
@@ -600,15 +539,12 @@ class StatusDependencyResourceIT {
 
         // Validate the StatusDependency in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamStatusDependency() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
         statusDependency.setId(longCount.incrementAndGet());
 
         // Create the StatusDependency
@@ -626,8 +562,6 @@ class StatusDependencyResourceIT {
 
         // Validate the StatusDependency in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore);
     }
 
     @Test
@@ -636,11 +570,8 @@ class StatusDependencyResourceIT {
         // Initialize the database
         insertedStatusDependency = statusDependencyRepository.saveAndFlush(statusDependency);
         statusDependencyRepository.save(statusDependency);
-        statusDependencySearchRepository.save(statusDependency);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
-        int searchDatabaseSizeBefore = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeBefore).isEqualTo(databaseSizeBeforeDelete);
 
         // Delete the statusDependency
         restStatusDependencyMockMvc
@@ -649,8 +580,6 @@ class StatusDependencyResourceIT {
 
         // Validate the database contains one less item
         assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-        int searchDatabaseSizeAfter = IterableUtil.sizeOf(statusDependencySearchRepository.findAll());
-        assertThat(searchDatabaseSizeAfter).isEqualTo(searchDatabaseSizeBefore - 1);
     }
 
     @Test
@@ -658,7 +587,6 @@ class StatusDependencyResourceIT {
     void searchStatusDependency() throws Exception {
         // Initialize the database
         insertedStatusDependency = statusDependencyRepository.saveAndFlush(statusDependency);
-        statusDependencySearchRepository.save(statusDependency);
 
         // Search the statusDependency
         restStatusDependencyMockMvc
