@@ -85,6 +85,12 @@ public class HttpMonitorServiceImpl implements HttpMonitorService {
     @Override
     @Transactional(readOnly = true)
     public Page<HttpMonitorDTO> search(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search for a page of HttpMonitors for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return httpMonitorRepository.findAll(pageable).map(httpMonitorMapper::toDto);
@@ -99,6 +105,12 @@ public class HttpMonitorServiceImpl implements HttpMonitorService {
     @Override
     @Transactional(readOnly = true)
     public Page<HttpMonitorDTO> searchPrefix(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to prefix search HttpMonitors for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
@@ -113,6 +125,12 @@ public class HttpMonitorServiceImpl implements HttpMonitorService {
     @Override
     @Transactional(readOnly = true)
     public Page<HttpMonitorDTO> searchFuzzy(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to fuzzy search HttpMonitors for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
@@ -127,6 +145,12 @@ public class HttpMonitorServiceImpl implements HttpMonitorService {
     @Override
     @Transactional(readOnly = true)
     public Page<HttpMonitorSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search HttpMonitors with highlight for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);

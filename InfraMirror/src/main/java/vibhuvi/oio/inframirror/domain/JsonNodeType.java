@@ -53,7 +53,7 @@ public class JsonNodeType implements UserType<JsonNode> {
         try {
             return OBJECT_MAPPER.readTree(json);
         } catch (Exception e) {
-            throw new SQLException("Failed to parse JSON: " + json, e);
+            throw new SQLException("Failed to parse JSON", e);
         }
     }
 
@@ -66,7 +66,7 @@ public class JsonNodeType implements UserType<JsonNode> {
                 String json = OBJECT_MAPPER.writeValueAsString(value);
                 st.setObject(index, json, SqlTypes.OTHER);
             } catch (Exception e) {
-                throw new SQLException("Failed to serialize JSON: " + value, e);
+                throw new SQLException("Failed to serialize JSON", e);
             }
         }
     }
@@ -79,7 +79,7 @@ public class JsonNodeType implements UserType<JsonNode> {
         try {
             return OBJECT_MAPPER.readTree(OBJECT_MAPPER.writeValueAsString(value));
         } catch (Exception e) {
-            throw new RuntimeException("Failed to deep copy JsonNode", e);
+            throw new IllegalStateException("Failed to deep copy JsonNode", e);
         }
     }
 

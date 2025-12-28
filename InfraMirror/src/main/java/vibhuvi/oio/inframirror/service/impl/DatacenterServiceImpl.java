@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.Datacenter;
@@ -81,6 +80,12 @@ public class DatacenterServiceImpl implements DatacenterService {
     @Override
     @Transactional(readOnly = true)
     public Page<DatacenterDTO> search(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search Datacenters for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return datacenterRepository.findAll(pageable).map(datacenterMapper::toDto);
@@ -95,6 +100,12 @@ public class DatacenterServiceImpl implements DatacenterService {
     @Override
     @Transactional(readOnly = true)
     public Page<DatacenterDTO> searchPrefix(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to prefix search Datacenters for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
@@ -109,6 +120,12 @@ public class DatacenterServiceImpl implements DatacenterService {
     @Override
     @Transactional(readOnly = true)
     public Page<DatacenterDTO> searchFuzzy(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to fuzzy search Datacenters for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
@@ -123,6 +140,12 @@ public class DatacenterServiceImpl implements DatacenterService {
     @Override
     @Transactional(readOnly = true)
     public Page<DatacenterSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search Datacenters with highlight for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);

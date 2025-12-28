@@ -60,12 +60,12 @@ public class InstanceHeartbeatResource {
     @PostMapping("")
     public ResponseEntity<InstanceHeartbeatDTO> createInstanceHeartbeat(@Valid @RequestBody InstanceHeartbeatDTO instanceHeartbeatDTO)
         throws URISyntaxException {
-        LOG.debug("REST request to save InstanceHeartbeat : {}", instanceHeartbeatDTO);
+        LOG.debug("REST request to save InstanceHeartbeat");
         if (instanceHeartbeatDTO.getId() != null) {
             throw new BadRequestAlertException("A new instanceHeartbeat cannot already have an ID", ENTITY_NAME, "idexists");
         }
         instanceHeartbeatDTO = instanceHeartbeatService.save(instanceHeartbeatDTO);
-        return ResponseEntity.created(new URI("/api/instance-heartbeats/" + instanceHeartbeatDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, instanceHeartbeatDTO.getId().toString()))
             .body(instanceHeartbeatDTO);
     }
@@ -85,7 +85,7 @@ public class InstanceHeartbeatResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody InstanceHeartbeatDTO instanceHeartbeatDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update InstanceHeartbeat : {}, {}", id, instanceHeartbeatDTO);
+        LOG.debug("REST request to update InstanceHeartbeat  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (instanceHeartbeatDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -119,7 +119,7 @@ public class InstanceHeartbeatResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody InstanceHeartbeatDTO instanceHeartbeatDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update InstanceHeartbeat partially : {}, {}", id, instanceHeartbeatDTO);
+        LOG.debug("REST request to partial update InstanceHeartbeat partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (instanceHeartbeatDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -149,7 +149,7 @@ public class InstanceHeartbeatResource {
     public ResponseEntity<List<InstanceHeartbeatDTO>> getAllInstanceHeartbeats(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to get a page of InstanceHeartbeats");
+        LOG.debug("REST request to get a page of entities");
         Page<InstanceHeartbeatDTO> page = instanceHeartbeatService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -163,7 +163,7 @@ public class InstanceHeartbeatResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<InstanceHeartbeatDTO> getInstanceHeartbeat(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get InstanceHeartbeat : {}", id);
+        LOG.debug("REST request to get InstanceHeartbeat  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<InstanceHeartbeatDTO> instanceHeartbeatDTO = instanceHeartbeatService.findOne(id);
         return ResponseUtil.wrapOrNotFound(instanceHeartbeatDTO);
     }
@@ -176,7 +176,7 @@ public class InstanceHeartbeatResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInstanceHeartbeat(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete InstanceHeartbeat : {}", id);
+        LOG.debug("REST request to delete InstanceHeartbeat  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         instanceHeartbeatService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -196,7 +196,7 @@ public class InstanceHeartbeatResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of InstanceHeartbeats for query {}", query);
+        LOG.debug("REST request to search for a page of InstanceHeartbeats for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
             Page<InstanceHeartbeatDTO> page = instanceHeartbeatService.search(query, pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
             return ResponseEntity.ok().headers(headers).body(page.getContent());

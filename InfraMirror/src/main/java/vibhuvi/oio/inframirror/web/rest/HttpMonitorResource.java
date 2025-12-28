@@ -66,12 +66,12 @@ public class HttpMonitorResource {
      */
     @PostMapping("")
     public ResponseEntity<HttpMonitorDTO> createHttpMonitor(@Valid @RequestBody HttpMonitorDTO httpMonitorDTO) throws URISyntaxException {
-        LOG.debug("REST request to save HttpMonitor : {}", httpMonitorDTO);
+        LOG.debug("REST request to save HttpMonitor");
         if (httpMonitorDTO.getId() != null) {
             throw new BadRequestAlertException("A new httpMonitor cannot already have an ID", ENTITY_NAME, "idexists");
         }
         httpMonitorDTO = httpMonitorService.save(httpMonitorDTO);
-        return ResponseEntity.created(new URI("/api/http-monitors/" + httpMonitorDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, httpMonitorDTO.getId().toString()))
             .body(httpMonitorDTO);
     }
@@ -91,7 +91,7 @@ public class HttpMonitorResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody HttpMonitorDTO httpMonitorDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update HttpMonitor : {}, {}", id, httpMonitorDTO);
+        LOG.debug("REST request to update HttpMonitor  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (httpMonitorDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -125,7 +125,7 @@ public class HttpMonitorResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody HttpMonitorDTO httpMonitorDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update HttpMonitor partially : {}, {}", id, httpMonitorDTO);
+        LOG.debug("REST request to partial update HttpMonitor partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (httpMonitorDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -184,7 +184,7 @@ public class HttpMonitorResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<HttpMonitorDTO> getHttpMonitor(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get HttpMonitor : {}", id);
+        LOG.debug("REST request to get HttpMonitor  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<HttpMonitorDTO> httpMonitorDTO = httpMonitorService.findOne(id);
         return ResponseUtil.wrapOrNotFound(httpMonitorDTO);
     }
@@ -197,7 +197,7 @@ public class HttpMonitorResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteHttpMonitor(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete HttpMonitor : {}", id);
+        LOG.debug("REST request to delete HttpMonitor  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         httpMonitorService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -217,7 +217,7 @@ public class HttpMonitorResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of HttpMonitors for query {}", query);
+        LOG.debug("REST request to search for a page of HttpMonitors for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<HttpMonitorDTO> page = httpMonitorService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -228,7 +228,7 @@ public class HttpMonitorResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to prefix search HttpMonitors for query {}", query);
+        LOG.debug("REST request to prefix search HttpMonitors for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<HttpMonitorDTO> page = httpMonitorService.searchPrefix(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -239,7 +239,7 @@ public class HttpMonitorResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to fuzzy search HttpMonitors for query {}", query);
+        LOG.debug("REST request to fuzzy search HttpMonitors for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<HttpMonitorDTO> page = httpMonitorService.searchFuzzy(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -250,7 +250,7 @@ public class HttpMonitorResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search HttpMonitors with highlight for query {}", query);
+        LOG.debug("REST request to search HttpMonitors with highlight for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<HttpMonitorSearchResultDTO> page = httpMonitorService.searchWithHighlight(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

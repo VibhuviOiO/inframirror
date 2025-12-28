@@ -62,12 +62,12 @@ public class AgentResource {
      */
     @PostMapping("")
     public ResponseEntity<AgentDTO> createAgent(@Valid @RequestBody AgentDTO agentDTO) throws URISyntaxException {
-        LOG.debug("REST request to save Agent : {}", agentDTO);
+        LOG.debug("REST request to save Agent");
         if (agentDTO.getId() != null) {
             throw new BadRequestAlertException("A new agent cannot already have an ID", ENTITY_NAME, "idexists");
         }
         agentDTO = agentService.save(agentDTO);
-        return ResponseEntity.created(new URI("/api/agents/" + agentDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, agentDTO.getId().toString()))
             .body(agentDTO);
     }
@@ -87,7 +87,7 @@ public class AgentResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody AgentDTO agentDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update Agent : {}, {}", id, agentDTO);
+        LOG.debug("REST request to update Agent  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (agentDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -121,7 +121,7 @@ public class AgentResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody AgentDTO agentDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Agent partially : {}, {}", id, agentDTO);
+        LOG.debug("REST request to partial update Agent partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (agentDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -180,7 +180,7 @@ public class AgentResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<AgentDTO> getAgent(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get Agent : {}", id);
+        LOG.debug("REST request to get Agent  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<AgentDTO> agentDTO = agentService.findOne(id);
         return ResponseUtil.wrapOrNotFound(agentDTO);
     }
@@ -193,7 +193,7 @@ public class AgentResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAgent(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete Agent : {}", id);
+        LOG.debug("REST request to delete Agent  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         agentService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -213,7 +213,7 @@ public class AgentResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of Agents for query {}", query);
+        LOG.debug("REST request to search for a page of Agents for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<AgentDTO> page = agentService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

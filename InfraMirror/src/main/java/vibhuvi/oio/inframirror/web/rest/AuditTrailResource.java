@@ -56,12 +56,12 @@ public class AuditTrailResource {
      */
     @PostMapping("")
     public ResponseEntity<AuditTrailDTO> createAuditTrail(@Valid @RequestBody AuditTrailDTO auditTrailDTO) throws URISyntaxException {
-        LOG.debug("REST request to save AuditTrail : {}", auditTrailDTO);
+        LOG.debug("REST request to save AuditTrail");
         if (auditTrailDTO.getId() != null) {
             throw new BadRequestAlertException("A new auditTrail cannot already have an ID", ENTITY_NAME, "idexists");
         }
         auditTrailDTO = auditTrailService.save(auditTrailDTO);
-        return ResponseEntity.created(new URI("/api/audit-trails/" + auditTrailDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, auditTrailDTO.getId().toString()))
             .body(auditTrailDTO);
     }
@@ -81,7 +81,7 @@ public class AuditTrailResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody AuditTrailDTO auditTrailDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update AuditTrail : {}, {}", id, auditTrailDTO);
+        LOG.debug("REST request to update AuditTrail  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (auditTrailDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -115,7 +115,7 @@ public class AuditTrailResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody AuditTrailDTO auditTrailDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update AuditTrail partially : {}, {}", id, auditTrailDTO);
+        LOG.debug("REST request to partial update AuditTrail partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (auditTrailDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -143,7 +143,7 @@ public class AuditTrailResource {
      */
     @GetMapping("")
     public ResponseEntity<List<AuditTrailDTO>> getAllAuditTrails(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        LOG.debug("REST request to get a page of AuditTrails");
+        LOG.debug("REST request to get a page of entities");
         Page<AuditTrailDTO> page = auditTrailService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -157,7 +157,7 @@ public class AuditTrailResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<AuditTrailDTO> getAuditTrail(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get AuditTrail : {}", id);
+        LOG.debug("REST request to get AuditTrail  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<AuditTrailDTO> auditTrailDTO = auditTrailService.findOne(id);
         return ResponseUtil.wrapOrNotFound(auditTrailDTO);
     }
@@ -170,7 +170,7 @@ public class AuditTrailResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuditTrail(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete AuditTrail : {}", id);
+        LOG.debug("REST request to delete AuditTrail  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         auditTrailService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -190,7 +190,7 @@ public class AuditTrailResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of AuditTrails for query {}", query);
+        LOG.debug("REST request to search for a page of AuditTrails for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
             Page<AuditTrailDTO> page = auditTrailService.search(query, pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
             return ResponseEntity.ok().headers(headers).body(page.getContent());

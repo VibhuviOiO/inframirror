@@ -81,9 +81,9 @@ public class AgentApiResource {
     @PostMapping("/register")
     public ResponseEntity<AgentRegistrationResponseDTO> registerAgent(@Valid @RequestBody AgentRegistrationRequestDTO request)
         throws URISyntaxException {
-        LOG.debug("REST request to register Agent : {}", request);
+        LOG.debug("REST request to register Agent");
         AgentRegistrationResponseDTO response = agentService.registerAgent(request);
-        return ResponseEntity.created(new URI("/api/agents/" + response.getAgentId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createAlert(applicationName, "Agent registered successfully", response.getAgentId().toString()))
             .body(response);
     }
@@ -93,9 +93,9 @@ public class AgentApiResource {
      */
     @PostMapping("/regions")
     public ResponseEntity<RegionDTO> createRegion(@Valid @RequestBody RegionDTO regionDTO) throws URISyntaxException {
-        LOG.debug("REST request to save Region : {}", regionDTO);
+        LOG.debug("REST request to save Region");
         RegionDTO result = regionService.save(regionDTO);
-        return ResponseEntity.created(new URI("/api/regions/" + result.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "region", result.getId().toString()))
             .body(result);
     }
@@ -105,9 +105,9 @@ public class AgentApiResource {
      */
     @PostMapping("/datacenters")
     public ResponseEntity<DatacenterDTO> createDatacenter(@Valid @RequestBody DatacenterDTO datacenterDTO) throws URISyntaxException {
-        LOG.debug("REST request to save Datacenter : {}", datacenterDTO);
+        LOG.debug("REST request to save Datacenter");
         DatacenterDTO result = datacenterService.save(datacenterDTO);
-        return ResponseEntity.created(new URI("/api/datacenters/" + result.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "datacenter", result.getId().toString()))
             .body(result);
     }
@@ -117,12 +117,12 @@ public class AgentApiResource {
      */
     @PostMapping("/instances")
     public ResponseEntity<InstanceDTO> createInstance(@Valid @RequestBody InstanceDTO instanceDTO) throws URISyntaxException {
-        LOG.debug("REST request to save Instance : {}", instanceDTO);
+        LOG.debug("REST request to save Instance");
         
         // Find or create instance by hostname
         InstanceDTO result = instanceService.findOrCreate(instanceDTO);
         
-        return ResponseEntity.created(new URI("/api/instances/" + result.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "instance", result.getId().toString()))
             .body(result);
     }
@@ -132,17 +132,17 @@ public class AgentApiResource {
      */
     @PostMapping("/http-monitors")
     public ResponseEntity<HttpMonitorDTO> createHttpMonitor(@Valid @RequestBody HttpMonitorDTO httpMonitorDTO) throws URISyntaxException {
-        LOG.debug("REST request to save HttpMonitor : {}", httpMonitorDTO);
+        LOG.debug("REST request to save HttpMonitor");
         
         // Find existing monitor by name
         Optional<HttpMonitorDTO> existing = httpMonitorService.findByName(httpMonitorDTO.getName());
         if (existing.isPresent()) {
-            LOG.debug("HttpMonitor with name '{}' already exists, returning existing", httpMonitorDTO.getName());
+            LOG.debug("HttpMonitor already exists, returning existing");
             return ResponseEntity.ok(existing.get());
         }
         
         HttpMonitorDTO result = httpMonitorService.save(httpMonitorDTO);
-        return ResponseEntity.created(new URI("/api/http-monitors/" + result.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "httpMonitor", result.getId().toString()))
             .body(result);
     }
@@ -152,7 +152,7 @@ public class AgentApiResource {
      */
     @GetMapping("/http-monitors/{id}")
     public ResponseEntity<HttpMonitorDTO> getHttpMonitor(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get HttpMonitor : {}", id);
+        LOG.debug("REST request to get HttpMonitor  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         return ResponseUtil.wrapOrNotFound(httpMonitorService.findOne(id));
     }
 
@@ -161,17 +161,17 @@ public class AgentApiResource {
      */
     @PostMapping("/monitored-services")
     public ResponseEntity<MonitoredServiceDTO> createMonitoredService(@Valid @RequestBody MonitoredServiceDTO monitoredServiceDTO) throws URISyntaxException {
-        LOG.debug("REST request to save MonitoredService : {}", monitoredServiceDTO);
+        LOG.debug("REST request to save MonitoredService");
         
         // Find existing service by name
         Optional<MonitoredServiceDTO> existing = monitoredServiceService.findByName(monitoredServiceDTO.getName());
         if (existing.isPresent()) {
-            LOG.debug("MonitoredService with name '{}' already exists, returning existing", monitoredServiceDTO.getName());
+            LOG.debug("MonitoredService already exists, returning existing");
             return ResponseEntity.ok(existing.get());
         }
         
         MonitoredServiceDTO result = monitoredServiceService.save(monitoredServiceDTO);
-        return ResponseEntity.created(new URI("/api/monitored-services/" + result.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "monitoredService", result.getId().toString()))
             .body(result);
     }
@@ -181,9 +181,9 @@ public class AgentApiResource {
      */
     @PostMapping("/service-instances")
     public ResponseEntity<ServiceInstanceDTO> createServiceInstance(@Valid @RequestBody ServiceInstanceDTO serviceInstanceDTO) throws URISyntaxException {
-        LOG.debug("REST request to save ServiceInstance : {}", serviceInstanceDTO);
+        LOG.debug("REST request to save ServiceInstance");
         ServiceInstanceDTO result = serviceInstanceService.save(serviceInstanceDTO);
-        return ResponseEntity.created(new URI("/api/service-instances/" + result.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "serviceInstance", result.getId().toString()))
             .body(result);
     }
@@ -193,7 +193,7 @@ public class AgentApiResource {
      */
     @PostMapping("/service-heartbeats")
     public ResponseEntity<ServiceHeartbeatDTO> submitServiceHeartbeat(@RequestBody Map<String, Object> heartbeatData) {
-        LOG.debug("Service heartbeat received: {}", heartbeatData);
+        LOG.debug("Service heartbeat received");
         
         try {
             ServiceHeartbeatDTO heartbeat = new ServiceHeartbeatDTO();
@@ -248,7 +248,7 @@ public class AgentApiResource {
             return ResponseEntity.ok(result);
             
         } catch (Exception e) {
-            LOG.error("Failed to save service heartbeat: {}", e.getMessage(), e);
+            LOG.error("Failed to save service heartbeat", e);
             return ResponseEntity.badRequest().build();
         }
     }
@@ -259,12 +259,6 @@ public class AgentApiResource {
     @PostMapping("/heartbeat")
     public ResponseEntity<Void> agentHeartbeat(HttpServletRequest request) {
         LOG.debug("Agent heartbeat received");
-        
-        String apiKey = request.getHeader("X-API-Key");
-        if (apiKey != null) {
-            agentService.updateLastSeenByApiKey(apiKey);
-        }
-        
         return ResponseEntity.ok().build();
     }
 
@@ -273,7 +267,7 @@ public class AgentApiResource {
      */
     @PostMapping("/instance-heartbeats")
     public ResponseEntity<Void> submitInstanceHeartbeat(@RequestBody Map<String, Object> heartbeatData, HttpServletRequest request) {
-        LOG.debug("Instance heartbeat received: {}", heartbeatData);
+        LOG.debug("Instance heartbeat received");
         
         try {
             // Create InstanceHeartbeatDTO from the received data
@@ -374,7 +368,7 @@ public class AgentApiResource {
             // Save the heartbeat
             instanceHeartbeatService.save(heartbeat);
             
-            LOG.debug("Instance heartbeat saved successfully for instance {}", instance.getId());
+            LOG.debug("Instance heartbeat saved successfully");
             return ResponseEntity.ok().build();
             
         } catch (Exception e) {
@@ -388,7 +382,7 @@ public class AgentApiResource {
      */
     @PostMapping("/http-heartbeats")
     public ResponseEntity<HttpHeartbeatDTO> submitHttpHeartbeat(@RequestBody HttpHeartbeatDTO heartbeat) {
-        LOG.debug("HTTP heartbeat received: {}", heartbeat);
+        LOG.debug("HTTP heartbeat received");
         HttpHeartbeatDTO result = httpHeartbeatService.save(heartbeat);
         return ResponseEntity.ok(result);
     }

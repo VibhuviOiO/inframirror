@@ -2,6 +2,7 @@ package vibhuvi.oio.inframirror.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -108,6 +109,12 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional(readOnly = true)
     public Page<AgentDTO> search(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search for a page of Agents for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return agentRepository.findAll(pageable).map(agentMapper::toDto);
@@ -123,6 +130,9 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional(readOnly = true)
     public Page<AgentDTO> searchPrefix(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }
@@ -137,6 +147,9 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional(readOnly = true)
     public Page<AgentDTO> searchFuzzy(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }
@@ -151,6 +164,9 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional(readOnly = true)
     public Page<AgentSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }
@@ -194,7 +210,7 @@ public class AgentServiceImpl implements AgentService {
             .orElseGet(() -> {
                 Datacenter newDatacenter = new Datacenter();
                 newDatacenter.setName(datacenterName);
-                String code = datacenterName.toLowerCase()
+                String code = datacenterName.toLowerCase(Locale.ROOT)
                     .replaceAll("\\s+", "")
                     .replaceAll("[^a-z0-9]", "")
                     .substring(0, Math.min(10, datacenterName.length()));
@@ -236,20 +252,5 @@ public class AgentServiceImpl implements AgentService {
             agent.setStatus("ACTIVE");
             agentRepository.save(agent);
         });
-    }
-
-    @Override
-    public void updateLastSeenByApiKey(String apiKey) {
-        LOG.debug("Updating last seen for agent with API key");
-        // API keys are managed separately - this is a no-op for now
-        // In production, you'd query api_keys table and find associated agent
-    }
-
-    @Override
-    public Optional<AgentDTO> findByApiKey(String apiKey) {
-        LOG.debug("Finding agent by API key");
-        // API keys are managed separately - return empty for now
-        // In production, you'd query api_keys table and find associated agent
-        return Optional.empty();
     }
 }

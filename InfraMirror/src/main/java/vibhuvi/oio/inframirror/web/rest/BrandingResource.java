@@ -56,12 +56,12 @@ public class BrandingResource {
      */
     @PostMapping("")
     public ResponseEntity<BrandingDTO> createBranding(@Valid @RequestBody BrandingDTO brandingDTO) throws URISyntaxException {
-        LOG.debug("REST request to save Branding : {}", brandingDTO);
+        LOG.debug("REST request to save Branding");
         if (brandingDTO.getId() != null) {
             throw new BadRequestAlertException("A new branding cannot already have an ID", ENTITY_NAME, "idexists");
         }
         brandingDTO = brandingService.save(brandingDTO);
-        return ResponseEntity.created(new URI("/api/brandings/" + brandingDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, brandingDTO.getId().toString()))
             .body(brandingDTO);
     }
@@ -81,7 +81,7 @@ public class BrandingResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody BrandingDTO brandingDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update Branding : {}, {}", id, brandingDTO);
+        LOG.debug("REST request to update Branding  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (brandingDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -115,7 +115,7 @@ public class BrandingResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody BrandingDTO brandingDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Branding partially : {}, {}", id, brandingDTO);
+        LOG.debug("REST request to partial update Branding partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (brandingDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -143,7 +143,7 @@ public class BrandingResource {
      */
     @GetMapping("")
     public ResponseEntity<List<BrandingDTO>> getAllBrandings(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        LOG.debug("REST request to get a page of Brandings");
+        LOG.debug("REST request to get a page of entities");
         Page<BrandingDTO> page = brandingService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -157,7 +157,7 @@ public class BrandingResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<BrandingDTO> getBranding(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get Branding : {}", id);
+        LOG.debug("REST request to get Branding  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<BrandingDTO> brandingDTO = brandingService.findOne(id);
         return ResponseUtil.wrapOrNotFound(brandingDTO);
     }
@@ -170,7 +170,7 @@ public class BrandingResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBranding(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete Branding : {}", id);
+        LOG.debug("REST request to delete Branding  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         brandingService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -190,7 +190,7 @@ public class BrandingResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of Brandings for query {}", query);
+        LOG.debug("REST request to search for a page of Brandings for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
             Page<BrandingDTO> page = brandingService.search(query, pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
             return ResponseEntity.ok().headers(headers).body(page.getContent());

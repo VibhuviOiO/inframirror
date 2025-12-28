@@ -57,12 +57,12 @@ public class ServiceInstanceResource {
     @PostMapping("")
     public ResponseEntity<ServiceInstanceDTO> createServiceInstance(@Valid @RequestBody ServiceInstanceDTO serviceInstanceDTO)
         throws URISyntaxException {
-        LOG.debug("REST request to save ServiceInstance : {}", serviceInstanceDTO);
+        LOG.debug("REST request to save ServiceInstance");
         if (serviceInstanceDTO.getId() != null) {
             throw new BadRequestAlertException("A new serviceInstance cannot already have an ID", ENTITY_NAME, "idexists");
         }
         serviceInstanceDTO = serviceInstanceService.save(serviceInstanceDTO);
-        return ResponseEntity.created(new URI("/api/service-instances/" + serviceInstanceDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, serviceInstanceDTO.getId().toString()))
             .body(serviceInstanceDTO);
     }
@@ -82,7 +82,7 @@ public class ServiceInstanceResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody ServiceInstanceDTO serviceInstanceDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update ServiceInstance : {}, {}", id, serviceInstanceDTO);
+        LOG.debug("REST request to update ServiceInstance : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         if (serviceInstanceDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -116,7 +116,7 @@ public class ServiceInstanceResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody ServiceInstanceDTO serviceInstanceDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update ServiceInstance partially : {}, {}", id, serviceInstanceDTO);
+        LOG.debug("REST request to partial update ServiceInstance partially : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         if (serviceInstanceDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -146,7 +146,7 @@ public class ServiceInstanceResource {
     public ResponseEntity<List<ServiceInstanceDTO>> getAllServiceInstances(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to get a page of ServiceInstances");
+        LOG.debug("REST request to get a page of entities");
         Page<ServiceInstanceDTO> page = serviceInstanceService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -160,7 +160,7 @@ public class ServiceInstanceResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ServiceInstanceDTO> getServiceInstance(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get ServiceInstance : {}", id);
+        LOG.debug("REST request to get ServiceInstance : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         Optional<ServiceInstanceDTO> serviceInstanceDTO = serviceInstanceService.findOne(id);
         return ResponseUtil.wrapOrNotFound(serviceInstanceDTO);
     }
@@ -173,7 +173,7 @@ public class ServiceInstanceResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteServiceInstance(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete ServiceInstance : {}", id);
+        LOG.debug("REST request to delete ServiceInstance : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         serviceInstanceService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -193,7 +193,7 @@ public class ServiceInstanceResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of ServiceInstances for query {}", query);
+        LOG.debug("REST request to search for a page of ServiceInstances for query: {}", query != null ? query.replaceAll("[\\r\\n]", "") : null);
         Page<ServiceInstanceDTO> page = serviceInstanceService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

@@ -67,12 +67,12 @@ public class MonitoredServiceResource {
     @PostMapping("")
     public ResponseEntity<MonitoredServiceDTO> createMonitoredService(@Valid @RequestBody MonitoredServiceDTO monitoredServiceDTO)
         throws URISyntaxException {
-        LOG.debug("REST request to save MonitoredService : {}", monitoredServiceDTO);
+        LOG.debug("REST request to save MonitoredService");
         if (monitoredServiceDTO.getId() != null) {
             throw new BadRequestAlertException("A new monitoredService cannot already have an ID", ENTITY_NAME, "idexists");
         }
         monitoredServiceDTO = monitoredServiceService.save(monitoredServiceDTO);
-        return ResponseEntity.created(new URI("/api/monitored-services/" + monitoredServiceDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, monitoredServiceDTO.getId().toString()))
             .body(monitoredServiceDTO);
     }
@@ -92,7 +92,7 @@ public class MonitoredServiceResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody MonitoredServiceDTO monitoredServiceDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update MonitoredService : {}, {}", id, monitoredServiceDTO);
+        LOG.debug("REST request to update MonitoredService  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (monitoredServiceDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -126,7 +126,7 @@ public class MonitoredServiceResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody MonitoredServiceDTO monitoredServiceDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update MonitoredService partially : {}, {}", id, monitoredServiceDTO);
+        LOG.debug("REST request to partial update MonitoredService partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (monitoredServiceDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -185,7 +185,7 @@ public class MonitoredServiceResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<MonitoredServiceDTO> getMonitoredService(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get MonitoredService : {}", id);
+        LOG.debug("REST request to get MonitoredService  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<MonitoredServiceDTO> monitoredServiceDTO = monitoredServiceService.findOne(id);
         return ResponseUtil.wrapOrNotFound(monitoredServiceDTO);
     }
@@ -198,7 +198,7 @@ public class MonitoredServiceResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMonitoredService(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete MonitoredService : {}", id);
+        LOG.debug("REST request to delete MonitoredService  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         monitoredServiceService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -213,7 +213,7 @@ public class MonitoredServiceResource {
      */
     @GetMapping("/{id}/instances")
     public ResponseEntity<List<vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO>> getServiceInstances(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get ServiceInstances for MonitoredService : {}", id);
+        LOG.debug("REST request to get ServiceInstances for MonitoredService  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         List<vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO> instances = monitoredServiceService.findServiceInstances(id);
         return ResponseEntity.ok().body(instances);
     }
@@ -231,12 +231,12 @@ public class MonitoredServiceResource {
         @PathVariable("id") Long id,
         @RequestBody vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO serviceInstanceDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to add ServiceInstance to MonitoredService : {}, {}", id, serviceInstanceDTO);
+        LOG.debug("REST request to add ServiceInstance to MonitoredService  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (serviceInstanceDTO.getId() != null) {
             throw new BadRequestAlertException("A new serviceInstance cannot already have an ID", "serviceInstance", "idexists");
         }
         serviceInstanceDTO = monitoredServiceService.addServiceInstance(id, serviceInstanceDTO);
-        return ResponseEntity.created(new URI("/api/service-instances/" + serviceInstanceDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "serviceInstance", serviceInstanceDTO.getId().toString()))
             .body(serviceInstanceDTO);
     }
@@ -254,7 +254,7 @@ public class MonitoredServiceResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of MonitoredServices for query {}", query);
+        LOG.debug("REST request to search for a page of MonitoredServices for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<MonitoredServiceDTO> page = monitoredServiceService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

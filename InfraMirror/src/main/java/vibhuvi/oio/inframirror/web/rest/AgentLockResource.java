@@ -52,12 +52,12 @@ public class AgentLockResource {
      */
     @PostMapping("")
     public ResponseEntity<AgentLockDTO> createAgentLock(@Valid @RequestBody AgentLockDTO agentLockDTO) throws URISyntaxException {
-        LOG.debug("REST request to save AgentLock : {}", agentLockDTO);
+        LOG.debug("REST request to save AgentLock");
         if (agentLockDTO.getId() != null) {
             throw new BadRequestAlertException("A new agentLock cannot already have an ID", ENTITY_NAME, "idexists");
         }
         agentLockDTO = agentLockService.save(agentLockDTO);
-        return ResponseEntity.created(new URI("/api/agent-locks/" + agentLockDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, agentLockDTO.getId().toString()))
             .body(agentLockDTO);
     }
@@ -70,7 +70,7 @@ public class AgentLockResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody AgentLockDTO agentLockDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update AgentLock : {}, {}", id, agentLockDTO);
+        LOG.debug("REST request to update AgentLock  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (agentLockDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -104,7 +104,7 @@ public class AgentLockResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<AgentLockDTO> getAgentLock(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get AgentLock : {}", id);
+        LOG.debug("REST request to get AgentLock  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<AgentLockDTO> agentLockDTO = agentLockService.findOne(id);
         return ResponseUtil.wrapOrNotFound(agentLockDTO);
     }
@@ -114,7 +114,7 @@ public class AgentLockResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAgentLock(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete AgentLock : {}", id);
+        LOG.debug("REST request to delete AgentLock  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         agentLockService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))

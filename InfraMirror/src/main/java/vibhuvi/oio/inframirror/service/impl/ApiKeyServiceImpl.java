@@ -152,6 +152,12 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     @Override
     @Transactional(readOnly = true)
     public Page<ApiKeyDTO> search(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search for a page of ApiKeys for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return apiKeyRepository.findAll(pageable).map(apiKeyMapper::toDto);
@@ -164,6 +170,9 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     @Override
     @Transactional(readOnly = true)
     public Page<ApiKeyDTO> searchPrefix(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }
@@ -175,6 +184,9 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     @Override
     @Transactional(readOnly = true)
     public Page<ApiKeyDTO> searchFuzzy(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }
@@ -186,6 +198,9 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     @Override
     @Transactional(readOnly = true)
     public Page<ApiKeySearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }

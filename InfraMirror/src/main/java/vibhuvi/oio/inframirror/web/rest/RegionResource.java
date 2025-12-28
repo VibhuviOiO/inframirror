@@ -62,12 +62,12 @@ public class RegionResource {
      */
     @PostMapping("")
     public ResponseEntity<RegionDTO> createRegion(@Valid @RequestBody RegionDTO regionDTO) throws URISyntaxException {
-        LOG.debug("REST request to save Region : {}", regionDTO);
+        LOG.debug("REST request to save Region");
         if (regionDTO.getId() != null) {
             throw new BadRequestAlertException("A new region cannot already have an ID", ENTITY_NAME, "idexists");
         }
         regionDTO = regionService.save(regionDTO);
-        return ResponseEntity.created(new URI("/api/regions/" + regionDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, regionDTO.getId().toString()))
             .body(regionDTO);
     }
@@ -87,7 +87,7 @@ public class RegionResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody RegionDTO regionDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update Region : {}, {}", id, regionDTO);
+        LOG.debug("REST request to update Region  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (regionDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -121,7 +121,7 @@ public class RegionResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody RegionDTO regionDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Region partially : {}, {}", id, regionDTO);
+        LOG.debug("REST request to partial update Region partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (regionDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -180,7 +180,7 @@ public class RegionResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<RegionDTO> getRegion(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get Region : {}", id);
+        LOG.debug("REST request to get Region  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<RegionDTO> regionDTO = regionService.findOne(id);
         return ResponseUtil.wrapOrNotFound(regionDTO);
     }
@@ -193,7 +193,7 @@ public class RegionResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRegion(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete Region : {}", id);
+        LOG.debug("REST request to delete Region  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         regionService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))

@@ -57,12 +57,12 @@ public class StatusPageItemResource {
     @PostMapping("")
     public ResponseEntity<StatusPageItemDTO> createStatusPageItem(@Valid @RequestBody StatusPageItemDTO statusPageItemDTO)
         throws URISyntaxException {
-        LOG.debug("REST request to save StatusPageItem : {}", statusPageItemDTO);
+        LOG.debug("REST request to save StatusPageItem");
         if (statusPageItemDTO.getId() != null) {
             throw new BadRequestAlertException("A new statusPageItem cannot already have an ID", ENTITY_NAME, "idexists");
         }
         statusPageItemDTO = statusPageItemService.save(statusPageItemDTO);
-        return ResponseEntity.created(new URI("/api/status-page-items/" + statusPageItemDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, statusPageItemDTO.getId().toString()))
             .body(statusPageItemDTO);
     }
@@ -82,7 +82,7 @@ public class StatusPageItemResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody StatusPageItemDTO statusPageItemDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update StatusPageItem : {}, {}", id, statusPageItemDTO);
+        LOG.debug("REST request to update StatusPageItem  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (statusPageItemDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -116,7 +116,7 @@ public class StatusPageItemResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody StatusPageItemDTO statusPageItemDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update StatusPageItem partially : {}, {}", id, statusPageItemDTO);
+        LOG.debug("REST request to partial update StatusPageItem partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (statusPageItemDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -146,7 +146,7 @@ public class StatusPageItemResource {
     public ResponseEntity<List<StatusPageItemDTO>> getAllStatusPageItems(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to get a page of StatusPageItems");
+        LOG.debug("REST request to get a page of entities");
         Page<StatusPageItemDTO> page = statusPageItemService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -160,7 +160,7 @@ public class StatusPageItemResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<StatusPageItemDTO> getStatusPageItem(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get StatusPageItem : {}", id);
+        LOG.debug("REST request to get StatusPageItem  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<StatusPageItemDTO> statusPageItemDTO = statusPageItemService.findOne(id);
         return ResponseUtil.wrapOrNotFound(statusPageItemDTO);
     }
@@ -173,7 +173,7 @@ public class StatusPageItemResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStatusPageItem(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete StatusPageItem : {}", id);
+        LOG.debug("REST request to delete StatusPageItem  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         statusPageItemService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -193,7 +193,7 @@ public class StatusPageItemResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of StatusPageItems for query {}", query);
+        LOG.debug("REST request to search for a page of StatusPageItems for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
             Page<StatusPageItemDTO> page = statusPageItemService.search(query, pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
             return ResponseEntity.ok().headers(headers).body(page.getContent());

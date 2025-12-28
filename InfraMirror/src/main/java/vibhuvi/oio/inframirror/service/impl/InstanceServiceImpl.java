@@ -80,6 +80,12 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     @Transactional(readOnly = true)
     public Page<InstanceDTO> search(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search Instances for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return instanceRepository.findAll(pageable).map(instanceMapper::toDto);
@@ -94,6 +100,12 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     @Transactional(readOnly = true)
     public Page<InstanceDTO> searchPrefix(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to prefix search Instances for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
@@ -108,6 +120,12 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     @Transactional(readOnly = true)
     public Page<InstanceDTO> searchFuzzy(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to fuzzy search Instances for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
@@ -122,6 +140,12 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     @Transactional(readOnly = true)
     public Page<InstanceSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search Instances with highlight for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);

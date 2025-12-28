@@ -126,6 +126,12 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
     @Override
     @Transactional(readOnly = true)
     public Page<MonitoredServiceDTO> search(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search for a page of MonitoredServices for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return monitoredServiceRepository.findAll(pageable).map(monitoredServiceMapper::toDto);
@@ -141,6 +147,9 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
     @Override
     @Transactional(readOnly = true)
     public Page<MonitoredServiceDTO> searchPrefix(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }
@@ -155,6 +164,9 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
     @Override
     @Transactional(readOnly = true)
     public Page<MonitoredServiceDTO> searchFuzzy(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }
@@ -169,6 +181,9 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
     @Override
     @Transactional(readOnly = true)
     public Page<MonitoredServiceSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }

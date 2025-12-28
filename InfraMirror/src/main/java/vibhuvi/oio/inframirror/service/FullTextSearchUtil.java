@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.service;
 
+import java.util.Locale;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,7 +28,7 @@ public final class FullTextSearchUtil {
         if (query == null || query.isBlank()) {
             return "";
         }
-        String sanitized = query.trim().toLowerCase();
+        String sanitized = query.trim().toLowerCase(Locale.ROOT);
         String[] words = sanitized.split("\\s+");
         return words[words.length - 1];
     }
@@ -54,7 +55,7 @@ public final class FullTextSearchUtil {
      * @return normalized query
      */
     public static String normalizeQuery(String query) {
-        return query == null ? "" : query.trim().toLowerCase();
+        return query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
     }
 
     /**

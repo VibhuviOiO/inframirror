@@ -66,12 +66,12 @@ public class StatusPageResource {
      */
     @PostMapping("")
     public ResponseEntity<StatusPageDTO> createStatusPage(@Valid @RequestBody StatusPageDTO statusPageDTO) throws URISyntaxException {
-        LOG.debug("REST request to save StatusPage : {}", statusPageDTO);
+        LOG.debug("REST request to save StatusPage");
         if (statusPageDTO.getId() != null) {
             throw new BadRequestAlertException("A new statusPage cannot already have an ID", ENTITY_NAME, "idexists");
         }
         statusPageDTO = statusPageService.save(statusPageDTO);
-        return ResponseEntity.created(new URI("/api/status-pages/" + statusPageDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, statusPageDTO.getId().toString()))
             .body(statusPageDTO);
     }
@@ -91,7 +91,7 @@ public class StatusPageResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody StatusPageDTO statusPageDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update StatusPage : {}, {}", id, statusPageDTO);
+        LOG.debug("REST request to update StatusPage : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         if (statusPageDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -125,7 +125,7 @@ public class StatusPageResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody StatusPageDTO statusPageDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update StatusPage partially : {}, {}", id, statusPageDTO);
+        LOG.debug("REST request to partial update StatusPage partially : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         if (statusPageDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -184,7 +184,7 @@ public class StatusPageResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<StatusPageDTO> getStatusPage(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get StatusPage : {}", id);
+        LOG.debug("REST request to get StatusPage : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         Optional<StatusPageDTO> statusPageDTO = statusPageService.findOne(id);
         return ResponseUtil.wrapOrNotFound(statusPageDTO);
     }
@@ -197,7 +197,7 @@ public class StatusPageResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStatusPage(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete StatusPage : {}", id);
+        LOG.debug("REST request to delete StatusPage : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         statusPageService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -217,7 +217,7 @@ public class StatusPageResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of StatusPages for query {}", query);
+        LOG.debug("REST request to search for a page of StatusPages for query: {}", query != null ? query.replaceAll("[\\r\\n]", "") : null);
         Page<StatusPageDTO> page = statusPageService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

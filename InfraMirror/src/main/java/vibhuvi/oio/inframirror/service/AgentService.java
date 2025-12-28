@@ -101,19 +101,4 @@ public interface AgentService {
      * @param agentId the agent ID.
      */
     void updateLastSeen(Long agentId);
-
-    /**
-     * Update agent's last seen timestamp by API key.
-     *
-     * @param apiKey the agent API key.
-     */
-    void updateLastSeenByApiKey(String apiKey);
-
-    /**
-     * Find agent by API key.
-     *
-     * @param apiKey the agent API key.
-     * @return the agent.
-     */
-    Optional<AgentDTO> findByApiKey(String apiKey);
 }

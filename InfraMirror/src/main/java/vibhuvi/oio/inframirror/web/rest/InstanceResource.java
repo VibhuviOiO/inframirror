@@ -66,12 +66,12 @@ public class InstanceResource {
      */
     @PostMapping("")
     public ResponseEntity<InstanceDTO> createInstance(@Valid @RequestBody InstanceDTO instanceDTO) throws URISyntaxException {
-        LOG.debug("REST request to save Instance : {}", instanceDTO);
+        LOG.debug("REST request to save Instance");
         if (instanceDTO.getId() != null) {
             throw new BadRequestAlertException("A new instance cannot already have an ID", ENTITY_NAME, "idexists");
         }
         instanceDTO = instanceService.save(instanceDTO);
-        return ResponseEntity.created(new URI("/api/instances/" + instanceDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, instanceDTO.getId().toString()))
             .body(instanceDTO);
     }
@@ -91,7 +91,7 @@ public class InstanceResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody InstanceDTO instanceDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update Instance : {}, {}", id, instanceDTO);
+        LOG.debug("REST request to update Instance  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (instanceDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -125,7 +125,7 @@ public class InstanceResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody InstanceDTO instanceDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Instance partially : {}, {}", id, instanceDTO);
+        LOG.debug("REST request to partial update Instance partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (instanceDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -184,7 +184,7 @@ public class InstanceResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<InstanceDTO> getInstance(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get Instance : {}", id);
+        LOG.debug("REST request to get Instance  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<InstanceDTO> instanceDTO = instanceService.findOne(id);
         return ResponseUtil.wrapOrNotFound(instanceDTO);
     }
@@ -197,7 +197,7 @@ public class InstanceResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInstance(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete Instance : {}", id);
+        LOG.debug("REST request to delete Instance  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         instanceService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -217,7 +217,7 @@ public class InstanceResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of Instances for query {}", query);
+        LOG.debug("REST request to search for a page of Instances for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<InstanceDTO> page = instanceService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -228,7 +228,7 @@ public class InstanceResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to prefix search Instances for query {}", query);
+        LOG.debug("REST request to prefix search Instances for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<InstanceDTO> page = instanceService.searchPrefix(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -239,7 +239,7 @@ public class InstanceResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to fuzzy search Instances for query {}", query);
+        LOG.debug("REST request to fuzzy search Instances for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<InstanceDTO> page = instanceService.searchFuzzy(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -250,7 +250,7 @@ public class InstanceResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search Instances with highlight for query {}", query);
+        LOG.debug("REST request to search Instances with highlight for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<InstanceSearchResultDTO> page = instanceService.searchWithHighlight(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

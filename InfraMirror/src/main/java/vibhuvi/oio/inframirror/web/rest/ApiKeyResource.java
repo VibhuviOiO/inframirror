@@ -57,12 +57,12 @@ public class ApiKeyResource {
      */
     @PostMapping("")
     public ResponseEntity<ApiKeyDTO> createApiKey(@Valid @RequestBody ApiKeyDTO apiKeyDTO) throws URISyntaxException {
-        LOG.debug("REST request to save ApiKey : {}", apiKeyDTO);
+        LOG.debug("REST request to save ApiKey");
         if (apiKeyDTO.getId() != null) {
             throw new BadRequestAlertException("A new apiKey cannot already have an ID", ENTITY_NAME, "idexists");
         }
         apiKeyDTO = apiKeyService.save(apiKeyDTO);
-        return ResponseEntity.created(new URI("/api/api-keys/" + apiKeyDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, apiKeyDTO.getId().toString()))
             .body(apiKeyDTO);
     }
@@ -82,7 +82,7 @@ public class ApiKeyResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody ApiKeyDTO apiKeyDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update ApiKey : {}, {}", id, apiKeyDTO);
+        LOG.debug("REST request to update ApiKey  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (apiKeyDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -116,7 +116,7 @@ public class ApiKeyResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody ApiKeyDTO apiKeyDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update ApiKey partially : {}, {}", id, apiKeyDTO);
+        LOG.debug("REST request to partial update ApiKey partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (apiKeyDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -144,7 +144,7 @@ public class ApiKeyResource {
      */
     @GetMapping("")
     public ResponseEntity<List<ApiKeyDTO>> getAllApiKeys(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        LOG.debug("REST request to get a page of ApiKeys");
+        LOG.debug("REST request to get a page of entities");
         Page<ApiKeyDTO> page = apiKeyService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -158,7 +158,7 @@ public class ApiKeyResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiKeyDTO> getApiKey(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get ApiKey : {}", id);
+        LOG.debug("REST request to get ApiKey  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<ApiKeyDTO> apiKeyDTO = apiKeyService.findOne(id);
         return ResponseUtil.wrapOrNotFound(apiKeyDTO);
     }
@@ -171,7 +171,7 @@ public class ApiKeyResource {
      */
     @PutMapping("/{id}/deactivate")
     public ResponseEntity<Void> deactivateApiKey(@PathVariable("id") Long id) {
-        LOG.debug("REST request to deactivate ApiKey : {}", id);
+        LOG.debug("REST request to deactivate ApiKey  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         ((vibhuvi.oio.inframirror.service.impl.ApiKeyServiceImpl) apiKeyService).deactivate(id);
         return ResponseEntity.ok().build();
     }
@@ -184,7 +184,7 @@ public class ApiKeyResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteApiKey(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete ApiKey : {}", id);
+        LOG.debug("REST request to delete ApiKey  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         apiKeyService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -204,7 +204,7 @@ public class ApiKeyResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of ApiKeys for query {}", query);
+        LOG.debug("REST request to search for a page of ApiKeys for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<ApiKeyDTO> page = apiKeyService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

@@ -60,12 +60,12 @@ public class StatusDependencyResource {
     @PostMapping("")
     public ResponseEntity<StatusDependencyDTO> createStatusDependency(@Valid @RequestBody StatusDependencyDTO statusDependencyDTO)
         throws URISyntaxException {
-        LOG.debug("REST request to save StatusDependency : {}", statusDependencyDTO);
+        LOG.debug("REST request to save StatusDependency");
         if (statusDependencyDTO.getId() != null) {
             throw new BadRequestAlertException("A new statusDependency cannot already have an ID", ENTITY_NAME, "idexists");
         }
         statusDependencyDTO = statusDependencyService.save(statusDependencyDTO);
-        return ResponseEntity.created(new URI("/api/status-dependencies/" + statusDependencyDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, statusDependencyDTO.getId().toString()))
             .body(statusDependencyDTO);
     }
@@ -85,7 +85,7 @@ public class StatusDependencyResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody StatusDependencyDTO statusDependencyDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update StatusDependency : {}, {}", id, statusDependencyDTO);
+        LOG.debug("REST request to update StatusDependency : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         if (statusDependencyDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -119,7 +119,7 @@ public class StatusDependencyResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody StatusDependencyDTO statusDependencyDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update StatusDependency partially : {}, {}", id, statusDependencyDTO);
+        LOG.debug("REST request to partial update StatusDependency partially : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         if (statusDependencyDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -163,7 +163,7 @@ public class StatusDependencyResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<StatusDependencyDTO> getStatusDependency(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get StatusDependency : {}", id);
+        LOG.debug("REST request to get StatusDependency : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         Optional<StatusDependencyDTO> statusDependencyDTO = statusDependencyService.findOne(id);
         return ResponseUtil.wrapOrNotFound(statusDependencyDTO);
     }
@@ -176,7 +176,7 @@ public class StatusDependencyResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStatusDependency(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete StatusDependency : {}", id);
+        LOG.debug("REST request to delete StatusDependency : {}", String.valueOf(id).replaceAll("[\\r\\n]", ""));
         statusDependencyService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -196,7 +196,7 @@ public class StatusDependencyResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of StatusDependencies for query {}", query);
+        LOG.debug("REST request to search for a page of StatusDependencies for query: {}", query != null ? query.replaceAll("[\\r\\n]", "") : null);
             Page<StatusDependencyDTO> page = statusDependencyService.search(query, pageable);
             HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
             return ResponseEntity.ok().headers(headers).body(page.getContent());

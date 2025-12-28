@@ -70,6 +70,12 @@ public class StatusPageServiceImpl implements StatusPageService {
     @Override
     @Transactional(readOnly = true)
     public Page<StatusPageDTO> search(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search for a page of StatusPages for query {}", query);
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return statusPageRepository.findAll(pageable).map(statusPageMapper::toDto);
@@ -82,6 +88,9 @@ public class StatusPageServiceImpl implements StatusPageService {
     @Override
     @Transactional(readOnly = true)
     public Page<StatusPageDTO> searchPrefix(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }
@@ -93,6 +102,9 @@ public class StatusPageServiceImpl implements StatusPageService {
     @Override
     @Transactional(readOnly = true)
     public Page<StatusPageDTO> searchFuzzy(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }
@@ -104,6 +116,9 @@ public class StatusPageServiceImpl implements StatusPageService {
     @Override
     @Transactional(readOnly = true)
     public Page<StatusPageSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
         if (FullTextSearchUtil.isEmptyQuery(query)) {
             return Page.empty(pageable);
         }

@@ -66,12 +66,12 @@ public class DatacenterResource {
      */
     @PostMapping("")
     public ResponseEntity<DatacenterDTO> createDatacenter(@Valid @RequestBody DatacenterDTO datacenterDTO) throws URISyntaxException {
-        LOG.debug("REST request to save Datacenter : {}", datacenterDTO);
+        LOG.debug("REST request to save Datacenter");
         if (datacenterDTO.getId() != null) {
             throw new BadRequestAlertException("A new datacenter cannot already have an ID", ENTITY_NAME, "idexists");
         }
         datacenterDTO = datacenterService.save(datacenterDTO);
-        return ResponseEntity.created(new URI("/api/datacenters/" + datacenterDTO.getId()))
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, datacenterDTO.getId().toString()))
             .body(datacenterDTO);
     }
@@ -91,7 +91,7 @@ public class DatacenterResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody DatacenterDTO datacenterDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update Datacenter : {}, {}", id, datacenterDTO);
+        LOG.debug("REST request to update Datacenter  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (datacenterDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -125,7 +125,7 @@ public class DatacenterResource {
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody DatacenterDTO datacenterDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Datacenter partially : {}, {}", id, datacenterDTO);
+        LOG.debug("REST request to partial update Datacenter partially  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         if (datacenterDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -184,7 +184,7 @@ public class DatacenterResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<DatacenterDTO> getDatacenter(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get Datacenter : {}", id);
+        LOG.debug("REST request to get Datacenter  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         Optional<DatacenterDTO> datacenterDTO = datacenterService.findOne(id);
         return ResponseUtil.wrapOrNotFound(datacenterDTO);
     }
@@ -197,7 +197,7 @@ public class DatacenterResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDatacenter(@PathVariable("id") Long id) {
-        LOG.debug("REST request to delete Datacenter : {}", id);
+        LOG.debug("REST request to delete Datacenter  : {}", String.valueOf(id).replaceAll("[\r\n]", ""));
         datacenterService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -217,7 +217,7 @@ public class DatacenterResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search for a page of Datacenters for query {}", query);
+        LOG.debug("REST request to search for a page of Datacenters for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<DatacenterDTO> page = datacenterService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -228,7 +228,7 @@ public class DatacenterResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to prefix search Datacenters for query {}", query);
+        LOG.debug("REST request to prefix search Datacenters for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<DatacenterDTO> page = datacenterService.searchPrefix(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -239,7 +239,7 @@ public class DatacenterResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to fuzzy search Datacenters for query {}", query);
+        LOG.debug("REST request to fuzzy search Datacenters for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<DatacenterDTO> page = datacenterService.searchFuzzy(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -250,7 +250,7 @@ public class DatacenterResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to search Datacenters with highlight for query {}", query);
+        LOG.debug("REST request to search Datacenters with highlight for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
         Page<DatacenterSearchResultDTO> page = datacenterService.searchWithHighlight(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

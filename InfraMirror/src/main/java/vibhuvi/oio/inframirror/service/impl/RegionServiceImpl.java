@@ -78,6 +78,12 @@ public class RegionServiceImpl implements RegionService {
     @Override
     @Transactional(readOnly = true)
     public Page<RegionDTO> search(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search Regions : {}", query);
 
         if (FullTextSearchUtil.isEmptyQuery(query)) {
@@ -93,6 +99,12 @@ public class RegionServiceImpl implements RegionService {
     @Override
     @Transactional(readOnly = true)
     public Page<RegionDTO> searchPrefix(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to prefix search Regions : {}", query);
 
         if (FullTextSearchUtil.isEmptyQuery(query)) {
@@ -108,6 +120,12 @@ public class RegionServiceImpl implements RegionService {
     @Override
     @Transactional(readOnly = true)
     public Page<RegionDTO> searchFuzzy(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to fuzzy search Regions : {}", query);
 
         if (FullTextSearchUtil.isEmptyQuery(query)) {
@@ -123,6 +141,12 @@ public class RegionServiceImpl implements RegionService {
     @Override
     @Transactional(readOnly = true)
     public Page<RegionSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
+        if (query != null && query.length() > 100) {
+            throw new IllegalArgumentException("Search query too long (max 100 characters)");
+        }
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable cannot be null");
+        }
         LOG.debug("Request to search Regions with highlight : {}", query);
 
         if (FullTextSearchUtil.isEmptyQuery(query)) {
