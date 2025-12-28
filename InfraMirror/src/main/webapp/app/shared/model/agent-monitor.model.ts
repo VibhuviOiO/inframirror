@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import { IAgent } from 'app/shared/model/agent.model';
-import { IHttpMonitor } from 'app/shared/model/http-monitor.model';
 
 export interface IAgentMonitor {
   id?: number;
@@ -9,8 +8,10 @@ export interface IAgentMonitor {
   createdDate?: dayjs.Dayjs | null;
   lastModifiedBy?: string | null;
   lastModifiedDate?: dayjs.Dayjs | null;
+  monitorType?: string;
+  monitorId?: number;
+  monitorName?: string;
   agent?: IAgent;
-  monitor?: IHttpMonitor;
 }
 
 export const defaultValue: Readonly<IAgentMonitor> = {

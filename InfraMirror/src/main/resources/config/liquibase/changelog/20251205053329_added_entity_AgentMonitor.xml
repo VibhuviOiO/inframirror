@@ -32,6 +32,9 @@
             <column name="agent_id" type="bigint">
                 <constraints nullable="false" />
             </column>
+            <column name="monitor_type" type="varchar(20)" defaultValue="HTTP">
+                <constraints nullable="false" />
+            </column>
             <column name="monitor_id" type="bigint">
                 <constraints nullable="false" />
             </column>
@@ -39,6 +42,15 @@
         </createTable>
         <dropDefaultValue tableName="agent_monitor" columnName="created_date" columnDataType="${datetimeType}"/>
         <dropDefaultValue tableName="agent_monitor" columnName="last_modified_date" columnDataType="${datetimeType}"/>
+    </changeSet>
+
+    <changeSet id="20251205053329-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="agent_id"
+                                 baseTableName="agent_monitor"
+                                 constraintName="fk_agent_monitor__agent_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="agent"
+                                 />
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

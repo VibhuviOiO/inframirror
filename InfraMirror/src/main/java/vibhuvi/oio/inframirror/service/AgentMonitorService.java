@@ -2,6 +2,8 @@ package vibhuvi.oio.inframirror.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import vibhuvi.oio.inframirror.service.dto.AgentMonitorDTO;
 
 /**
@@ -53,14 +55,6 @@ public interface AgentMonitorService {
      * @param id the id of the entity.
      */
     void delete(Long id);
-
-    /**
-     * Search for agentMonitors by agent or monitor name.
-     *
-     * @param query the query of the search.
-     * @return the list of entities.
-     */
-    List<AgentMonitorDTO> search(String query);
     
     /**
      * Find agentMonitors by agent ID.

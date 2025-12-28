@@ -42,18 +42,21 @@ public class AgentMonitor implements Serializable {
     @Column(name = "last_modified_date")
     private Instant lastModifiedDate;
 
-    @ManyToOne(optional = false)
     @NotNull
+    @Size(max = 20)
+    @Column(name = "monitor_type", length = 20, nullable = false)
+    private String monitorType;
+
+    @NotNull
+    @Column(name = "monitor_id", nullable = false)
+    private Long monitorId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(
         value = { "instances", "httpHeartbeats", "instanceHeartbeats", "serviceHeartbeats", "region" },
         allowSetters = true
     )
     private Agent agent;
-
-    @ManyToOne(optional = false)
-    @NotNull
-    @JsonIgnoreProperties(value = { "children", "heartbeats", "parent" }, allowSetters = true)
-    private HttpMonitor monitor;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -135,6 +138,32 @@ public class AgentMonitor implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
+    public String getMonitorType() {
+        return this.monitorType;
+    }
+
+    public AgentMonitor monitorType(String monitorType) {
+        this.setMonitorType(monitorType);
+        return this;
+    }
+
+    public void setMonitorType(String monitorType) {
+        this.monitorType = monitorType;
+    }
+
+    public Long getMonitorId() {
+        return this.monitorId;
+    }
+
+    public AgentMonitor monitorId(Long monitorId) {
+        this.setMonitorId(monitorId);
+        return this;
+    }
+
+    public void setMonitorId(Long monitorId) {
+        this.monitorId = monitorId;
+    }
+
     public Agent getAgent() {
         return this.agent;
     }
@@ -145,19 +174,6 @@ public class AgentMonitor implements Serializable {
 
     public AgentMonitor agent(Agent agent) {
         this.setAgent(agent);
-        return this;
-    }
-
-    public HttpMonitor getMonitor() {
-        return this.monitor;
-    }
-
-    public void setMonitor(HttpMonitor httpMonitor) {
-        this.monitor = httpMonitor;
-    }
-
-    public AgentMonitor monitor(HttpMonitor httpMonitor) {
-        this.setMonitor(httpMonitor);
         return this;
     }
 

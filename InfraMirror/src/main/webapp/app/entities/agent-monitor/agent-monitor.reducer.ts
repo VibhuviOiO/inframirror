@@ -21,8 +21,23 @@ const apiSearchUrl = 'api/agent-monitors/_search';
 
 export const searchEntities = createAsyncThunk(
   'agentMonitor/search_entity',
-  async ({ query, page, size, sort }: IQueryParams) => {
-    const requestUrl = `${apiSearchUrl}?query=${query}`;
+  async (params: IQueryParams) => {
+    const { query, sort, ...filters } = params;
+    const queryParams = new URLSearchParams();
+
+    queryParams.append('query', query);
+
+    if (sort) {
+      queryParams.append('sort', sort);
+    }
+
+    Object.keys(filters).forEach(key => {
+      if (filters[key]) {
+        queryParams.append(key, filters[key]);
+      }
+    });
+
+    const requestUrl = `${apiSearchUrl}?${queryParams.toString()}`;
     return axios.get<IAgentMonitor[]>(requestUrl);
   },
   { serializeError: serializeAxiosError },
@@ -30,8 +45,23 @@ export const searchEntities = createAsyncThunk(
 
 export const getEntities = createAsyncThunk(
   'agentMonitor/fetch_entity_list',
-  async ({ sort }: IQueryParams) => {
-    const requestUrl = `${apiUrl}?${sort ? `sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
+  async (params: IQueryParams) => {
+    const { sort, ...filters } = params;
+    const queryParams = new URLSearchParams();
+
+    if (sort) {
+      queryParams.append('sort', sort);
+    }
+
+    Object.keys(filters).forEach(key => {
+      if (filters[key]) {
+        queryParams.append(key, filters[key]);
+      }
+    });
+
+    queryParams.append('cacheBuster', new Date().getTime().toString());
+
+    const requestUrl = `${apiUrl}?${queryParams.toString()}`;
     return axios.get<IAgentMonitor[]>(requestUrl);
   },
   { serializeError: serializeAxiosError },

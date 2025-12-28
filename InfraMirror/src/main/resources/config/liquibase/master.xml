@@ -35,7 +35,6 @@
     <include file="config/liquibase/changelog/20251205053323_added_entity_constraints_Datacenter.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251205053327_added_entity_constraints_HttpMonitor.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251205053328_added_entity_constraints_HttpHeartbeat.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20251205053329_added_entity_constraints_AgentMonitor.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251205053331_added_entity_constraints_Instance.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251205053332_added_entity_constraints_InstanceHeartbeat.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251205053334_added_entity_constraints_ServiceInstance.xml" relativeToChangelogFile="false"/>

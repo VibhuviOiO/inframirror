@@ -60,6 +60,12 @@ class AgentMonitorResourceIT {
     private static final Instant DEFAULT_LAST_MODIFIED_DATE = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_LAST_MODIFIED_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
+    private static final String DEFAULT_MONITOR_TYPE = "HTTP";
+    private static final String UPDATED_MONITOR_TYPE = "INSTANCE";
+
+    private static final Long DEFAULT_MONITOR_ID = 1L;
+    private static final Long UPDATED_MONITOR_ID = 2L;
+
     private static final String ENTITY_API_URL = "/api/agent-monitors";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
     private static final String ENTITY_SEARCH_API_URL = "/api/agent-monitors/_search";
@@ -97,7 +103,9 @@ class AgentMonitorResourceIT {
             .createdBy(DEFAULT_CREATED_BY)
             .createdDate(DEFAULT_CREATED_DATE)
             .lastModifiedBy(DEFAULT_LAST_MODIFIED_BY)
-            .lastModifiedDate(DEFAULT_LAST_MODIFIED_DATE);
+            .lastModifiedDate(DEFAULT_LAST_MODIFIED_DATE)
+            .monitorType(DEFAULT_MONITOR_TYPE)
+            .monitorId(DEFAULT_MONITOR_ID);
         // Add required entity
         Agent agent;
         if (TestUtil.findAll(em, Agent.class).isEmpty()) {
@@ -108,16 +116,6 @@ class AgentMonitorResourceIT {
             agent = TestUtil.findAll(em, Agent.class).get(0);
         }
         agentMonitor.setAgent(agent);
-        // Add required entity
-        HttpMonitor httpMonitor;
-        if (TestUtil.findAll(em, HttpMonitor.class).isEmpty()) {
-            httpMonitor = HttpMonitorResourceIT.createEntity();
-            em.persist(httpMonitor);
-            em.flush();
-        } else {
-            httpMonitor = TestUtil.findAll(em, HttpMonitor.class).get(0);
-        }
-        agentMonitor.setMonitor(httpMonitor);
         return agentMonitor;
     }
 
@@ -133,7 +131,9 @@ class AgentMonitorResourceIT {
             .createdBy(UPDATED_CREATED_BY)
             .createdDate(UPDATED_CREATED_DATE)
             .lastModifiedBy(UPDATED_LAST_MODIFIED_BY)
-            .lastModifiedDate(UPDATED_LAST_MODIFIED_DATE);
+            .lastModifiedDate(UPDATED_LAST_MODIFIED_DATE)
+            .monitorType(UPDATED_MONITOR_TYPE)
+            .monitorId(UPDATED_MONITOR_ID);
         // Add required entity
         Agent agent;
         if (TestUtil.findAll(em, Agent.class).isEmpty()) {
@@ -144,16 +144,6 @@ class AgentMonitorResourceIT {
             agent = TestUtil.findAll(em, Agent.class).get(0);
         }
         updatedAgentMonitor.setAgent(agent);
-        // Add required entity
-        HttpMonitor httpMonitor;
-        if (TestUtil.findAll(em, HttpMonitor.class).isEmpty()) {
-            httpMonitor = HttpMonitorResourceIT.createUpdatedEntity();
-            em.persist(httpMonitor);
-            em.flush();
-        } else {
-            httpMonitor = TestUtil.findAll(em, HttpMonitor.class).get(0);
-        }
-        updatedAgentMonitor.setMonitor(httpMonitor);
         return updatedAgentMonitor;
     }
 

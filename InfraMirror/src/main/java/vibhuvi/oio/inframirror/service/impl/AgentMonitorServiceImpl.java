@@ -6,10 +6,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.AgentMonitor;
 import vibhuvi.oio.inframirror.repository.AgentMonitorRepository;
+import vibhuvi.oio.inframirror.repository.HttpMonitorRepository;
+import vibhuvi.oio.inframirror.repository.InstanceRepository;
+import vibhuvi.oio.inframirror.repository.MonitoredServiceRepository;
 import vibhuvi.oio.inframirror.service.AgentMonitorService;
 import vibhuvi.oio.inframirror.service.dto.AgentMonitorDTO;
 import vibhuvi.oio.inframirror.service.mapper.AgentMonitorMapper;
@@ -27,20 +32,59 @@ public class AgentMonitorServiceImpl implements AgentMonitorService {
 
     private final AgentMonitorMapper agentMonitorMapper;
 
+    private final HttpMonitorRepository httpMonitorRepository;
+
+    private final InstanceRepository instanceRepository;
+
+    private final MonitoredServiceRepository monitoredServiceRepository;
+
     public AgentMonitorServiceImpl(
         AgentMonitorRepository agentMonitorRepository,
-        AgentMonitorMapper agentMonitorMapper
+        AgentMonitorMapper agentMonitorMapper,
+        HttpMonitorRepository httpMonitorRepository,
+        InstanceRepository instanceRepository,
+        MonitoredServiceRepository monitoredServiceRepository
     ) {
         this.agentMonitorRepository = agentMonitorRepository;
         this.agentMonitorMapper = agentMonitorMapper;
+        this.httpMonitorRepository = httpMonitorRepository;
+        this.instanceRepository = instanceRepository;
+        this.monitoredServiceRepository = monitoredServiceRepository;
+    }
+
+    private void enrichWithMonitorName(AgentMonitorDTO dto) {
+        if (dto.getMonitorType() != null && dto.getMonitorId() != null) {
+            switch (dto.getMonitorType()) {
+                case "HTTP":
+                    httpMonitorRepository.findById(dto.getMonitorId())
+                        .ifPresent(monitor -> dto.setMonitorName(monitor.getName()));
+                    break;
+                case "INSTANCE":
+                    instanceRepository.findById(dto.getMonitorId())
+                        .ifPresent(instance -> dto.setMonitorName(instance.getName()));
+                    break;
+                case "SERVICE":
+                    monitoredServiceRepository.findById(dto.getMonitorId())
+                        .ifPresent(service -> dto.setMonitorName(service.getName()));
+                    break;
+            }
+        }
     }
 
     @Override
     public AgentMonitorDTO save(AgentMonitorDTO agentMonitorDTO) {
         LOG.debug("Request to save AgentMonitor : {}", agentMonitorDTO);
+        if (agentMonitorDTO.getCreatedBy() == null) {
+            agentMonitorDTO.setCreatedBy("system");
+        }
+        if (agentMonitorDTO.getCreatedDate() == null) {
+            agentMonitorDTO.setCreatedDate(java.time.Instant.now());
+        }
         AgentMonitor agentMonitor = agentMonitorMapper.toEntity(agentMonitorDTO);
         agentMonitor = agentMonitorRepository.save(agentMonitor);
-        return agentMonitorMapper.toDto(agentMonitor);
+        AgentMonitorDTO result = agentMonitorMapper.toDto(agentMonitor);
+        enrichWithMonitorName(result);
+        return result;
     }
 
     @Override
@@ -70,30 +114,28 @@ public class AgentMonitorServiceImpl implements AgentMonitorService {
     @Transactional(readOnly = true)
     public List<AgentMonitorDTO> findAll() {
         LOG.debug("Request to get all AgentMonitors");
-        return agentMonitorRepository.findAll().stream().map(agentMonitorMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
+        return agentMonitorRepository.findAll().stream()
+            .map(agentMonitorMapper::toDto)
+            .peek(this::enrichWithMonitorName)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<AgentMonitorDTO> findOne(Long id) {
         LOG.debug("Request to get AgentMonitor : {}", id);
-        return agentMonitorRepository.findById(id).map(agentMonitorMapper::toDto);
+        return agentMonitorRepository.findById(id)
+            .map(agentMonitorMapper::toDto)
+            .map(dto -> {
+                enrichWithMonitorName(dto);
+                return dto;
+            });
     }
 
     @Override
     public void delete(Long id) {
         LOG.debug("Request to delete AgentMonitor : {}", id);
         agentMonitorRepository.deleteById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<AgentMonitorDTO> search(String query) {
-        LOG.debug("Request to search AgentMonitors for query {}", query);
-        return agentMonitorRepository.searchByAgentOrMonitorName(query, query)
-            .stream()
-            .map(agentMonitorMapper::toDto)
-            .toList();
     }
     
     @Override

@@ -16,7 +16,6 @@ public class AgentMonitorDTO implements Serializable {
     @NotNull
     private Boolean active;
 
-    @NotNull
     @Size(max = 50)
     private String createdBy;
 
@@ -28,10 +27,16 @@ public class AgentMonitorDTO implements Serializable {
     private Instant lastModifiedDate;
 
     @NotNull
-    private AgentDTO agent;
+    @Size(max = 20)
+    private String monitorType;
 
     @NotNull
-    private HttpMonitorDTO monitor;
+    private Long monitorId;
+
+    private String monitorName;
+
+    @NotNull
+    private AgentDTO agent;
 
     public Long getId() {
         return id;
@@ -81,20 +86,36 @@ public class AgentMonitorDTO implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
+    public String getMonitorType() {
+        return monitorType;
+    }
+
+    public void setMonitorType(String monitorType) {
+        this.monitorType = monitorType;
+    }
+
+    public Long getMonitorId() {
+        return monitorId;
+    }
+
+    public void setMonitorId(Long monitorId) {
+        this.monitorId = monitorId;
+    }
+
+    public String getMonitorName() {
+        return monitorName;
+    }
+
+    public void setMonitorName(String monitorName) {
+        this.monitorName = monitorName;
+    }
+
     public AgentDTO getAgent() {
         return agent;
     }
 
     public void setAgent(AgentDTO agent) {
         this.agent = agent;
-    }
-
-    public HttpMonitorDTO getMonitor() {
-        return monitor;
-    }
-
-    public void setMonitor(HttpMonitorDTO monitor) {
-        this.monitor = monitor;
     }
 
     @Override
@@ -128,8 +149,10 @@ public class AgentMonitorDTO implements Serializable {
             ", createdDate='" + getCreatedDate() + "'" +
             ", lastModifiedBy='" + getLastModifiedBy() + "'" +
             ", lastModifiedDate='" + getLastModifiedDate() + "'" +
+            ", monitorType='" + getMonitorType() + "'" +
+            ", monitorId=" + getMonitorId() +
+            ", monitorName='" + getMonitorName() + "'" +
             ", agent=" + getAgent() +
-            ", monitor=" + getMonitor() +
             "}";
     }
 }

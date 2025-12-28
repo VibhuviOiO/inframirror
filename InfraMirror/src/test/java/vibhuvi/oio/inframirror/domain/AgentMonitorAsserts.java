@@ -51,7 +51,9 @@ public class AgentMonitorAsserts {
             .satisfies(a -> assertThat(a.getCreatedBy()).as("check createdBy").isEqualTo(expected.getCreatedBy()))
             .satisfies(a -> assertThat(a.getCreatedDate()).as("check createdDate").isEqualTo(expected.getCreatedDate()))
             .satisfies(a -> assertThat(a.getLastModifiedBy()).as("check lastModifiedBy").isEqualTo(expected.getLastModifiedBy()))
-            .satisfies(a -> assertThat(a.getLastModifiedDate()).as("check lastModifiedDate").isEqualTo(expected.getLastModifiedDate()));
+            .satisfies(a -> assertThat(a.getLastModifiedDate()).as("check lastModifiedDate").isEqualTo(expected.getLastModifiedDate()))
+            .satisfies(a -> assertThat(a.getMonitorType()).as("check monitorType").isEqualTo(expected.getMonitorType()))
+            .satisfies(a -> assertThat(a.getMonitorId()).as("check monitorId").isEqualTo(expected.getMonitorId()));
     }
 
     /**
@@ -63,7 +65,6 @@ public class AgentMonitorAsserts {
     public static void assertAgentMonitorUpdatableRelationshipsEquals(AgentMonitor expected, AgentMonitor actual) {
         assertThat(actual)
             .as("Verify AgentMonitor relationships")
-            .satisfies(a -> assertThat(a.getAgent()).as("check agent").isEqualTo(expected.getAgent()))
-            .satisfies(a -> assertThat(a.getMonitor()).as("check monitor").isEqualTo(expected.getMonitor()));
+            .satisfies(a -> assertThat(a.getAgent()).as("check agent").isEqualTo(expected.getAgent()));
     }
 }
