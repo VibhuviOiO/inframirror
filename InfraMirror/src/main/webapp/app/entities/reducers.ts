@@ -13,7 +13,6 @@ import instanceHeartbeat from 'app/entities/instance-heartbeat/instance-heartbea
 import serviceInstance from 'app/entities/service-instance/service-instance.reducer';
 import serviceHeartbeat from 'app/entities/service-heartbeat/service-heartbeat.reducer';
 import statusPage from 'app/entities/status-page/status-page.reducer';
-import statusPageItem from 'app/entities/status-page-item/status-page-item.reducer';
 import statusDependency from 'app/entities/status-dependency/status-dependency.reducer';
 import monitoredService from 'app/entities/monitored-service/monitored-service.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
@@ -34,7 +33,6 @@ const entitiesReducers = {
   serviceInstance,
   serviceHeartbeat,
   statusPage,
-  statusPageItem,
   statusDependency,
   monitoredService,
   /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */

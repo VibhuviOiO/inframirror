@@ -6,11 +6,6 @@
   "dto": "mapstruct",
   "fields": [
     {
-      "fieldName": "id",
-      "fieldType": "Long",
-      "fieldValidateRules": ["required"]
-    },
-    {
       "fieldName": "name",
       "fieldType": "String",
       "fieldValidateRules": ["required", "maxlength"],
@@ -32,52 +27,6 @@
       "fieldName": "isPublic",
       "fieldType": "Boolean",
       "fieldValidateRules": ["required"]
-    },
-    {
-      "fieldName": "customDomain",
-      "fieldType": "String",
-      "fieldValidateRules": ["maxlength"],
-      "fieldValidateRulesMaxlength": "255"
-    },
-    {
-      "fieldName": "logoUrl",
-      "fieldType": "String",
-      "fieldValidateRules": ["maxlength"],
-      "fieldValidateRulesMaxlength": "500"
-    },
-    {
-      "fieldName": "themeColor",
-      "fieldType": "String",
-      "fieldValidateRules": ["maxlength"],
-      "fieldValidateRulesMaxlength": "7"
-    },
-    {
-      "fieldName": "headerText",
-      "fieldType": "String",
-      "fieldValidateRules": ["maxlength"],
-      "fieldValidateRulesMaxlength": "500"
-    },
-    {
-      "fieldName": "footerText",
-      "fieldType": "String",
-      "fieldValidateRules": ["maxlength"],
-      "fieldValidateRulesMaxlength": "500"
-    },
-    {
-      "fieldName": "showResponseTimes",
-      "fieldType": "Boolean"
-    },
-    {
-      "fieldName": "showUptimePercentage",
-      "fieldType": "Boolean"
-    },
-    {
-      "fieldName": "autoRefreshSeconds",
-      "fieldType": "Integer"
-    },
-    {
-      "fieldName": "monitorSelection",
-      "fieldType": "TextBlob"
     },
     {
       "fieldName": "isActive",
@@ -109,17 +58,25 @@
     {
       "otherEntityName": "statusPageItem",
       "otherEntityRelationshipName": "statusPage",
-      "relationshipName": "item",
+      "relationshipName": "items",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
     {
       "otherEntityName": "statusDependency",
       "otherEntityRelationshipName": "statusPage",
-      "relationshipName": "statusDependency",
+      "relationshipName": "dependencies",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "statusPageSettings",
+      "otherEntityRelationshipName": "statusPage",
+      "relationshipName": "settings",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
     }
   ],
-  "service": "serviceImpl"
+  "service": "serviceImpl",
+  "searchEngine": "no"
 }

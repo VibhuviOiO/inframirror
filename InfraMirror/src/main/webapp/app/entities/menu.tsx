@@ -53,9 +53,6 @@ const EntitiesMenu = () => {
       <MenuItem icon="asterisk" to="/status-page">
         <Translate contentKey="global.menu.entities.statusPage" />
       </MenuItem>
-      <MenuItem icon="asterisk" to="/status-page-item">
-        <Translate contentKey="global.menu.entities.statusPageItem" />
-      </MenuItem>
       <MenuItem icon="asterisk" to="/status-dependency">
         <Translate contentKey="global.menu.entities.statusDependency" />
       </MenuItem>

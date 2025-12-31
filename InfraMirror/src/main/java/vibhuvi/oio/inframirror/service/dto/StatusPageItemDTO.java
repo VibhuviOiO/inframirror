@@ -11,7 +11,6 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class StatusPageItemDTO implements Serializable {
 
-    @NotNull
     private Long id;
 
     @NotNull
@@ -20,6 +19,8 @@ public class StatusPageItemDTO implements Serializable {
 
     @NotNull
     private Long itemId;
+
+    private String itemName;
 
     private Integer displayOrder;
 
@@ -50,6 +51,14 @@ public class StatusPageItemDTO implements Serializable {
 
     public void setItemId(Long itemId) {
         this.itemId = itemId;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
     public Integer getDisplayOrder() {
@@ -104,6 +113,7 @@ public class StatusPageItemDTO implements Serializable {
             "id=" + getId() +
             ", itemType='" + getItemType() + "'" +
             ", itemId=" + getItemId() +
+            ", itemName='" + getItemName() + "'" +
             ", displayOrder=" + getDisplayOrder() +
             ", createdAt='" + getCreatedAt() + "'" +
             ", statusPage=" + getStatusPage() +

@@ -42,9 +42,16 @@ public class StatusPageItemResource {
 
     private final StatusPageItemRepository statusPageItemRepository;
 
-    public StatusPageItemResource(StatusPageItemService statusPageItemService, StatusPageItemRepository statusPageItemRepository) {
+    private final org.springframework.context.ApplicationContext applicationContext;
+
+    public StatusPageItemResource(
+        StatusPageItemService statusPageItemService, 
+        StatusPageItemRepository statusPageItemRepository,
+        org.springframework.context.ApplicationContext applicationContext
+    ) {
         this.statusPageItemService = statusPageItemService;
         this.statusPageItemRepository = statusPageItemRepository;
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -140,13 +147,63 @@ public class StatusPageItemResource {
      * {@code GET  /status-page-items} : get all the statusPageItems.
      *
      * @param pageable the pagination information.
+     * @param statusPageId optional filter by status page ID.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of statusPageItems in body.
      */
     @GetMapping("")
     public ResponseEntity<List<StatusPageItemDTO>> getAllStatusPageItems(
+        @RequestParam(value = "statusPageId.equals", required = false) Long statusPageId,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        LOG.debug("REST request to get a page of entities");
+        LOG.debug("REST request to get a page of entities with statusPageId: {}", statusPageId);
+        
+        if (statusPageId != null) {
+            List<StatusPageItemDTO> items = statusPageItemRepository
+                .findByStatusPageIdOrderByDisplayOrderAsc(statusPageId)
+                .stream()
+                .map(item -> {
+                    StatusPageItemDTO dto = new StatusPageItemDTO();
+                    dto.setId(item.getId());
+                    dto.setItemType(item.getItemType());
+                    dto.setItemId(item.getItemId());
+                    dto.setDisplayOrder(item.getDisplayOrder());
+                    dto.setCreatedAt(item.getCreatedAt());
+                    
+                    vibhuvi.oio.inframirror.service.dto.StatusPageDTO spDto = new vibhuvi.oio.inframirror.service.dto.StatusPageDTO();
+                    spDto.setId(item.getStatusPage().getId());
+                    spDto.setName(item.getStatusPage().getName());
+                    spDto.setSlug(item.getStatusPage().getSlug());
+                    dto.setStatusPage(spDto);
+                    
+                    // Enrich item name
+                    String itemType = item.getItemType();
+                    Long itemId = item.getItemId();
+                    
+                    if ("HTTP".equals(itemType) || "HTTP_MONITOR".equals(itemType)) {
+                        vibhuvi.oio.inframirror.repository.HttpMonitorRepository httpRepo = 
+                            applicationContext.getBean(vibhuvi.oio.inframirror.repository.HttpMonitorRepository.class);
+                        httpRepo.findById(itemId).ifPresent(monitor -> dto.setItemName(monitor.getName()));
+                    } else if ("INSTANCE".equals(itemType)) {
+                        vibhuvi.oio.inframirror.repository.InstanceRepository instRepo = 
+                            applicationContext.getBean(vibhuvi.oio.inframirror.repository.InstanceRepository.class);
+                        instRepo.findById(itemId).ifPresent(instance -> dto.setItemName(instance.getName()));
+                    } else if ("SERVICE".equals(itemType) || "SERVICE_INSTANCE".equals(itemType)) {
+                        vibhuvi.oio.inframirror.repository.ServiceInstanceRepository svcRepo = 
+                            applicationContext.getBean(vibhuvi.oio.inframirror.repository.ServiceInstanceRepository.class);
+                        svcRepo.findById(itemId).ifPresent(service -> {
+                            if (service.getMonitoredService() != null) {
+                                dto.setItemName(service.getMonitoredService().getName());
+                            }
+                        });
+                    }
+                    
+                    return dto;
+                })
+                .toList();
+            
+            return ResponseEntity.ok().body(items);
+        }
+        
         Page<StatusPageItemDTO> page = statusPageItemService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

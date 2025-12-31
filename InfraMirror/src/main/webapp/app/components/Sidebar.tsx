@@ -77,7 +77,6 @@ const sidebarMenu: SidebarMenu[] = [
     icon: FaClipboardList,
     items: [
       { name: 'Status Page', icon: FaSitemap, route: '/status-page' },
-      { name: 'Status Page Items', icon: FaList, route: '/status-page-item' },
       { name: 'Status Page Dependencies', icon: FaSitemap, route: '/status-dependency' },
     ],
   },

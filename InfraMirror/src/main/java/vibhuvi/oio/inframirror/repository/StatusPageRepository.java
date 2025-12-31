@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.repository;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -13,6 +14,16 @@ import vibhuvi.oio.inframirror.domain.StatusPage;
 @SuppressWarnings("unused")
 @Repository
 public interface StatusPageRepository extends JpaRepository<StatusPage, Long>, JpaSpecificationExecutor<StatusPage> {
+    
+    Optional<StatusPage> findBySlug(String slug);
+    
+    @Query(
+        value = "SELECT sp.id, COUNT(spi.id) FROM status_page sp " +
+                "LEFT JOIN status_page_item spi ON sp.id = spi.status_page_id " +
+                "WHERE sp.id IN :ids GROUP BY sp.id",
+        nativeQuery = true
+    )
+    java.util.List<Object[]> findItemCountsByStatusPageIds(@Param("ids") java.util.List<Long> ids);
     
     @Query(
         value = "SELECT * FROM status_page WHERE search_vector @@ to_tsquery('simple', :query || ':*') " +

@@ -6,6 +6,7 @@ import Loadable from 'react-loadable';
 import LoginRedirect from 'app/modules/login/login-redirect';
 import Logout from 'app/modules/login/logout';
 import Home from 'app/modules/home/home';
+import PublicStatusPage from 'app/modules/status/public-status-page';
 import EntitiesRoutes from 'app/entities/routes';
 import PrivateRoute from 'app/shared/auth/private-route';
 import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
@@ -23,7 +24,9 @@ const AppRoutes = () => {
     <div className="view-routes">
       <ErrorBoundaryRoutes>
         <Route index element={<Home />} />
+        <Route path="s/:slug" element={<PublicStatusPage />} />
         <Route path="logout" element={<Logout />} />
+        <Route path="sign-in" element={<LoginRedirect />} />
         <Route
           path="admin/*"
           element={
@@ -32,7 +35,6 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         />
-        <Route path="sign-in" element={<LoginRedirect />} />
         <Route
           path="*"
           element={
@@ -41,7 +43,6 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         />
-        <Route path="*" element={<PageNotFound />} />
       </ErrorBoundaryRoutes>
     </div>
   );

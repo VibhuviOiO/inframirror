@@ -1,0 +1,143 @@
+.dependency-tree-card {
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tree-header {
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 1rem;
+
+  h4 {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+}
+
+.dependency-tree {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.dependency-node {
+  margin: 0;
+  padding: 0;
+}
+
+.node-content {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 0;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+  }
+
+  &.level-0 {
+    padding: 12px 0;
+    border-bottom: 1px solid #e9ecef;
+  }
+}
+
+.tree-connector {
+  color: #6c757d;
+  margin-right: 8px;
+  white-space: pre;
+  font-family: monospace;
+  user-select: none;
+}
+
+.node-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.node-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.node-status {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.node-type-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.node-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 15px;
+}
+
+.node-type-badge {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid #dee2e6;
+}
+
+.node-details {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.node-metric {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #28a745;
+  font-weight: 500;
+}
+
+.node-timestamp {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #6c757d;
+}
+
+.node-error {
+  margin-top: 6px;
+  padding: 8px 12px;
+  background-color: #fff3cd;
+  border-left: 3px solid #ffc107;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #856404;
+}
+
+.node-children {
+  margin-left: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dependency-tree {
+    font-size: 12px;
+  }
+
+  .node-name {
+    font-size: 14px;
+  }
+
+  .node-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}

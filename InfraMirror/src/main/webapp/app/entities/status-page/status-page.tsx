@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Col, Form, FormGroup, Input, InputGroup, Row, Table } from 'reactstrap';
+import { Button, Col, Input, Row, Card, CardBody, Badge, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { JhiItemCount, JhiPagination, TextFormat, Translate, getPaginationState, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +10,8 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities, searchEntities } from './status-page.reducer';
+import StatusPageSidePanel from './status-page-side-panel';
+import './status-page.scss';
 
 export const StatusPage = () => {
   const dispatch = useAppDispatch();
@@ -18,6 +20,9 @@ export const StatusPage = () => {
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState<{ [key: number]: boolean }>({});
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+  const [selectedStatusPage, setSelectedStatusPage] = useState(null);
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
@@ -27,7 +32,7 @@ export const StatusPage = () => {
   const totalItems = useAppSelector(state => state.statusPage.totalItems);
 
   const getAllEntities = () => {
-    if (search) {
+    if (search && search.length >= 3) {
       dispatch(
         searchEntities({
           query: search,
@@ -48,7 +53,7 @@ export const StatusPage = () => {
   };
 
   const startSearching = e => {
-    if (search) {
+    if (search && search.length >= 3) {
       setPaginationState({
         ...paginationState,
         activePage: 1,
@@ -74,7 +79,10 @@ export const StatusPage = () => {
     dispatch(getEntities({}));
   };
 
-  const handleSearch = event => setSearch(event.target.value);
+  const handleSearch = event => {
+    const value = event.target.value;
+    setSearch(value);
+  };
 
   const sortEntities = () => {
     getAllEntities();
@@ -85,7 +93,10 @@ export const StatusPage = () => {
   };
 
   useEffect(() => {
-    sortEntities();
+    const timer = setTimeout(() => {
+      sortEntities();
+    }, 500);
+    return () => clearTimeout(timer);
   }, [paginationState.activePage, paginationState.order, paginationState.sort, search]);
 
   useEffect(() => {
@@ -111,6 +122,10 @@ export const StatusPage = () => {
     });
   };
 
+  const totalPages = Math.ceil(totalItems / paginationState.itemsPerPage);
+  const startItem = (paginationState.activePage - 1) * paginationState.itemsPerPage + 1;
+  const endItem = Math.min(paginationState.activePage * paginationState.itemsPerPage, totalItems);
+
   const handlePagination = currentPage =>
     setPaginationState({
       ...paginationState,
@@ -130,15 +145,68 @@ export const StatusPage = () => {
     return order === ASC ? faSortUp : faSortDown;
   };
 
+  const toggleDropdown = (index: number) => {
+    setDropdownOpen(prev => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  const openSidePanel = (statusPage = null) => {
+    setSelectedStatusPage(statusPage);
+    setSidePanelOpen(true);
+  };
+
+  const closeSidePanel = () => {
+    setSidePanelOpen(false);
+    setSelectedStatusPage(null);
+  };
+
+  const handleSidePanelSuccess = () => {
+    closeSidePanel();
+    handleSyncList();
+  };
+
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4 id="status-page-heading" data-cy="StatusPageHeading" className="mb-0">
           <Translate contentKey="infraMirrorApp.statusPage.home.title">Status Pages</Translate>
         </h4>
-        <div className="d-flex">
+        <div className="d-flex gap-2 align-items-center">
+          {totalItems > 0 && (
+            <div className="d-flex align-items-center gap-2 text-muted small">
+              <span>
+                {startItem}–{endItem} of {totalItems}
+              </span>
+              <Button
+                color="link"
+                size="sm"
+                className="p-1 text-muted"
+                onClick={() => handlePagination(paginationState.activePage - 1)}
+                disabled={paginationState.activePage === 1}
+                title="Previous page"
+              >
+                <FontAwesomeIcon icon="chevron-left" />
+              </Button>
+              <Button
+                color="link"
+                size="sm"
+                className="p-1 text-muted"
+                onClick={() => handlePagination(paginationState.activePage + 1)}
+                disabled={paginationState.activePage >= totalPages}
+                title="Next page"
+              >
+                <FontAwesomeIcon icon="chevron-right" />
+              </Button>
+            </div>
+          )}
+          <Input
+            type="text"
+            name="search"
+            value={search}
+            onChange={handleSearch}
+            placeholder={translate('infraMirrorApp.statusPage.home.search')}
+            style={{ width: '250px' }}
+          />
           <Button
-            className="me-2"
             color="info"
             size="sm"
             onClick={handleSyncList}
@@ -147,232 +215,123 @@ export const StatusPage = () => {
           >
             <FontAwesomeIcon icon="sync" spin={loading} />
           </Button>
-          <Link
-            to="/status-page/new"
-            className="btn btn-primary btn-sm jh-create-entity"
+          <Button
+            color="primary"
+            size="sm"
+            onClick={() => openSidePanel()}
             id="jh-create-entity"
             data-cy="entityCreateButton"
             title={translate('infraMirrorApp.statusPage.home.createLabel')}
           >
-            <Translate contentKey="infraMirrorApp.statusPage.home.createLabel">Create</Translate>
-          </Link>
+            <FontAwesomeIcon icon="plus" /> <Translate contentKey="infraMirrorApp.statusPage.home.createLabel">Create</Translate>
+          </Button>
         </div>
       </div>
       <hr />
-      <Row className="mb-3">
-        <Col sm="12">
-          <div className="d-flex gap-2">
-            <Input
-              type="text"
-              name="search"
-              value={search}
-              onChange={handleSearch}
-              placeholder={translate('infraMirrorApp.statusPage.home.search')}
-              style={{ flex: 1 }}
-            />
-            <Button color="primary" size="sm" onClick={startSearching} disabled={!search}>
-              <Translate contentKey="infraMirrorApp.statusPage.home.searchButton">Search</Translate>
-            </Button>
-            {search && (
-              <Button color="secondary" size="sm" onClick={clear}>
-                <Translate contentKey="infraMirrorApp.statusPage.home.clearSearch">Clear</Translate>
-              </Button>
-            )}
+      <div style={{ minHeight: '200px' }}>
+        {loading ? (
+          <div>
+            {[1, 2, 3].map(i => (
+              <div key={i} className="skeleton-loader skeleton-card mb-2" />
+            ))}
           </div>
-        </Col>
-      </Row>
-      <div className="table-responsive" style={{ position: 'relative', minHeight: '200px' }}>
-        {loading && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 10,
-            }}
-          >
-            <FontAwesomeIcon icon="spinner" spin size="2x" />
-          </div>
-        )}
-        {statusPageList && statusPageList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('name')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.name">Name</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
-                </th>
-                <th className="hand" onClick={sort('slug')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.slug">Slug</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('slug')} />
-                </th>
-                <th className="hand" onClick={sort('description')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.description">Description</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
-                </th>
-                <th className="hand" onClick={sort('isPublic')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.isPublic">Is Public</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('isPublic')} />
-                </th>
-                <th className="hand" onClick={sort('customDomain')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.customDomain">Custom Domain</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('customDomain')} />
-                </th>
-                <th className="hand" onClick={sort('logoUrl')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.logoUrl">Logo Url</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('logoUrl')} />
-                </th>
-                <th className="hand" onClick={sort('themeColor')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.themeColor">Theme Color</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('themeColor')} />
-                </th>
-                <th className="hand" onClick={sort('headerText')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.headerText">Header Text</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('headerText')} />
-                </th>
-                <th className="hand" onClick={sort('footerText')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.footerText">Footer Text</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('footerText')} />
-                </th>
-                <th className="hand" onClick={sort('showResponseTimes')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.showResponseTimes">Show Response Times</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('showResponseTimes')} />
-                </th>
-                <th className="hand" onClick={sort('showUptimePercentage')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.showUptimePercentage">Show Uptime Percentage</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('showUptimePercentage')} />
-                </th>
-                <th className="hand" onClick={sort('autoRefreshSeconds')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.autoRefreshSeconds">Auto Refresh Seconds</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('autoRefreshSeconds')} />
-                </th>
-                <th className="hand" onClick={sort('monitorSelection')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.monitorSelection">Monitor Selection</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('monitorSelection')} />
-                </th>
-                <th className="hand" onClick={sort('isActive')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.isActive">Is Active</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('isActive')} />
-                </th>
-                <th className="hand" onClick={sort('isHomePage')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.isHomePage">Is Home Page</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('isHomePage')} />
-                </th>
-                <th className="hand" onClick={sort('allowedRoles')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.allowedRoles">Allowed Roles</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('allowedRoles')} />
-                </th>
-                <th className="hand" onClick={sort('createdAt')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.createdAt">Created At</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('createdAt')} />
-                </th>
-                <th className="hand" onClick={sort('updatedAt')}>
-                  <Translate contentKey="infraMirrorApp.statusPage.updatedAt">Updated At</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('updatedAt')} />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {statusPageList.map((statusPage, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>{statusPage.name}</td>
-                  <td>{statusPage.slug}</td>
-                  <td>{statusPage.description}</td>
-                  <td>{statusPage.isPublic ? 'true' : 'false'}</td>
-                  <td>{statusPage.customDomain}</td>
-                  <td>{statusPage.logoUrl}</td>
-                  <td>{statusPage.themeColor}</td>
-                  <td>{statusPage.headerText}</td>
-                  <td>{statusPage.footerText}</td>
-                  <td>{statusPage.showResponseTimes ? 'true' : 'false'}</td>
-                  <td>{statusPage.showUptimePercentage ? 'true' : 'false'}</td>
-                  <td>{statusPage.autoRefreshSeconds}</td>
-                  <td>{statusPage.monitorSelection}</td>
-                  <td>{statusPage.isActive ? 'true' : 'false'}</td>
-                  <td>{statusPage.isHomePage ? 'true' : 'false'}</td>
-                  <td>{statusPage.allowedRoles}</td>
-                  <td>{statusPage.createdAt ? <TextFormat type="date" value={statusPage.createdAt} format={APP_DATE_FORMAT} /> : null}</td>
-                  <td>{statusPage.updatedAt ? <TextFormat type="date" value={statusPage.updatedAt} format={APP_DATE_FORMAT} /> : null}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button
-                        tag={Link}
-                        to={`/status-page/${statusPage.id}`}
-                        color="info"
-                        size="sm"
-                        data-cy="entityDetailsButton"
-                        title={translate('entity.action.view')}
-                      >
-                        <FontAwesomeIcon icon="eye" size="sm" />
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/status-page/${statusPage.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                        title={translate('entity.action.edit')}
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" size="sm" />
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (window.location.href = `/status-page/${statusPage.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                        title={translate('entity.action.delete')}
-                      >
-                        <FontAwesomeIcon icon="trash" size="sm" />
-                      </Button>
+        ) : statusPageList && statusPageList.length > 0 ? (
+          <div>
+            {statusPageList.map((statusPage, i) => (
+              <Card key={`entity-${i}`} className="mb-2 shadow-sm status-page-card">
+                <CardBody className="py-2">
+                  <div className="d-flex justify-content-between align-items-center">
+                    <div className="d-flex align-items-center gap-3 flex-grow-1">
+                      <div>
+                        <strong>{statusPage.name}</strong>
+                        {statusPage.description && <span className="text-muted ms-2">— {statusPage.description}</span>}
+                      </div>
+                      <div className="d-flex gap-1">
+                        {statusPage.isPublic && <Badge className="py-0 status-badge-up">Public</Badge>}
+                        {statusPage.isActive && <Badge className="py-0 status-badge-up">Active</Badge>}
+                        {statusPage.isHomePage && <Badge className="py-0 status-badge-degraded">Home</Badge>}
+                      </div>
+                      <div className="small">
+                        <Link to={`/status-page/view/${statusPage.slug}`} className="text-decoration-none">
+                          <code>/s/{statusPage.slug}</code>
+                        </Link>
+                      </div>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+                    <div className="d-flex align-items-center gap-2">
+                      {statusPage.itemCount !== undefined && (
+                        <Badge color="secondary" className="py-0">
+                          <FontAwesomeIcon icon="circle" className="me-1" style={{ fontSize: '0.5em' }} />
+                          {statusPage.itemCount}
+                        </Badge>
+                      )}
+                      <Dropdown isOpen={dropdownOpen[i]} toggle={() => toggleDropdown(i)}>
+                        <DropdownToggle color="link" className="text-dark p-0">
+                          <FontAwesomeIcon icon="ellipsis-v" size="lg" />
+                        </DropdownToggle>
+                        <DropdownMenu end>
+                          <DropdownItem tag={Link} to={`/status-page/view/${statusPage.slug}`}>
+                            <FontAwesomeIcon icon="eye" className="me-2" /> View
+                          </DropdownItem>
+                          {statusPage.isPublic && (
+                            <DropdownItem tag="a" href={`/s/${statusPage.slug}`} target="_blank" rel="noopener noreferrer">
+                              <FontAwesomeIcon icon="external-link-alt" className="me-2" /> Open Public Page
+                            </DropdownItem>
+                          )}
+                          <DropdownItem onClick={() => openSidePanel(statusPage)}>
+                            <FontAwesomeIcon icon="pencil-alt" className="me-2" /> Edit
+                          </DropdownItem>
+                          <DropdownItem divider />
+                          <DropdownItem
+                            tag={Link}
+                            to={`/status-page/${statusPage.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                            className="text-danger"
+                          >
+                            <FontAwesomeIcon icon="trash" className="me-2" /> Delete
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            ))}
+          </div>
         ) : (
-          !loading && (
-            <div className="text-center py-5">
-              <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
-              <h5 className="text-muted">
-                <Translate contentKey="infraMirrorApp.statusPage.home.emptyState">
-                  No status pages available. Create your first status page to get started.
-                </Translate>
-              </h5>
-              <Link to="/status-page/new" className="btn btn-primary mt-3">
-                <FontAwesomeIcon icon="plus" /> <Translate contentKey="infraMirrorApp.statusPage.home.createLabel">Create</Translate>
-              </Link>
-            </div>
-          )
+          <Card className="border-0 shadow-sm">
+            <CardBody className="text-center py-5">
+              <FontAwesomeIcon icon="clipboard-list" size="4x" className="text-primary mb-4" />
+              <h4 className="mb-3">Welcome to Status Pages</h4>
+              <p className="text-muted mb-4">
+                Create status pages to monitor your infrastructure and share real-time status with your team or customers.
+              </p>
+              <div className="d-flex justify-content-center gap-3 mb-4">
+                <div className="text-start">
+                  <h6 className="text-primary">
+                    <FontAwesomeIcon icon="check-circle" className="me-2" />
+                    Quick Start
+                  </h6>
+                  <ul className="small text-muted">
+                    <li>Create a status page</li>
+                    <li>Add monitors (HTTP, Services, Instances)</li>
+                    <li>Configure dependencies</li>
+                    <li>Share with your team</li>
+                  </ul>
+                </div>
+              </div>
+              <Button color="primary" size="lg" onClick={() => openSidePanel()}>
+                <FontAwesomeIcon icon="plus" className="me-2" />
+                Create Your First Status Page
+              </Button>
+            </CardBody>
+          </Card>
         )}
       </div>
-      {totalItems ? (
-        <div className={statusPageList && statusPageList.length > 0 ? 'd-flex justify-content-between align-items-center' : 'd-none'}>
-          <div>
-            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
-          </div>
-          <div>
-            <JhiPagination
-              activePage={paginationState.activePage}
-              onSelect={handlePagination}
-              maxButtons={5}
-              itemsPerPage={paginationState.itemsPerPage}
-              totalItems={totalItems}
-            />
-          </div>
-        </div>
-      ) : (
-        ''
-      )}
+      <StatusPageSidePanel
+        isOpen={sidePanelOpen}
+        onClose={closeSidePanel}
+        statusPage={selectedStatusPage}
+        onSuccess={handleSidePanelSuccess}
+      />
     </div>
   );
 };

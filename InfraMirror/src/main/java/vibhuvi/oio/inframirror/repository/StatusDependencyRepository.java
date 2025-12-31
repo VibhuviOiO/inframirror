@@ -1,5 +1,6 @@
 package vibhuvi.oio.inframirror.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import vibhuvi.oio.inframirror.domain.StatusDependency;
@@ -9,4 +10,6 @@ import vibhuvi.oio.inframirror.domain.StatusDependency;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface StatusDependencyRepository extends JpaRepository<StatusDependency, Long> {}
+public interface StatusDependencyRepository extends JpaRepository<StatusDependency, Long> {
+    List<StatusDependency> findByParentTypeAndParentId(String parentType, Long parentId);
+}

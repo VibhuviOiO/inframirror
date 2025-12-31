@@ -1,0 +1,105 @@
+.public-status-page {
+  .loading-container,
+  .error-container {
+    text-align: center;
+    padding: 3rem;
+  }
+
+  .overall-status {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+
+    .status-icon {
+      font-size: 2rem;
+    }
+
+    .overall-status-text {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+  }
+
+  .monitors-list {
+    .no-monitors {
+      text-align: center;
+      padding: 3rem;
+      color: #6c757d;
+    }
+
+    .monitor-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      background: white;
+
+      .monitor-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+
+        .status-icon {
+          font-size: 1.5rem;
+        }
+
+        .monitor-details {
+          h4 {
+            margin: 0;
+            font-size: 1.1rem;
+          }
+
+          .monitor-url {
+            color: #6c757d;
+            font-size: 0.9rem;
+          }
+        }
+      }
+
+      .monitor-metrics {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+
+        .metric {
+          font-weight: 500;
+        }
+
+        .last-checked {
+          color: #6c757d;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+
+  .auto-refresh-indicator {
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+
+  .status-up {
+    color: #28a745;
+  }
+
+  .status-degraded {
+    color: #ffc107;
+  }
+
+  .status-down {
+    color: #dc3545;
+  }
+
+  .status-unknown {
+    color: #6c757d;
+  }
+}

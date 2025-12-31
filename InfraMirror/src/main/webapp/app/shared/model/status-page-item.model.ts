@@ -5,6 +5,7 @@ export interface IStatusPageItem {
   id?: number;
   itemType?: string;
   itemId?: number;
+  itemName?: string | null;
   displayOrder?: number | null;
   createdAt?: dayjs.Dayjs | null;
   statusPage?: IStatusPage;

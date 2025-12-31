@@ -37,7 +37,7 @@ export const HttpMonitorDeleteModal: React.FC<HttpMonitorDeleteModalProps> = ({ 
       <ModalHeader toggle={toggle} data-cy="httpMonitorDeleteDialogHeading">
         Confirm delete operation
       </ModalHeader>
-      <ModalBody id="uptimeOApp.httpMonitor.delete.question">
+      <ModalBody id="infraMirrorApp.httpMonitor.delete.question">
         Are you sure you want to delete Monitor <strong>{monitor?.name || monitor?.id}</strong>?
       </ModalBody>
       <ModalFooter>

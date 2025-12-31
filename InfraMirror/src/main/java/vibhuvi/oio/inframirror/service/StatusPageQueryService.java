@@ -50,7 +50,26 @@ public class StatusPageQueryService extends QueryService<StatusPage> {
     public Page<StatusPageDTO> findByCriteria(StatusPageCriteria criteria, Pageable page) {
         LOG.debug("find by criteria : {}, page: {}", criteria, page);
         final Specification<StatusPage> specification = createSpecification(criteria);
-        return statusPageRepository.findAll(specification, page).map(statusPageMapper::toDto);
+        Page<StatusPage> result = statusPageRepository.findAll(specification, page);
+        
+        // Fetch item counts in a single query
+        if (!result.isEmpty()) {
+            java.util.List<Long> ids = result.getContent().stream().map(StatusPage::getId).toList();
+            java.util.Map<Long, Long> itemCounts = statusPageRepository.findItemCountsByStatusPageIds(ids)
+                .stream()
+                .collect(java.util.stream.Collectors.toMap(
+                    arr -> ((Number) arr[0]).longValue(),
+                    arr -> ((Number) arr[1]).longValue()
+                ));
+            
+            return result.map(entity -> {
+                StatusPageDTO dto = statusPageMapper.toDto(entity);
+                dto.setItemCount(itemCounts.getOrDefault(entity.getId(), 0L).intValue());
+                return dto;
+            });
+        }
+        
+        return result.map(statusPageMapper::toDto);
     }
 
     /**
@@ -81,14 +100,6 @@ public class StatusPageQueryService extends QueryService<StatusPage> {
                 buildStringSpecification(criteria.getSlug(), StatusPage_.slug),
                 buildStringSpecification(criteria.getDescription(), StatusPage_.description),
                 buildSpecification(criteria.getIsPublic(), StatusPage_.isPublic),
-                buildStringSpecification(criteria.getCustomDomain(), StatusPage_.customDomain),
-                buildStringSpecification(criteria.getLogoUrl(), StatusPage_.logoUrl),
-                buildStringSpecification(criteria.getThemeColor(), StatusPage_.themeColor),
-                buildStringSpecification(criteria.getHeaderText(), StatusPage_.headerText),
-                buildStringSpecification(criteria.getFooterText(), StatusPage_.footerText),
-                buildSpecification(criteria.getShowResponseTimes(), StatusPage_.showResponseTimes),
-                buildSpecification(criteria.getShowUptimePercentage(), StatusPage_.showUptimePercentage),
-                buildRangeSpecification(criteria.getAutoRefreshSeconds(), StatusPage_.autoRefreshSeconds),
                 buildSpecification(criteria.getIsActive(), StatusPage_.isActive),
                 buildSpecification(criteria.getIsHomePage(), StatusPage_.isHomePage),
                 buildRangeSpecification(criteria.getCreatedAt(), StatusPage_.createdAt),

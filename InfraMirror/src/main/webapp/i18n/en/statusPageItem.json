@@ -4,7 +4,7 @@
       "home": {
         "title": "Status Page Items",
         "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Status Page Item",
+        "createLabel": "Create",
         "createOrEditLabel": "Create or edit a Status Page Item",
         "search": "Search for Status Page Item",
         "notFound": "No Status Page Items found"
@@ -20,9 +20,8 @@
       },
       "id": "Id",
       "itemType": "Item Type",
-      "itemId": "Item Id",
+      "itemName": "Item Name",
       "displayOrder": "Display Order",
-      "createdAt": "Created At",
       "statusPage": "Status Page"
     }
   }

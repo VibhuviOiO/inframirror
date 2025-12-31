@@ -20,12 +20,20 @@ import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 import vibhuvi.oio.inframirror.repository.StatusPageRepository;
+import vibhuvi.oio.inframirror.repository.StatusPageItemRepository;
+import vibhuvi.oio.inframirror.repository.HttpMonitorRepository;
+import vibhuvi.oio.inframirror.repository.HttpHeartbeatRepository;
+import vibhuvi.oio.inframirror.domain.*;
 import vibhuvi.oio.inframirror.service.StatusPageQueryService;
 import vibhuvi.oio.inframirror.service.StatusPageService;
 import vibhuvi.oio.inframirror.service.criteria.StatusPageCriteria;
 import vibhuvi.oio.inframirror.service.dto.StatusPageDTO;
 import vibhuvi.oio.inframirror.service.dto.StatusPageSearchResultDTO;
+import vibhuvi.oio.inframirror.service.dto.PublicStatusPageDTO;
+import vibhuvi.oio.inframirror.service.dto.PublicMonitorStatusDTO;
+import vibhuvi.oio.inframirror.service.dto.DependencyTreeDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
+import java.util.ArrayList;
 
 /**
  * REST controller for managing {@link vibhuvi.oio.inframirror.domain.StatusPage}.
@@ -47,14 +55,27 @@ public class StatusPageResource {
 
     private final StatusPageQueryService statusPageQueryService;
 
+    private final StatusPageItemRepository statusPageItemRepository;
+    private final HttpMonitorRepository httpMonitorRepository;
+    private final HttpHeartbeatRepository httpHeartbeatRepository;
+    private final vibhuvi.oio.inframirror.service.StatusDependencyService statusDependencyService;
+
     public StatusPageResource(
         StatusPageService statusPageService,
         StatusPageRepository statusPageRepository,
-        StatusPageQueryService statusPageQueryService
+        StatusPageQueryService statusPageQueryService,
+        StatusPageItemRepository statusPageItemRepository,
+        HttpMonitorRepository httpMonitorRepository,
+        HttpHeartbeatRepository httpHeartbeatRepository,
+        vibhuvi.oio.inframirror.service.StatusDependencyService statusDependencyService
     ) {
         this.statusPageService = statusPageService;
         this.statusPageRepository = statusPageRepository;
         this.statusPageQueryService = statusPageQueryService;
+        this.statusPageItemRepository = statusPageItemRepository;
+        this.httpMonitorRepository = httpMonitorRepository;
+        this.httpHeartbeatRepository = httpHeartbeatRepository;
+        this.statusDependencyService = statusDependencyService;
     }
 
     /**
@@ -251,5 +272,48 @@ public class StatusPageResource {
         Page<StatusPageSearchResultDTO> page = statusPageService.searchWithHighlight(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/by-slug/{slug}")
+    public ResponseEntity<StatusPageDTO> getStatusPageIdBySlug(@PathVariable String slug) {
+        LOG.debug("REST request to get status page by slug : {}", slug);
+        StatusPage statusPage = statusPageRepository
+            .findBySlug(slug)
+            .orElseThrow(() -> new BadRequestAlertException("Status page not found", ENTITY_NAME, "notfound"));
+        StatusPageDTO dto = new StatusPageDTO();
+        dto.setId(statusPage.getId());
+        dto.setName(statusPage.getName());
+        dto.setSlug(statusPage.getSlug());
+        dto.setIsPublic(statusPage.getIsPublic());
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/{id}/dependencies")
+    public ResponseEntity<List<DependencyTreeDTO>> getStatusPageDependencies(@PathVariable Long id) {
+        LOG.debug("REST request to get dependencies for status page : {}", id);
+        List<DependencyTreeDTO> dependencies = statusDependencyService.getDependencyTree(id);
+        return ResponseEntity.ok(dependencies);
+    }
+
+    @GetMapping("/view/{slug}")
+    public ResponseEntity<StatusPageDTO> getStatusPageView(@PathVariable String slug) {
+        LOG.debug("REST request to view status page by slug : {}", slug);
+        StatusPage statusPage = statusPageRepository
+            .findBySlug(slug)
+            .orElseThrow(() -> new BadRequestAlertException("Status page not found", ENTITY_NAME, "notfound"));
+        
+        StatusPageDTO dto = new StatusPageDTO();
+        dto.setId(statusPage.getId());
+        dto.setName(statusPage.getName());
+        dto.setSlug(statusPage.getSlug());
+        dto.setDescription(statusPage.getDescription());
+        dto.setIsPublic(statusPage.getIsPublic());
+        dto.setIsActive(statusPage.getIsActive());
+        dto.setIsHomePage(statusPage.getIsHomePage());
+        dto.setAllowedRoles(statusPage.getAllowedRoles());
+        dto.setCreatedAt(statusPage.getCreatedAt());
+        dto.setUpdatedAt(statusPage.getUpdatedAt());
+        
+        return ResponseEntity.ok(dto);
     }
 }

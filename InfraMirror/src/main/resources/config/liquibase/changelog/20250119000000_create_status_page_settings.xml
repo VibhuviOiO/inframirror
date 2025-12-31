@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250119000000-1" author="jhipster">
+        <createTable tableName="status_page_settings">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status_page_id" type="bigint">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            
+            <!-- Branding -->
+            <column name="logo_url" type="varchar(500)"/>
+            <column name="theme_color" type="varchar(20)"/>
+            <column name="custom_domain" type="varchar(255)"/>
+            <column name="header_text" type="text"/>
+            <column name="footer_text" type="text"/>
+            
+            <!-- Display Settings -->
+            <column name="show_response_times" type="boolean" defaultValueBoolean="true"/>
+            <column name="show_uptime_percentage" type="boolean" defaultValueBoolean="true"/>
+            <column name="auto_refresh_seconds" type="integer"/>
+            
+            <!-- Uptime Calculation Settings -->
+            <column name="sample_size" type="integer" defaultValueNumeric="20">
+                <constraints nullable="false"/>
+            </column>
+            <column name="success_threshold_high" type="decimal(3,2)" defaultValueNumeric="0.80">
+                <constraints nullable="false"/>
+            </column>
+            <column name="success_threshold_low" type="decimal(3,2)" defaultValueNumeric="0.60">
+                <constraints nullable="false"/>
+            </column>
+            <column name="warning_threshold_ms" type="integer" defaultValueNumeric="500">
+                <constraints nullable="false"/>
+            </column>
+            <column name="critical_threshold_ms" type="integer" defaultValueNumeric="1000">
+                <constraints nullable="false"/>
+            </column>
+            
+            <!-- Timestamps -->
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="status_page_settings"
+                                 baseColumnNames="status_page_id"
+                                 constraintName="fk_status_page_settings_status_page_id"
+                                 referencedTableName="status_page"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

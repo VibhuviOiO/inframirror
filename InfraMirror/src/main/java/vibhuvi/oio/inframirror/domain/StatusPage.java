@@ -43,38 +43,6 @@ public class StatusPage implements Serializable {
     @Column(name = "is_public", nullable = false)
     private Boolean isPublic;
 
-    @Size(max = 255)
-    @Column(name = "custom_domain", length = 255)
-    private String customDomain;
-
-    @Size(max = 500)
-    @Column(name = "logo_url", length = 500)
-    private String logoUrl;
-
-    @Size(max = 7)
-    @Column(name = "theme_color", length = 7)
-    private String themeColor;
-
-    @Size(max = 500)
-    @Column(name = "header_text", length = 500)
-    private String headerText;
-
-    @Size(max = 500)
-    @Column(name = "footer_text", length = 500)
-    private String footerText;
-
-    @Column(name = "show_response_times")
-    private Boolean showResponseTimes;
-
-    @Column(name = "show_uptime_percentage")
-    private Boolean showUptimePercentage;
-
-    @Column(name = "auto_refresh_seconds")
-    private Integer autoRefreshSeconds;
-
-    @Column(name = "monitor_selection", columnDefinition = "TEXT")
-    private String monitorSelection;
-
     @Column(name = "is_active")
     private Boolean isActive;
 
@@ -167,123 +135,6 @@ public class StatusPage implements Serializable {
 
     public void setIsPublic(Boolean isPublic) {
         this.isPublic = isPublic;
-    }
-
-    public String getCustomDomain() {
-        return this.customDomain;
-    }
-
-    public StatusPage customDomain(String customDomain) {
-        this.setCustomDomain(customDomain);
-        return this;
-    }
-
-    public void setCustomDomain(String customDomain) {
-        this.customDomain = customDomain;
-    }
-
-    public String getLogoUrl() {
-        return this.logoUrl;
-    }
-
-    public StatusPage logoUrl(String logoUrl) {
-        this.setLogoUrl(logoUrl);
-        return this;
-    }
-
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
-    }
-
-    public String getThemeColor() {
-        return this.themeColor;
-    }
-
-    public StatusPage themeColor(String themeColor) {
-        this.setThemeColor(themeColor);
-        return this;
-    }
-
-    public void setThemeColor(String themeColor) {
-        this.themeColor = themeColor;
-    }
-
-    public String getHeaderText() {
-        return this.headerText;
-    }
-
-    public StatusPage headerText(String headerText) {
-        this.setHeaderText(headerText);
-        return this;
-    }
-
-    public void setHeaderText(String headerText) {
-        this.headerText = headerText;
-    }
-
-    public String getFooterText() {
-        return this.footerText;
-    }
-
-    public StatusPage footerText(String footerText) {
-        this.setFooterText(footerText);
-        return this;
-    }
-
-    public void setFooterText(String footerText) {
-        this.footerText = footerText;
-    }
-
-    public Boolean getShowResponseTimes() {
-        return this.showResponseTimes;
-    }
-
-    public StatusPage showResponseTimes(Boolean showResponseTimes) {
-        this.setShowResponseTimes(showResponseTimes);
-        return this;
-    }
-
-    public void setShowResponseTimes(Boolean showResponseTimes) {
-        this.showResponseTimes = showResponseTimes;
-    }
-
-    public Boolean getShowUptimePercentage() {
-        return this.showUptimePercentage;
-    }
-
-    public StatusPage showUptimePercentage(Boolean showUptimePercentage) {
-        this.setShowUptimePercentage(showUptimePercentage);
-        return this;
-    }
-
-    public void setShowUptimePercentage(Boolean showUptimePercentage) {
-        this.showUptimePercentage = showUptimePercentage;
-    }
-
-    public Integer getAutoRefreshSeconds() {
-        return this.autoRefreshSeconds;
-    }
-
-    public StatusPage autoRefreshSeconds(Integer autoRefreshSeconds) {
-        this.setAutoRefreshSeconds(autoRefreshSeconds);
-        return this;
-    }
-
-    public void setAutoRefreshSeconds(Integer autoRefreshSeconds) {
-        this.autoRefreshSeconds = autoRefreshSeconds;
-    }
-
-    public String getMonitorSelection() {
-        return this.monitorSelection;
-    }
-
-    public StatusPage monitorSelection(String monitorSelection) {
-        this.setMonitorSelection(monitorSelection);
-        return this;
-    }
-
-    public void setMonitorSelection(String monitorSelection) {
-        this.monitorSelection = monitorSelection;
     }
 
     public Boolean getIsActive() {
@@ -441,15 +292,6 @@ public class StatusPage implements Serializable {
             ", slug='" + getSlug() + "'" +
             ", description='" + getDescription() + "'" +
             ", isPublic='" + getIsPublic() + "'" +
-            ", customDomain='" + getCustomDomain() + "'" +
-            ", logoUrl='" + getLogoUrl() + "'" +
-            ", themeColor='" + getThemeColor() + "'" +
-            ", headerText='" + getHeaderText() + "'" +
-            ", footerText='" + getFooterText() + "'" +
-            ", showResponseTimes='" + getShowResponseTimes() + "'" +
-            ", showUptimePercentage='" + getShowUptimePercentage() + "'" +
-            ", autoRefreshSeconds=" + getAutoRefreshSeconds() +
-            ", monitorSelection='" + getMonitorSelection() + "'" +
             ", isActive='" + getIsActive() + "'" +
             ", isHomePage='" + getIsHomePage() + "'" +
             ", allowedRoles='" + getAllowedRoles() + "'" +

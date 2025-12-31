@@ -16,13 +16,7 @@ public class StatusPageTestSamples {
             .id(1L)
             .name("name1")
             .slug("slug1")
-            .description("description1")
-            .customDomain("customDomain1")
-            .logoUrl("logoUrl1")
-            .themeColor("themeColor1")
-            .headerText("headerText1")
-            .footerText("footerText1")
-            .autoRefreshSeconds(1);
+            .description("description1");
     }
 
     public static StatusPage getStatusPageSample2() {
@@ -30,13 +24,7 @@ public class StatusPageTestSamples {
             .id(2L)
             .name("name2")
             .slug("slug2")
-            .description("description2")
-            .customDomain("customDomain2")
-            .logoUrl("logoUrl2")
-            .themeColor("themeColor2")
-            .headerText("headerText2")
-            .footerText("footerText2")
-            .autoRefreshSeconds(2);
+            .description("description2");
     }
 
     public static StatusPage getStatusPageRandomSampleGenerator() {
@@ -44,12 +32,6 @@ public class StatusPageTestSamples {
             .id(longCount.incrementAndGet())
             .name(UUID.randomUUID().toString())
             .slug(UUID.randomUUID().toString())
-            .description(UUID.randomUUID().toString())
-            .customDomain(UUID.randomUUID().toString())
-            .logoUrl(UUID.randomUUID().toString())
-            .themeColor(UUID.randomUUID().toString())
-            .headerText(UUID.randomUUID().toString())
-            .footerText(UUID.randomUUID().toString())
-            .autoRefreshSeconds(intCount.incrementAndGet());
+            .description(UUID.randomUUID().toString());
     }
 }

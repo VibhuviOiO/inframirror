@@ -17,5 +17,7 @@ public interface StatusPageItemMapper extends EntityMapper<StatusPageItemDTO, St
     @Named("statusPageId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "slug", source = "slug")
     StatusPageDTO toDtoStatusPageId(StatusPage statusPage);
 }

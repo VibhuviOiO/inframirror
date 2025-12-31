@@ -213,13 +213,6 @@ export const StatusPageUpdate = () => {
                 type="text"
               />
               <ValidatedField
-                label={translate('infraMirrorApp.statusPage.monitorSelection')}
-                id="status-page-monitorSelection"
-                name="monitorSelection"
-                data-cy="monitorSelection"
-                type="textarea"
-              />
-              <ValidatedField
                 label={translate('infraMirrorApp.statusPage.isActive')}
                 id="status-page-isActive"
                 name="isActive"

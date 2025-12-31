@@ -5,6 +5,7 @@
         "title": "Status Pages",
         "refreshListLabel": "Refresh list",
         "createLabel": "Create",
+        "editLabel": "Edit",
         "createOrEditLabel": "Create or edit a Status Page",
         "search": "Search for Status Page",
         "searchButton": "Search",

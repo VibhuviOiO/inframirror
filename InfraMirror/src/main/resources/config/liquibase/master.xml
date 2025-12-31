@@ -31,6 +31,7 @@
     <include file="config/liquibase/changelog/20251205053337_added_entity_StatusPageItem.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251205053338_added_entity_StatusDependency.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251205054618_added_entity_MonitoredService.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250119000000_create_status_page_settings.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20251205053323_added_entity_constraints_Datacenter.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251205053327_added_entity_constraints_HttpMonitor.xml" relativeToChangelogFile="false"/>

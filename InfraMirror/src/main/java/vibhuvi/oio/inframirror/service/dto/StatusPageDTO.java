@@ -29,30 +29,6 @@ public class StatusPageDTO implements Serializable {
     @NotNull
     private Boolean isPublic;
 
-    @Size(max = 255)
-    private String customDomain;
-
-    @Size(max = 500)
-    private String logoUrl;
-
-    @Size(max = 7)
-    private String themeColor;
-
-    @Size(max = 500)
-    private String headerText;
-
-    @Size(max = 500)
-    private String footerText;
-
-    private Boolean showResponseTimes;
-
-    private Boolean showUptimePercentage;
-
-    private Integer autoRefreshSeconds;
-
-    @Lob
-    private String monitorSelection;
-
     private Boolean isActive;
 
     private Boolean isHomePage;
@@ -65,6 +41,8 @@ public class StatusPageDTO implements Serializable {
 
     @NotNull
     private Instant updatedAt;
+
+    private Integer itemCount;
 
     public Long getId() {
         return id;
@@ -104,78 +82,6 @@ public class StatusPageDTO implements Serializable {
 
     public void setIsPublic(Boolean isPublic) {
         this.isPublic = isPublic;
-    }
-
-    public String getCustomDomain() {
-        return customDomain;
-    }
-
-    public void setCustomDomain(String customDomain) {
-        this.customDomain = customDomain;
-    }
-
-    public String getLogoUrl() {
-        return logoUrl;
-    }
-
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
-    }
-
-    public String getThemeColor() {
-        return themeColor;
-    }
-
-    public void setThemeColor(String themeColor) {
-        this.themeColor = themeColor;
-    }
-
-    public String getHeaderText() {
-        return headerText;
-    }
-
-    public void setHeaderText(String headerText) {
-        this.headerText = headerText;
-    }
-
-    public String getFooterText() {
-        return footerText;
-    }
-
-    public void setFooterText(String footerText) {
-        this.footerText = footerText;
-    }
-
-    public Boolean getShowResponseTimes() {
-        return showResponseTimes;
-    }
-
-    public void setShowResponseTimes(Boolean showResponseTimes) {
-        this.showResponseTimes = showResponseTimes;
-    }
-
-    public Boolean getShowUptimePercentage() {
-        return showUptimePercentage;
-    }
-
-    public void setShowUptimePercentage(Boolean showUptimePercentage) {
-        this.showUptimePercentage = showUptimePercentage;
-    }
-
-    public Integer getAutoRefreshSeconds() {
-        return autoRefreshSeconds;
-    }
-
-    public void setAutoRefreshSeconds(Integer autoRefreshSeconds) {
-        this.autoRefreshSeconds = autoRefreshSeconds;
-    }
-
-    public String getMonitorSelection() {
-        return monitorSelection;
-    }
-
-    public void setMonitorSelection(String monitorSelection) {
-        this.monitorSelection = monitorSelection;
     }
 
     public Boolean getIsActive() {
@@ -218,6 +124,14 @@ public class StatusPageDTO implements Serializable {
         this.updatedAt = updatedAt;
     }
 
+    public Integer getItemCount() {
+        return itemCount;
+    }
+
+    public void setItemCount(Integer itemCount) {
+        this.itemCount = itemCount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -248,15 +162,6 @@ public class StatusPageDTO implements Serializable {
             ", slug='" + getSlug() + "'" +
             ", description='" + getDescription() + "'" +
             ", isPublic='" + getIsPublic() + "'" +
-            ", customDomain='" + getCustomDomain() + "'" +
-            ", logoUrl='" + getLogoUrl() + "'" +
-            ", themeColor='" + getThemeColor() + "'" +
-            ", headerText='" + getHeaderText() + "'" +
-            ", footerText='" + getFooterText() + "'" +
-            ", showResponseTimes='" + getShowResponseTimes() + "'" +
-            ", showUptimePercentage='" + getShowUptimePercentage() + "'" +
-            ", autoRefreshSeconds=" + getAutoRefreshSeconds() +
-            ", monitorSelection='" + getMonitorSelection() + "'" +
             ", isActive='" + getIsActive() + "'" +
             ", isHomePage='" + getIsHomePage() + "'" +
             ", allowedRoles='" + getAllowedRoles() + "'" +

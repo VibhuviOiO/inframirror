@@ -48,6 +48,34 @@
             <column name="response_time_critical_ms" valueNumeric="1000"/>
             <column name="enabled" valueBoolean="true"/>
         </insert>
+        <insert tableName="http_monitor">
+            <column name="id" valueNumeric="4001"/>
+            <column name="name" value="ISRO Public API"/>
+            <column name="method" value="GET"/>
+            <column name="type" value="HTTPS"/>
+            <column name="url" value="https://api.isro.gov.in/v1/satellites"/>
+            <column name="interval_seconds" valueNumeric="60"/>
+            <column name="timeout_seconds" valueNumeric="30"/>
+            <column name="retry_count" valueNumeric="2"/>
+            <column name="retry_delay_seconds" valueNumeric="5"/>
+            <column name="response_time_warning_ms" valueNumeric="1000"/>
+            <column name="response_time_critical_ms" valueNumeric="3000"/>
+            <column name="enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="http_monitor">
+            <column name="id" valueNumeric="4002"/>
+            <column name="name" value="ISRO Microservice API"/>
+            <column name="method" value="GET"/>
+            <column name="type" value="HTTPS"/>
+            <column name="url" value="https://microservice.isro.internal/api/data"/>
+            <column name="interval_seconds" valueNumeric="60"/>
+            <column name="timeout_seconds" valueNumeric="30"/>
+            <column name="retry_count" valueNumeric="2"/>
+            <column name="retry_delay_seconds" valueNumeric="5"/>
+            <column name="response_time_warning_ms" valueNumeric="500"/>
+            <column name="response_time_critical_ms" valueNumeric="2000"/>
+            <column name="enabled" valueBoolean="true"/>
+        </insert>
 
         <!-- Regions -->
         <insert tableName="region">
@@ -124,6 +152,162 @@
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
         </insert>
+        <insert tableName="instance">
+            <column name="id" valueNumeric="1001"/>
+            <column name="name" value="mongo-01"/>
+            <column name="hostname" value="mongo-01.isro.internal"/>
+            <column name="description" value="MongoDB Primary Node"/>
+            <column name="instance_type" value="BARE_METAL"/>
+            <column name="monitoring_type" value="SELF_HOSTED"/>
+            <column name="operating_system" value="LINUX"/>
+            <column name="platform" value="Ubuntu 22.04"/>
+            <column name="private_ip_address" value="10.0.1.11"/>
+            <column name="ping_enabled" valueBoolean="true"/>
+            <column name="ping_interval" valueNumeric="30"/>
+            <column name="ping_timeout_ms" valueNumeric="3000"/>
+            <column name="ping_retry_count" valueNumeric="2"/>
+            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
+            <column name="hardware_monitoring_interval" valueNumeric="60"/>
+            <column name="cpu_warning_threshold" valueNumeric="75"/>
+            <column name="cpu_danger_threshold" valueNumeric="90"/>
+            <column name="memory_warning_threshold" valueNumeric="80"/>
+            <column name="memory_danger_threshold" valueNumeric="95"/>
+            <column name="disk_warning_threshold" valueNumeric="80"/>
+            <column name="disk_danger_threshold" valueNumeric="90"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="instance">
+            <column name="id" valueNumeric="1002"/>
+            <column name="name" value="mongo-02"/>
+            <column name="hostname" value="mongo-02.isro.internal"/>
+            <column name="description" value="MongoDB Secondary Node"/>
+            <column name="instance_type" value="BARE_METAL"/>
+            <column name="monitoring_type" value="SELF_HOSTED"/>
+            <column name="operating_system" value="LINUX"/>
+            <column name="platform" value="Ubuntu 22.04"/>
+            <column name="private_ip_address" value="10.0.1.12"/>
+            <column name="ping_enabled" valueBoolean="true"/>
+            <column name="ping_interval" valueNumeric="30"/>
+            <column name="ping_timeout_ms" valueNumeric="3000"/>
+            <column name="ping_retry_count" valueNumeric="2"/>
+            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
+            <column name="hardware_monitoring_interval" valueNumeric="60"/>
+            <column name="cpu_warning_threshold" valueNumeric="75"/>
+            <column name="cpu_danger_threshold" valueNumeric="90"/>
+            <column name="memory_warning_threshold" valueNumeric="80"/>
+            <column name="memory_danger_threshold" valueNumeric="95"/>
+            <column name="disk_warning_threshold" valueNumeric="80"/>
+            <column name="disk_danger_threshold" valueNumeric="90"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="instance">
+            <column name="id" valueNumeric="1003"/>
+            <column name="name" value="mongo-03"/>
+            <column name="hostname" value="mongo-03.isro.internal"/>
+            <column name="description" value="MongoDB Arbiter Node"/>
+            <column name="instance_type" value="BARE_METAL"/>
+            <column name="monitoring_type" value="SELF_HOSTED"/>
+            <column name="operating_system" value="LINUX"/>
+            <column name="platform" value="Ubuntu 22.04"/>
+            <column name="private_ip_address" value="10.0.1.13"/>
+            <column name="ping_enabled" valueBoolean="true"/>
+            <column name="ping_interval" valueNumeric="30"/>
+            <column name="ping_timeout_ms" valueNumeric="3000"/>
+            <column name="ping_retry_count" valueNumeric="2"/>
+            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
+            <column name="hardware_monitoring_interval" valueNumeric="60"/>
+            <column name="cpu_warning_threshold" valueNumeric="75"/>
+            <column name="cpu_danger_threshold" valueNumeric="90"/>
+            <column name="memory_warning_threshold" valueNumeric="80"/>
+            <column name="memory_danger_threshold" valueNumeric="95"/>
+            <column name="disk_warning_threshold" valueNumeric="80"/>
+            <column name="disk_danger_threshold" valueNumeric="90"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="instance">
+            <column name="id" valueNumeric="1004"/>
+            <column name="name" value="kafka-01"/>
+            <column name="hostname" value="kafka-01.isro.internal"/>
+            <column name="description" value="Kafka Broker 1"/>
+            <column name="instance_type" value="BARE_METAL"/>
+            <column name="monitoring_type" value="SELF_HOSTED"/>
+            <column name="operating_system" value="LINUX"/>
+            <column name="platform" value="Ubuntu 22.04"/>
+            <column name="private_ip_address" value="10.0.2.11"/>
+            <column name="ping_enabled" valueBoolean="true"/>
+            <column name="ping_interval" valueNumeric="30"/>
+            <column name="ping_timeout_ms" valueNumeric="3000"/>
+            <column name="ping_retry_count" valueNumeric="2"/>
+            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
+            <column name="hardware_monitoring_interval" valueNumeric="60"/>
+            <column name="cpu_warning_threshold" valueNumeric="75"/>
+            <column name="cpu_danger_threshold" valueNumeric="90"/>
+            <column name="memory_warning_threshold" valueNumeric="80"/>
+            <column name="memory_danger_threshold" valueNumeric="95"/>
+            <column name="disk_warning_threshold" valueNumeric="80"/>
+            <column name="disk_danger_threshold" valueNumeric="90"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="instance">
+            <column name="id" valueNumeric="1005"/>
+            <column name="name" value="kafka-02"/>
+            <column name="hostname" value="kafka-02.isro.internal"/>
+            <column name="description" value="Kafka Broker 2"/>
+            <column name="instance_type" value="BARE_METAL"/>
+            <column name="monitoring_type" value="SELF_HOSTED"/>
+            <column name="operating_system" value="LINUX"/>
+            <column name="platform" value="Ubuntu 22.04"/>
+            <column name="private_ip_address" value="10.0.2.12"/>
+            <column name="ping_enabled" valueBoolean="true"/>
+            <column name="ping_interval" valueNumeric="30"/>
+            <column name="ping_timeout_ms" valueNumeric="3000"/>
+            <column name="ping_retry_count" valueNumeric="2"/>
+            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
+            <column name="hardware_monitoring_interval" valueNumeric="60"/>
+            <column name="cpu_warning_threshold" valueNumeric="75"/>
+            <column name="cpu_danger_threshold" valueNumeric="90"/>
+            <column name="memory_warning_threshold" valueNumeric="80"/>
+            <column name="memory_danger_threshold" valueNumeric="95"/>
+            <column name="disk_warning_threshold" valueNumeric="80"/>
+            <column name="disk_danger_threshold" valueNumeric="90"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="instance">
+            <column name="id" valueNumeric="1006"/>
+            <column name="name" value="kafka-03"/>
+            <column name="hostname" value="kafka-03.isro.internal"/>
+            <column name="description" value="Kafka Broker 3"/>
+            <column name="instance_type" value="BARE_METAL"/>
+            <column name="monitoring_type" value="SELF_HOSTED"/>
+            <column name="operating_system" value="LINUX"/>
+            <column name="platform" value="Ubuntu 22.04"/>
+            <column name="private_ip_address" value="10.0.2.13"/>
+            <column name="ping_enabled" valueBoolean="true"/>
+            <column name="ping_interval" valueNumeric="30"/>
+            <column name="ping_timeout_ms" valueNumeric="3000"/>
+            <column name="ping_retry_count" valueNumeric="2"/>
+            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
+            <column name="hardware_monitoring_interval" valueNumeric="60"/>
+            <column name="cpu_warning_threshold" valueNumeric="75"/>
+            <column name="cpu_danger_threshold" valueNumeric="90"/>
+            <column name="memory_warning_threshold" valueNumeric="80"/>
+            <column name="memory_danger_threshold" valueNumeric="95"/>
+            <column name="disk_warning_threshold" valueNumeric="80"/>
+            <column name="disk_danger_threshold" valueNumeric="90"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
 
         <!-- Services -->
         <insert tableName="monitored_service">
@@ -144,6 +328,42 @@
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
         </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="2001"/>
+            <column name="name" value="Mongo Cluster"/>
+            <column name="description" value="MongoDB Database Cluster for ISRO satellite data"/>
+            <column name="service_type" value="MONGODB"/>
+            <column name="environment" value="PRODUCTION"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="cluster_monitoring_enabled" valueBoolean="true"/>
+            <column name="interval_seconds" valueNumeric="30"/>
+            <column name="timeout_ms" valueNumeric="3000"/>
+            <column name="retry_count" valueNumeric="2"/>
+            <column name="latency_warning_ms" valueNumeric="300"/>
+            <column name="latency_critical_ms" valueNumeric="1000"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="2002"/>
+            <column name="name" value="Kafka Cluster"/>
+            <column name="description" value="Kafka Streaming Service for real-time telemetry"/>
+            <column name="service_type" value="KAFKA"/>
+            <column name="environment" value="PRODUCTION"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="cluster_monitoring_enabled" valueBoolean="true"/>
+            <column name="interval_seconds" valueNumeric="30"/>
+            <column name="timeout_ms" valueNumeric="3000"/>
+            <column name="retry_count" valueNumeric="2"/>
+            <column name="latency_warning_ms" valueNumeric="200"/>
+            <column name="latency_critical_ms" valueNumeric="800"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
 
         <!-- Service Instances -->
         <insert tableName="service_instance">
@@ -155,19 +375,150 @@
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
         </insert>
+        <insert tableName="service_instance">
+            <column name="id" valueNumeric="3001"/>
+            <column name="monitored_service_id" valueNumeric="2001"/>
+            <column name="instance_id" valueNumeric="1001"/>
+            <column name="port" valueNumeric="27017"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="service_instance">
+            <column name="id" valueNumeric="3002"/>
+            <column name="monitored_service_id" valueNumeric="2001"/>
+            <column name="instance_id" valueNumeric="1002"/>
+            <column name="port" valueNumeric="27017"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="service_instance">
+            <column name="id" valueNumeric="3003"/>
+            <column name="monitored_service_id" valueNumeric="2001"/>
+            <column name="instance_id" valueNumeric="1003"/>
+            <column name="port" valueNumeric="27017"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="service_instance">
+            <column name="id" valueNumeric="3004"/>
+            <column name="monitored_service_id" valueNumeric="2002"/>
+            <column name="instance_id" valueNumeric="1004"/>
+            <column name="port" valueNumeric="9092"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="service_instance">
+            <column name="id" valueNumeric="3005"/>
+            <column name="monitored_service_id" valueNumeric="2002"/>
+            <column name="instance_id" valueNumeric="1005"/>
+            <column name="port" valueNumeric="9092"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="service_instance">
+            <column name="id" valueNumeric="3006"/>
+            <column name="monitored_service_id" valueNumeric="2002"/>
+            <column name="instance_id" valueNumeric="1006"/>
+            <column name="port" valueNumeric="9092"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
 
         <!-- Status Pages -->
         <insert tableName="status_page">
             <column name="id" valueNumeric="1"/>
-            <column name="name" value="Public Status"/>
-            <column name="slug" value="public-status"/>
-            <column name="description" value="Public service status"/>
+            <column name="name" value="Public API Status"/>
+            <column name="slug" value="public-api-status"/>
+            <column name="description" value="Public ISRO API service status"/>
             <column name="is_public" valueBoolean="true"/>
             <column name="is_active" valueBoolean="true"/>
             <column name="is_home_page" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="Public Services Status"/>
+            <column name="slug" value="services-status"/>
+            <column name="description" value="External services monitoring"/>
+            <column name="is_public" valueBoolean="true"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="is_home_page" valueBoolean="false"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page">
+            <column name="id" valueNumeric="3"/>
+            <column name="name" value="Internal Infrastructure"/>
+            <column name="slug" value="internal-infra"/>
+            <column name="description" value="Private infrastructure monitoring with full dependency tree"/>
+            <column name="is_public" valueBoolean="false"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="is_home_page" valueBoolean="false"/>
+            <column name="allowed_roles" value="ROLE_ADMIN,ROLE_OPS"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page">
+            <column name="id" valueNumeric="4"/>
+            <column name="name" value="Home Lab Status"/>
+            <column name="slug" value="home-lab"/>
+            <column name="description" value="Private home lab infrastructure status"/>
+            <column name="is_public" valueBoolean="false"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="is_home_page" valueBoolean="false"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page">
+            <column name="id" valueNumeric="5001"/>
+            <column name="name" value="ISRO Infrastructure Status"/>
+            <column name="slug" value="isro-internal"/>
+            <column name="description" value="Complete ISRO infrastructure dependency tree"/>
+            <column name="is_public" valueBoolean="false"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="is_home_page" valueBoolean="false"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Status Page Settings (for public pages only) -->
+        <insert tableName="status_page_settings">
+            <column name="id" valueNumeric="1"/>
+            <column name="status_page_id" valueNumeric="1"/>
+            <column name="logo_url" value="/content/images/logo.png"/>
+            <column name="theme_color" value="#007bff"/>
+            <column name="header_text" value="All systems operational"/>
+            <column name="footer_text" value="Powered by InfraMirror"/>
             <column name="show_response_times" valueBoolean="true"/>
             <column name="show_uptime_percentage" valueBoolean="true"/>
             <column name="auto_refresh_seconds" valueNumeric="30"/>
+            <column name="sample_size" valueNumeric="20"/>
+            <column name="success_threshold_high" valueNumeric="0.80"/>
+            <column name="success_threshold_low" valueNumeric="0.60"/>
+            <column name="warning_threshold_ms" valueNumeric="500"/>
+            <column name="critical_threshold_ms" valueNumeric="1000"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page_settings">
+            <column name="id" valueNumeric="2"/>
+            <column name="status_page_id" valueNumeric="2"/>
+            <column name="theme_color" value="#28a745"/>
+            <column name="show_response_times" valueBoolean="true"/>
+            <column name="show_uptime_percentage" valueBoolean="false"/>
+            <column name="auto_refresh_seconds" valueNumeric="60"/>
+            <column name="sample_size" valueNumeric="20"/>
+            <column name="success_threshold_high" valueNumeric="0.80"/>
+            <column name="success_threshold_low" valueNumeric="0.60"/>
+            <column name="warning_threshold_ms" valueNumeric="500"/>
+            <column name="critical_threshold_ms" valueNumeric="1000"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
         </insert>
@@ -189,6 +540,54 @@
             <column name="display_order" valueNumeric="2"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
         </insert>
+        <insert tableName="status_page_item">
+            <column name="id" valueNumeric="3"/>
+            <column name="status_page_id" valueNumeric="2"/>
+            <column name="item_type" value="HTTP"/>
+            <column name="item_id" valueNumeric="3"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page_item">
+            <column name="id" valueNumeric="4"/>
+            <column name="status_page_id" valueNumeric="3"/>
+            <column name="item_type" value="HTTP"/>
+            <column name="item_id" valueNumeric="1"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page_item">
+            <column name="id" valueNumeric="5"/>
+            <column name="status_page_id" valueNumeric="3"/>
+            <column name="item_type" value="SERVICE"/>
+            <column name="item_id" valueNumeric="1"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page_item">
+            <column name="id" valueNumeric="6"/>
+            <column name="status_page_id" valueNumeric="4"/>
+            <column name="item_type" value="INSTANCE"/>
+            <column name="item_id" valueNumeric="1"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page_item">
+            <column name="id" valueNumeric="7"/>
+            <column name="status_page_id" valueNumeric="4"/>
+            <column name="item_type" value="INSTANCE"/>
+            <column name="item_id" valueNumeric="2"/>
+            <column name="display_order" valueNumeric="2"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="status_page_item">
+            <column name="id" valueNumeric="6001"/>
+            <column name="status_page_id" valueNumeric="5001"/>
+            <column name="item_type" value="HTTP_MONITOR"/>
+            <column name="item_id" valueNumeric="4001"/>
+            <column name="display_order" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
 
         <!-- Status Dependencies -->
         <insert tableName="status_dependency">
@@ -197,6 +596,87 @@
             <column name="parent_id" valueNumeric="1"/>
             <column name="child_type" value="INSTANCE"/>
             <column name="child_id" valueNumeric="2"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <!-- ISRO Public API -> ISRO Microservice API -->
+        <insert tableName="status_dependency">
+            <column name="id" valueNumeric="7001"/>
+            <column name="parent_type" value="HTTP_MONITOR"/>
+            <column name="parent_id" valueNumeric="4001"/>
+            <column name="child_type" value="HTTP_MONITOR"/>
+            <column name="child_id" valueNumeric="4002"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <!-- ISRO Microservice API -> Mongo Cluster -->
+        <insert tableName="status_dependency">
+            <column name="id" valueNumeric="7002"/>
+            <column name="parent_type" value="HTTP_MONITOR"/>
+            <column name="parent_id" valueNumeric="4002"/>
+            <column name="child_type" value="SERVICE"/>
+            <column name="child_id" valueNumeric="2001"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <!-- ISRO Microservice API -> Kafka Cluster -->
+        <insert tableName="status_dependency">
+            <column name="id" valueNumeric="7003"/>
+            <column name="parent_type" value="HTTP_MONITOR"/>
+            <column name="parent_id" valueNumeric="4002"/>
+            <column name="child_type" value="SERVICE"/>
+            <column name="child_id" valueNumeric="2002"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <!-- Mongo Cluster -> mongo-01 -->
+        <insert tableName="status_dependency">
+            <column name="id" valueNumeric="7004"/>
+            <column name="parent_type" value="SERVICE"/>
+            <column name="parent_id" valueNumeric="2001"/>
+            <column name="child_type" value="INSTANCE"/>
+            <column name="child_id" valueNumeric="1001"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <!-- Mongo Cluster -> mongo-02 -->
+        <insert tableName="status_dependency">
+            <column name="id" valueNumeric="7005"/>
+            <column name="parent_type" value="SERVICE"/>
+            <column name="parent_id" valueNumeric="2001"/>
+            <column name="child_type" value="INSTANCE"/>
+            <column name="child_id" valueNumeric="1002"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <!-- Mongo Cluster -> mongo-03 -->
+        <insert tableName="status_dependency">
+            <column name="id" valueNumeric="7006"/>
+            <column name="parent_type" value="SERVICE"/>
+            <column name="parent_id" valueNumeric="2001"/>
+            <column name="child_type" value="INSTANCE"/>
+            <column name="child_id" valueNumeric="1003"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <!-- Kafka Cluster -> kafka-01 -->
+        <insert tableName="status_dependency">
+            <column name="id" valueNumeric="7007"/>
+            <column name="parent_type" value="SERVICE"/>
+            <column name="parent_id" valueNumeric="2002"/>
+            <column name="child_type" value="INSTANCE"/>
+            <column name="child_id" valueNumeric="1004"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <!-- Kafka Cluster -> kafka-02 -->
+        <insert tableName="status_dependency">
+            <column name="id" valueNumeric="7008"/>
+            <column name="parent_type" value="SERVICE"/>
+            <column name="parent_id" valueNumeric="2002"/>
+            <column name="child_type" value="INSTANCE"/>
+            <column name="child_id" valueNumeric="1005"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <!-- Kafka Cluster -> kafka-03 -->
+        <insert tableName="status_dependency">
+            <column name="id" valueNumeric="7009"/>
+            <column name="parent_type" value="SERVICE"/>
+            <column name="parent_id" valueNumeric="2002"/>
+            <column name="child_type" value="INSTANCE"/>
+            <column name="child_id" valueNumeric="1006"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
         </insert>
 

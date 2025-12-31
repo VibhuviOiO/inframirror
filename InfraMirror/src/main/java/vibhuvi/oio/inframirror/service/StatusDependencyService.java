@@ -1,9 +1,11 @@
 package vibhuvi.oio.inframirror.service;
 
 import java.util.Optional;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import vibhuvi.oio.inframirror.service.dto.StatusDependencyDTO;
+import vibhuvi.oio.inframirror.service.dto.DependencyTreeDTO;
 
 /**
  * Service Interface for managing {@link vibhuvi.oio.inframirror.domain.StatusDependency}.
@@ -65,4 +67,12 @@ public interface StatusDependencyService {
      * @return the list of entities.
      */
     Page<StatusDependencyDTO> search(String query, Pageable pageable);
+
+    /**
+     * Get dependency tree for a status page.
+     *
+     * @param statusPageId the status page id.
+     * @return the dependency tree.
+     */
+    List<DependencyTreeDTO> getDependencyTree(Long statusPageId);
 }

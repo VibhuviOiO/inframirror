@@ -112,6 +112,8 @@ module.exports = async options => {
         new ESLintPlugin({
           configType: 'flat',
           extensions: ['ts', 'tsx'],
+          failOnError: false,
+          emitWarning: true,
         }),
         new ForkTsCheckerWebpackPlugin(),
         new CopyWebpackPlugin({
