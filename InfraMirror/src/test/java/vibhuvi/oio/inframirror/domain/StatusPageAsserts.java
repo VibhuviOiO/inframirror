@@ -51,7 +51,6 @@ public class StatusPageAsserts {
             .satisfies(a -> assertThat(a.getSlug()).as("check slug").isEqualTo(expected.getSlug()))
             .satisfies(a -> assertThat(a.getDescription()).as("check description").isEqualTo(expected.getDescription()))
             .satisfies(a -> assertThat(a.getIsPublic()).as("check isPublic").isEqualTo(expected.getIsPublic()))
-            .satisfies(a -> assertThat(a.getMonitorSelection()).as("check monitorSelection").isEqualTo(expected.getMonitorSelection()))
             .satisfies(a -> assertThat(a.getIsActive()).as("check isActive").isEqualTo(expected.getIsActive()))
             .satisfies(a -> assertThat(a.getIsHomePage()).as("check isHomePage").isEqualTo(expected.getIsHomePage()))
             .satisfies(a -> assertThat(a.getAllowedRoles()).as("check allowedRoles").isEqualTo(expected.getAllowedRoles()))

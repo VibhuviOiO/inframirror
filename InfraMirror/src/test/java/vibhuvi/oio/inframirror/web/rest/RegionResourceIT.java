@@ -61,12 +61,13 @@ class RegionResourceIT {
     @Autowired
     private ObjectMapper om;
     
+    @Autowired
     private RegionRepository regionRepository;
 
     @Autowired
     private RegionMapper regionMapper;
     
-
+    @Autowired
     private EntityManager em;
 
     @Autowired
@@ -168,6 +169,24 @@ class RegionResourceIT {
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
 
+    }
+
+    @Test
+    @Transactional
+    void createRegionWithDuplicateName() throws Exception {
+        // Create first region
+        insertedRegion = regionRepository.saveAndFlush(region);
+        long databaseSizeBeforeCreate = getRepositoryCount();
+
+        // Try to create another with same name (case-insensitive)
+        Region duplicateRegion = new Region().name(DEFAULT_NAME.toLowerCase()).regionCode("different-code").groupName("Different Group");
+        RegionDTO regionDTO = regionMapper.toDto(duplicateRegion);
+
+        restRegionMockMvc
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(regionDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeCreate);
     }
 
     @Test

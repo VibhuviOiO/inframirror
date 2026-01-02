@@ -109,8 +109,8 @@ export const RegionSlice = createEntitySlice({
         return {
           ...state,
           loading: false,
-          entities: data,
-          totalItems: parseInt(headers['x-total-count'], 10),
+          entities: Array.isArray(data) ? data : [],
+          totalItems: parseInt(headers?.['x-total-count'] || headers?.['X-Total-Count'] || '0', 10),
         };
       })
       .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {

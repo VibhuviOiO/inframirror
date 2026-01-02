@@ -26,7 +26,7 @@ public class Region implements Serializable {
 
     @NotNull
     @Size(max = 50)
-    @Column(name = "name", length = 50, nullable = false)
+    @Column(name = "name", length = 50, nullable = false, unique = false)
     private String name;
 
     @Size(max = 20)
@@ -41,6 +41,10 @@ public class Region implements Serializable {
     @org.springframework.data.annotation.Transient
     @JsonIgnoreProperties(value = { "instances", "monitoredServices", "region" }, allowSetters = true)
     private Set<Datacenter> datacenters = new HashSet<>();
+
+    // TODO: Add for multi-tenancy
+    // @Column(name = "org_id", nullable = false)
+    // private Long orgId;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 

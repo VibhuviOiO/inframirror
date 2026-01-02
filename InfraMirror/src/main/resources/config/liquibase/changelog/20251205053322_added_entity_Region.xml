@@ -64,6 +64,9 @@
             CREATE INDEX idx_region_name_trgm ON region USING GIN (name gin_trgm_ops);
             CREATE INDEX idx_region_code_trgm ON region USING GIN (region_code gin_trgm_ops);
             CREATE INDEX idx_region_group_trgm ON region USING GIN (group_name gin_trgm_ops);
+            
+            -- B-tree index for exact name lookups and sorting
+            CREATE INDEX idx_region_name ON region (name);
         </sql>
     </changeSet>
 

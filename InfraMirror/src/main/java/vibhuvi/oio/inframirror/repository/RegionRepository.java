@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vibhuvi.oio.inframirror.domain.Region;
+import vibhuvi.oio.inframirror.repository.base.SearchableRepository;
 import vibhuvi.oio.inframirror.service.dto.RegionSearchResultDTO;
 
 /**
@@ -14,8 +15,10 @@ import vibhuvi.oio.inframirror.service.dto.RegionSearchResultDTO;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface RegionRepository extends JpaRepository<Region, Long>, JpaSpecificationExecutor<Region> {
+public interface RegionRepository extends SearchableRepository<Region>, JpaSpecificationExecutor<Region> {
     Optional<Region> findByName(String name);
+    
+    boolean existsByNameIgnoreCase(String name);
 
     /**
      * Full-text search using PostgreSQL tsvector with prefix matching.

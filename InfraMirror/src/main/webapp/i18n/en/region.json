@@ -5,6 +5,7 @@
         "title": "Regions",
         "refreshListLabel": "Refresh list",
         "createLabel": "Create",
+        "editLabel": "Edit Region",
         "createOrEditLabel": "Create",
         "search": "Search for Region",
         "searchButton": "Search",

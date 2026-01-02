@@ -81,5 +81,6 @@ declare global {
 }
 
 import 'cypress-audit/commands';
+import './entity-commands';
 // Convert this to a module instead of a script (allows import/export)
 export {};

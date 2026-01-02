@@ -3,6 +3,10 @@
 // Add component overrides and new styles below.
 // ---------------------------------------------------------
 
+// Import generic entity styles
+@import 'shared/styles/entity-common';
+@import 'shared/styles/side-panel-common';
+
 :root {
   --bs-border-radius: 1.15rem !important;
 }

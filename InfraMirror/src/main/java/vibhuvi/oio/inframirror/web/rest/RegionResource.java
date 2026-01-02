@@ -21,6 +21,7 @@ import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 import vibhuvi.oio.inframirror.repository.RegionRepository;
 import vibhuvi.oio.inframirror.service.RegionQueryService;
+import vibhuvi.oio.inframirror.service.RegionSearchService;
 import vibhuvi.oio.inframirror.service.RegionService;
 import vibhuvi.oio.inframirror.service.criteria.RegionCriteria;
 import vibhuvi.oio.inframirror.service.dto.RegionDTO;
@@ -47,10 +48,18 @@ public class RegionResource {
 
     private final RegionQueryService regionQueryService;
 
-    public RegionResource(RegionService regionService, RegionRepository regionRepository, RegionQueryService regionQueryService) {
+    private final RegionSearchService regionSearchService;
+
+    public RegionResource(
+        RegionService regionService,
+        RegionRepository regionRepository,
+        RegionQueryService regionQueryService,
+        RegionSearchService regionSearchService
+    ) {
         this.regionService = regionService;
         this.regionRepository = regionRepository;
         this.regionQueryService = regionQueryService;
+        this.regionSearchService = regionSearchService;
     }
 
     /**
@@ -66,8 +75,11 @@ public class RegionResource {
         if (regionDTO.getId() != null) {
             throw new BadRequestAlertException("A new region cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        if (regionRepository.existsByNameIgnoreCase(regionDTO.getName())) {
+            throw new BadRequestAlertException("Region name already exists", ENTITY_NAME, "nameexists");
+        }
         regionDTO = regionService.save(regionDTO);
-        return ResponseEntity.ok()
+        return ResponseEntity.created(new URI("/api/regions/" + regionDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, regionDTO.getId().toString()))
             .body(regionDTO);
     }
@@ -95,7 +107,8 @@ public class RegionResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!regionRepository.existsById(id)) {
+        // Optimized: Use findById instead of existsById to avoid double query
+        if (!regionRepository.findById(id).isPresent()) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
@@ -129,11 +142,12 @@ public class RegionResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!regionRepository.existsById(id)) {
+        // Optimized: partialUpdate already does findById, no need for existsById check
+        Optional<RegionDTO> result = regionService.partialUpdate(regionDTO);
+        
+        if (result.isEmpty()) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
-
-        Optional<RegionDTO> result = regionService.partialUpdate(regionDTO);
 
         return ResponseUtil.wrapOrNotFound(
             result,
@@ -214,7 +228,7 @@ public class RegionResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search Regions : {}", query);
-        Page<RegionDTO> page = regionService.search(query, pageable);
+        Page<RegionDTO> page = regionSearchService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -232,7 +246,7 @@ public class RegionResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to prefix search Regions : {}", query);
-        Page<RegionDTO> page = regionService.searchPrefix(query, pageable);
+        Page<RegionDTO> page = regionSearchService.searchPrefix(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -250,7 +264,7 @@ public class RegionResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to fuzzy search Regions : {}", query);
-        Page<RegionDTO> page = regionService.searchFuzzy(query, pageable);
+        Page<RegionDTO> page = regionSearchService.searchFuzzy(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -268,7 +282,7 @@ public class RegionResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search Regions with highlight : {}", query);
-        Page<RegionSearchResultDTO> page = regionService.searchWithHighlight(query, pageable);
+        Page<RegionSearchResultDTO> page = regionSearchService.searchWithHighlight(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
