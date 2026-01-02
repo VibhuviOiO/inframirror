@@ -97,7 +97,7 @@ export const StatusPageView = () => {
         </div>
       </div>
 
-      {data.id && <DependencyTree key={refreshKey} statusPageId={data.id} />}
+      {data.id && <DependencyTree key={refreshKey} statusPageId={data.id} isPublic={data.isPublic} />}
 
       {showManagePanel && data.id && (
         <ManageItemsPanel

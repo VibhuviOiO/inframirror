@@ -12,7 +12,6 @@ import java.util.Objects;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class StatusDependencyDTO implements Serializable {
 
-    @NotNull
     private Long id;
 
     @NotNull
@@ -30,8 +29,11 @@ public class StatusDependencyDTO implements Serializable {
     @Lob
     private String metadata;
 
-    @NotNull
     private Instant createdAt;
+
+    private String parentName;
+
+    private String childName;
 
     private StatusPageDTO statusPage;
 
@@ -89,6 +91,22 @@ public class StatusDependencyDTO implements Serializable {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+
+    public String getChildName() {
+        return childName;
+    }
+
+    public void setChildName(String childName) {
+        this.childName = childName;
     }
 
     public StatusPageDTO getStatusPage() {

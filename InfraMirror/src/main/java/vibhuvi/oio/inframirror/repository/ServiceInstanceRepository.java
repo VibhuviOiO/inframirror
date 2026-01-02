@@ -17,5 +17,8 @@ public interface ServiceInstanceRepository extends JpaRepository<ServiceInstance
     @Query("SELECT si FROM ServiceInstance si LEFT JOIN FETCH si.instance WHERE si.monitoredService.id = :monitoredServiceId")
     List<ServiceInstance> findByMonitoredServiceIdWithInstance(@Param("monitoredServiceId") Long monitoredServiceId);
     
+    @Query("SELECT si FROM ServiceInstance si LEFT JOIN FETCH si.monitoredService WHERE si.id = :id")
+    java.util.Optional<ServiceInstance> findByIdWithMonitoredService(@Param("id") Long id);
+    
     void deleteByMonitoredServiceId(Long monitoredServiceId);
 }

@@ -42,6 +42,63 @@
     }
   }
 
+  .help-section {
+    padding: 1rem 1.5rem;
+    background: #e7f3ff;
+    border-bottom: 2px solid #007bff;
+
+    .dependency-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+
+      .flow-step {
+        padding: 0.75rem;
+        background: white;
+        border-radius: 6px;
+        border-left: 3px solid #007bff;
+      }
+
+      .flow-arrow {
+        text-align: center;
+        font-size: 1.5rem;
+        color: #007bff;
+      }
+    }
+
+    .example-chain {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      background: white;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+
+      .chain-item {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 0.875rem;
+
+        &.http {
+          background: #007bff;
+          color: white;
+        }
+
+        &.service {
+          background: #28a745;
+          color: white;
+        }
+
+        &.instance {
+          background: #17a2b8;
+          color: white;
+        }
+      }
+    }
+  }
+
   .panel-body {
     flex: 1;
     overflow: hidden;
@@ -125,6 +182,7 @@
   .items-list {
     flex: 1;
     overflow-y: auto;
+    max-height: calc(100vh - 400px);
 
     .item-group {
       .group-header {
@@ -205,5 +263,170 @@
   }
   to {
     transform: translateX(0);
+  }
+}
+
+.dependency-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1070;
+}
+
+.dependency-modal {
+  background: white;
+  border-radius: 8px;
+  width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+
+  .modal-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h6 {
+      margin: 0;
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+
+    .add-dependency-form {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      .form-row {
+        display: flex;
+        gap: 0.5rem;
+
+        .form-control {
+          flex: 1;
+        }
+      }
+    }
+
+    .existing-dependencies {
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      .dependency-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .dependency-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem;
+          background: #f8f9fa;
+          border-radius: 6px;
+          border: 1px solid #dee2e6;
+
+          span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .btn-link {
+    padding: 0.25rem 0.5rem;
+    color: #6c757d;
+
+    &:hover {
+      color: #007bff;
+    }
+  }
+}
+
+.dependency-section {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  margin-top: 0.5rem;
+
+  .dependency-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    .dep-tab {
+      padding: 0.5rem 1rem;
+      border: 1px solid #dee2e6;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #e9ecef;
+      }
+
+      &.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+      }
+    }
+  }
+
+  .dependency-items {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+
+    .dependency-item-row {
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      label {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        cursor: pointer;
+
+        input[type='checkbox'] {
+          margin-right: 0.5rem;
+          cursor: pointer;
+        }
+      }
+    }
   }
 }

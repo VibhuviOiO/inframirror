@@ -20,6 +20,9 @@ import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 import vibhuvi.oio.inframirror.repository.StatusDependencyRepository;
+import vibhuvi.oio.inframirror.repository.HttpMonitorRepository;
+import vibhuvi.oio.inframirror.repository.InstanceRepository;
+import vibhuvi.oio.inframirror.repository.MonitoredServiceRepository;
 import vibhuvi.oio.inframirror.service.StatusDependencyService;
 import vibhuvi.oio.inframirror.service.dto.StatusDependencyDTO;
 import vibhuvi.oio.inframirror.web.rest.errors.BadRequestAlertException;
@@ -42,12 +45,24 @@ public class StatusDependencyResource {
 
     private final StatusDependencyRepository statusDependencyRepository;
 
+    private final HttpMonitorRepository httpMonitorRepository;
+
+    private final InstanceRepository instanceRepository;
+
+    private final MonitoredServiceRepository monitoredServiceRepository;
+
     public StatusDependencyResource(
         StatusDependencyService statusDependencyService,
-        StatusDependencyRepository statusDependencyRepository
+        StatusDependencyRepository statusDependencyRepository,
+        HttpMonitorRepository httpMonitorRepository,
+        InstanceRepository instanceRepository,
+        MonitoredServiceRepository monitoredServiceRepository
     ) {
         this.statusDependencyService = statusDependencyService;
         this.statusDependencyRepository = statusDependencyRepository;
+        this.httpMonitorRepository = httpMonitorRepository;
+        this.instanceRepository = instanceRepository;
+        this.monitoredServiceRepository = monitoredServiceRepository;
     }
 
     /**
@@ -143,16 +158,42 @@ public class StatusDependencyResource {
      * {@code GET  /status-dependencies} : get all the statusDependencies.
      *
      * @param pageable the pagination information.
+     * @param statusPageId optional filter by status page ID.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of statusDependencies in body.
      */
     @GetMapping("")
     public ResponseEntity<List<StatusDependencyDTO>> getAllStatusDependencies(
-        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(value = "statusPageId.equals", required = false) Long statusPageId
     ) {
         LOG.debug("REST request to get a page of StatusDependencies");
         Page<StatusDependencyDTO> page = statusDependencyService.findAll(pageable);
+        
+        if (statusPageId != null) {
+            List<StatusDependencyDTO> filtered = page.getContent().stream()
+                .filter(dep -> dep.getStatusPage() != null && dep.getStatusPage().getId().equals(statusPageId))
+                .map(this::enrichNames)
+                .toList();
+            return ResponseEntity.ok().body(filtered);
+        }
+        
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    private StatusDependencyDTO enrichNames(StatusDependencyDTO dto) {
+        dto.setParentName(getItemName(dto.getParentType(), dto.getParentId()));
+        dto.setChildName(getItemName(dto.getChildType(), dto.getChildId()));
+        return dto;
+    }
+
+    private String getItemName(String type, Long id) {
+        return switch (type) {
+            case "HTTP", "HTTP_MONITOR" -> httpMonitorRepository.findById(id).map(m -> m.getName()).orElse("Unknown");
+            case "INSTANCE" -> instanceRepository.findById(id).map(i -> i.getHostname()).orElse("Unknown");
+            case "SERVICE", "SERVICE_INSTANCE" -> monitoredServiceRepository.findById(id).map(s -> s.getName()).orElse("Unknown");
+            default -> type + " #" + id;
+        };
     }
 
     /**

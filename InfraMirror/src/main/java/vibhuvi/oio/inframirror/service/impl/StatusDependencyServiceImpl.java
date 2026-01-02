@@ -38,6 +38,7 @@ public class StatusDependencyServiceImpl implements StatusDependencyService {
     private final HttpHeartbeatRepository httpHeartbeatRepository;
     private final MonitoredServiceRepository monitoredServiceRepository;
     private final InstanceRepository instanceRepository;
+    private final vibhuvi.oio.inframirror.repository.ServiceInstanceRepository serviceInstanceRepository;
 
     public StatusDependencyServiceImpl(
         StatusDependencyRepository statusDependencyRepository,
@@ -46,7 +47,8 @@ public class StatusDependencyServiceImpl implements StatusDependencyService {
         HttpMonitorRepository httpMonitorRepository,
         HttpHeartbeatRepository httpHeartbeatRepository,
         MonitoredServiceRepository monitoredServiceRepository,
-        InstanceRepository instanceRepository
+        InstanceRepository instanceRepository,
+        vibhuvi.oio.inframirror.repository.ServiceInstanceRepository serviceInstanceRepository
     ) {
         this.statusDependencyRepository = statusDependencyRepository;
         this.statusDependencyMapper = statusDependencyMapper;
@@ -55,11 +57,15 @@ public class StatusDependencyServiceImpl implements StatusDependencyService {
         this.httpHeartbeatRepository = httpHeartbeatRepository;
         this.monitoredServiceRepository = monitoredServiceRepository;
         this.instanceRepository = instanceRepository;
+        this.serviceInstanceRepository = serviceInstanceRepository;
     }
     @Override
     public StatusDependencyDTO save(StatusDependencyDTO statusDependencyDTO) {
         LOG.debug("Request to save StatusDependency : {}", statusDependencyDTO);
         StatusDependency statusDependency = statusDependencyMapper.toEntity(statusDependencyDTO);
+        if (statusDependency.getCreatedAt() == null) {
+            statusDependency.setCreatedAt(java.time.Instant.now());
+        }
         statusDependency = statusDependencyRepository.save(statusDependency);
         return statusDependencyMapper.toDto(statusDependency);
     }
@@ -172,14 +178,15 @@ public class StatusDependencyServiceImpl implements StatusDependencyService {
                 node.setLastChecked(heartbeat.getExecutedAt() != null ? heartbeat.getExecutedAt().toString() : null);
             }
         } else if ("SERVICE".equals(type)) {
+            // SERVICE type should refer to MonitoredService, not ServiceInstance
             MonitoredService service = monitoredServiceRepository.findById(itemId).orElse(null);
             if (service == null) {
-                LOG.warn("Service not found: {}", itemId);
+                LOG.warn("MonitoredService not found: {}", itemId);
                 return null;
             }
             node.setName(service.getName());
             node.setStatus("UNKNOWN");
-            LOG.debug("Found service: {}", service.getName());
+            LOG.debug("Found MonitoredService: {} (id={})", service.getName(), itemId);
         } else if ("INSTANCE".equals(type)) {
             Instance instance = instanceRepository.findById(itemId).orElse(null);
             if (instance == null) {

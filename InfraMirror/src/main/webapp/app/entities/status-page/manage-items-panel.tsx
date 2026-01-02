@@ -18,6 +18,8 @@ interface AvailableItem {
   type: 'HTTP' | 'INSTANCE' | 'SERVICE';
   isAdded: boolean;
   group?: string;
+  itemId?: number;
+  dependencies?: number[];
 }
 
 interface StatusPageItem {
@@ -44,17 +46,21 @@ export const ManageItemsPanel: React.FC<ManageItemsPanelProps> = ({
   const [currentItems, setCurrentItems] = useState<StatusPageItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [filter, setFilter] = useState<FilterType>('all');
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [showHelp, setShowHelp] = useState(false);
+  const pageSize = 50;
 
   useEffect(() => {
     fetchCurrentItems();
   }, [statusPageId]);
 
   useEffect(() => {
-    // Only fetch available items after current items are loaded
-    if (currentItems.length >= 0) {
-      fetchAvailableItems();
-    }
-  }, [activeTab, currentItems]);
+    setPage(0);
+    setItems([]);
+    setHasMore(true);
+    fetchAvailableItems(true);
+  }, [activeTab, currentItems, search]);
 
   useEffect(() => {
     // Auto-select items that are already added
@@ -80,7 +86,8 @@ export const ManageItemsPanel: React.FC<ManageItemsPanelProps> = ({
     }
   };
 
-  const fetchAvailableItems = async () => {
+  const fetchAvailableItems = async (reset = false) => {
+    if (loading || (!reset && !hasMore)) return;
     setLoading(true);
     try {
       let endpoint = '';
@@ -96,36 +103,54 @@ export const ManageItemsPanel: React.FC<ManageItemsPanelProps> = ({
           typeKey = 'INSTANCE';
           break;
         case 'SERVICE':
-          endpoint = '/api/service-instances';
+          endpoint = '/api/monitored-services';
           typeKey = 'SERVICE';
           break;
         default:
           return;
       }
 
-      const response = await axios.get(endpoint, { params: { size: 1000 } });
-      const availableItems: AvailableItem[] = response.data.map((item: any) => {
+      const currentPage = reset ? 0 : page;
+      const params: any = { page: currentPage, size: pageSize, sort: 'id,asc' };
+      if (search) {
+        params['name.contains'] = search;
+      }
+
+      const itemsResponse = await axios.get(endpoint, { params });
+
+      const availableItems: AvailableItem[] = itemsResponse.data.map((item: any) => {
         let group = '';
-        if (typeKey === 'INSTANCE' && item.datacenter?.name) {
-          group = item.datacenter.name;
-        } else if (typeKey === 'SERVICE' && item.monitoredService?.datacenter?.name) {
-          group = item.monitoredService.datacenter.name;
+        let itemName = '';
+
+        if (typeKey === 'INSTANCE') {
+          itemName = item.hostname || item.name || `Instance ${item.id}`;
+          if (item.datacenter?.name) {
+            group = item.datacenter.name;
+          }
+        } else if (typeKey === 'SERVICE') {
+          itemName = item.name || `Service ${item.id}`;
+          if (item.datacenter?.name) {
+            group = item.datacenter.name;
+          }
+        } else {
+          itemName = item.name || `${typeKey} ${item.id}`;
         }
 
-        const isAdded = currentItems.some(ci => ci.itemType === typeKey && ci.itemId === item.id);
-        console.error(`Checking ${item.name} (id=${item.id}): typeKey=${typeKey}, isAdded=${isAdded}`);
-        console.error('Current items:', currentItems);
+        const isAdded = currentItems.some(ci => (ci.itemType === typeKey || ci.itemType === `${typeKey}_MONITOR`) && ci.itemId === item.id);
 
         return {
           id: item.id,
-          name: item.name || `${typeKey} ${item.id}`,
+          itemId: item.id,
+          name: itemName,
           type: typeKey as 'HTTP' | 'INSTANCE' | 'SERVICE',
           isAdded,
           group,
         };
       });
 
-      setItems(availableItems);
+      setItems(prev => (reset ? availableItems : [...prev, ...availableItems]));
+      setHasMore(itemsResponse.data.length === pageSize);
+      setPage(currentPage + 1);
     } catch (error) {
       console.error('Error fetching items:', error);
     } finally {
@@ -287,8 +312,47 @@ export const ManageItemsPanel: React.FC<ManageItemsPanelProps> = ({
             <h5 className="mb-1">Manage Items</h5>
             <p className="text-muted mb-0 small">{statusPageName}</p>
           </div>
-          <Button close onClick={onClose} />
+          <div className="d-flex gap-2">
+            <Button color="link" size="sm" onClick={() => setShowHelp(!showHelp)}>
+              <FontAwesomeIcon icon="question-circle" /> Help
+            </Button>
+            <Button close onClick={onClose} />
+          </div>
         </div>
+
+        {showHelp && (
+          <div className="help-section">
+            <div className="alert alert-info mb-0">
+              <h6 className="mb-2">
+                <FontAwesomeIcon icon="info-circle" /> How to Build Dependency Trees
+              </h6>
+              <div className="dependency-flow">
+                <div className="flow-step">
+                  <strong>Step 1:</strong> Add items to status page (check items below)
+                </div>
+                <div className="flow-arrow">↓</div>
+                <div className="flow-step">
+                  <strong>Step 2:</strong> Go to dependency tree view
+                </div>
+                <div className="flow-arrow">↓</div>
+                <div className="flow-step">
+                  <strong>Step 3:</strong> Click &ldquo;Add Dependency&rdquo; on any item to build chains
+                </div>
+              </div>
+              <div className="mt-3">
+                <strong>Example Chain:</strong>
+                <div className="example-chain">
+                  <span className="chain-item http">HTTP Monitor</span>
+                  <FontAwesomeIcon icon="arrow-right" className="mx-2" />
+                  <span className="chain-item service">Service</span>
+                  <FontAwesomeIcon icon="arrow-right" className="mx-2" />
+                  <span className="chain-item instance">Instance</span>
+                </div>
+                <small className="text-muted d-block mt-2">This shows: HTTP depends on Service, Service depends on Instance</small>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="panel-body">
           <div className="tabs-container">
@@ -396,7 +460,15 @@ export const ManageItemsPanel: React.FC<ManageItemsPanelProps> = ({
             </div>
           )}
 
-          <div className="items-list">
+          <div
+            className="items-list"
+            onScroll={e => {
+              const target = e.target as HTMLDivElement;
+              if (target.scrollHeight - target.scrollTop <= target.clientHeight + 100) {
+                fetchAvailableItems();
+              }
+            }}
+          >
             {loading ? (
               <div className="text-center py-5">
                 <Spinner color="primary" />
@@ -425,22 +497,30 @@ export const ManageItemsPanel: React.FC<ManageItemsPanelProps> = ({
                   <div key={group} className="item-group">
                     {group !== 'Other' && <div className="group-header">{group}</div>}
                     {groupItems.map(item => (
-                      <div key={`${item.type}-${item.id}`} className={`item-row ${item.isAdded ? 'added' : ''}`}>
-                        <label className="item-checkbox">
-                          <input type="checkbox" checked={item.isAdded} onChange={() => handleToggleItem(item)} disabled={saving} />
-                        </label>
-                        <div className="item-info">
-                          <FontAwesomeIcon
-                            icon={item.type === 'HTTP' ? 'globe' : item.type === 'INSTANCE' ? 'server' : 'cogs'}
-                            className="me-2 text-muted"
-                          />
-                          <span>{item.name}</span>
+                      <>
+                        <div key={`${item.type}-${item.id}`} className={`item-row ${item.isAdded ? 'added' : ''}`}>
+                          <label className="item-checkbox">
+                            <input type="checkbox" checked={item.isAdded} onChange={() => handleToggleItem(item)} disabled={saving} />
+                          </label>
+                          <div className="item-info">
+                            <FontAwesomeIcon
+                              icon={item.type === 'HTTP' ? 'globe' : item.type === 'INSTANCE' ? 'server' : 'cogs'}
+                              className="me-2 text-muted"
+                            />
+                            <span>{item.name}</span>
+                          </div>
+                          {item.isAdded && <Badge color="success">Added</Badge>}
                         </div>
-                        {item.isAdded && <Badge color="success">Added</Badge>}
-                      </div>
+                      </>
                     ))}
                   </div>
                 ))}
+                {loading && (
+                  <div className="text-center py-3">
+                    <Spinner size="sm" color="primary" />
+                  </div>
+                )}
+                {!loading && !hasMore && items.length > 0 && <div className="text-center py-2 text-muted small">No more items</div>}
               </>
             )}
           </div>
