@@ -1,0 +1,92 @@
+.region-page {
+  .region-card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .region-table {
+    tbody tr {
+      border-left: 3px solid transparent;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        border-left-color: var(--bs-primary);
+        background-color: rgba(13, 110, 253, 0.02);
+      }
+    }
+    
+    thead th {
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.8px;
+      color: #6c757d;
+      padding: 0.875rem 1rem;
+      background: linear-gradient(to bottom, #f8f9fa 0%, #f1f3f5 100%);
+    }
+    
+    tbody td {
+      padding: 0.875rem 1rem;
+      vertical-align: middle;
+      font-size: 0.9rem;
+    }
+  }
+
+  .search-input {
+    border-radius: 24px;
+    border: 1px solid #e9ecef;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    
+    &:focus {
+      border-color: var(--bs-primary);
+      box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.08);
+      outline: none;
+    }
+
+    &::placeholder {
+      color: #adb5bd;
+    }
+  }
+
+  .action-btn {
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  }
+
+  .region-badge {
+    padding: 0.4rem 0.85rem;
+    border-radius: 24px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+  }
+
+  h4 {
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+  }
+
+  .pagination-info {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6c757d;
+    padding: 0.25rem 0.75rem;
+    background: #f8f9fa;
+    border-radius: 20px;
+  }
+}
