@@ -169,31 +169,80 @@ public class StatusDependencyResource {
         LOG.debug("REST request to get a page of StatusDependencies");
         Page<StatusDependencyDTO> page = statusDependencyService.findAll(pageable);
         
+        List<StatusDependencyDTO> content = page.getContent();
         if (statusPageId != null) {
-            List<StatusDependencyDTO> filtered = page.getContent().stream()
+            content = content.stream()
                 .filter(dep -> dep.getStatusPage() != null && dep.getStatusPage().getId().equals(statusPageId))
-                .map(this::enrichNames)
                 .toList();
-            return ResponseEntity.ok().body(filtered);
         }
         
+        // Batch enrich names
+        List<StatusDependencyDTO> enriched = enrichNamesInBatch(content);
+        
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        return ResponseEntity.ok().headers(headers).body(enriched);
     }
 
-    private StatusDependencyDTO enrichNames(StatusDependencyDTO dto) {
-        dto.setParentName(getItemName(dto.getParentType(), dto.getParentId()));
-        dto.setChildName(getItemName(dto.getChildType(), dto.getChildId()));
-        return dto;
-    }
+    private List<StatusDependencyDTO> enrichNamesInBatch(List<StatusDependencyDTO> dtos) {
+        if (dtos.isEmpty()) {
+            return dtos;
+        }
 
-    private String getItemName(String type, Long id) {
-        return switch (type) {
-            case "HTTP", "HTTP_MONITOR" -> httpMonitorRepository.findById(id).map(m -> m.getName()).orElse("Unknown");
-            case "INSTANCE" -> instanceRepository.findById(id).map(i -> i.getHostname()).orElse("Unknown");
-            case "SERVICE", "SERVICE_INSTANCE" -> monitoredServiceRepository.findById(id).map(s -> s.getName()).orElse("Unknown");
-            default -> type + " #" + id;
-        };
+        java.util.Set<Long> httpIds = new java.util.HashSet<>();
+        java.util.Set<Long> serviceIds = new java.util.HashSet<>();
+        java.util.Set<Long> instanceIds = new java.util.HashSet<>();
+
+        for (StatusDependencyDTO dto : dtos) {
+            if ("HTTP".equals(dto.getParentType()) || "HTTP_MONITOR".equals(dto.getParentType())) {
+                httpIds.add(dto.getParentId());
+            } else if ("SERVICE".equals(dto.getParentType())) {
+                serviceIds.add(dto.getParentId());
+            } else if ("INSTANCE".equals(dto.getParentType())) {
+                instanceIds.add(dto.getParentId());
+            }
+
+            if ("HTTP".equals(dto.getChildType()) || "HTTP_MONITOR".equals(dto.getChildType())) {
+                httpIds.add(dto.getChildId());
+            } else if ("SERVICE".equals(dto.getChildType())) {
+                serviceIds.add(dto.getChildId());
+            } else if ("INSTANCE".equals(dto.getChildType())) {
+                instanceIds.add(dto.getChildId());
+            }
+        }
+
+        java.util.Map<Long, String> httpNames = new java.util.HashMap<>();
+        java.util.Map<Long, String> serviceNames = new java.util.HashMap<>();
+        java.util.Map<Long, String> instanceNames = new java.util.HashMap<>();
+
+        if (!httpIds.isEmpty()) {
+            httpMonitorRepository.findAllById(httpIds).forEach(h -> httpNames.put(h.getId(), h.getName()));
+        }
+        if (!serviceIds.isEmpty()) {
+            monitoredServiceRepository.findAllById(serviceIds).forEach(s -> serviceNames.put(s.getId(), s.getName()));
+        }
+        if (!instanceIds.isEmpty()) {
+            instanceRepository.findAllById(instanceIds).forEach(i -> instanceNames.put(i.getId(), i.getHostname()));
+        }
+
+        for (StatusDependencyDTO dto : dtos) {
+            if ("HTTP".equals(dto.getParentType()) || "HTTP_MONITOR".equals(dto.getParentType())) {
+                dto.setParentName(httpNames.getOrDefault(dto.getParentId(), "Unknown"));
+            } else if ("SERVICE".equals(dto.getParentType())) {
+                dto.setParentName(serviceNames.getOrDefault(dto.getParentId(), "Unknown"));
+            } else if ("INSTANCE".equals(dto.getParentType())) {
+                dto.setParentName(instanceNames.getOrDefault(dto.getParentId(), "Unknown"));
+            }
+
+            if ("HTTP".equals(dto.getChildType()) || "HTTP_MONITOR".equals(dto.getChildType())) {
+                dto.setChildName(httpNames.getOrDefault(dto.getChildId(), "Unknown"));
+            } else if ("SERVICE".equals(dto.getChildType())) {
+                dto.setChildName(serviceNames.getOrDefault(dto.getChildId(), "Unknown"));
+            } else if ("INSTANCE".equals(dto.getChildType())) {
+                dto.setChildName(instanceNames.getOrDefault(dto.getChildId(), "Unknown"));
+            }
+        }
+
+        return dtos;
     }
 
     /**

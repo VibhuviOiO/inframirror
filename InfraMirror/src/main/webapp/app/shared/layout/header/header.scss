@@ -93,6 +93,10 @@ Navbar styles
 }
 
 .brand-logo {
+  display: flex;
+  align-items: center;
+  padding: 0 !important;
+  margin: 0 !important;
   &:hover {
     text-decoration: none;
   }
@@ -100,15 +104,17 @@ Navbar styles
     height: 35px;
     width: auto;
     display: inline-block;
+    margin-right: 0;
     img {
-      width: 45px;
+      height: 35px;
+      width: auto;
     }
   }
 }
 
 .brand-title {
   font-size: 1.25rem;
-  margin-left: 0.25rem;
+  margin-left: 0;
   color: $header-color;
   &:hover {
     color: $header-color-hover;

@@ -28,6 +28,7 @@ import {
   FaTools,
   FaBars,
   FaAngleLeft,
+  FaTachometerAlt,
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { IconType } from 'react-icons';
@@ -74,8 +75,9 @@ const sidebarMenu: SidebarMenu[] = [
   },
   {
     title: 'Status Page',
-    icon: FaClipboardList,
-    items: [{ name: 'Status Page', icon: FaSitemap, route: '/status-page' }],
+    icon: FaTachometerAlt,
+    route: '/status-page',
+    items: [],
   },
   {
     title: 'Monitoring',
@@ -139,8 +141,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isAuthenticated, isAdmin, isCollapsed
         {filteredMenu.map((menu, index) => (
           <div key={index}>
             {menu.route ? (
-              <div className="sidebar-item" onClick={() => handleNavigation(menu.route)}>
-                {menu.title}
+              <div className="sidebar-header" onClick={() => handleNavigation(menu.route)}>
+                {React.createElement(menu.icon, { className: 'sidebar-icon' })}
+                {!isCollapsed && <span>{menu.title}</span>}
+                {isCollapsed && <span className="sidebar-tooltip">{menu.title}</span>}
               </div>
             ) : (
               <>
@@ -156,6 +160,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isAuthenticated, isAdmin, isCollapsed
                 >
                   {React.createElement(menu.icon, { className: 'sidebar-icon' })}
                   {!isCollapsed && <span>{menu.title}</span>}
+                  {isCollapsed && <span className="sidebar-tooltip">{menu.title}</span>}
                 </div>
                 {!isCollapsed && expandedSection === menu.title && (
                   <div className="sidebar-submenu">

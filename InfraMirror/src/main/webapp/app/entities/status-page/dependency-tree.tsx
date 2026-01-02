@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import React, { useState, useEffect } from 'react';
 import { Card, CardBody, Spinner, Badge, Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -47,26 +48,41 @@ export const DependencyTree: React.FC<DependencyTreeProps> = ({ statusPageId, is
     }
   }, [autoRefresh, statusPageId]);
 
+  useEffect(() => {
+    if (managingDepsFor && allItems.filter(i => i.type === dependencyTab).length === 0) {
+      loadItemsForType(dependencyTab);
+    }
+  }, [managingDepsFor, dependencyTab]);
+
   const loadData = async () => {
     setLoading(true);
     try {
-      const [treeRes, httpRes, instancesRes, servicesRes] = await Promise.all([
-        axios.get<TreeNode[]>(`/api/status-pages/${statusPageId}/dependencies`),
-        axios.get('/api/http-monitors', { params: { size: 1000 } }),
-        axios.get('/api/instances', { params: { size: 1000 } }),
-        axios.get('/api/monitored-services', { params: { size: 1000 } }),
-      ]);
+      const treeRes = await axios.get<TreeNode[]>(`/api/status-pages/${statusPageId}/dependencies`);
       setTree(treeRes.data);
-      const all = [
-        ...httpRes.data.map(i => ({ id: i.id, name: i.name, type: 'HTTP' })),
-        ...instancesRes.data.map(i => ({ id: i.id, name: i.hostname || `Instance ${i.id}`, type: 'INSTANCE' })),
-        ...servicesRes.data.map(i => ({ id: i.id, name: i.name, type: 'SERVICE' })),
-      ];
-      setAllItems(all);
+      setAllItems([]);
     } catch (error) {
       console.error('Failed to load dependency tree:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadItemsForType = async (type: 'HTTP' | 'SERVICE' | 'INSTANCE') => {
+    try {
+      let items = [];
+      if (type === 'HTTP') {
+        const res = await axios.get('/api/http-monitors', { params: { size: 100 } });
+        items = res.data.map(i => ({ id: i.id, name: i.name, type: 'HTTP' }));
+      } else if (type === 'SERVICE') {
+        const res = await axios.get('/api/monitored-services', { params: { size: 250 } });
+        items = res.data.map(i => ({ id: i.id, name: i.name, type: 'SERVICE' }));
+      } else if (type === 'INSTANCE') {
+        const res = await axios.get('/api/instances', { params: { size: 1000 } });
+        items = res.data.map(i => ({ id: i.id, name: i.hostname || `Instance ${i.id}`, type: 'INSTANCE', instanceType: i.instanceType }));
+      }
+      setAllItems(prev => [...prev.filter(i => i.type !== type), ...items]);
+    } catch (error) {
+      console.error(`Failed to load ${type} items:`, error);
     }
   };
 
@@ -124,7 +140,6 @@ export const DependencyTree: React.FC<DependencyTreeProps> = ({ statusPageId, is
   };
 
   const handleAddDependency = async (parentNode: TreeNode, childId: number, childType: string) => {
-    console.error('Adding dependency:', { parentNode, childId, childType, statusPageId });
     setSaving(true);
     try {
       const payload = {
@@ -134,36 +149,28 @@ export const DependencyTree: React.FC<DependencyTreeProps> = ({ statusPageId, is
         childType,
         childId,
       };
-      console.error('Posting dependency payload:', payload);
-      const response = await axios.post('/api/status-dependencies', payload);
-      console.error('Dependency created:', response.data);
+      await axios.post('/api/status-dependencies', payload);
       await loadData();
     } catch (error) {
       console.error('Error adding dependency:', error);
-      if (axios.isAxiosError(error)) {
-        console.error('Response:', error.response?.data);
-      }
     } finally {
       setSaving(false);
     }
   };
 
-  const handleRemoveDependency = async (parentNode: TreeNode, childId: number) => {
-    setSaving(true);
-    try {
-      const depsRes = await axios.get('/api/status-dependencies', {
-        params: { 'statusPageId.equals': statusPageId },
-      });
-      const dep = depsRes.data.find(d => d.parentId === parentNode.itemId && d.childId === childId);
-      if (dep) {
-        await axios.delete(`/api/status-dependencies/${dep.id}`);
-        await loadData();
+  const canAddDependencies = (node: TreeNode) => {
+    // BARE_METAL instances cannot have dependencies
+    if (node.type === 'INSTANCE' && node.metadata) {
+      try {
+        const meta = JSON.parse(node.metadata);
+        if (meta.instanceType === 'BARE_METAL') {
+          return false;
+        }
+      } catch (e) {
+        // If metadata parsing fails, allow dependencies
       }
-    } catch (error) {
-      console.error('Error removing dependency:', error);
-    } finally {
-      setSaving(false);
     }
+    return true;
   };
 
   const renderNode = (node: TreeNode, level = 0) => {
@@ -200,15 +207,18 @@ export const DependencyTree: React.FC<DependencyTreeProps> = ({ statusPageId, is
                   </span>
                 )}
               </div>
-              <Button
-                color="info"
-                size="sm"
-                onClick={() => setManagingDepsFor(managingDepsFor === node.id ? null : node.id)}
-                disabled={saving}
-              >
-                <FontAwesomeIcon icon="sitemap" className="me-1" />
-                Add Dependency
-              </Button>
+              {canAddDependencies(node) && (
+                <Button
+                  color="primary"
+                  size="sm"
+                  outline
+                  onClick={() => setManagingDepsFor(managingDepsFor === node.id ? null : node.id)}
+                  disabled={saving}
+                >
+                  <FontAwesomeIcon icon="link" className="me-1" />
+                  {hasChildren ? `Dependencies (${node.children.length})` : 'Add Dependencies'}
+                </Button>
+              )}
             </div>
             {node.errorMessage && (
               <div className="alert alert-danger mt-2 mb-0 py-1 small">
@@ -217,48 +227,141 @@ export const DependencyTree: React.FC<DependencyTreeProps> = ({ statusPageId, is
               </div>
             )}
             {managingDepsFor === node.id && (
-              <div className="dependency-manager mt-2">
-                <div className="d-flex gap-2 mb-2">
-                  <Button size="sm" color={dependencyTab === 'HTTP' ? 'primary' : 'secondary'} onClick={() => setDependencyTab('HTTP')}>
-                    HTTP
+              <div className="dependency-manager-panel mt-3 p-3 bg-white border rounded shadow-sm">
+                <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                  <div>
+                    <h6 className="mb-0">
+                      <FontAwesomeIcon icon="link" className="me-2 text-primary" />
+                      What does <strong>{node.name}</strong> depend on?
+                    </h6>
+                    <small className="text-muted">Check items that this {getTypeLabel(node.type).toLowerCase()} relies on</small>
+                  </div>
+                  <Button size="sm" color="light" onClick={() => setManagingDepsFor(null)}>
+                    <FontAwesomeIcon icon="times" className="me-1" />
+                    Close
                   </Button>
+                </div>
+
+                <div className="btn-group mb-3 w-100" role="group">
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${dependencyTab === 'HTTP' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => setDependencyTab('HTTP')}
+                  >
+                    <FontAwesomeIcon icon="globe" className="me-1" />
+                    APIs
+                  </button>
                   {!isPublic && (
                     <>
-                      <Button
-                        size="sm"
-                        color={dependencyTab === 'INSTANCE' ? 'primary' : 'secondary'}
-                        onClick={() => setDependencyTab('INSTANCE')}
-                      >
-                        Instance
-                      </Button>
-                      <Button
-                        size="sm"
-                        color={dependencyTab === 'SERVICE' ? 'primary' : 'secondary'}
+                      <button
+                        type="button"
+                        className={`btn btn-sm ${dependencyTab === 'SERVICE' ? 'btn-primary' : 'btn-outline-primary'}`}
                         onClick={() => setDependencyTab('SERVICE')}
                       >
-                        Service
-                      </Button>
+                        <FontAwesomeIcon icon="server" className="me-1" />
+                        Services
+                      </button>
+                      <button
+                        type="button"
+                        className={`btn btn-sm ${dependencyTab === 'INSTANCE' ? 'btn-primary' : 'btn-outline-primary'}`}
+                        onClick={() => setDependencyTab('INSTANCE')}
+                      >
+                        <FontAwesomeIcon icon="hdd" className="me-1" />
+                        Instances
+                      </button>
                     </>
                   )}
                 </div>
-                <div className="dependency-list">
+
+                <div className="input-group input-group-sm mb-3">
+                  <span className="input-group-text bg-white">
+                    <FontAwesomeIcon icon="search" className="text-muted" />
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder={`Search ${dependencyTab === 'HTTP' ? 'APIs' : dependencyTab === 'SERVICE' ? 'Services' : 'Instances'}...`}
+                    onChange={e => {
+                      const val = e.target.value.toLowerCase();
+                      setAllItems(prev =>
+                        prev.map(item => ({
+                          ...item,
+                          hidden: item.type === dependencyTab && !item.name.toLowerCase().includes(val),
+                        })),
+                      );
+                    }}
+                  />
+                </div>
+
+                <div className="dependency-items-list" style={{ maxHeight: '350px', overflowY: 'auto' }}>
                   {allItems
                     .filter(i => {
                       if (i.type !== dependencyTab) return false;
+                      if (i.hidden) return false;
                       if (i.id === node.itemId && i.type === node.type) return false;
-                      const childIds = node.children.map(c => ({ id: c.itemId, type: c.type }));
-                      return !childIds.some(c => c.id === i.id && c.type === i.type);
+                      return true;
                     })
-                    .map(item => (
-                      <div key={item.id} className="d-flex align-items-center gap-2 mb-1">
-                        <Button size="sm" color="success" onClick={() => handleAddDependency(node, item.id, item.type)} disabled={saving}>
-                          <FontAwesomeIcon icon="plus" />
-                        </Button>
-                        <span>{item.name}</span>
-                      </div>
-                    ))}
-                  {allItems.filter(i => i.type === dependencyTab).length === 0 && (
-                    <div className="text-muted small">No {dependencyTab} items available</div>
+                    .map(item => {
+                      const isChild = node.children.some(c => c.itemId === item.id && c.type === item.type);
+                      return (
+                        <label
+                          key={`${item.type}-${item.id}`}
+                          className={`dependency-item d-flex align-items-center gap-3 p-3 mb-2 border rounded ${isChild ? 'border-success bg-success-subtle' : 'bg-light'} ${saving ? 'opacity-50' : ''}`}
+                          style={{ cursor: saving ? 'not-allowed' : 'pointer', transition: 'all 0.2s' }}
+                        >
+                          <input
+                            type="checkbox"
+                            className="form-check-input m-0"
+                            style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                            checked={isChild}
+                            onChange={async () => {
+                              if (isChild) {
+                                setSaving(true);
+                                try {
+                                  const depsRes = await axios.get('/api/status-dependencies', {
+                                    params: { 'statusPageId.equals': statusPageId },
+                                  });
+                                  const dep = depsRes.data.find(
+                                    d =>
+                                      d.parentId === node.itemId &&
+                                      d.parentType === node.type &&
+                                      d.childId === item.id &&
+                                      d.childType === item.type,
+                                  );
+                                  if (dep) {
+                                    await axios.delete(`/api/status-dependencies/${dep.id}`);
+                                    await loadData();
+                                  }
+                                } catch (error) {
+                                  console.error('Error removing dependency:', error);
+                                } finally {
+                                  setSaving(false);
+                                }
+                              } else {
+                                await handleAddDependency(node, item.id, item.type);
+                              }
+                            }}
+                            disabled={saving}
+                          />
+                          <div className="flex-grow-1">
+                            <div className="fw-semibold">{item.name}</div>
+                          </div>
+                          {isChild && (
+                            <Badge color="success" className="px-2 py-1">
+                              <FontAwesomeIcon icon="check" className="me-1" />
+                              Connected
+                            </Badge>
+                          )}
+                        </label>
+                      );
+                    })}
+                  {allItems.filter(i => i.type === dependencyTab && !i.hidden).length === 0 && (
+                    <div className="text-center py-5 text-muted">
+                      <FontAwesomeIcon icon="inbox" size="3x" className="mb-3 opacity-25" />
+                      <p className="mb-0">
+                        No {dependencyTab === 'HTTP' ? 'APIs' : dependencyTab === 'SERVICE' ? 'services' : 'instances'} found
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -294,59 +397,154 @@ export const DependencyTree: React.FC<DependencyTreeProps> = ({ statusPageId, is
               </span>
             )}
           </div>
-          <Button
-            color="link"
-            size="sm"
-            className="text-info"
-            onClick={() => setManagingDepsFor(managingDepsFor === node.id ? null : node.id)}
-            disabled={saving}
-          >
-            <FontAwesomeIcon icon="plus" />
-          </Button>
+          {canAddDependencies(node) && (
+            <Button
+              color="link"
+              size="sm"
+              className="text-primary"
+              onClick={() => setManagingDepsFor(managingDepsFor === node.id ? null : node.id)}
+              disabled={saving}
+              title="Manage dependencies"
+            >
+              <FontAwesomeIcon icon="link" />
+            </Button>
+          )}
         </div>
         {managingDepsFor === node.id && (
-          <div className="dependency-manager mt-2 mb-2">
-            <div className="d-flex gap-2 mb-2">
-              <Button size="sm" color={dependencyTab === 'HTTP' ? 'primary' : 'secondary'} onClick={() => setDependencyTab('HTTP')}>
-                HTTP
+          <div className="dependency-manager-panel mt-3 mb-3 p-3 bg-white border rounded shadow-sm">
+            <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+              <div>
+                <h6 className="mb-0">
+                  <FontAwesomeIcon icon="link" className="me-2 text-primary" />
+                  What does <strong>{node.name}</strong> depend on?
+                </h6>
+                <small className="text-muted">Check items that this {getTypeLabel(node.type).toLowerCase()} relies on</small>
+              </div>
+              <Button size="sm" color="light" onClick={() => setManagingDepsFor(null)}>
+                <FontAwesomeIcon icon="times" />
               </Button>
+            </div>
+
+            <div className="btn-group mb-3 w-100" role="group">
+              <button
+                type="button"
+                className={`btn btn-sm ${dependencyTab === 'HTTP' ? 'btn-primary' : 'btn-outline-primary'}`}
+                onClick={() => setDependencyTab('HTTP')}
+              >
+                <FontAwesomeIcon icon="globe" className="me-1" />
+                APIs
+              </button>
               {!isPublic && (
                 <>
-                  <Button
-                    size="sm"
-                    color={dependencyTab === 'INSTANCE' ? 'primary' : 'secondary'}
-                    onClick={() => setDependencyTab('INSTANCE')}
-                  >
-                    Instance
-                  </Button>
-                  <Button
-                    size="sm"
-                    color={dependencyTab === 'SERVICE' ? 'primary' : 'secondary'}
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${dependencyTab === 'SERVICE' ? 'btn-primary' : 'btn-outline-primary'}`}
                     onClick={() => setDependencyTab('SERVICE')}
                   >
-                    Service
-                  </Button>
+                    <FontAwesomeIcon icon="server" className="me-1" />
+                    Services
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${dependencyTab === 'INSTANCE' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => setDependencyTab('INSTANCE')}
+                  >
+                    <FontAwesomeIcon icon="hdd" className="me-1" />
+                    Instances
+                  </button>
                 </>
               )}
             </div>
-            <div className="dependency-list">
+
+            <div className="input-group input-group-sm mb-3">
+              <span className="input-group-text bg-white">
+                <FontAwesomeIcon icon="search" className="text-muted" />
+              </span>
+              <input
+                type="text"
+                className="form-control"
+                placeholder={`Search ${dependencyTab === 'HTTP' ? 'APIs' : dependencyTab === 'SERVICE' ? 'Services' : 'Instances'}...`}
+                onChange={e => {
+                  const val = e.target.value.toLowerCase();
+                  setAllItems(prev =>
+                    prev.map(item => ({
+                      ...item,
+                      hidden: item.type === dependencyTab && !item.name.toLowerCase().includes(val),
+                    })),
+                  );
+                }}
+              />
+            </div>
+
+            <div className="dependency-items-list" style={{ maxHeight: '350px', overflowY: 'auto' }}>
               {allItems
                 .filter(i => {
                   if (i.type !== dependencyTab) return false;
+                  if (i.hidden) return false;
                   if (i.id === node.itemId && i.type === node.type) return false;
-                  const childIds = node.children.map(c => ({ id: c.itemId, type: c.type }));
-                  return !childIds.some(c => c.id === i.id && c.type === i.type);
+                  return true;
                 })
-                .map(item => (
-                  <div key={item.id} className="d-flex align-items-center gap-2 mb-1">
-                    <Button size="sm" color="success" onClick={() => handleAddDependency(node, item.id, item.type)} disabled={saving}>
-                      <FontAwesomeIcon icon="plus" />
-                    </Button>
-                    <span>{item.name}</span>
-                  </div>
-                ))}
-              {allItems.filter(i => i.type === dependencyTab).length === 0 && (
-                <div className="text-muted small">No {dependencyTab} items available</div>
+                .map(item => {
+                  const isChild = node.children.some(c => c.itemId === item.id && c.type === item.type);
+                  return (
+                    <label
+                      key={`${item.type}-${item.id}`}
+                      className={`dependency-item d-flex align-items-center gap-3 p-3 mb-2 border rounded ${isChild ? 'border-success bg-success-subtle' : 'bg-light'} ${saving ? 'opacity-50' : ''}`}
+                      style={{ cursor: saving ? 'not-allowed' : 'pointer', transition: 'all 0.2s' }}
+                    >
+                      <input
+                        type="checkbox"
+                        className="form-check-input m-0"
+                        style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                        checked={isChild}
+                        onChange={async () => {
+                          if (isChild) {
+                            setSaving(true);
+                            try {
+                              const depsRes = await axios.get('/api/status-dependencies', {
+                                params: { 'statusPageId.equals': statusPageId },
+                              });
+                              const dep = depsRes.data.find(
+                                d =>
+                                  d.parentId === node.itemId &&
+                                  d.parentType === node.type &&
+                                  d.childId === item.id &&
+                                  d.childType === item.type,
+                              );
+                              if (dep) {
+                                await axios.delete(`/api/status-dependencies/${dep.id}`);
+                                await loadData();
+                              }
+                            } catch (error) {
+                              console.error('Error removing dependency:', error);
+                            } finally {
+                              setSaving(false);
+                            }
+                          } else {
+                            await handleAddDependency(node, item.id, item.type);
+                          }
+                        }}
+                        disabled={saving}
+                      />
+                      <div className="flex-grow-1">
+                        <div className="fw-semibold">{item.name}</div>
+                      </div>
+                      {isChild && (
+                        <Badge color="success" className="px-2 py-1">
+                          <FontAwesomeIcon icon="check" className="me-1" />
+                          Connected
+                        </Badge>
+                      )}
+                    </label>
+                  );
+                })}
+              {allItems.filter(i => i.type === dependencyTab && !i.hidden).length === 0 && (
+                <div className="text-center py-5 text-muted">
+                  <FontAwesomeIcon icon="inbox" size="3x" className="mb-3 opacity-25" />
+                  <p className="mb-0">
+                    No {dependencyTab === 'HTTP' ? 'APIs' : dependencyTab === 'SERVICE' ? 'services' : 'instances'} found
+                  </p>
+                </div>
               )}
             </div>
           </div>
