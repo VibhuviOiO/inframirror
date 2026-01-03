@@ -105,12 +105,14 @@ export const DatacenterSlice = createEntitySlice({
       })
       .addMatcher(isFulfilled(getEntities, searchEntities), (state, action) => {
         const { data, headers } = action.payload;
+        const entities = Array.isArray(data) ? data : [];
+        const totalItems = parseInt(headers['x-total-count'] || headers['X-Total-Count'] || '0', 10);
 
         return {
           ...state,
           loading: false,
-          entities: data,
-          totalItems: parseInt(headers['x-total-count'], 10),
+          entities,
+          totalItems,
         };
       })
       .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {

@@ -37,6 +37,12 @@ declare global {
       testEscapeKeyClose(): Chainable<void>;
 
       /**
+       * Fill and submit side panel form
+       * @param formData - Object with field IDs and values
+       */
+      fillSidePanelForm(formData: Record<string, string>): Chainable<void>;
+
+      /**
        * Cleanup test entities by name patterns
        * @param apiUrl - API endpoint (e.g., '/api/regions')
        * @param namePatterns - Array of name patterns to match
@@ -96,6 +102,13 @@ Cypress.Commands.add('testEscapeKeyClose', () => {
   cy.get('.side-panel').should('be.visible');
   cy.get('body').type('{esc}');
   cy.get('.side-panel').should('not.exist');
+});
+
+// Fill side panel form (handles fixed positioning)
+Cypress.Commands.add('fillSidePanelForm', formData => {
+  Object.entries(formData).forEach(([fieldId, value]) => {
+    cy.get(`#${fieldId}`).clear({ force: true }).type(value, { force: true });
+  });
 });
 
 // Cleanup test entities

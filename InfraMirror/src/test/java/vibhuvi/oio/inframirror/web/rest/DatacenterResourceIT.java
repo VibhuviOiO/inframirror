@@ -36,7 +36,7 @@ import vibhuvi.oio.inframirror.service.mapper.DatacenterMapper;
 @IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-class DatacenterResourceIT {
+class DatacenterResourceIT extends AbstractEntityResourceIT<Datacenter, DatacenterRepository> {
 
     private static final String DEFAULT_CODE = "AAAAAAAAAA";
     private static final String UPDATED_CODE = "BBBBBBBBBB";
@@ -52,21 +52,23 @@ class DatacenterResourceIT {
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
-    private ObjectMapper om;
-    
     private DatacenterRepository datacenterRepository;
 
     @Autowired
     private DatacenterMapper datacenterMapper;
-    
-    private EntityManager em;
-
-    @Autowired
-    private MockMvc restDatacenterMockMvc;
 
     private Datacenter datacenter;
-
     private Datacenter insertedDatacenter;
+
+    @Override
+    protected DatacenterRepository getRepository() {
+        return datacenterRepository;
+    }
+
+    @Override
+    protected String getEntityApiUrl() {
+        return ENTITY_API_URL;
+    }
 
     /**
      * Create an entity for this test.
@@ -108,7 +110,7 @@ class DatacenterResourceIT {
         // Create the Datacenter
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
         var returnedDatacenterDTO = om.readValue(
-            restDatacenterMockMvc
+            restMockMvc
                 .perform(
                     post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(datacenterDTO))
                 )
@@ -122,7 +124,7 @@ class DatacenterResourceIT {
         // Validate the Datacenter in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedDatacenter = datacenterMapper.toEntity(returnedDatacenterDTO);
-        assertDatacenterUpdatableFieldsEquals(returnedDatacenter, getPersistedDatacenter(returnedDatacenter));
+        assertDatacenterUpdatableFieldsEquals(returnedDatacenter, getPersistedEntity(returnedDatacenter.getId()));
 
         insertedDatacenter = returnedDatacenter;
     }
@@ -137,7 +139,7 @@ class DatacenterResourceIT {
         long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
-        restDatacenterMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(datacenterDTO)))
             .andExpect(status().isBadRequest());
 
@@ -155,7 +157,7 @@ class DatacenterResourceIT {
         // Create the Datacenter, which fails.
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
 
-        restDatacenterMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(datacenterDTO)))
             .andExpect(status().isBadRequest());
 
@@ -172,7 +174,7 @@ class DatacenterResourceIT {
         // Create the Datacenter, which fails.
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
 
-        restDatacenterMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(datacenterDTO)))
             .andExpect(status().isBadRequest());
 
@@ -186,7 +188,7 @@ class DatacenterResourceIT {
         insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
 
         // Get all the datacenterList
-        restDatacenterMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -202,7 +204,7 @@ class DatacenterResourceIT {
         insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
 
         // Get the datacenter
-        restDatacenterMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL_ID, datacenter.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -357,7 +359,7 @@ class DatacenterResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultDatacenterShouldBeFound(String filter) throws Exception {
-        restDatacenterMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -366,7 +368,7 @@ class DatacenterResourceIT {
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
 
         // Check, that the count call also returns 1
-        restDatacenterMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -377,7 +379,7 @@ class DatacenterResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultDatacenterShouldNotBeFound(String filter) throws Exception {
-        restDatacenterMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -385,7 +387,7 @@ class DatacenterResourceIT {
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restDatacenterMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -396,7 +398,7 @@ class DatacenterResourceIT {
     @Transactional
     void getNonExistingDatacenter() throws Exception {
         // Get the datacenter
-        restDatacenterMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -414,7 +416,7 @@ class DatacenterResourceIT {
         updatedDatacenter.code(UPDATED_CODE).name(UPDATED_NAME);
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(updatedDatacenter);
 
-        restDatacenterMockMvc
+        restMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, datacenterDTO.getId())
                     .with(csrf())
@@ -425,7 +427,7 @@ class DatacenterResourceIT {
 
         // Validate the Datacenter in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedDatacenterToMatchAllProperties(updatedDatacenter);
+        assertDatacenterAllPropertiesEquals(updatedDatacenter, getPersistedEntity(updatedDatacenter.getId()));
     }
 
     @Test
@@ -438,7 +440,7 @@ class DatacenterResourceIT {
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restDatacenterMockMvc
+        restMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, datacenterDTO.getId())
                     .with(csrf())
@@ -461,7 +463,7 @@ class DatacenterResourceIT {
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restDatacenterMockMvc
+        restMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .with(csrf())
@@ -484,7 +486,7 @@ class DatacenterResourceIT {
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restDatacenterMockMvc
+        restMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(datacenterDTO)))
             .andExpect(status().isMethodNotAllowed());
 
@@ -506,7 +508,7 @@ class DatacenterResourceIT {
 
         partialUpdatedDatacenter.code(UPDATED_CODE);
 
-        restDatacenterMockMvc
+        restMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedDatacenter.getId())
                     .with(csrf())
@@ -520,7 +522,7 @@ class DatacenterResourceIT {
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
         assertDatacenterUpdatableFieldsEquals(
             createUpdateProxyForBean(partialUpdatedDatacenter, datacenter),
-            getPersistedDatacenter(datacenter)
+            getPersistedEntity(datacenter.getId())
         );
     }
 
@@ -538,7 +540,7 @@ class DatacenterResourceIT {
 
         partialUpdatedDatacenter.code(UPDATED_CODE).name(UPDATED_NAME);
 
-        restDatacenterMockMvc
+        restMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedDatacenter.getId())
                     .with(csrf())
@@ -550,7 +552,7 @@ class DatacenterResourceIT {
         // Validate the Datacenter in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertDatacenterUpdatableFieldsEquals(partialUpdatedDatacenter, getPersistedDatacenter(partialUpdatedDatacenter));
+        assertDatacenterUpdatableFieldsEquals(partialUpdatedDatacenter, getPersistedEntity(partialUpdatedDatacenter.getId()));
     }
 
     @Test
@@ -563,7 +565,7 @@ class DatacenterResourceIT {
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restDatacenterMockMvc
+        restMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, datacenterDTO.getId())
                     .with(csrf())
@@ -586,7 +588,7 @@ class DatacenterResourceIT {
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restDatacenterMockMvc
+        restMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .with(csrf())
@@ -609,7 +611,7 @@ class DatacenterResourceIT {
         DatacenterDTO datacenterDTO = datacenterMapper.toDto(datacenter);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restDatacenterMockMvc
+        restMockMvc
             .perform(
                 patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(datacenterDTO))
             )
@@ -628,7 +630,7 @@ class DatacenterResourceIT {
         long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the datacenter
-        restDatacenterMockMvc
+        restMockMvc
             .perform(delete(ENTITY_API_URL_ID, datacenter.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
@@ -639,126 +641,40 @@ class DatacenterResourceIT {
     @Test
     @Transactional
     void searchDatacenter() throws Exception {
-        // Initialize the database
         insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
-        em.flush();
-        em.clear();
-
-        // Search the datacenter
-        restDatacenterMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(datacenter.getId().intValue())))
-            .andExpect(jsonPath("$.[*].code").value(hasItem(DEFAULT_CODE)))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
-    }
-
-    @Test
-    @Transactional
-    void searchDatacenterByName() throws Exception {
-        // Initialize the database
-        insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
-        em.flush();
-        em.clear();
-
-        // Search the datacenter by name
-        restDatacenterMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(datacenter.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+        flushAndClear();
+        SearchTestHelper.testFullTextSearch(restMockMvc, ENTITY_SEARCH_API_URL, DEFAULT_NAME.substring(0, 3));
     }
 
     @Test
     @Transactional
     void searchDatacenterPrefix() throws Exception {
-        // Initialize the database
         insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
-        em.flush();
-        em.clear();
-
-        // Prefix search
-        restDatacenterMockMvc
-            .perform(get("/api/datacenters/_search/prefix?query=" + DEFAULT_NAME.substring(0, 2)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(datacenter.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+        flushAndClear();
+        SearchTestHelper.testPrefixSearch(restMockMvc, ENTITY_SEARCH_API_URL, DEFAULT_NAME.substring(0, 2));
     }
 
     @Test
     @Transactional
     void searchDatacenterFuzzy() throws Exception {
-        // Initialize the database
         insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
-        em.flush();
-        em.clear();
-
-        // Fuzzy search
-        restDatacenterMockMvc
-            .perform(get("/api/datacenters/_search/fuzzy?query=" + DEFAULT_NAME))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        flushAndClear();
+        SearchTestHelper.testFuzzySearch(restMockMvc, ENTITY_SEARCH_API_URL, DEFAULT_NAME);
     }
 
     @Test
     @Transactional
     void searchDatacenterWithHighlight() throws Exception {
-        // Initialize the database
         insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
-        em.flush();
-        em.clear();
-
-        // Search with highlight
-        restDatacenterMockMvc
-            .perform(get("/api/datacenters/_search/highlight?query=" + DEFAULT_NAME.substring(0, 3)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        flushAndClear();
+        SearchTestHelper.testHighlightSearch(restMockMvc, ENTITY_SEARCH_API_URL, DEFAULT_NAME.substring(0, 3));
     }
 
     @Test
     @Transactional
     void searchDatacenterEmptyQuery() throws Exception {
-        // Initialize the database
         insertedDatacenter = datacenterRepository.saveAndFlush(datacenter);
-        em.flush();
-        em.clear();
-
-        // Search with empty query
-        restDatacenterMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query="))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(datacenter.getId().intValue())));
-    }
-
-    protected long getRepositoryCount() {
-        return datacenterRepository.count();
-    }
-
-    protected void assertIncrementedRepositoryCount(long countBefore) {
-        assertThat(countBefore + 1).isEqualTo(getRepositoryCount());
-    }
-
-    protected void assertDecrementedRepositoryCount(long countBefore) {
-        assertThat(countBefore - 1).isEqualTo(getRepositoryCount());
-    }
-
-    protected void assertSameRepositoryCount(long countBefore) {
-        assertThat(countBefore).isEqualTo(getRepositoryCount());
-    }
-
-    protected Datacenter getPersistedDatacenter(Datacenter datacenter) {
-        return datacenterRepository.findById(datacenter.getId()).orElseThrow();
-    }
-
-    protected void assertPersistedDatacenterToMatchAllProperties(Datacenter expectedDatacenter) {
-        assertDatacenterAllPropertiesEquals(expectedDatacenter, getPersistedDatacenter(expectedDatacenter));
-    }
-
-    protected void assertPersistedDatacenterToMatchUpdatableProperties(Datacenter expectedDatacenter) {
-        assertDatacenterAllUpdatablePropertiesEquals(expectedDatacenter, getPersistedDatacenter(expectedDatacenter));
+        flushAndClear();
+        SearchTestHelper.testEmptyQuerySearch(restMockMvc, ENTITY_SEARCH_API_URL);
     }
 }

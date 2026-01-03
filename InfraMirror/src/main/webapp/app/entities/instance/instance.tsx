@@ -3,7 +3,19 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Input, Table, Badge } from 'reactstrap';
 import { JhiItemCount, JhiPagination, Translate, getPaginationState, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortDown, faSortUp, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faSort,
+  faSortDown,
+  faSortUp,
+  faPlus,
+  faSync,
+  faSearch,
+  faTimes,
+  faSpinner,
+  faPencilAlt,
+  faTrash,
+  faInbox,
+} from '@fortawesome/free-solid-svg-icons';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -163,7 +175,7 @@ export const Instance = () => {
           </h5>
           <div className="d-flex gap-2">
             <Button color="info" size="sm" onClick={handleSyncList} disabled={loading}>
-              <FontAwesomeIcon icon="sync" spin={loading} />
+              <FontAwesomeIcon icon={faSync} spin={loading} />
             </Button>
             <Button color="primary" size="sm" onClick={handleCreate}>
               <FontAwesomeIcon icon={faPlus} className="me-1" />
@@ -182,11 +194,11 @@ export const Instance = () => {
               style={{ flex: 1 }}
             />
             <Button color="primary" size="sm" onClick={startSearching} disabled={!search}>
-              <FontAwesomeIcon icon="search" />
+              <FontAwesomeIcon icon={faSearch} />
             </Button>
             {search && (
               <Button color="secondary" size="sm" onClick={clear}>
-                <FontAwesomeIcon icon="times" />
+                <FontAwesomeIcon icon={faTimes} />
               </Button>
             )}
           </div>
@@ -207,7 +219,7 @@ export const Instance = () => {
                 zIndex: 10,
               }}
             >
-              <FontAwesomeIcon icon="spinner" spin size="2x" />
+              <FontAwesomeIcon icon={faSpinner} spin size="2x" />
             </div>
           )}
           {instanceList && instanceList.length > 0 ? (
@@ -250,7 +262,7 @@ export const Instance = () => {
                     <td>
                       <div className="d-flex gap-1">
                         <Button onClick={() => handleEdit(instance)} color="link" size="sm" title="Edit" style={{ padding: 0 }}>
-                          <FontAwesomeIcon icon="pencil-alt" />
+                          <FontAwesomeIcon icon={faPencilAlt} />
                         </Button>
                         <Button
                           onClick={() => handleDelete(instance)}
@@ -259,7 +271,7 @@ export const Instance = () => {
                           title="Delete"
                           style={{ padding: 0, color: '#dc3545', marginLeft: '0.5rem' }}
                         >
-                          <FontAwesomeIcon icon="trash" />
+                          <FontAwesomeIcon icon={faTrash} />
                         </Button>
                       </div>
                     </td>
@@ -270,10 +282,10 @@ export const Instance = () => {
           ) : (
             !loading && (
               <div className="text-center py-5">
-                <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
+                <FontAwesomeIcon icon={faInbox} size="3x" className="text-muted mb-3" />
                 <h5 className="text-muted">No instances available. Create your first instance to get started.</h5>
                 <Button color="primary" className="mt-3" onClick={handleCreate}>
-                  <FontAwesomeIcon icon="plus" /> Create Instance
+                  <FontAwesomeIcon icon={faPlus} /> Create Instance
                 </Button>
               </div>
             )

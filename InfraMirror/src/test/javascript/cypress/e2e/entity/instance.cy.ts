@@ -15,38 +15,29 @@ describe('Instance e2e test', () => {
   const instancePageUrlPattern = new RegExp('/instance(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const instanceSample = {
-    name: 'spirit',
-    hostname: 'vice',
-    instanceType: 'morbidity kindly',
-    monitoringType: 'aha wetly',
-    pingEnabled: false,
-    pingInterval: 22570,
-    pingTimeoutMs: 2986,
-    pingRetryCount: 19446,
-    hardwareMonitoringEnabled: false,
-    hardwareMonitoringInterval: 8392,
-    cpuWarningThreshold: 31597,
-    cpuDangerThreshold: 12441,
-    memoryWarningThreshold: 32202,
-    memoryDangerThreshold: 2659,
-    diskWarningThreshold: 356,
-    diskDangerThreshold: 20659,
-  };
 
   let instance;
   let datacenter;
 
-  beforeEach(() => {
-    cy.login(username, password);
+  before(() => {
+    cy.session([username, password], () => {
+      cy.login(username, password);
+    });
   });
 
   beforeEach(() => {
-    // create an instance at the required relationship entity:
+    cy.session([username, password], () => {
+      cy.login(username, password);
+    });
+  });
+
+  beforeEach(() => {
+    const uniqueCode = `CODE-${Date.now()}`;
+    const uniqueName = `test-${Date.now()}-${Math.random().toString(36).substring(7)}`;
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/datacenters',
-      body: { code: 'bookcase b', name: 'oof gah crocodile' },
+      body: { code: uniqueCode, name: uniqueName },
     }).then(({ body }) => {
       datacenter = body;
     });
@@ -139,6 +130,26 @@ describe('Instance e2e test', () => {
 
     describe('with existing value', () => {
       beforeEach(() => {
+        const uniqueName = `test-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+        const instanceSample = {
+          name: uniqueName,
+          hostname: `host-${Date.now()}`,
+          instanceType: 'VM',
+          monitoringType: 'PING',
+          pingEnabled: false,
+          pingInterval: 22570,
+          pingTimeoutMs: 2986,
+          pingRetryCount: 19446,
+          hardwareMonitoringEnabled: false,
+          hardwareMonitoringInterval: 8392,
+          cpuWarningThreshold: 31597,
+          cpuDangerThreshold: 12441,
+          memoryWarningThreshold: 32202,
+          memoryDangerThreshold: 2659,
+          diskWarningThreshold: 356,
+          diskDangerThreshold: 20659,
+        };
+
         cy.authenticatedRequest({
           method: 'POST',
           url: '/api/instances',
@@ -228,11 +239,14 @@ describe('Instance e2e test', () => {
     });
 
     it('should create an instance of Instance', () => {
-      cy.get(`[data-cy="name"]`).type('think unlined state');
-      cy.get(`[data-cy="name"]`).should('have.value', 'think unlined state');
+      const uniqueName = `test-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+      const uniqueHostname = `host-${Date.now()}`;
 
-      cy.get(`[data-cy="hostname"]`).type('question');
-      cy.get(`[data-cy="hostname"]`).should('have.value', 'question');
+      cy.get(`[data-cy="name"]`).type(uniqueName);
+      cy.get(`[data-cy="name"]`).should('have.value', uniqueName);
+
+      cy.get(`[data-cy="hostname"]`).type(uniqueHostname);
+      cy.get(`[data-cy="hostname"]`).should('have.value', uniqueHostname);
 
       cy.get(`[data-cy="description"]`).type('colorize but when');
       cy.get(`[data-cy="description"]`).should('have.value', 'colorize but when');

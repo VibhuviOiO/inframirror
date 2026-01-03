@@ -7,14 +7,13 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vibhuvi.oio.inframirror.domain.Instance;
+import vibhuvi.oio.inframirror.repository.base.SearchableRepository;
 
-/**
- * Spring Data JPA repository for the Instance entity.
- */
-@SuppressWarnings("unused")
 @Repository
-public interface InstanceRepository extends JpaRepository<Instance, Long>, JpaSpecificationExecutor<Instance> {
+public interface InstanceRepository extends SearchableRepository<Instance>, JpaSpecificationExecutor<Instance> {
     Optional<Instance> findByHostname(String hostname);
+    
+    boolean existsByNameIgnoreCase(String name);
 
     @Query(
         value = "SELECT * FROM instance " +

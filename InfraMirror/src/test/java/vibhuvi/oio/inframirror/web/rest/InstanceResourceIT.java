@@ -41,7 +41,7 @@ import vibhuvi.oio.inframirror.domain.enumeration.OperatingSystem;
 @IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-class InstanceResourceIT {
+class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepository> {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
@@ -139,21 +139,23 @@ class InstanceResourceIT {
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
-    private ObjectMapper om;
-    
     private InstanceRepository instanceRepository;
 
     @Autowired
     private InstanceMapper instanceMapper;
-    
-    private EntityManager em;
-
-    @Autowired
-    private MockMvc restInstanceMockMvc;
 
     private Instance instance;
-
     private Instance insertedInstance;
+
+    @Override
+    protected InstanceRepository getRepository() {
+        return instanceRepository;
+    }
+
+    @Override
+    protected String getEntityApiUrl() {
+        return ENTITY_API_URL;
+    }
 
     /**
      * Create an entity for this test.
@@ -269,7 +271,7 @@ class InstanceResourceIT {
         // Create the Instance
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
         var returnedInstanceDTO = om.readValue(
-            restInstanceMockMvc
+            restMockMvc
                 .perform(
                     post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO))
                 )
@@ -283,7 +285,7 @@ class InstanceResourceIT {
         // Validate the Instance in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedInstance = instanceMapper.toEntity(returnedInstanceDTO);
-        assertInstanceUpdatableFieldsEquals(returnedInstance, getPersistedInstance(returnedInstance));
+        assertInstanceUpdatableFieldsEquals(returnedInstance, getPersistedEntity(returnedInstance.getId()));
 
 
         insertedInstance = returnedInstance;
@@ -299,7 +301,7 @@ class InstanceResourceIT {
         long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -317,7 +319,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -335,7 +337,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -353,7 +355,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -371,7 +373,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -389,7 +391,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -407,7 +409,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -425,7 +427,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -443,7 +445,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -461,7 +463,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -479,7 +481,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -497,7 +499,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -515,7 +517,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -533,7 +535,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -551,7 +553,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -569,7 +571,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -587,7 +589,7 @@ class InstanceResourceIT {
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isBadRequest());
 
@@ -602,7 +604,7 @@ class InstanceResourceIT {
         insertedInstance = instanceRepository.saveAndFlush(instance);
 
         // Get all the instanceList
-        restInstanceMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -642,7 +644,7 @@ class InstanceResourceIT {
         insertedInstance = instanceRepository.saveAndFlush(instance);
 
         // Get the instance
-        restInstanceMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL_ID, instance.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -2307,7 +2309,7 @@ class InstanceResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultInstanceShouldBeFound(String filter) throws Exception {
-        restInstanceMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -2340,7 +2342,7 @@ class InstanceResourceIT {
             .andExpect(jsonPath("$.[*].lastHardwareCheckAt").value(hasItem(DEFAULT_LAST_HARDWARE_CHECK_AT.toString())));
 
         // Check, that the count call also returns 1
-        restInstanceMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -2351,7 +2353,7 @@ class InstanceResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultInstanceShouldNotBeFound(String filter) throws Exception {
-        restInstanceMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -2359,7 +2361,7 @@ class InstanceResourceIT {
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restInstanceMockMvc
+        restMockMvc
             .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -2370,7 +2372,7 @@ class InstanceResourceIT {
     @Transactional
     void getNonExistingInstance() throws Exception {
         // Get the instance
-        restInstanceMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -2414,7 +2416,7 @@ class InstanceResourceIT {
             .lastHardwareCheckAt(UPDATED_LAST_HARDWARE_CHECK_AT);
         InstanceDTO instanceDTO = instanceMapper.toDto(updatedInstance);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, instanceDTO.getId())
                     .with(csrf())
@@ -2425,7 +2427,7 @@ class InstanceResourceIT {
 
         // Validate the Instance in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedInstanceToMatchAllProperties(updatedInstance);
+        assertInstanceAllPropertiesEquals(updatedInstance, getPersistedEntity(updatedInstance.getId()));
 
     }
 
@@ -2439,7 +2441,7 @@ class InstanceResourceIT {
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restInstanceMockMvc
+        restMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, instanceDTO.getId())
                     .with(csrf())
@@ -2462,7 +2464,7 @@ class InstanceResourceIT {
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restInstanceMockMvc
+        restMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .with(csrf())
@@ -2485,7 +2487,7 @@ class InstanceResourceIT {
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restInstanceMockMvc
+        restMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(instanceDTO)))
             .andExpect(status().isMethodNotAllowed());
 
@@ -2521,7 +2523,7 @@ class InstanceResourceIT {
             .createdAt(UPDATED_CREATED_AT)
             .lastPingAt(UPDATED_LAST_PING_AT);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedInstance.getId())
                     .with(csrf())
@@ -2533,7 +2535,7 @@ class InstanceResourceIT {
         // Validate the Instance in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertInstanceUpdatableFieldsEquals(createUpdateProxyForBean(partialUpdatedInstance, instance), getPersistedInstance(instance));
+        assertInstanceUpdatableFieldsEquals(createUpdateProxyForBean(partialUpdatedInstance, instance), getPersistedEntity(instance.getId()));
     }
 
     @Test
@@ -2576,7 +2578,7 @@ class InstanceResourceIT {
             .lastPingAt(UPDATED_LAST_PING_AT)
             .lastHardwareCheckAt(UPDATED_LAST_HARDWARE_CHECK_AT);
 
-        restInstanceMockMvc
+        restMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedInstance.getId())
                     .with(csrf())
@@ -2588,7 +2590,7 @@ class InstanceResourceIT {
         // Validate the Instance in the database
 
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertInstanceUpdatableFieldsEquals(partialUpdatedInstance, getPersistedInstance(partialUpdatedInstance));
+        assertInstanceUpdatableFieldsEquals(partialUpdatedInstance, getPersistedEntity(partialUpdatedInstance.getId()));
     }
 
     @Test
@@ -2601,7 +2603,7 @@ class InstanceResourceIT {
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restInstanceMockMvc
+        restMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, instanceDTO.getId())
                     .with(csrf())
@@ -2624,7 +2626,7 @@ class InstanceResourceIT {
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restInstanceMockMvc
+        restMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .with(csrf())
@@ -2647,7 +2649,7 @@ class InstanceResourceIT {
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
-        restInstanceMockMvc
+        restMockMvc
             .perform(
                 patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(instanceDTO))
             )
@@ -2667,7 +2669,7 @@ class InstanceResourceIT {
         long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the instance
-        restInstanceMockMvc
+        restMockMvc
             .perform(delete(ENTITY_API_URL_ID, instance.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
@@ -2679,112 +2681,40 @@ class InstanceResourceIT {
     @Transactional
     void searchInstance() throws Exception {
         insertedInstance = instanceRepository.saveAndFlush(instance);
-        em.flush();
-        em.clear();
-
-        restInstanceMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(instance.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
-    }
-
-    @Test
-    @Transactional
-    void searchInstanceByName() throws Exception {
-        insertedInstance = instanceRepository.saveAndFlush(instance);
-        em.flush();
-        em.clear();
-
-        restInstanceMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query=" + DEFAULT_NAME.substring(0, 3)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(instance.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+        flushAndClear();
+        SearchTestHelper.testFullTextSearch(restMockMvc, ENTITY_SEARCH_API_URL, DEFAULT_NAME.substring(0, 3));
     }
 
     @Test
     @Transactional
     void searchInstancePrefix() throws Exception {
         insertedInstance = instanceRepository.saveAndFlush(instance);
-        em.flush();
-        em.clear();
-
-        restInstanceMockMvc
-            .perform(get("/api/instances/_search/prefix?query=" + DEFAULT_NAME.substring(0, 2)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(instance.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+        flushAndClear();
+        SearchTestHelper.testPrefixSearch(restMockMvc, ENTITY_SEARCH_API_URL, DEFAULT_NAME.substring(0, 2));
     }
 
     @Test
     @Transactional
     void searchInstanceFuzzy() throws Exception {
         insertedInstance = instanceRepository.saveAndFlush(instance);
-        em.flush();
-        em.clear();
-
-        restInstanceMockMvc
-            .perform(get("/api/instances/_search/fuzzy?query=" + DEFAULT_NAME))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        flushAndClear();
+        SearchTestHelper.testFuzzySearch(restMockMvc, ENTITY_SEARCH_API_URL, DEFAULT_NAME);
     }
 
     @Test
     @Transactional
     void searchInstanceWithHighlight() throws Exception {
         insertedInstance = instanceRepository.saveAndFlush(instance);
-        em.flush();
-        em.clear();
-
-        restInstanceMockMvc
-            .perform(get("/api/instances/_search/highlight?query=" + DEFAULT_NAME.substring(0, 3)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        flushAndClear();
+        SearchTestHelper.testHighlightSearch(restMockMvc, ENTITY_SEARCH_API_URL, DEFAULT_NAME.substring(0, 3));
     }
 
     @Test
     @Transactional
     void searchInstanceEmptyQuery() throws Exception {
         insertedInstance = instanceRepository.saveAndFlush(instance);
-        em.flush();
-        em.clear();
-
-        restInstanceMockMvc
-            .perform(get(ENTITY_SEARCH_API_URL + "?query="))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(instance.getId().intValue())));
+        flushAndClear();
+        SearchTestHelper.testEmptyQuerySearch(restMockMvc, ENTITY_SEARCH_API_URL);
     }
 
-    protected long getRepositoryCount() {
-        return instanceRepository.count();
-    }
-
-    protected void assertIncrementedRepositoryCount(long countBefore) {
-        assertThat(countBefore + 1).isEqualTo(getRepositoryCount());
-    }
-
-    protected void assertDecrementedRepositoryCount(long countBefore) {
-        assertThat(countBefore - 1).isEqualTo(getRepositoryCount());
-    }
-
-    protected void assertSameRepositoryCount(long countBefore) {
-        assertThat(countBefore).isEqualTo(getRepositoryCount());
-    }
-
-    protected Instance getPersistedInstance(Instance instance) {
-        return instanceRepository.findById(instance.getId()).orElseThrow();
-    }
-
-    protected void assertPersistedInstanceToMatchAllProperties(Instance expectedInstance) {
-        assertInstanceAllPropertiesEquals(expectedInstance, getPersistedInstance(expectedInstance));
-    }
-
-    protected void assertPersistedInstanceToMatchUpdatableProperties(Instance expectedInstance) {
-        assertInstanceAllUpdatablePropertiesEquals(expectedInstance, getPersistedInstance(expectedInstance));
-    }
 }

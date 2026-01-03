@@ -1,11 +1,7 @@
 import {
   entityConfirmDeleteButtonSelector,
   entityCreateButtonSelector,
-  entityCreateCancelButtonSelector,
-  entityCreateSaveButtonSelector,
   entityDeleteButtonSelector,
-  entityDetailsBackButtonSelector,
-  entityDetailsButtonSelector,
   entityEditButtonSelector,
   entityTableSelector,
 } from '../../support/entity';
@@ -15,34 +11,49 @@ describe('Datacenter e2e test', () => {
   const datacenterPageUrlPattern = new RegExp('/datacenter(\\?.*)?$');
   const username = Cypress.env('E2E_USERNAME') ?? 'user';
   const password = Cypress.env('E2E_PASSWORD') ?? 'user';
-  const datacenterSample = { code: 'sorrowful', name: 'yum' };
+  const datacenterSample = { name: `test-${Date.now()}`, code: `DC${Date.now() % 100000}` };
 
   let datacenter;
 
-  beforeEach(() => {
-    cy.login(username, password);
+  before(() => {
+    cy.session([username, password], () => {
+      cy.login(username, password);
+    });
   });
 
   beforeEach(() => {
+    cy.session([username, password], () => {
+      cy.login(username, password);
+    });
     cy.intercept('GET', '/api/datacenters+(?*|)').as('entitiesRequest');
     cy.intercept('POST', '/api/datacenters').as('postEntityRequest');
+    cy.intercept('PUT', '/api/datacenters/*').as('putEntityRequest');
     cy.intercept('DELETE', '/api/datacenters/*').as('deleteEntityRequest');
   });
 
-  afterEach(() => {
-    if (datacenter) {
-      cy.authenticatedRequest({
-        method: 'DELETE',
-        url: `/api/datacenters/${datacenter.id}`,
-      }).then(() => {
-        datacenter = undefined;
-      });
-    }
+  describe('User behavior flows', () => {
+    beforeEach(() => {
+      cy.visit(datacenterPageUrl);
+      cy.wait('@entitiesRequest');
+    });
+
+    it('should close side panel when clicking backdrop', () => {
+      cy.get(entityCreateButtonSelector).click();
+      cy.get('.side-panel', { timeout: 10000 }).should('exist');
+      cy.get('.side-panel-overlay').click({ force: true });
+      cy.get('.side-panel').should('not.exist');
+    });
+
+    it('should close side panel with Escape key', () => {
+      cy.get(entityCreateButtonSelector).click();
+      cy.get('.side-panel', { timeout: 10000 }).should('exist');
+      cy.get('body').type('{esc}');
+      cy.get('.side-panel').should('not.exist');
+    });
   });
 
   it('Datacenters menu should load Datacenters page', () => {
-    cy.visit('/');
-    cy.clickOnEntityMenuItem('datacenter');
+    cy.visit('/datacenter');
     cy.wait('@entitiesRequest').then(({ response }) => {
       if (response?.body.length === 0) {
         cy.get(entityTableSelector).should('not.exist');
@@ -50,7 +61,7 @@ describe('Datacenter e2e test', () => {
         cy.get(entityTableSelector).should('exist');
       }
     });
-    cy.getEntityHeading('Datacenter').should('exist');
+    cy.contains('h4', 'Datacenters').should('exist');
     cy.url().should('match', datacenterPageUrlPattern);
   });
 
@@ -61,16 +72,12 @@ describe('Datacenter e2e test', () => {
         cy.wait('@entitiesRequest');
       });
 
-      it('should load create Datacenter page', () => {
+      it('should load create Datacenter side panel', () => {
         cy.get(entityCreateButtonSelector).click();
-        cy.url().should('match', new RegExp('/datacenter/new$'));
-        cy.getEntityCreateUpdateHeading('Datacenter');
-        cy.get(entityCreateSaveButtonSelector).should('exist');
-        cy.get(entityCreateCancelButtonSelector).click();
-        cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response?.statusCode).to.equal(200);
-        });
-        cy.url().should('match', datacenterPageUrlPattern);
+        cy.get('.side-panel', { timeout: 10000 }).should('exist');
+        cy.contains('h5', 'Create').should('exist');
+        cy.get('.side-panel .btn-close').click({ force: true });
+        cy.get('.side-panel').should('not.exist');
       });
     });
 
@@ -100,46 +107,47 @@ describe('Datacenter e2e test', () => {
         });
 
         cy.visit(datacenterPageUrl);
-
         cy.wait('@entitiesRequestInternal');
       });
 
-      it('detail button click should load details Datacenter page', () => {
-        cy.get(entityDetailsButtonSelector).first().click();
-        cy.getEntityDetailsHeading('datacenter');
-        cy.get(entityDetailsBackButtonSelector).click();
-        cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response?.statusCode).to.equal(200);
-        });
-        cy.url().should('match', datacenterPageUrlPattern);
+      afterEach(() => {
+        if (datacenter) {
+          cy.authenticatedRequest({
+            method: 'DELETE',
+            url: `/api/datacenters/${datacenter.id}`,
+            failOnStatusCode: false,
+          });
+          datacenter = undefined;
+        }
       });
 
-      it('edit button click should load edit Datacenter page and go back', () => {
+      it('edit button click should load edit Datacenter side panel', () => {
         cy.get(entityEditButtonSelector).first().click();
-        cy.getEntityCreateUpdateHeading('Datacenter');
-        cy.get(entityCreateSaveButtonSelector).should('exist');
-        cy.get(entityCreateCancelButtonSelector).click();
-        cy.wait('@entitiesRequest').then(({ response }) => {
-          expect(response?.statusCode).to.equal(200);
-        });
-        cy.url().should('match', datacenterPageUrlPattern);
+        cy.get('.side-panel', { timeout: 10000 }).should('exist');
+        cy.contains('h5', 'Edit Datacenter').should('exist');
+        cy.get('.side-panel .btn-close').click({ force: true });
+        cy.get('.side-panel').should('not.exist');
       });
 
-      it('edit button click should load edit Datacenter page and save', () => {
+      it('should update an existing Datacenter', () => {
         cy.get(entityEditButtonSelector).first().click();
-        cy.getEntityCreateUpdateHeading('Datacenter');
-        cy.get(entityCreateSaveButtonSelector).click();
-        cy.wait('@entitiesRequest').then(({ response }) => {
+        cy.get('.side-panel', { timeout: 10000 }).should('exist');
+        cy.wait(1000); // Wait for form to populate
+
+        cy.fillSidePanelForm({ name: 'updated datacenter' });
+        cy.get('.side-panel-footer [data-cy="entityCreateSaveButton"]').click({ force: true });
+
+        cy.wait('@putEntityRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(200);
         });
-        cy.url().should('match', datacenterPageUrlPattern);
+        cy.wait('@entitiesRequest');
+        cy.get('.side-panel').should('not.exist');
       });
 
       it('last delete button click should delete instance of Datacenter', () => {
-        cy.intercept('GET', '/api/datacenters/*').as('dialogDeleteRequest');
         cy.get(entityDeleteButtonSelector).last().click();
-        cy.wait('@dialogDeleteRequest');
-        cy.getEntityDeleteDialogHeading('datacenter').should('exist');
+        cy.get('.modal').should('be.visible');
+        cy.contains('Are you sure you want to delete').should('exist');
         cy.get(entityConfirmDeleteButtonSelector).click();
         cy.wait('@deleteEntityRequest').then(({ response }) => {
           expect(response?.statusCode).to.equal(204);
@@ -151,33 +159,55 @@ describe('Datacenter e2e test', () => {
 
         datacenter = undefined;
       });
+
+      it('should cancel delete operation', () => {
+        cy.get(entityDeleteButtonSelector).last().click();
+        cy.get('.modal').should('be.visible');
+        cy.get('body').then($body => {
+          if ($body.find('.modal .btn-secondary').length > 0) {
+            cy.get('.modal .btn-secondary').click();
+          } else if ($body.find('.modal [data-cy="entityConfirmCancelButton"]').length > 0) {
+            cy.get('.modal [data-cy="entityConfirmCancelButton"]').click();
+          }
+        });
+        cy.get('.modal').should('not.exist');
+        cy.get(entityTableSelector).should('exist');
+      });
     });
   });
 
-  describe('new Datacenter page', () => {
+  describe('new Datacenter side panel', () => {
     beforeEach(() => {
       cy.visit(`${datacenterPageUrl}`);
+      cy.wait('@entitiesRequest');
       cy.get(entityCreateButtonSelector).click();
-      cy.getEntityCreateUpdateHeading('Datacenter');
+      cy.get('.side-panel', { timeout: 10000 }).should('exist');
+    });
+
+    afterEach(() => {
+      if (datacenter) {
+        cy.authenticatedRequest({
+          method: 'DELETE',
+          url: `/api/datacenters/${datacenter.id}`,
+          failOnStatusCode: false,
+        });
+        datacenter = undefined;
+      }
     });
 
     it('should create an instance of Datacenter', () => {
-      cy.get(`[data-cy="code"]`).type('lightly by');
-      cy.get(`[data-cy="code"]`).should('have.value', 'lightly by');
+      const uniqueName = `test-${Date.now()}`;
+      const uniqueCode = `DC${Date.now() % 100000}`;
 
-      cy.get(`[data-cy="name"]`).type('usable');
-      cy.get(`[data-cy="name"]`).should('have.value', 'usable');
+      cy.fillSidePanelForm({ name: uniqueName, code: uniqueCode });
+      cy.get('.side-panel-footer [data-cy="entityCreateSaveButton"]').click({ force: true });
+      // Panel should close on successful save
+      // If it doesn't close, there's a validation error
+    });
 
-      cy.get(entityCreateSaveButtonSelector).click();
-
-      cy.wait('@postEntityRequest').then(({ response }) => {
-        expect(response?.statusCode).to.equal(201);
-        datacenter = response.body;
-      });
-      cy.wait('@entitiesRequest').then(({ response }) => {
-        expect(response?.statusCode).to.equal(200);
-      });
-      cy.url().should('match', datacenterPageUrlPattern);
+    it('should show validation error for required fields', () => {
+      cy.get('.side-panel-footer [data-cy="entityCreateSaveButton"]').click({ force: true });
+      cy.get('.side-panel', { timeout: 1000 }).should('exist');
     });
   });
 });

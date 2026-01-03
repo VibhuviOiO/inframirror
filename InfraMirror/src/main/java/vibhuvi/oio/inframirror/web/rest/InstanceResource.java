@@ -21,6 +21,7 @@ import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 import vibhuvi.oio.inframirror.repository.InstanceRepository;
 import vibhuvi.oio.inframirror.service.InstanceQueryService;
+import vibhuvi.oio.inframirror.service.InstanceSearchService;
 import vibhuvi.oio.inframirror.service.InstanceService;
 import vibhuvi.oio.inframirror.service.criteria.InstanceCriteria;
 import vibhuvi.oio.inframirror.service.dto.InstanceDTO;
@@ -42,17 +43,18 @@ public class InstanceResource {
     private String applicationName;
 
     private final InstanceService instanceService;
-
+    private final InstanceSearchService instanceSearchService;
     private final InstanceRepository instanceRepository;
-
     private final InstanceQueryService instanceQueryService;
 
     public InstanceResource(
         InstanceService instanceService,
+        InstanceSearchService instanceSearchService,
         InstanceRepository instanceRepository,
         InstanceQueryService instanceQueryService
     ) {
         this.instanceService = instanceService;
+        this.instanceSearchService = instanceSearchService;
         this.instanceRepository = instanceRepository;
         this.instanceQueryService = instanceQueryService;
     }
@@ -70,8 +72,11 @@ public class InstanceResource {
         if (instanceDTO.getId() != null) {
             throw new BadRequestAlertException("A new instance cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        if (instanceRepository.existsByNameIgnoreCase(instanceDTO.getName())) {
+            throw new BadRequestAlertException("Instance with this name already exists", ENTITY_NAME, "nameexists");
+        }
         instanceDTO = instanceService.save(instanceDTO);
-        return ResponseEntity.ok()
+        return ResponseEntity.created(new URI("/api/instances/" + instanceDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, instanceDTO.getId().toString()))
             .body(instanceDTO);
     }
@@ -99,7 +104,7 @@ public class InstanceResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!instanceRepository.existsById(id)) {
+        if (!instanceRepository.findById(id).isPresent()) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
@@ -133,7 +138,7 @@ public class InstanceResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!instanceRepository.existsById(id)) {
+        if (!instanceRepository.findById(id).isPresent()) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
@@ -218,7 +223,7 @@ public class InstanceResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of Instances for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
-        Page<InstanceDTO> page = instanceService.search(query, pageable);
+        Page<InstanceDTO> page = instanceSearchService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -229,7 +234,7 @@ public class InstanceResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to prefix search Instances for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
-        Page<InstanceDTO> page = instanceService.searchPrefix(query, pageable);
+        Page<InstanceDTO> page = instanceSearchService.searchPrefix(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -240,7 +245,7 @@ public class InstanceResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to fuzzy search Instances for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
-        Page<InstanceDTO> page = instanceService.searchFuzzy(query, pageable);
+        Page<InstanceDTO> page = instanceSearchService.searchFuzzy(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -251,7 +256,7 @@ public class InstanceResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search Instances with highlight for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
-        Page<InstanceSearchResultDTO> page = instanceService.searchWithHighlight(query, pageable);
+        Page<InstanceSearchResultDTO> page = instanceSearchService.searchWithHighlight(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

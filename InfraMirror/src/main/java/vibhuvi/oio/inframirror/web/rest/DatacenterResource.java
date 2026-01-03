@@ -21,6 +21,7 @@ import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 import vibhuvi.oio.inframirror.repository.DatacenterRepository;
 import vibhuvi.oio.inframirror.service.DatacenterQueryService;
+import vibhuvi.oio.inframirror.service.DatacenterSearchService;
 import vibhuvi.oio.inframirror.service.DatacenterService;
 import vibhuvi.oio.inframirror.service.criteria.DatacenterCriteria;
 import vibhuvi.oio.inframirror.service.dto.DatacenterDTO;
@@ -42,17 +43,18 @@ public class DatacenterResource {
     private String applicationName;
 
     private final DatacenterService datacenterService;
-
+    private final DatacenterSearchService datacenterSearchService;
     private final DatacenterRepository datacenterRepository;
-
     private final DatacenterQueryService datacenterQueryService;
 
     public DatacenterResource(
         DatacenterService datacenterService,
+        DatacenterSearchService datacenterSearchService,
         DatacenterRepository datacenterRepository,
         DatacenterQueryService datacenterQueryService
     ) {
         this.datacenterService = datacenterService;
+        this.datacenterSearchService = datacenterSearchService;
         this.datacenterRepository = datacenterRepository;
         this.datacenterQueryService = datacenterQueryService;
     }
@@ -70,8 +72,11 @@ public class DatacenterResource {
         if (datacenterDTO.getId() != null) {
             throw new BadRequestAlertException("A new datacenter cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        if (datacenterRepository.existsByNameIgnoreCase(datacenterDTO.getName())) {
+            throw new BadRequestAlertException("A datacenter with this name already exists", ENTITY_NAME, "nameexists");
+        }
         datacenterDTO = datacenterService.save(datacenterDTO);
-        return ResponseEntity.ok()
+        return ResponseEntity.created(new URI("/api/datacenters/" + datacenterDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, datacenterDTO.getId().toString()))
             .body(datacenterDTO);
     }
@@ -218,7 +223,7 @@ public class DatacenterResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of Datacenters for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
-        Page<DatacenterDTO> page = datacenterService.search(query, pageable);
+        Page<DatacenterDTO> page = datacenterSearchService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -229,7 +234,7 @@ public class DatacenterResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to prefix search Datacenters for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
-        Page<DatacenterDTO> page = datacenterService.searchPrefix(query, pageable);
+        Page<DatacenterDTO> page = datacenterSearchService.searchPrefix(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -240,7 +245,7 @@ public class DatacenterResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to fuzzy search Datacenters for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
-        Page<DatacenterDTO> page = datacenterService.searchFuzzy(query, pageable);
+        Page<DatacenterDTO> page = datacenterSearchService.searchFuzzy(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -251,7 +256,7 @@ public class DatacenterResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search Datacenters with highlight for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
-        Page<DatacenterSearchResultDTO> page = datacenterService.searchWithHighlight(query, pageable);
+        Page<DatacenterSearchResultDTO> page = datacenterSearchService.searchWithHighlight(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
