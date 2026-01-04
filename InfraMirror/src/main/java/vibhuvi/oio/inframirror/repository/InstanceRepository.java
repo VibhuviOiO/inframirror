@@ -11,6 +11,10 @@ import vibhuvi.oio.inframirror.repository.base.SearchableRepository;
 
 @Repository
 public interface InstanceRepository extends SearchableRepository<Instance>, JpaSpecificationExecutor<Instance> {
+    
+    @EntityGraph(attributePaths = {"datacenter"})
+    Page<Instance> findAll(Pageable pageable);
+    
     Optional<Instance> findByHostname(String hostname);
     
     boolean existsByNameIgnoreCase(String name);

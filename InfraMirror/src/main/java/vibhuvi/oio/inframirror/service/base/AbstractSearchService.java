@@ -42,7 +42,7 @@ public abstract class AbstractSearchService<D, E> {
             return getRepository().findAll(pageable).map(getMapper()::toDto);
         }
 
-        String searchTerm = FullTextSearchUtil.sanitizeQuery(query);
+        String searchTerm = FullTextSearchUtil.normalizeQuery(query);
         Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
 
         return getRepository().searchFullText(searchTerm, limitedPageable).map(getMapper()::toDto);

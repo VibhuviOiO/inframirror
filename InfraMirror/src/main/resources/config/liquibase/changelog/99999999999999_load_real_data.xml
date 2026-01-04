@@ -106,22 +106,9 @@
             <column name="hostname" value="rp4.local"/>
             <column name="description" value="Raspberry Pi 4 - Docker host"/>
             <column name="instance_type" value="BARE_METAL"/>
-            <column name="monitoring_type" value="SELF_HOSTED"/>
             <column name="operating_system" value="LINUX"/>
             <column name="platform" value="Raspberry Pi OS"/>
             <column name="private_ip_address" value="192.168.0.104"/>
-            <column name="ping_enabled" valueBoolean="true"/>
-            <column name="ping_interval" valueNumeric="30"/>
-            <column name="ping_timeout_ms" valueNumeric="3000"/>
-            <column name="ping_retry_count" valueNumeric="2"/>
-            <column name="hardware_monitoring_enabled" valueBoolean="false"/>
-            <column name="hardware_monitoring_interval" valueNumeric="300"/>
-            <column name="cpu_warning_threshold" valueNumeric="80"/>
-            <column name="cpu_danger_threshold" valueNumeric="95"/>
-            <column name="memory_warning_threshold" valueNumeric="80"/>
-            <column name="memory_danger_threshold" valueNumeric="95"/>
-            <column name="disk_warning_threshold" valueNumeric="80"/>
-            <column name="disk_danger_threshold" valueNumeric="95"/>
             <column name="datacenter_id" valueNumeric="1"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
@@ -132,22 +119,9 @@
             <column name="hostname" value="swagup-machine.local"/>
             <column name="description" value="Mac machine - Redis cluster host"/>
             <column name="instance_type" value="BARE_METAL"/>
-            <column name="monitoring_type" value="SELF_HOSTED"/>
             <column name="operating_system" value="MACOS"/>
             <column name="platform" value="macOS"/>
             <column name="private_ip_address" value="192.168.0.103"/>
-            <column name="ping_enabled" valueBoolean="true"/>
-            <column name="ping_interval" valueNumeric="30"/>
-            <column name="ping_timeout_ms" valueNumeric="3000"/>
-            <column name="ping_retry_count" valueNumeric="2"/>
-            <column name="hardware_monitoring_enabled" valueBoolean="false"/>
-            <column name="hardware_monitoring_interval" valueNumeric="300"/>
-            <column name="cpu_warning_threshold" valueNumeric="80"/>
-            <column name="cpu_danger_threshold" valueNumeric="95"/>
-            <column name="memory_warning_threshold" valueNumeric="80"/>
-            <column name="memory_danger_threshold" valueNumeric="95"/>
-            <column name="disk_warning_threshold" valueNumeric="80"/>
-            <column name="disk_danger_threshold" valueNumeric="95"/>
             <column name="datacenter_id" valueNumeric="1"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
@@ -158,22 +132,9 @@
             <column name="hostname" value="mongo-01.isro.internal"/>
             <column name="description" value="MongoDB Primary Node"/>
             <column name="instance_type" value="BARE_METAL"/>
-            <column name="monitoring_type" value="SELF_HOSTED"/>
             <column name="operating_system" value="LINUX"/>
             <column name="platform" value="Ubuntu 22.04"/>
             <column name="private_ip_address" value="10.0.1.11"/>
-            <column name="ping_enabled" valueBoolean="true"/>
-            <column name="ping_interval" valueNumeric="30"/>
-            <column name="ping_timeout_ms" valueNumeric="3000"/>
-            <column name="ping_retry_count" valueNumeric="2"/>
-            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
-            <column name="hardware_monitoring_interval" valueNumeric="60"/>
-            <column name="cpu_warning_threshold" valueNumeric="75"/>
-            <column name="cpu_danger_threshold" valueNumeric="90"/>
-            <column name="memory_warning_threshold" valueNumeric="80"/>
-            <column name="memory_danger_threshold" valueNumeric="95"/>
-            <column name="disk_warning_threshold" valueNumeric="80"/>
-            <column name="disk_danger_threshold" valueNumeric="90"/>
             <column name="datacenter_id" valueNumeric="1"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
@@ -184,22 +145,9 @@
             <column name="hostname" value="mongo-02.isro.internal"/>
             <column name="description" value="MongoDB Secondary Node"/>
             <column name="instance_type" value="BARE_METAL"/>
-            <column name="monitoring_type" value="SELF_HOSTED"/>
             <column name="operating_system" value="LINUX"/>
             <column name="platform" value="Ubuntu 22.04"/>
             <column name="private_ip_address" value="10.0.1.12"/>
-            <column name="ping_enabled" valueBoolean="true"/>
-            <column name="ping_interval" valueNumeric="30"/>
-            <column name="ping_timeout_ms" valueNumeric="3000"/>
-            <column name="ping_retry_count" valueNumeric="2"/>
-            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
-            <column name="hardware_monitoring_interval" valueNumeric="60"/>
-            <column name="cpu_warning_threshold" valueNumeric="75"/>
-            <column name="cpu_danger_threshold" valueNumeric="90"/>
-            <column name="memory_warning_threshold" valueNumeric="80"/>
-            <column name="memory_danger_threshold" valueNumeric="95"/>
-            <column name="disk_warning_threshold" valueNumeric="80"/>
-            <column name="disk_danger_threshold" valueNumeric="90"/>
             <column name="datacenter_id" valueNumeric="1"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
@@ -210,22 +158,9 @@
             <column name="hostname" value="mongo-03.isro.internal"/>
             <column name="description" value="MongoDB Arbiter Node"/>
             <column name="instance_type" value="BARE_METAL"/>
-            <column name="monitoring_type" value="SELF_HOSTED"/>
             <column name="operating_system" value="LINUX"/>
             <column name="platform" value="Ubuntu 22.04"/>
             <column name="private_ip_address" value="10.0.1.13"/>
-            <column name="ping_enabled" valueBoolean="true"/>
-            <column name="ping_interval" valueNumeric="30"/>
-            <column name="ping_timeout_ms" valueNumeric="3000"/>
-            <column name="ping_retry_count" valueNumeric="2"/>
-            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
-            <column name="hardware_monitoring_interval" valueNumeric="60"/>
-            <column name="cpu_warning_threshold" valueNumeric="75"/>
-            <column name="cpu_danger_threshold" valueNumeric="90"/>
-            <column name="memory_warning_threshold" valueNumeric="80"/>
-            <column name="memory_danger_threshold" valueNumeric="95"/>
-            <column name="disk_warning_threshold" valueNumeric="80"/>
-            <column name="disk_danger_threshold" valueNumeric="90"/>
             <column name="datacenter_id" valueNumeric="1"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
@@ -236,22 +171,9 @@
             <column name="hostname" value="kafka-01.isro.internal"/>
             <column name="description" value="Kafka Broker 1"/>
             <column name="instance_type" value="BARE_METAL"/>
-            <column name="monitoring_type" value="SELF_HOSTED"/>
             <column name="operating_system" value="LINUX"/>
             <column name="platform" value="Ubuntu 22.04"/>
             <column name="private_ip_address" value="10.0.2.11"/>
-            <column name="ping_enabled" valueBoolean="true"/>
-            <column name="ping_interval" valueNumeric="30"/>
-            <column name="ping_timeout_ms" valueNumeric="3000"/>
-            <column name="ping_retry_count" valueNumeric="2"/>
-            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
-            <column name="hardware_monitoring_interval" valueNumeric="60"/>
-            <column name="cpu_warning_threshold" valueNumeric="75"/>
-            <column name="cpu_danger_threshold" valueNumeric="90"/>
-            <column name="memory_warning_threshold" valueNumeric="80"/>
-            <column name="memory_danger_threshold" valueNumeric="95"/>
-            <column name="disk_warning_threshold" valueNumeric="80"/>
-            <column name="disk_danger_threshold" valueNumeric="90"/>
             <column name="datacenter_id" valueNumeric="1"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
@@ -262,22 +184,9 @@
             <column name="hostname" value="kafka-02.isro.internal"/>
             <column name="description" value="Kafka Broker 2"/>
             <column name="instance_type" value="BARE_METAL"/>
-            <column name="monitoring_type" value="SELF_HOSTED"/>
             <column name="operating_system" value="LINUX"/>
             <column name="platform" value="Ubuntu 22.04"/>
             <column name="private_ip_address" value="10.0.2.12"/>
-            <column name="ping_enabled" valueBoolean="true"/>
-            <column name="ping_interval" valueNumeric="30"/>
-            <column name="ping_timeout_ms" valueNumeric="3000"/>
-            <column name="ping_retry_count" valueNumeric="2"/>
-            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
-            <column name="hardware_monitoring_interval" valueNumeric="60"/>
-            <column name="cpu_warning_threshold" valueNumeric="75"/>
-            <column name="cpu_danger_threshold" valueNumeric="90"/>
-            <column name="memory_warning_threshold" valueNumeric="80"/>
-            <column name="memory_danger_threshold" valueNumeric="95"/>
-            <column name="disk_warning_threshold" valueNumeric="80"/>
-            <column name="disk_danger_threshold" valueNumeric="90"/>
             <column name="datacenter_id" valueNumeric="1"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
@@ -288,22 +197,9 @@
             <column name="hostname" value="kafka-03.isro.internal"/>
             <column name="description" value="Kafka Broker 3"/>
             <column name="instance_type" value="BARE_METAL"/>
-            <column name="monitoring_type" value="SELF_HOSTED"/>
             <column name="operating_system" value="LINUX"/>
             <column name="platform" value="Ubuntu 22.04"/>
             <column name="private_ip_address" value="10.0.2.13"/>
-            <column name="ping_enabled" valueBoolean="true"/>
-            <column name="ping_interval" valueNumeric="30"/>
-            <column name="ping_timeout_ms" valueNumeric="3000"/>
-            <column name="ping_retry_count" valueNumeric="2"/>
-            <column name="hardware_monitoring_enabled" valueBoolean="true"/>
-            <column name="hardware_monitoring_interval" valueNumeric="60"/>
-            <column name="cpu_warning_threshold" valueNumeric="75"/>
-            <column name="cpu_danger_threshold" valueNumeric="90"/>
-            <column name="memory_warning_threshold" valueNumeric="80"/>
-            <column name="memory_danger_threshold" valueNumeric="95"/>
-            <column name="disk_warning_threshold" valueNumeric="80"/>
-            <column name="disk_danger_threshold" valueNumeric="90"/>
             <column name="datacenter_id" valueNumeric="1"/>
             <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>

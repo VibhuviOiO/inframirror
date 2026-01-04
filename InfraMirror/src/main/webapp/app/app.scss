@@ -4,6 +4,9 @@
 @import 'bootstrap/scss/bootstrap';
 // Import custom styles
 @import 'custom';
+// Import shared styles
+@import 'shared/styles/entity-common';
+@import 'shared/styles/side-panel-common';
 
 :root {
   --theme-primary: #2c3e50;

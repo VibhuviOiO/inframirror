@@ -26,9 +26,6 @@
             <column name="instance_type" type="varchar(50)">
                 <constraints nullable="false" />
             </column>
-            <column name="monitoring_type" type="varchar(50)">
-                <constraints nullable="false" />
-            </column>
             <column name="operating_system" type="varchar(100)">
                 <constraints nullable="true" />
             </column>
@@ -44,52 +41,10 @@
             <column name="tags" type="${clobType}">
                 <constraints nullable="true" />
             </column>
-            <column name="ping_enabled" type="boolean">
-                <constraints nullable="false" />
-            </column>
-            <column name="ping_interval" type="integer">
-                <constraints nullable="false" />
-            </column>
-            <column name="ping_timeout_ms" type="integer">
-                <constraints nullable="false" />
-            </column>
-            <column name="ping_retry_count" type="integer">
-                <constraints nullable="false" />
-            </column>
-            <column name="hardware_monitoring_enabled" type="boolean">
-                <constraints nullable="false" />
-            </column>
-            <column name="hardware_monitoring_interval" type="integer">
-                <constraints nullable="false" />
-            </column>
-            <column name="cpu_warning_threshold" type="integer">
-                <constraints nullable="false" />
-            </column>
-            <column name="cpu_danger_threshold" type="integer">
-                <constraints nullable="false" />
-            </column>
-            <column name="memory_warning_threshold" type="integer">
-                <constraints nullable="false" />
-            </column>
-            <column name="memory_danger_threshold" type="integer">
-                <constraints nullable="false" />
-            </column>
-            <column name="disk_warning_threshold" type="integer">
-                <constraints nullable="false" />
-            </column>
-            <column name="disk_danger_threshold" type="integer">
-                <constraints nullable="false" />
-            </column>
             <column name="created_at" type="${datetimeType}">
                 <constraints nullable="true" />
             </column>
             <column name="updated_at" type="${datetimeType}">
-                <constraints nullable="true" />
-            </column>
-            <column name="last_ping_at" type="${datetimeType}">
-                <constraints nullable="true" />
-            </column>
-            <column name="last_hardware_check_at" type="${datetimeType}">
                 <constraints nullable="true" />
             </column>
             <column name="datacenter_id" type="bigint">
@@ -108,8 +63,6 @@
         </createTable>
         <dropDefaultValue tableName="instance" columnName="created_at" columnDataType="${datetimeType}"/>
         <dropDefaultValue tableName="instance" columnName="updated_at" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="instance" columnName="last_ping_at" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="instance" columnName="last_hardware_check_at" columnDataType="${datetimeType}"/>
     </changeSet>
 
     <changeSet id="20251205053331-2" author="system">

@@ -7,21 +7,23 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vibhuvi.oio.inframirror.domain.MonitoredService;
+import vibhuvi.oio.inframirror.repository.base.SearchableRepository;
 
 /**
  * Spring Data JPA repository for the MonitoredService entity.
  */
-@SuppressWarnings("unused")
 @Repository
-public interface MonitoredServiceRepository extends JpaRepository<MonitoredService, Long>, JpaSpecificationExecutor<MonitoredService> {
+public interface MonitoredServiceRepository extends SearchableRepository<MonitoredService>, JpaSpecificationExecutor<MonitoredService> {
     Optional<MonitoredService> findFirstByName(String name);
+    
+    boolean existsByNameIgnoreCase(String name);
 
     @Query(
         value = "SELECT * FROM monitored_service " +
-                "WHERE search_vector @@ to_tsquery('simple', :query || ':*') " +
-                "ORDER BY ts_rank(search_vector, to_tsquery('simple', :query || ':*')) DESC",
+                "WHERE search_vector @@ plainto_tsquery('simple', :query) " +
+                "ORDER BY ts_rank(search_vector, plainto_tsquery('simple', :query)) DESC",
         countQuery = "SELECT COUNT(*) FROM monitored_service " +
-                     "WHERE search_vector @@ to_tsquery('simple', :query || ':*')",
+                     "WHERE search_vector @@ plainto_tsquery('simple', :query)",
         nativeQuery = true
     )
     Page<MonitoredService> searchFullText(@Param("query") String query, Pageable pageable);
@@ -58,16 +60,16 @@ public interface MonitoredServiceRepository extends JpaRepository<MonitoredServi
                 "  m.description, " +
                 "  m.service_type, " +
                 "  m.environment, " +
-                "  ts_rank(m.search_vector, to_tsquery('simple', :query || ':*')) as rank, " +
+                "  ts_rank(m.search_vector, plainto_tsquery('simple', :query)) as rank, " +
                 "  ts_headline('simple', " +
                 "    COALESCE(m.name, '') || ' ' || COALESCE(m.description, '') || ' ' || COALESCE(m.service_type, '') || ' ' || COALESCE(m.environment, ''), " +
-                "    to_tsquery('simple', :query || ':*'), " +
+                "    plainto_tsquery('simple', :query), " +
                 "    'StartSel=<mark>, StopSel=</mark>, MaxWords=50, MinWords=10') as highlight " +
                 "FROM monitored_service m " +
-                "WHERE m.search_vector @@ to_tsquery('simple', :query || ':*') " +
+                "WHERE m.search_vector @@ plainto_tsquery('simple', :query) " +
                 "ORDER BY rank DESC",
         countQuery = "SELECT COUNT(*) FROM monitored_service " +
-                     "WHERE search_vector @@ to_tsquery('simple', :query || ':*')",
+                     "WHERE search_vector @@ plainto_tsquery('simple', :query)",
         nativeQuery = true
     )
     Page<Object[]> searchWithHighlight(@Param("query") String query, Pageable pageable);

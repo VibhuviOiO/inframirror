@@ -4,23 +4,19 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vibhuvi.oio.inframirror.domain.MonitoredService;
 import vibhuvi.oio.inframirror.repository.MonitoredServiceRepository;
 import vibhuvi.oio.inframirror.repository.ServiceInstanceRepository;
-import vibhuvi.oio.inframirror.service.FullTextSearchUtil;
 import vibhuvi.oio.inframirror.service.MonitoredServiceService;
 import vibhuvi.oio.inframirror.service.dto.MonitoredServiceDTO;
-import vibhuvi.oio.inframirror.service.dto.MonitoredServiceSearchResultDTO;
 import vibhuvi.oio.inframirror.service.dto.ServiceInstanceDTO;
 import vibhuvi.oio.inframirror.service.mapper.MonitoredServiceMapper;
 import vibhuvi.oio.inframirror.service.mapper.ServiceInstanceMapper;
 
 /**
- * Service Implementation for managing {@link vibhuvi.oio.inframirror.domain.MonitoredService}.
+ * Service Implementation for managing {@link MonitoredService}.
  */
 @Service
 @Transactional
@@ -29,11 +25,8 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
     private static final Logger LOG = LoggerFactory.getLogger(MonitoredServiceServiceImpl.class);
 
     private final MonitoredServiceRepository monitoredServiceRepository;
-
     private final MonitoredServiceMapper monitoredServiceMapper;
-
     private final ServiceInstanceRepository serviceInstanceRepository;
-
     private final ServiceInstanceMapper serviceInstanceMapper;
 
     public MonitoredServiceServiceImpl(
@@ -72,7 +65,6 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
             .findById(monitoredServiceDTO.getId())
             .map(existingMonitoredService -> {
                 monitoredServiceMapper.partialUpdate(existingMonitoredService, monitoredServiceDTO);
-
                 return existingMonitoredService;
             })
             .map(monitoredServiceRepository::save)
@@ -121,86 +113,5 @@ public class MonitoredServiceServiceImpl implements MonitoredServiceService {
         serviceInstance = serviceInstanceRepository.save(serviceInstance);
         
         return serviceInstanceMapper.toDtoWithFullInstance(serviceInstance);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<MonitoredServiceDTO> search(String query, Pageable pageable) {
-        if (query != null && query.length() > 100) {
-            throw new IllegalArgumentException("Search query too long (max 100 characters)");
-        }
-        if (pageable == null) {
-            throw new IllegalArgumentException("Pageable cannot be null");
-        }
-        LOG.debug("Request to search for a page of MonitoredServices for query {}", query);
-        if (FullTextSearchUtil.isEmptyQuery(query)) {
-            return monitoredServiceRepository.findAll(pageable).map(monitoredServiceMapper::toDto);
-        }
-
-        String searchTerm = FullTextSearchUtil.sanitizeQuery(query);
-        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
-
-        return monitoredServiceRepository.searchFullText(searchTerm, limitedPageable)
-            .map(monitoredServiceMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<MonitoredServiceDTO> searchPrefix(String query, Pageable pageable) {
-        if (query != null && query.length() > 100) {
-            throw new IllegalArgumentException("Search query too long (max 100 characters)");
-        }
-        if (FullTextSearchUtil.isEmptyQuery(query)) {
-            return Page.empty(pageable);
-        }
-
-        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
-        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
-
-        return monitoredServiceRepository.searchPrefix(normalizedQuery, limitedPageable)
-            .map(monitoredServiceMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<MonitoredServiceDTO> searchFuzzy(String query, Pageable pageable) {
-        if (query != null && query.length() > 100) {
-            throw new IllegalArgumentException("Search query too long (max 100 characters)");
-        }
-        if (FullTextSearchUtil.isEmptyQuery(query)) {
-            return Page.empty(pageable);
-        }
-
-        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
-        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
-
-        return monitoredServiceRepository.searchFuzzy(normalizedQuery, limitedPageable)
-            .map(monitoredServiceMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<MonitoredServiceSearchResultDTO> searchWithHighlight(String query, Pageable pageable) {
-        if (query != null && query.length() > 100) {
-            throw new IllegalArgumentException("Search query too long (max 100 characters)");
-        }
-        if (FullTextSearchUtil.isEmptyQuery(query)) {
-            return Page.empty(pageable);
-        }
-
-        String normalizedQuery = FullTextSearchUtil.normalizeQuery(query);
-        Pageable limitedPageable = FullTextSearchUtil.createLimitedPageable(pageable);
-
-        return monitoredServiceRepository.searchWithHighlight(normalizedQuery, limitedPageable)
-            .map(row -> {
-                Long id = ((Number) row[0]).longValue();
-                String name = (String) row[1];
-                String description = (String) row[2];
-                String serviceType = (String) row[3];
-                String environment = (String) row[4];
-                Float rank = ((Number) row[5]).floatValue();
-                String highlight = (String) row[6];
-                return new MonitoredServiceSearchResultDTO(id, name, description, serviceType, environment, rank, highlight);
-            });
     }
 }

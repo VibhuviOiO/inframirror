@@ -72,3 +72,4 @@ public class InstanceSearchServiceImpl extends AbstractSearchService<InstanceDTO
             });
     }
 }
+    

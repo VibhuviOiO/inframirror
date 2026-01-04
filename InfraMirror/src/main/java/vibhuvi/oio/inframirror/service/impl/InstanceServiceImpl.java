@@ -51,6 +51,23 @@ public class InstanceServiceImpl extends AbstractCrudService<InstanceDTO, Instan
     }
 
     @Override
+    public InstanceDTO save(InstanceDTO instanceDTO) {
+        // Set default monitoring values if not provided
+        if (instanceDTO.getPingInterval() == null) instanceDTO.setPingInterval(60);
+        if (instanceDTO.getPingTimeoutMs() == null) instanceDTO.setPingTimeoutMs(5000);
+        if (instanceDTO.getPingRetryCount() == null) instanceDTO.setPingRetryCount(3);
+        if (instanceDTO.getHardwareMonitoringEnabled() == null) instanceDTO.setHardwareMonitoringEnabled(false);
+        if (instanceDTO.getHardwareMonitoringInterval() == null) instanceDTO.setHardwareMonitoringInterval(300);
+        if (instanceDTO.getCpuWarningThreshold() == null) instanceDTO.setCpuWarningThreshold(80);
+        if (instanceDTO.getCpuDangerThreshold() == null) instanceDTO.setCpuDangerThreshold(90);
+        if (instanceDTO.getMemoryWarningThreshold() == null) instanceDTO.setMemoryWarningThreshold(80);
+        if (instanceDTO.getMemoryDangerThreshold() == null) instanceDTO.setMemoryDangerThreshold(90);
+        if (instanceDTO.getDiskWarningThreshold() == null) instanceDTO.setDiskWarningThreshold(80);
+        if (instanceDTO.getDiskDangerThreshold() == null) instanceDTO.setDiskDangerThreshold(90);
+        return super.save(instanceDTO);
+    }
+
+    @Override
     public Optional<InstanceDTO> partialUpdate(InstanceDTO instanceDTO) {
         return super.partialUpdate(instanceDTO, instanceDTO.getId());
     }

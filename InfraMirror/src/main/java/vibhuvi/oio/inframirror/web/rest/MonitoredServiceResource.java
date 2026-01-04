@@ -21,6 +21,7 @@ import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 import vibhuvi.oio.inframirror.repository.MonitoredServiceRepository;
 import vibhuvi.oio.inframirror.service.MonitoredServiceQueryService;
+import vibhuvi.oio.inframirror.service.MonitoredServiceSearchService;
 import vibhuvi.oio.inframirror.service.MonitoredServiceService;
 import vibhuvi.oio.inframirror.service.criteria.MonitoredServiceCriteria;
 import vibhuvi.oio.inframirror.service.dto.MonitoredServiceDTO;
@@ -42,17 +43,18 @@ public class MonitoredServiceResource {
     private String applicationName;
 
     private final MonitoredServiceService monitoredServiceService;
-
+    private final MonitoredServiceSearchService monitoredServiceSearchService;
     private final MonitoredServiceRepository monitoredServiceRepository;
-
     private final MonitoredServiceQueryService monitoredServiceQueryService;
 
     public MonitoredServiceResource(
         MonitoredServiceService monitoredServiceService,
+        MonitoredServiceSearchService monitoredServiceSearchService,
         MonitoredServiceRepository monitoredServiceRepository,
         MonitoredServiceQueryService monitoredServiceQueryService
     ) {
         this.monitoredServiceService = monitoredServiceService;
+        this.monitoredServiceSearchService = monitoredServiceSearchService;
         this.monitoredServiceRepository = monitoredServiceRepository;
         this.monitoredServiceQueryService = monitoredServiceQueryService;
     }
@@ -71,8 +73,11 @@ public class MonitoredServiceResource {
         if (monitoredServiceDTO.getId() != null) {
             throw new BadRequestAlertException("A new monitoredService cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        if (monitoredServiceRepository.existsByNameIgnoreCase(monitoredServiceDTO.getName())) {
+            throw new BadRequestAlertException("A monitored service with this name already exists", ENTITY_NAME, "nameexists");
+        }
         monitoredServiceDTO = monitoredServiceService.save(monitoredServiceDTO);
-        return ResponseEntity.ok()
+        return ResponseEntity.created(new URI("/api/monitored-services/" + monitoredServiceDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, monitoredServiceDTO.getId().toString()))
             .body(monitoredServiceDTO);
     }
@@ -255,7 +260,7 @@ public class MonitoredServiceResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         LOG.debug("REST request to search for a page of MonitoredServices for for query: {}", query != null ? query.replaceAll("[\r\n]", "") : null);
-        Page<MonitoredServiceDTO> page = monitoredServiceService.search(query, pageable);
+        Page<MonitoredServiceDTO> page = monitoredServiceSearchService.search(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -265,7 +270,7 @@ public class MonitoredServiceResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        Page<MonitoredServiceDTO> page = monitoredServiceService.searchPrefix(query, pageable);
+        Page<MonitoredServiceDTO> page = monitoredServiceSearchService.searchPrefix(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -275,7 +280,7 @@ public class MonitoredServiceResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        Page<MonitoredServiceDTO> page = monitoredServiceService.searchFuzzy(query, pageable);
+        Page<MonitoredServiceDTO> page = monitoredServiceSearchService.searchFuzzy(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -285,7 +290,7 @@ public class MonitoredServiceResource {
         @RequestParam("query") String query,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        Page<MonitoredServiceSearchResultDTO> page = monitoredServiceService.searchWithHighlight(query, pageable);
+        Page<MonitoredServiceSearchResultDTO> page = monitoredServiceSearchService.searchWithHighlight(query, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

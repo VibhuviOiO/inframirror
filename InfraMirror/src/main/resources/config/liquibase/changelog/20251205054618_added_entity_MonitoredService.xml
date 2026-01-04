@@ -108,6 +108,54 @@
         </sql>
     </changeSet>
 
+    <changeSet id="20251205054618-5" author="system">
+        <sql>
+            UPDATE monitored_service
+            SET search_vector = to_tsvector('simple', unaccent(
+                coalesce(name, '') || ' ' ||
+                coalesce(description, '') || ' ' ||
+                coalesce(service_type, '') || ' ' ||
+                coalesce(environment, '')
+            ));
+        </sql>
+    </changeSet>
+
+    <changeSet id="20251205054618-7" author="system">
+        <sql>
+            UPDATE monitored_service
+            SET search_vector = to_tsvector('simple', unaccent(
+                coalesce(name, '') || ' ' ||
+                coalesce(description, '') || ' ' ||
+                coalesce(service_type, '') || ' ' ||
+                coalesce(environment, '')
+            ));
+        </sql>
+    </changeSet>
+
+    <changeSet id="20251205054618-9" author="system">
+        <sql splitStatements="false"><![CDATA[
+            DROP TRIGGER IF EXISTS trg_monitored_service_search_vector ON monitored_service;
+            DROP FUNCTION IF EXISTS monitored_service_search_vector_update();
+            
+            CREATE FUNCTION monitored_service_search_vector_update() RETURNS trigger AS $$
+            BEGIN
+              NEW.search_vector := to_tsvector('simple', unaccent(
+                coalesce(NEW.name, '') || ' ' ||
+                coalesce(NEW.description, '') || ' ' ||
+                coalesce(NEW.service_type, '') || ' ' ||
+                coalesce(NEW.environment, '')
+              ));
+              RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER trg_monitored_service_search_vector
+            BEFORE INSERT OR UPDATE ON monitored_service
+            FOR EACH ROW
+            EXECUTE FUNCTION monitored_service_search_vector_update();
+        ]]></sql>
+    </changeSet>
+
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--
