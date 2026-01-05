@@ -8,7 +8,6 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import vibhuvi.oio.inframirror.domain.enumeration.InstanceType;
-import vibhuvi.oio.inframirror.domain.enumeration.MonitoringType;
 import vibhuvi.oio.inframirror.domain.enumeration.OperatingSystem;
 
 /**
@@ -51,12 +50,6 @@ public class Instance implements Serializable {
     
     private InstanceType instanceType;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "monitoring_type", nullable = false)
-    
-    private MonitoringType monitoringType;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "operating_system")
     
@@ -81,97 +74,11 @@ public class Instance implements Serializable {
     
     private String tags;
 
-    @NotNull
-    @Column(name = "ping_enabled", nullable = false)
-    
-    private Boolean pingEnabled = true;
-
-    @NotNull
-    @Min(10)
-    @Max(3600)
-    @Column(name = "ping_interval", nullable = false)
-    
-    private Integer pingInterval = 30;
-
-    @NotNull
-    @Min(500)
-    @Max(30000)
-    @Column(name = "ping_timeout_ms", nullable = false)
-    
-    private Integer pingTimeoutMs = 3000;
-
-    @NotNull
-    @Min(0)
-    @Max(5)
-    @Column(name = "ping_retry_count", nullable = false)
-    
-    private Integer pingRetryCount = 2;
-
-    @NotNull
-    @Column(name = "hardware_monitoring_enabled", nullable = false)
-    
-    private Boolean hardwareMonitoringEnabled = false;
-
-    @NotNull
-    @Min(60)
-    @Max(3600)
-    @Column(name = "hardware_monitoring_interval", nullable = false)
-    
-    private Integer hardwareMonitoringInterval = 300;
-
-    @NotNull
-    @Min(0)
-    @Max(100)
-    @Column(name = "cpu_warning_threshold", nullable = false)
-    
-    private Integer cpuWarningThreshold = 70;
-
-    @NotNull
-    @Min(0)
-    @Max(100)
-    @Column(name = "cpu_danger_threshold", nullable = false)
-    
-    private Integer cpuDangerThreshold = 90;
-
-    @NotNull
-    @Min(0)
-    @Max(100)
-    @Column(name = "memory_warning_threshold", nullable = false)
-    
-    private Integer memoryWarningThreshold = 75;
-
-    @NotNull
-    @Min(0)
-    @Max(100)
-    @Column(name = "memory_danger_threshold", nullable = false)
-    
-    private Integer memoryDangerThreshold = 90;
-
-    @NotNull
-    @Min(0)
-    @Max(100)
-    @Column(name = "disk_warning_threshold", nullable = false)
-    
-    private Integer diskWarningThreshold = 80;
-
-    @NotNull
-    @Min(0)
-    @Max(100)
-    @Column(name = "disk_danger_threshold", nullable = false)
-    
-    private Integer diskDangerThreshold = 95;
-
     @Column(name = "created_at")
     private Instant createdAt;
 
     @Column(name = "updated_at")
     private Instant updatedAt;
-
-    @Column(name = "last_ping_at")
-    private Instant lastPingAt;
-
-    @Column(name = "last_hardware_check_at")
-    private Instant lastHardwareCheckAt;
 
     @NotNull
     @Column(name = "is_active", nullable = false)
@@ -267,19 +174,6 @@ public class Instance implements Serializable {
         this.instanceType = instanceType;
     }
 
-    public MonitoringType getMonitoringType() {
-        return this.monitoringType;
-    }
-
-    public Instance monitoringType(MonitoringType monitoringType) {
-        this.setMonitoringType(monitoringType);
-        return this;
-    }
-
-    public void setMonitoringType(MonitoringType monitoringType) {
-        this.monitoringType = monitoringType;
-    }
-
     public OperatingSystem getOperatingSystem() {
         return this.operatingSystem;
     }
@@ -345,162 +239,6 @@ public class Instance implements Serializable {
         this.tags = tags;
     }
 
-    public Boolean getPingEnabled() {
-        return this.pingEnabled;
-    }
-
-    public Instance pingEnabled(Boolean pingEnabled) {
-        this.setPingEnabled(pingEnabled);
-        return this;
-    }
-
-    public void setPingEnabled(Boolean pingEnabled) {
-        this.pingEnabled = pingEnabled;
-    }
-
-    public Integer getPingInterval() {
-        return this.pingInterval;
-    }
-
-    public Instance pingInterval(Integer pingInterval) {
-        this.setPingInterval(pingInterval);
-        return this;
-    }
-
-    public void setPingInterval(Integer pingInterval) {
-        this.pingInterval = pingInterval;
-    }
-
-    public Integer getPingTimeoutMs() {
-        return this.pingTimeoutMs;
-    }
-
-    public Instance pingTimeoutMs(Integer pingTimeoutMs) {
-        this.setPingTimeoutMs(pingTimeoutMs);
-        return this;
-    }
-
-    public void setPingTimeoutMs(Integer pingTimeoutMs) {
-        this.pingTimeoutMs = pingTimeoutMs;
-    }
-
-    public Integer getPingRetryCount() {
-        return this.pingRetryCount;
-    }
-
-    public Instance pingRetryCount(Integer pingRetryCount) {
-        this.setPingRetryCount(pingRetryCount);
-        return this;
-    }
-
-    public void setPingRetryCount(Integer pingRetryCount) {
-        this.pingRetryCount = pingRetryCount;
-    }
-
-    public Boolean getHardwareMonitoringEnabled() {
-        return this.hardwareMonitoringEnabled;
-    }
-
-    public Instance hardwareMonitoringEnabled(Boolean hardwareMonitoringEnabled) {
-        this.setHardwareMonitoringEnabled(hardwareMonitoringEnabled);
-        return this;
-    }
-
-    public void setHardwareMonitoringEnabled(Boolean hardwareMonitoringEnabled) {
-        this.hardwareMonitoringEnabled = hardwareMonitoringEnabled;
-    }
-
-    public Integer getHardwareMonitoringInterval() {
-        return this.hardwareMonitoringInterval;
-    }
-
-    public Instance hardwareMonitoringInterval(Integer hardwareMonitoringInterval) {
-        this.setHardwareMonitoringInterval(hardwareMonitoringInterval);
-        return this;
-    }
-
-    public void setHardwareMonitoringInterval(Integer hardwareMonitoringInterval) {
-        this.hardwareMonitoringInterval = hardwareMonitoringInterval;
-    }
-
-    public Integer getCpuWarningThreshold() {
-        return this.cpuWarningThreshold;
-    }
-
-    public Instance cpuWarningThreshold(Integer cpuWarningThreshold) {
-        this.setCpuWarningThreshold(cpuWarningThreshold);
-        return this;
-    }
-
-    public void setCpuWarningThreshold(Integer cpuWarningThreshold) {
-        this.cpuWarningThreshold = cpuWarningThreshold;
-    }
-
-    public Integer getCpuDangerThreshold() {
-        return this.cpuDangerThreshold;
-    }
-
-    public Instance cpuDangerThreshold(Integer cpuDangerThreshold) {
-        this.setCpuDangerThreshold(cpuDangerThreshold);
-        return this;
-    }
-
-    public void setCpuDangerThreshold(Integer cpuDangerThreshold) {
-        this.cpuDangerThreshold = cpuDangerThreshold;
-    }
-
-    public Integer getMemoryWarningThreshold() {
-        return this.memoryWarningThreshold;
-    }
-
-    public Instance memoryWarningThreshold(Integer memoryWarningThreshold) {
-        this.setMemoryWarningThreshold(memoryWarningThreshold);
-        return this;
-    }
-
-    public void setMemoryWarningThreshold(Integer memoryWarningThreshold) {
-        this.memoryWarningThreshold = memoryWarningThreshold;
-    }
-
-    public Integer getMemoryDangerThreshold() {
-        return this.memoryDangerThreshold;
-    }
-
-    public Instance memoryDangerThreshold(Integer memoryDangerThreshold) {
-        this.setMemoryDangerThreshold(memoryDangerThreshold);
-        return this;
-    }
-
-    public void setMemoryDangerThreshold(Integer memoryDangerThreshold) {
-        this.memoryDangerThreshold = memoryDangerThreshold;
-    }
-
-    public Integer getDiskWarningThreshold() {
-        return this.diskWarningThreshold;
-    }
-
-    public Instance diskWarningThreshold(Integer diskWarningThreshold) {
-        this.setDiskWarningThreshold(diskWarningThreshold);
-        return this;
-    }
-
-    public void setDiskWarningThreshold(Integer diskWarningThreshold) {
-        this.diskWarningThreshold = diskWarningThreshold;
-    }
-
-    public Integer getDiskDangerThreshold() {
-        return this.diskDangerThreshold;
-    }
-
-    public Instance diskDangerThreshold(Integer diskDangerThreshold) {
-        this.setDiskDangerThreshold(diskDangerThreshold);
-        return this;
-    }
-
-    public void setDiskDangerThreshold(Integer diskDangerThreshold) {
-        this.diskDangerThreshold = diskDangerThreshold;
-    }
-
     public Instant getCreatedAt() {
         return this.createdAt;
     }
@@ -525,32 +263,6 @@ public class Instance implements Serializable {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Instant getLastPingAt() {
-        return this.lastPingAt;
-    }
-
-    public Instance lastPingAt(Instant lastPingAt) {
-        this.setLastPingAt(lastPingAt);
-        return this;
-    }
-
-    public void setLastPingAt(Instant lastPingAt) {
-        this.lastPingAt = lastPingAt;
-    }
-
-    public Instant getLastHardwareCheckAt() {
-        return this.lastHardwareCheckAt;
-    }
-
-    public Instance lastHardwareCheckAt(Instant lastHardwareCheckAt) {
-        this.setLastHardwareCheckAt(lastHardwareCheckAt);
-        return this;
-    }
-
-    public void setLastHardwareCheckAt(Instant lastHardwareCheckAt) {
-        this.lastHardwareCheckAt = lastHardwareCheckAt;
     }
 
     public Set<InstanceHeartbeat> getHeartbeats() {
@@ -682,28 +394,13 @@ public class Instance implements Serializable {
             ", hostname='" + getHostname() + "'" +
             ", description='" + getDescription() + "'" +
             ", instanceType='" + getInstanceType() + "'" +
-            ", monitoringType='" + getMonitoringType() + "'" +
             ", operatingSystem='" + getOperatingSystem() + "'" +
             ", platform='" + getPlatform() + "'" +
             ", privateIpAddress='" + getPrivateIpAddress() + "'" +
             ", publicIpAddress='" + getPublicIpAddress() + "'" +
             ", tags='" + getTags() + "'" +
-            ", pingEnabled='" + getPingEnabled() + "'" +
-            ", pingInterval=" + getPingInterval() +
-            ", pingTimeoutMs=" + getPingTimeoutMs() +
-            ", pingRetryCount=" + getPingRetryCount() +
-            ", hardwareMonitoringEnabled='" + getHardwareMonitoringEnabled() + "'" +
-            ", hardwareMonitoringInterval=" + getHardwareMonitoringInterval() +
-            ", cpuWarningThreshold=" + getCpuWarningThreshold() +
-            ", cpuDangerThreshold=" + getCpuDangerThreshold() +
-            ", memoryWarningThreshold=" + getMemoryWarningThreshold() +
-            ", memoryDangerThreshold=" + getMemoryDangerThreshold() +
-            ", diskWarningThreshold=" + getDiskWarningThreshold() +
-            ", diskDangerThreshold=" + getDiskDangerThreshold() +
             ", createdAt='" + getCreatedAt() + "'" +
             ", updatedAt='" + getUpdatedAt() + "'" +
-            ", lastPingAt='" + getLastPingAt() + "'" +
-            ", lastHardwareCheckAt='" + getLastHardwareCheckAt() + "'" +
             "}";
     }
 }

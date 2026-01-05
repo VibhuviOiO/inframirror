@@ -6,7 +6,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 export interface IMenuItem {
   children: React.ReactNode;
-  icon: IconProp;
+  icon?: IconProp;
   to: string;
   id?: string;
   'data-cy'?: string;
@@ -17,7 +17,7 @@ const MenuItem = (props: IMenuItem) => {
 
   return (
     <DropdownItem tag={Link} to={to} id={id} data-cy={props['data-cy']}>
-      <FontAwesomeIcon icon={icon} fixedWidth /> {children}
+      {icon && <FontAwesomeIcon icon={icon} fixedWidth />} {children}
     </DropdownItem>
   );
 };

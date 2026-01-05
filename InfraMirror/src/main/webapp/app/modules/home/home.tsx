@@ -1,7 +1,7 @@
 import './home.scss';
 
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardBody, Col, Row, Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
@@ -239,30 +239,30 @@ export const Home = () => {
                 Quick Links
               </h5>
               <div className="quick-links">
-                <a href="#/region" className="quick-link-item">
+                <Link to="/region" className="quick-link-item">
                   <FontAwesomeIcon icon="globe" className="me-2" />
                   Manage Regions
-                </a>
-                <a href="#/datacenter" className="quick-link-item">
+                </Link>
+                <Link to="/datacenter" className="quick-link-item">
                   <FontAwesomeIcon icon="building" className="me-2" />
                   Manage Datacenters
-                </a>
-                <a href="#/instance" className="quick-link-item">
+                </Link>
+                <Link to="/instance" className="quick-link-item">
                   <FontAwesomeIcon icon="server" className="me-2" />
                   Manage Instances
-                </a>
-                <a href="#/http-monitor" className="quick-link-item">
+                </Link>
+                <Link to="/http-monitor" className="quick-link-item">
                   <FontAwesomeIcon icon="chart-line" className="me-2" />
                   HTTP Monitors
-                </a>
-                <a href="#/monitored-service" className="quick-link-item">
+                </Link>
+                <Link to="/monitored-service" className="quick-link-item">
                   <FontAwesomeIcon icon="cogs" className="me-2" />
                   Monitored Services
-                </a>
-                <a href="#/agent" className="quick-link-item">
+                </Link>
+                <Link to="/agent" className="quick-link-item">
                   <FontAwesomeIcon icon="robot" className="me-2" />
                   Agents
-                </a>
+                </Link>
               </div>
             </CardBody>
           </Card>
