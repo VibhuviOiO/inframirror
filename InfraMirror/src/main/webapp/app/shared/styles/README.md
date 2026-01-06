@@ -1,19 +1,23 @@
 # Generic Entity Styles Guide
 
 ## Overview
+
 Generic, reusable SCSS styles for all entity pages (Region, Datacenter, Instance, Service, etc.) to maintain consistent design across the application.
 
 ## Files
 
 ### 1. `entity-common.scss`
+
 Generic styles for entity list pages with table, search, pagination, and animations.
 
 ### 2. `side-panel-common.scss`
+
 Generic styles for side panels (create/edit forms) with overlay, animations, and responsive layout.
 
 ## Usage
 
 ### Styles are Global
+
 The generic styles are imported in `custom.scss` and available everywhere. **No need to import or create entity-specific SCSS files.**
 
 ### Use Generic Classes in Your Component
@@ -23,9 +27,7 @@ export const Datacenter = () => {
   return (
     <div className="entity-page">
       <div className="card shadow-sm border-0 entity-card">
-        <Table className="table-hover mb-0 entity-table">
-          {/* Table content */}
-        </Table>
+        <Table className="table-hover mb-0 entity-table">{/* Table content */}</Table>
       </div>
     </div>
   );
@@ -35,6 +37,7 @@ export const Datacenter = () => {
 ## Available Classes
 
 **Entity Page:**
+
 - `.entity-page` - Main wrapper
 - `.entity-card` - Card container
 - `.entity-table` - Table with hover effects
@@ -45,6 +48,7 @@ export const Datacenter = () => {
 - `.loading-icon` - Animated spinner
 
 **Side Panel:**
+
 - `.side-panel-overlay` - Dark backdrop
 - `.side-panel` - Sliding panel
 - `.side-panel-header` - Panel header
@@ -70,7 +74,9 @@ export const Datacenter = () => {
         <Table className="entity-table">
           <tbody>
             <tr>
-              <td><span className="entity-badge">Active</span></td>
+              <td>
+                <span className="entity-badge">Active</span>
+              </td>
             </tr>
           </tbody>
         </Table>
@@ -91,9 +97,7 @@ export const DatacenterSidePanel = ({ isOpen, onClose }) => (
           <div className="side-panel-header">
             <h5>Create Datacenter</h5>
           </div>
-          <div className="side-panel-body">
-            {/* Form */}
-          </div>
+          <div className="side-panel-body">{/* Form */}</div>
           <div className="side-panel-footer">
             <Button>Save</Button>
           </div>
