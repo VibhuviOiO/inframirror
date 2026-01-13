@@ -55,8 +55,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     private static final InstanceType DEFAULT_INSTANCE_TYPE = InstanceType.VM;
     private static final InstanceType UPDATED_INSTANCE_TYPE = InstanceType.BARE_METAL;
 
-    private static final MonitoringType DEFAULT_MONITORING_TYPE = MonitoringType.SELF_HOSTED;
-    private static final MonitoringType UPDATED_MONITORING_TYPE = MonitoringType.AGENT_MONITORED;
 
     private static final OperatingSystem DEFAULT_OPERATING_SYSTEM = OperatingSystem.LINUX;
     private static final OperatingSystem UPDATED_OPERATING_SYSTEM = OperatingSystem.WINDOWS;
@@ -73,51 +71,60 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     private static final String DEFAULT_TAGS = "AAAAAAAAAA";
     private static final String UPDATED_TAGS = "BBBBBBBBBB";
 
-    private static final Boolean DEFAULT_PING_ENABLED = false;
-    private static final Boolean UPDATED_PING_ENABLED = true;
+    private static final Integer DEFAULT_CPU_WARNING_THRESHOLD = 75;
+    private static final Integer UPDATED_CPU_WARNING_THRESHOLD = 80;
+    private static final Integer SMALLER_CPU_WARNING_THRESHOLD = 74;
 
-    private static final Integer DEFAULT_PING_INTERVAL = 10;
-    private static final Integer UPDATED_PING_INTERVAL = 20;
-    private static final Integer SMALLER_PING_INTERVAL = 9;
+    private static final Integer DEFAULT_CPU_DANGER_THRESHOLD = 90;
+    private static final Integer UPDATED_CPU_DANGER_THRESHOLD = 95;
+    private static final Integer SMALLER_CPU_DANGER_THRESHOLD = 89;
 
-    private static final Integer DEFAULT_PING_TIMEOUT_MS = 500;
-    private static final Integer UPDATED_PING_TIMEOUT_MS = 600;
-    private static final Integer SMALLER_PING_TIMEOUT_MS = 499;
+    private static final Integer DEFAULT_MEMORY_WARNING_THRESHOLD = 80;
+    private static final Integer UPDATED_MEMORY_WARNING_THRESHOLD = 85;
+    private static final Integer SMALLER_MEMORY_WARNING_THRESHOLD = 79;
 
-    private static final Integer DEFAULT_PING_RETRY_COUNT = 1;
-    private static final Integer UPDATED_PING_RETRY_COUNT = 2;
-    private static final Integer SMALLER_PING_RETRY_COUNT = 1 - 1;
+    private static final Integer DEFAULT_MEMORY_DANGER_THRESHOLD = 95;
+    private static final Integer UPDATED_MEMORY_DANGER_THRESHOLD = 98;
+    private static final Integer SMALLER_MEMORY_DANGER_THRESHOLD = 94;
 
-    private static final Boolean DEFAULT_HARDWARE_MONITORING_ENABLED = false;
-    private static final Boolean UPDATED_HARDWARE_MONITORING_ENABLED = true;
+    private static final Integer DEFAULT_DISK_WARNING_THRESHOLD = 80;
+    private static final Integer UPDATED_DISK_WARNING_THRESHOLD = 85;
+    private static final Integer SMALLER_DISK_WARNING_THRESHOLD = 79;
+
+    private static final Integer DEFAULT_DISK_DANGER_THRESHOLD = 90;
+    private static final Integer UPDATED_DISK_DANGER_THRESHOLD = 95;
+    private static final Integer SMALLER_DISK_DANGER_THRESHOLD = 89;
+
+    private static final Boolean DEFAULT_PING_ENABLED = true;
+    private static final Boolean UPDATED_PING_ENABLED = false;
+
+    private static final Integer DEFAULT_PING_INTERVAL = 30;
+    private static final Integer UPDATED_PING_INTERVAL = 60;
+    private static final Integer SMALLER_PING_INTERVAL = 29;
+
+    private static final Integer DEFAULT_PING_TIMEOUT_MS = 3000;
+    private static final Integer UPDATED_PING_TIMEOUT_MS = 5000;
+    private static final Integer SMALLER_PING_TIMEOUT_MS = 2999;
+
+    private static final Integer DEFAULT_PING_RETRY_COUNT = 2;
+    private static final Integer UPDATED_PING_RETRY_COUNT = 3;
+    private static final Integer SMALLER_PING_RETRY_COUNT = 1;
+
+    private static final Boolean DEFAULT_HARDWARE_MONITORING_ENABLED = true;
+    private static final Boolean UPDATED_HARDWARE_MONITORING_ENABLED = false;
 
     private static final Integer DEFAULT_HARDWARE_MONITORING_INTERVAL = 60;
     private static final Integer UPDATED_HARDWARE_MONITORING_INTERVAL = 120;
     private static final Integer SMALLER_HARDWARE_MONITORING_INTERVAL = 59;
 
-    private static final Integer DEFAULT_CPU_WARNING_THRESHOLD = 1;
-    private static final Integer UPDATED_CPU_WARNING_THRESHOLD = 2;
-    private static final Integer SMALLER_CPU_WARNING_THRESHOLD = 1 - 1;
+    private static final MonitoringType DEFAULT_MONITORING_TYPE = MonitoringType.SELF_HOSTED;
+    private static final MonitoringType UPDATED_MONITORING_TYPE = MonitoringType.AGENT_MONITORED;
 
-    private static final Integer DEFAULT_CPU_DANGER_THRESHOLD = 1;
-    private static final Integer UPDATED_CPU_DANGER_THRESHOLD = 2;
-    private static final Integer SMALLER_CPU_DANGER_THRESHOLD = 1 - 1;
+    private static final Instant DEFAULT_LAST_PING_AT = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_LAST_PING_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final Integer DEFAULT_MEMORY_WARNING_THRESHOLD = 1;
-    private static final Integer UPDATED_MEMORY_WARNING_THRESHOLD = 2;
-    private static final Integer SMALLER_MEMORY_WARNING_THRESHOLD = 1 - 1;
-
-    private static final Integer DEFAULT_MEMORY_DANGER_THRESHOLD = 1;
-    private static final Integer UPDATED_MEMORY_DANGER_THRESHOLD = 2;
-    private static final Integer SMALLER_MEMORY_DANGER_THRESHOLD = 1 - 1;
-
-    private static final Integer DEFAULT_DISK_WARNING_THRESHOLD = 1;
-    private static final Integer UPDATED_DISK_WARNING_THRESHOLD = 2;
-    private static final Integer SMALLER_DISK_WARNING_THRESHOLD = 1 - 1;
-
-    private static final Integer DEFAULT_DISK_DANGER_THRESHOLD = 1;
-    private static final Integer UPDATED_DISK_DANGER_THRESHOLD = 2;
-    private static final Integer SMALLER_DISK_DANGER_THRESHOLD = 1 - 1;
+    private static final Instant DEFAULT_LAST_HARDWARE_CHECK_AT = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_LAST_HARDWARE_CHECK_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
     private static final Instant DEFAULT_CREATED_AT = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_CREATED_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
@@ -125,11 +132,7 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     private static final Instant DEFAULT_UPDATED_AT = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_UPDATED_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final Instant DEFAULT_LAST_PING_AT = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_LAST_PING_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final Instant DEFAULT_LAST_HARDWARE_CHECK_AT = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_LAST_HARDWARE_CHECK_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
     private static final String ENTITY_API_URL = "/api/instances";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -169,28 +172,13 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
             .hostname(DEFAULT_HOSTNAME)
             .description(DEFAULT_DESCRIPTION)
             .instanceType(DEFAULT_INSTANCE_TYPE)
-            .monitoringType(DEFAULT_MONITORING_TYPE)
             .operatingSystem(DEFAULT_OPERATING_SYSTEM)
             .platform(DEFAULT_PLATFORM)
             .privateIpAddress(DEFAULT_PRIVATE_IP_ADDRESS)
             .publicIpAddress(DEFAULT_PUBLIC_IP_ADDRESS)
             .tags(DEFAULT_TAGS)
-            .pingEnabled(DEFAULT_PING_ENABLED)
-            .pingInterval(DEFAULT_PING_INTERVAL)
-            .pingTimeoutMs(DEFAULT_PING_TIMEOUT_MS)
-            .pingRetryCount(DEFAULT_PING_RETRY_COUNT)
-            .hardwareMonitoringEnabled(DEFAULT_HARDWARE_MONITORING_ENABLED)
-            .hardwareMonitoringInterval(DEFAULT_HARDWARE_MONITORING_INTERVAL)
-            .cpuWarningThreshold(DEFAULT_CPU_WARNING_THRESHOLD)
-            .cpuDangerThreshold(DEFAULT_CPU_DANGER_THRESHOLD)
-            .memoryWarningThreshold(DEFAULT_MEMORY_WARNING_THRESHOLD)
-            .memoryDangerThreshold(DEFAULT_MEMORY_DANGER_THRESHOLD)
-            .diskWarningThreshold(DEFAULT_DISK_WARNING_THRESHOLD)
-            .diskDangerThreshold(DEFAULT_DISK_DANGER_THRESHOLD)
             .createdAt(DEFAULT_CREATED_AT)
-            .updatedAt(DEFAULT_UPDATED_AT)
-            .lastPingAt(DEFAULT_LAST_PING_AT)
-            .lastHardwareCheckAt(DEFAULT_LAST_HARDWARE_CHECK_AT);
+            .updatedAt(DEFAULT_UPDATED_AT);
         // Add required entity
         Datacenter datacenter;
         if (TestUtil.findAll(em, Datacenter.class).isEmpty()) {
@@ -216,28 +204,13 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
             .hostname(UPDATED_HOSTNAME)
             .description(UPDATED_DESCRIPTION)
             .instanceType(UPDATED_INSTANCE_TYPE)
-            .monitoringType(UPDATED_MONITORING_TYPE)
             .operatingSystem(UPDATED_OPERATING_SYSTEM)
             .platform(UPDATED_PLATFORM)
             .privateIpAddress(UPDATED_PRIVATE_IP_ADDRESS)
             .publicIpAddress(UPDATED_PUBLIC_IP_ADDRESS)
             .tags(UPDATED_TAGS)
-            .pingEnabled(UPDATED_PING_ENABLED)
-            .pingInterval(UPDATED_PING_INTERVAL)
-            .pingTimeoutMs(UPDATED_PING_TIMEOUT_MS)
-            .pingRetryCount(UPDATED_PING_RETRY_COUNT)
-            .hardwareMonitoringEnabled(UPDATED_HARDWARE_MONITORING_ENABLED)
-            .hardwareMonitoringInterval(UPDATED_HARDWARE_MONITORING_INTERVAL)
-            .cpuWarningThreshold(UPDATED_CPU_WARNING_THRESHOLD)
-            .cpuDangerThreshold(UPDATED_CPU_DANGER_THRESHOLD)
-            .memoryWarningThreshold(UPDATED_MEMORY_WARNING_THRESHOLD)
-            .memoryDangerThreshold(UPDATED_MEMORY_DANGER_THRESHOLD)
-            .diskWarningThreshold(UPDATED_DISK_WARNING_THRESHOLD)
-            .diskDangerThreshold(UPDATED_DISK_DANGER_THRESHOLD)
             .createdAt(UPDATED_CREATED_AT)
-            .updatedAt(UPDATED_UPDATED_AT)
-            .lastPingAt(UPDATED_LAST_PING_AT)
-            .lastHardwareCheckAt(UPDATED_LAST_HARDWARE_CHECK_AT);
+            .updatedAt(UPDATED_UPDATED_AT);
         // Add required entity
         Datacenter datacenter;
         if (TestUtil.findAll(em, Datacenter.class).isEmpty()) {
@@ -368,7 +341,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkMonitoringTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setMonitoringType(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -386,7 +358,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkPingEnabledIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setPingEnabled(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -404,7 +375,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkPingIntervalIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setPingInterval(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -422,7 +392,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkPingTimeoutMsIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setPingTimeoutMs(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -440,7 +409,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkPingRetryCountIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setPingRetryCount(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -458,7 +426,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkHardwareMonitoringEnabledIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setHardwareMonitoringEnabled(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -476,7 +443,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkHardwareMonitoringIntervalIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setHardwareMonitoringInterval(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -494,7 +460,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkCpuWarningThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setCpuWarningThreshold(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -512,7 +477,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkCpuDangerThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setCpuDangerThreshold(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -530,7 +494,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkMemoryWarningThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setMemoryWarningThreshold(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -548,7 +511,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkMemoryDangerThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setMemoryDangerThreshold(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -566,7 +528,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkDiskWarningThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setDiskWarningThreshold(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -584,7 +545,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
     void checkDiskDangerThresholdIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        instance.setDiskDangerThreshold(null);
 
         // Create the Instance, which fails.
         InstanceDTO instanceDTO = instanceMapper.toDto(instance);
@@ -623,14 +583,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
             .andExpect(jsonPath("$.[*].pingInterval").value(hasItem(DEFAULT_PING_INTERVAL)))
             .andExpect(jsonPath("$.[*].pingTimeoutMs").value(hasItem(DEFAULT_PING_TIMEOUT_MS)))
             .andExpect(jsonPath("$.[*].pingRetryCount").value(hasItem(DEFAULT_PING_RETRY_COUNT)))
-            .andExpect(jsonPath("$.[*].hardwareMonitoringEnabled").value(hasItem(DEFAULT_HARDWARE_MONITORING_ENABLED)))
-            .andExpect(jsonPath("$.[*].hardwareMonitoringInterval").value(hasItem(DEFAULT_HARDWARE_MONITORING_INTERVAL)))
-            .andExpect(jsonPath("$.[*].cpuWarningThreshold").value(hasItem(DEFAULT_CPU_WARNING_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].cpuDangerThreshold").value(hasItem(DEFAULT_CPU_DANGER_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].memoryWarningThreshold").value(hasItem(DEFAULT_MEMORY_WARNING_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].memoryDangerThreshold").value(hasItem(DEFAULT_MEMORY_DANGER_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].diskWarningThreshold").value(hasItem(DEFAULT_DISK_WARNING_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].diskDangerThreshold").value(hasItem(DEFAULT_DISK_DANGER_THRESHOLD)))
             .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
             .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(DEFAULT_UPDATED_AT.toString())))
             .andExpect(jsonPath("$.[*].lastPingAt").value(hasItem(DEFAULT_LAST_PING_AT.toString())))
@@ -663,14 +615,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
             .andExpect(jsonPath("$.pingInterval").value(DEFAULT_PING_INTERVAL))
             .andExpect(jsonPath("$.pingTimeoutMs").value(DEFAULT_PING_TIMEOUT_MS))
             .andExpect(jsonPath("$.pingRetryCount").value(DEFAULT_PING_RETRY_COUNT))
-            .andExpect(jsonPath("$.hardwareMonitoringEnabled").value(DEFAULT_HARDWARE_MONITORING_ENABLED))
-            .andExpect(jsonPath("$.hardwareMonitoringInterval").value(DEFAULT_HARDWARE_MONITORING_INTERVAL))
-            .andExpect(jsonPath("$.cpuWarningThreshold").value(DEFAULT_CPU_WARNING_THRESHOLD))
-            .andExpect(jsonPath("$.cpuDangerThreshold").value(DEFAULT_CPU_DANGER_THRESHOLD))
-            .andExpect(jsonPath("$.memoryWarningThreshold").value(DEFAULT_MEMORY_WARNING_THRESHOLD))
-            .andExpect(jsonPath("$.memoryDangerThreshold").value(DEFAULT_MEMORY_DANGER_THRESHOLD))
-            .andExpect(jsonPath("$.diskWarningThreshold").value(DEFAULT_DISK_WARNING_THRESHOLD))
-            .andExpect(jsonPath("$.diskDangerThreshold").value(DEFAULT_DISK_DANGER_THRESHOLD))
             .andExpect(jsonPath("$.createdAt").value(DEFAULT_CREATED_AT.toString()))
             .andExpect(jsonPath("$.updatedAt").value(DEFAULT_UPDATED_AT.toString()))
             .andExpect(jsonPath("$.lastPingAt").value(DEFAULT_LAST_PING_AT.toString()))
@@ -2328,14 +2272,6 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
             .andExpect(jsonPath("$.[*].pingInterval").value(hasItem(DEFAULT_PING_INTERVAL)))
             .andExpect(jsonPath("$.[*].pingTimeoutMs").value(hasItem(DEFAULT_PING_TIMEOUT_MS)))
             .andExpect(jsonPath("$.[*].pingRetryCount").value(hasItem(DEFAULT_PING_RETRY_COUNT)))
-            .andExpect(jsonPath("$.[*].hardwareMonitoringEnabled").value(hasItem(DEFAULT_HARDWARE_MONITORING_ENABLED)))
-            .andExpect(jsonPath("$.[*].hardwareMonitoringInterval").value(hasItem(DEFAULT_HARDWARE_MONITORING_INTERVAL)))
-            .andExpect(jsonPath("$.[*].cpuWarningThreshold").value(hasItem(DEFAULT_CPU_WARNING_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].cpuDangerThreshold").value(hasItem(DEFAULT_CPU_DANGER_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].memoryWarningThreshold").value(hasItem(DEFAULT_MEMORY_WARNING_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].memoryDangerThreshold").value(hasItem(DEFAULT_MEMORY_DANGER_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].diskWarningThreshold").value(hasItem(DEFAULT_DISK_WARNING_THRESHOLD)))
-            .andExpect(jsonPath("$.[*].diskDangerThreshold").value(hasItem(DEFAULT_DISK_DANGER_THRESHOLD)))
             .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
             .andExpect(jsonPath("$.[*].updatedAt").value(hasItem(DEFAULT_UPDATED_AT.toString())))
             .andExpect(jsonPath("$.[*].lastPingAt").value(hasItem(DEFAULT_LAST_PING_AT.toString())))
@@ -2392,28 +2328,13 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
             .hostname(UPDATED_HOSTNAME)
             .description(UPDATED_DESCRIPTION)
             .instanceType(UPDATED_INSTANCE_TYPE)
-            .monitoringType(UPDATED_MONITORING_TYPE)
             .operatingSystem(UPDATED_OPERATING_SYSTEM)
             .platform(UPDATED_PLATFORM)
             .privateIpAddress(UPDATED_PRIVATE_IP_ADDRESS)
             .publicIpAddress(UPDATED_PUBLIC_IP_ADDRESS)
             .tags(UPDATED_TAGS)
-            .pingEnabled(UPDATED_PING_ENABLED)
-            .pingInterval(UPDATED_PING_INTERVAL)
-            .pingTimeoutMs(UPDATED_PING_TIMEOUT_MS)
-            .pingRetryCount(UPDATED_PING_RETRY_COUNT)
-            .hardwareMonitoringEnabled(UPDATED_HARDWARE_MONITORING_ENABLED)
-            .hardwareMonitoringInterval(UPDATED_HARDWARE_MONITORING_INTERVAL)
-            .cpuWarningThreshold(UPDATED_CPU_WARNING_THRESHOLD)
-            .cpuDangerThreshold(UPDATED_CPU_DANGER_THRESHOLD)
-            .memoryWarningThreshold(UPDATED_MEMORY_WARNING_THRESHOLD)
-            .memoryDangerThreshold(UPDATED_MEMORY_DANGER_THRESHOLD)
-            .diskWarningThreshold(UPDATED_DISK_WARNING_THRESHOLD)
-            .diskDangerThreshold(UPDATED_DISK_DANGER_THRESHOLD)
             .createdAt(UPDATED_CREATED_AT)
-            .updatedAt(UPDATED_UPDATED_AT)
-            .lastPingAt(UPDATED_LAST_PING_AT)
-            .lastHardwareCheckAt(UPDATED_LAST_HARDWARE_CHECK_AT);
+            .updatedAt(UPDATED_UPDATED_AT);
         InstanceDTO instanceDTO = instanceMapper.toDto(updatedInstance);
 
         restMockMvc
@@ -2510,18 +2431,8 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
         partialUpdatedInstance
             .name(UPDATED_NAME)
             .hostname(UPDATED_HOSTNAME)
-            .monitoringType(UPDATED_MONITORING_TYPE)
             .operatingSystem(UPDATED_OPERATING_SYSTEM)
-            .pingRetryCount(UPDATED_PING_RETRY_COUNT)
-            .hardwareMonitoringEnabled(UPDATED_HARDWARE_MONITORING_ENABLED)
-            .hardwareMonitoringInterval(UPDATED_HARDWARE_MONITORING_INTERVAL)
-            .cpuDangerThreshold(UPDATED_CPU_DANGER_THRESHOLD)
-            .memoryWarningThreshold(UPDATED_MEMORY_WARNING_THRESHOLD)
-            .memoryDangerThreshold(UPDATED_MEMORY_DANGER_THRESHOLD)
-            .diskWarningThreshold(UPDATED_DISK_WARNING_THRESHOLD)
-            .diskDangerThreshold(UPDATED_DISK_DANGER_THRESHOLD)
-            .createdAt(UPDATED_CREATED_AT)
-            .lastPingAt(UPDATED_LAST_PING_AT);
+            .createdAt(UPDATED_CREATED_AT);
 
         restMockMvc
             .perform(
@@ -2555,28 +2466,13 @@ class InstanceResourceIT extends AbstractEntityResourceIT<Instance, InstanceRepo
             .hostname(UPDATED_HOSTNAME)
             .description(UPDATED_DESCRIPTION)
             .instanceType(UPDATED_INSTANCE_TYPE)
-            .monitoringType(UPDATED_MONITORING_TYPE)
             .operatingSystem(UPDATED_OPERATING_SYSTEM)
             .platform(UPDATED_PLATFORM)
             .privateIpAddress(UPDATED_PRIVATE_IP_ADDRESS)
             .publicIpAddress(UPDATED_PUBLIC_IP_ADDRESS)
             .tags(UPDATED_TAGS)
-            .pingEnabled(UPDATED_PING_ENABLED)
-            .pingInterval(UPDATED_PING_INTERVAL)
-            .pingTimeoutMs(UPDATED_PING_TIMEOUT_MS)
-            .pingRetryCount(UPDATED_PING_RETRY_COUNT)
-            .hardwareMonitoringEnabled(UPDATED_HARDWARE_MONITORING_ENABLED)
-            .hardwareMonitoringInterval(UPDATED_HARDWARE_MONITORING_INTERVAL)
-            .cpuWarningThreshold(UPDATED_CPU_WARNING_THRESHOLD)
-            .cpuDangerThreshold(UPDATED_CPU_DANGER_THRESHOLD)
-            .memoryWarningThreshold(UPDATED_MEMORY_WARNING_THRESHOLD)
-            .memoryDangerThreshold(UPDATED_MEMORY_DANGER_THRESHOLD)
-            .diskWarningThreshold(UPDATED_DISK_WARNING_THRESHOLD)
-            .diskDangerThreshold(UPDATED_DISK_DANGER_THRESHOLD)
             .createdAt(UPDATED_CREATED_AT)
-            .updatedAt(UPDATED_UPDATED_AT)
-            .lastPingAt(UPDATED_LAST_PING_AT)
-            .lastHardwareCheckAt(UPDATED_LAST_HARDWARE_CHECK_AT);
+            .updatedAt(UPDATED_UPDATED_AT);
 
         restMockMvc
             .perform(

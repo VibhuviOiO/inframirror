@@ -5,7 +5,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import vibhuvi.oio.inframirror.domain.enumeration.InstanceType;
-import vibhuvi.oio.inframirror.domain.enumeration.MonitoringType;
 import vibhuvi.oio.inframirror.domain.enumeration.OperatingSystem;
 
 public class InstanceTestSamples {
@@ -21,21 +20,10 @@ public class InstanceTestSamples {
             .hostname("hostname1")
             .description("description1")
             .instanceType(InstanceType.VM)
-            .monitoringType(MonitoringType.SELF_HOSTED)
             .operatingSystem(OperatingSystem.LINUX)
             .platform("platform1")
             .privateIpAddress("privateIpAddress1")
-            .publicIpAddress("publicIpAddress1")
-            .pingInterval(1)
-            .pingTimeoutMs(1)
-            .pingRetryCount(1)
-            .hardwareMonitoringInterval(1)
-            .cpuWarningThreshold(1)
-            .cpuDangerThreshold(1)
-            .memoryWarningThreshold(1)
-            .memoryDangerThreshold(1)
-            .diskWarningThreshold(1)
-            .diskDangerThreshold(1);
+            .publicIpAddress("publicIpAddress1");
     }
 
     public static Instance getInstanceSample2() {
@@ -45,21 +33,10 @@ public class InstanceTestSamples {
             .hostname("hostname2")
             .description("description2")
             .instanceType(InstanceType.BARE_METAL)
-            .monitoringType(MonitoringType.AGENT_MONITORED)
             .operatingSystem(OperatingSystem.WINDOWS)
             .platform("platform2")
             .privateIpAddress("privateIpAddress2")
-            .publicIpAddress("publicIpAddress2")
-            .pingInterval(2)
-            .pingTimeoutMs(2)
-            .pingRetryCount(2)
-            .hardwareMonitoringInterval(2)
-            .cpuWarningThreshold(2)
-            .cpuDangerThreshold(2)
-            .memoryWarningThreshold(2)
-            .memoryDangerThreshold(2)
-            .diskWarningThreshold(2)
-            .diskDangerThreshold(2);
+            .publicIpAddress("publicIpAddress2");
     }
 
     public static Instance getInstanceRandomSampleGenerator() {
@@ -69,20 +46,9 @@ public class InstanceTestSamples {
             .hostname(UUID.randomUUID().toString())
             .description(UUID.randomUUID().toString())
             .instanceType(InstanceType.values()[random.nextInt(InstanceType.values().length)])
-            .monitoringType(MonitoringType.values()[random.nextInt(MonitoringType.values().length)])
             .operatingSystem(OperatingSystem.values()[random.nextInt(OperatingSystem.values().length)])
             .platform(UUID.randomUUID().toString())
             .privateIpAddress(UUID.randomUUID().toString())
-            .publicIpAddress(UUID.randomUUID().toString())
-            .pingInterval(intCount.incrementAndGet())
-            .pingTimeoutMs(intCount.incrementAndGet())
-            .pingRetryCount(intCount.incrementAndGet())
-            .hardwareMonitoringInterval(intCount.incrementAndGet())
-            .cpuWarningThreshold(intCount.incrementAndGet())
-            .cpuDangerThreshold(intCount.incrementAndGet())
-            .memoryWarningThreshold(intCount.incrementAndGet())
-            .memoryDangerThreshold(intCount.incrementAndGet())
-            .diskWarningThreshold(intCount.incrementAndGet())
-            .diskDangerThreshold(intCount.incrementAndGet());
+            .publicIpAddress(UUID.randomUUID().toString());
     }
 }
