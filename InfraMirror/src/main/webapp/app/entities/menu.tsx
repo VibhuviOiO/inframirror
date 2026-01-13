@@ -59,6 +59,9 @@ const EntitiesMenu = () => {
       <MenuItem icon="asterisk" to="/monitored-service">
         <Translate contentKey="global.menu.entities.monitoredService" />
       </MenuItem>
+      <MenuItem icon="plug" to="/icc">
+        ICC
+      </MenuItem>
       {/* jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here */}
     </>
   );

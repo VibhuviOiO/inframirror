@@ -205,6 +205,60 @@
             <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
         </insert>
 
+        <!-- Marathon Staging Cluster (localhost tunneled) -->
+        <insert tableName="instance">
+            <column name="id" valueNumeric="3001"/>
+            <column name="name" value="localhost"/>
+            <column name="hostname" value="localhost"/>
+            <column name="description" value="Local machine hosting Marathon cluster"/>
+            <column name="instance_type" value="BARE_METAL"/>
+            <column name="operating_system" value="LINUX"/>
+            <column name="platform" value="Ubuntu"/>
+            <column name="private_ip_address" value="127.0.0.1"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="3001"/>
+            <column name="name" value="Marathon Staging Cluster"/>
+            <column name="description" value="Marathon cluster with 2 nodes (ports 8093, 8094)"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="environment" value="STAGING"/>
+            <column name="advanced_config" value="http://localhost:8093,http://localhost:8094"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="cluster_monitoring_enabled" valueBoolean="true"/>
+            <column name="interval_seconds" valueNumeric="30"/>
+            <column name="timeout_ms" valueNumeric="5000"/>
+            <column name="retry_count" valueNumeric="2"/>
+            <column name="latency_warning_ms" valueNumeric="500"/>
+            <column name="latency_critical_ms" valueNumeric="2000"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <insert tableName="service_instance">
+            <column name="id" valueNumeric="4001"/>
+            <column name="monitored_service_id" valueNumeric="3001"/>
+            <column name="instance_id" valueNumeric="3001"/>
+            <column name="port" valueNumeric="8093"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="service_instance">
+            <column name="id" valueNumeric="4002"/>
+            <column name="monitored_service_id" valueNumeric="3001"/>
+            <column name="instance_id" valueNumeric="3001"/>
+            <column name="port" valueNumeric="8094"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+            <column name="updated_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
         <!-- Services -->
         <insert tableName="monitored_service">
             <column name="id" valueNumeric="1"/>
@@ -651,6 +705,379 @@
             <column name="active" valueBoolean="true"/>
             <column name="created_date" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="expires_at" valueComputed="CURRENT_TIMESTAMP + INTERVAL '1 year'"/>
+        </insert>
+
+        <!-- Integration Control Console (ICC) Data -->
+        
+        <!-- Control Integrations -->
+        <insert tableName="control_integration">
+            <column name="id" valueNumeric="1"/>
+            <column name="code" value="MARATHON"/>
+            <column name="name" value="Marathon"/>
+            <column name="description" value="Apache Marathon container orchestration platform"/>
+            <column name="category" value="CONTAINER"/>
+            <column name="icon" value="faDocker"/>
+            <column name="supports_multi_dc" valueBoolean="true"/>
+            <column name="supports_write" valueBoolean="true"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="control_integration">
+            <column name="id" valueNumeric="2"/>
+            <column name="code" value="K8S"/>
+            <column name="name" value="Kubernetes"/>
+            <column name="description" value="Kubernetes container orchestration system"/>
+            <column name="category" value="CONTAINER"/>
+            <column name="icon" value="faServer"/>
+            <column name="supports_multi_dc" valueBoolean="true"/>
+            <column name="supports_write" valueBoolean="true"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="control_integration">
+            <column name="id" valueNumeric="3"/>
+            <column name="code" value="SOLR"/>
+            <column name="name" value="Solr Cloud"/>
+            <column name="description" value="Apache Solr distributed search platform"/>
+            <column name="category" value="SEARCH"/>
+            <column name="icon" value="faSearch"/>
+            <column name="supports_multi_dc" valueBoolean="true"/>
+            <column name="supports_write" valueBoolean="false"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="control_integration">
+            <column name="id" valueNumeric="4"/>
+            <column name="code" value="CUSTOM"/>
+            <column name="name" value="Custom API"/>
+            <column name="description" value="Custom REST API integration"/>
+            <column name="category" value="OTHER"/>
+            <column name="icon" value="faPlug"/>
+            <column name="supports_multi_dc" valueBoolean="false"/>
+            <column name="supports_write" valueBoolean="true"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Integration Instances (linking to existing MonitoredService) -->
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="1"/>
+            <column name="control_integration_id" valueNumeric="4"/>
+            <column name="name" value="ISRO Spacecrafts API"/>
+            <column name="instance_type" value="HTTP_MONITOR"/>
+            <column name="http_monitor_id" valueNumeric="1"/>
+            <column name="environment" value="PROD"/>
+            <column name="timeout_ms" valueNumeric="5000"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="2"/>
+            <column name="control_integration_id" valueNumeric="4"/>
+            <column name="name" value="ISRO Launchers API"/>
+            <column name="instance_type" value="HTTP_MONITOR"/>
+            <column name="http_monitor_id" valueNumeric="2"/>
+            <column name="environment" value="PROD"/>
+            <column name="timeout_ms" valueNumeric="5000"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="3"/>
+            <column name="control_integration_id" valueNumeric="4"/>
+            <column name="name" value="Redis Cluster Service"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="1"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="environment" value="DEV"/>
+            <column name="timeout_ms" valueNumeric="5000"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Integration Resources -->
+        <insert tableName="integration_resource">
+            <column name="id" valueNumeric="1"/>
+            <column name="control_integration_id" valueNumeric="4"/>
+            <column name="name" value="spacecrafts"/>
+            <column name="display_name" value="Spacecrafts"/>
+            <column name="api_path" value="/api/spacecrafts"/>
+            <column name="response_path" value="$.spacecrafts"/>
+            <column name="identifier_path" value="$.id"/>
+            <column name="supports_namespace" valueBoolean="false"/>
+            <column name="refresh_interval_sec" valueNumeric="30"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_resource">
+            <column name="id" valueNumeric="2"/>
+            <column name="control_integration_id" valueNumeric="4"/>
+            <column name="name" value="launchers"/>
+            <column name="display_name" value="Launchers"/>
+            <column name="api_path" value="/api/launchers"/>
+            <column name="response_path" value="$.launchers"/>
+            <column name="identifier_path" value="$.id"/>
+            <column name="supports_namespace" valueBoolean="false"/>
+            <column name="refresh_interval_sec" valueNumeric="30"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Integration Views (UI Configuration) -->
+        <insert tableName="integration_view">
+            <column name="id" valueNumeric="1"/>
+            <column name="integration_resource_id" valueNumeric="1"/>
+            <column name="view_type" value="TABLE"/>
+            <column name="title" value="ISRO Spacecrafts"/>
+            <column name="default_sort" value="id"/>
+            <column name="is_default" valueBoolean="true"/>
+            <column name="config" value='{"columns":[{"key":"id","label":"ID","expression":"$.id","type":"string","visible":true,"width":100},{"key":"name","label":"Name","expression":"$.name","type":"string","visible":true,"width":200}]}'/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_view">
+            <column name="id" valueNumeric="2"/>
+            <column name="integration_resource_id" valueNumeric="2"/>
+            <column name="view_type" value="TABLE"/>
+            <column name="title" value="ISRO Launchers"/>
+            <column name="default_sort" value="id"/>
+            <column name="is_default" valueBoolean="true"/>
+            <column name="config" value='{"columns":[{"key":"id","label":"ID","expression":"$.id","type":"string","visible":true,"width":100},{"key":"name","label":"Name","expression":"$.name","type":"string","visible":true,"width":200}]}'/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- ICC: Marathon Integration Instance -->
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="101"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon Staging"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="3001"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="environment" value="STAGING"/>
+            <column name="timeout_ms" valueNumeric="5000"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- ICC: Marathon Resources -->
+        <insert tableName="integration_resource">
+            <column name="id" valueNumeric="101"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="apps"/>
+            <column name="display_name" value="Applications"/>
+            <column name="api_path" value="/v2/apps"/>
+            <column name="response_path" value="$.apps"/>
+            <column name="identifier_path" value="$.id"/>
+            <column name="supports_namespace" valueBoolean="false"/>
+            <column name="refresh_interval_sec" valueNumeric="30"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- ICC: Marathon View -->
+        <insert tableName="integration_view">
+            <column name="id" valueNumeric="101"/>
+            <column name="integration_resource_id" valueNumeric="101"/>
+            <column name="view_type" value="TABLE"/>
+            <column name="title" value="Marathon Applications"/>
+            <column name="default_sort" value="id"/>
+            <column name="is_default" valueBoolean="true"/>
+            <column name="config" value='{"columns":[{"key":"id","label":"App ID","expression":"$.id","type":"string","visible":true,"width":250},{"key":"instances","label":"Instances","expression":"$.instances","type":"number","visible":true,"width":100},{"key":"cpus","label":"CPUs","expression":"$.cpus","type":"number","visible":true,"width":80},{"key":"mem","label":"Memory (MB)","expression":"$.mem","type":"number","visible":true,"width":120},{"key":"tasksRunning","label":"Running","expression":"$.tasksRunning","type":"number","visible":true,"width":100}]}'/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- Marathon Multi-DC Clusters (10 DCs via SSH tunnel) -->
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="201"/>
+            <column name="name" value="Marathon CHI"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="advanced_config" value="http://127.0.0.1:8080"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="202"/>
+            <column name="name" value="Marathon DAM"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="advanced_config" value="http://127.0.0.1:8081"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="203"/>
+            <column name="name" value="Marathon PROD"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="advanced_config" value="http://127.0.0.1:8082"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="204"/>
+            <column name="name" value="Marathon FRA"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="advanced_config" value="http://127.0.0.1:8083"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="205"/>
+            <column name="name" value="Marathon LON"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="advanced_config" value="http://127.0.0.1:8084"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="206"/>
+            <column name="name" value="Marathon RDN"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="advanced_config" value="http://127.0.0.1:8085"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="207"/>
+            <column name="name" value="Marathon SF"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="advanced_config" value="http://127.0.0.1:8086"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="208"/>
+            <column name="name" value="Marathon STO"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="advanced_config" value="http://127.0.0.1:8087"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="209"/>
+            <column name="name" value="Marathon SYD"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="advanced_config" value="http://127.0.0.1:8088"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="monitored_service">
+            <column name="id" valueNumeric="210"/>
+            <column name="name" value="Marathon VA"/>
+            <column name="service_type" value="MARATHON"/>
+            <column name="advanced_config" value="http://127.0.0.1:8089"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="monitoring_enabled" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+
+        <!-- ICC Integration Instances for 10 Marathon DCs -->
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="201"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon CHI"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="201"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="202"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon DAM"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="202"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="203"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon PROD"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="203"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="204"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon FRA"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="204"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="205"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon LON"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="205"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="206"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon RDN"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="206"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="207"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon SF"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="207"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="208"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon STO"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="208"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="209"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon SYD"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="209"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
+        </insert>
+        <insert tableName="integration_instance">
+            <column name="id" valueNumeric="210"/>
+            <column name="control_integration_id" valueNumeric="1"/>
+            <column name="name" value="Marathon VA"/>
+            <column name="instance_type" value="MONITORED_SERVICE"/>
+            <column name="monitored_service_id" valueNumeric="210"/>
+            <column name="datacenter_id" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
         </insert>
     </changeSet>
 

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250106000001-1" author="jhipster">
+        <createTable tableName="control_integration">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="code" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="category" type="varchar(50)"/>
+            <column name="icon" type="varchar(100)"/>
+            <column name="supports_multi_dc" type="boolean" defaultValueBoolean="false"/>
+            <column name="supports_write" type="boolean" defaultValueBoolean="true"/>
+            <column name="is_active" type="boolean" defaultValueBoolean="true"/>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <createIndex indexName="idx_control_integration_code" tableName="control_integration">
+            <column name="code"/>
+        </createIndex>
+        <createIndex indexName="idx_control_integration_category" tableName="control_integration">
+            <column name="category"/>
+        </createIndex>
+        <createIndex indexName="idx_control_integration_active" tableName="control_integration">
+            <column name="is_active"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

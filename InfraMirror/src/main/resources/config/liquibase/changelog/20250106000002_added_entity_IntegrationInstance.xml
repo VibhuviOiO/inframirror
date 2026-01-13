@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250106000002-1" author="jhipster">
+        <createTable tableName="integration_instance">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="control_integration_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="instance_type" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="monitored_service_id" type="bigint"/>
+            <column name="http_monitor_id" type="bigint"/>
+            <column name="base_url" type="text"/>
+            <column name="auth_type" type="varchar(30)"/>
+            <column name="auth_config" type="jsonb"/>
+            <column name="environment" type="varchar(20)"/>
+            <column name="datacenter_id" type="bigint"/>
+            <column name="timeout_ms" type="integer" defaultValueNumeric="5000"/>
+            <column name="is_active" type="boolean" defaultValueBoolean="true"/>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <createIndex indexName="idx_integration_instance_control_integration" tableName="integration_instance">
+            <column name="control_integration_id"/>
+        </createIndex>
+        <createIndex indexName="idx_integration_instance_monitored_service" tableName="integration_instance">
+            <column name="monitored_service_id"/>
+        </createIndex>
+        <createIndex indexName="idx_integration_instance_http_monitor" tableName="integration_instance">
+            <column name="http_monitor_id"/>
+        </createIndex>
+        <createIndex indexName="idx_integration_instance_datacenter" tableName="integration_instance">
+            <column name="datacenter_id"/>
+        </createIndex>
+        <createIndex indexName="idx_integration_instance_type" tableName="integration_instance">
+            <column name="instance_type"/>
+        </createIndex>
+        <createIndex indexName="idx_integration_instance_environment" tableName="integration_instance">
+            <column name="environment"/>
+        </createIndex>
+        <createIndex indexName="idx_integration_instance_active" tableName="integration_instance">
+            <column name="is_active"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="20250106000002-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="control_integration_id"
+                                 baseTableName="integration_instance"
+                                 constraintName="fk_integration_instance_control_integration_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="control_integration"/>
+
+        <addForeignKeyConstraint baseColumnNames="monitored_service_id"
+                                 baseTableName="integration_instance"
+                                 constraintName="fk_integration_instance_monitored_service_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="monitored_service"/>
+
+        <addForeignKeyConstraint baseColumnNames="http_monitor_id"
+                                 baseTableName="integration_instance"
+                                 constraintName="fk_integration_instance_http_monitor_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="http_monitor"/>
+
+        <addForeignKeyConstraint baseColumnNames="datacenter_id"
+                                 baseTableName="integration_instance"
+                                 constraintName="fk_integration_instance_datacenter_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="datacenter"/>
+    </changeSet>
+
+    <changeSet id="20250106000002-3" author="jhipster">
+        <sql>
+            ALTER TABLE integration_instance ADD CONSTRAINT chk_integration_instance_type
+            CHECK (
+                (instance_type = 'MONITORED_SERVICE' AND monitored_service_id IS NOT NULL) OR
+                (instance_type = 'HTTP_MONITOR' AND http_monitor_id IS NOT NULL) OR
+                (instance_type = 'CUSTOM' AND base_url IS NOT NULL)
+            );
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

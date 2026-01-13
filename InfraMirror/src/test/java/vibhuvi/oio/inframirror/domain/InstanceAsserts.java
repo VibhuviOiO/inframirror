@@ -51,49 +51,14 @@ public class InstanceAsserts {
             .satisfies(a -> assertThat(a.getHostname()).as("check hostname").isEqualTo(expected.getHostname()))
             .satisfies(a -> assertThat(a.getDescription()).as("check description").isEqualTo(expected.getDescription()))
             .satisfies(a -> assertThat(a.getInstanceType()).as("check instanceType").isEqualTo(expected.getInstanceType()))
-            .satisfies(a -> assertThat(a.getMonitoringType()).as("check monitoringType").isEqualTo(expected.getMonitoringType()))
             .satisfies(a -> assertThat(a.getOperatingSystem()).as("check operatingSystem").isEqualTo(expected.getOperatingSystem()))
             .satisfies(a -> assertThat(a.getPlatform()).as("check platform").isEqualTo(expected.getPlatform()))
             .satisfies(a -> assertThat(a.getPrivateIpAddress()).as("check privateIpAddress").isEqualTo(expected.getPrivateIpAddress()))
             .satisfies(a -> assertThat(a.getPublicIpAddress()).as("check publicIpAddress").isEqualTo(expected.getPublicIpAddress()))
             .satisfies(a -> assertThat(a.getTags()).as("check tags").isEqualTo(expected.getTags()))
-            .satisfies(a -> assertThat(a.getPingEnabled()).as("check pingEnabled").isEqualTo(expected.getPingEnabled()))
-            .satisfies(a -> assertThat(a.getPingInterval()).as("check pingInterval").isEqualTo(expected.getPingInterval()))
-            .satisfies(a -> assertThat(a.getPingTimeoutMs()).as("check pingTimeoutMs").isEqualTo(expected.getPingTimeoutMs()))
-            .satisfies(a -> assertThat(a.getPingRetryCount()).as("check pingRetryCount").isEqualTo(expected.getPingRetryCount()))
-            .satisfies(a ->
-                assertThat(a.getHardwareMonitoringEnabled())
-                    .as("check hardwareMonitoringEnabled")
-                    .isEqualTo(expected.getHardwareMonitoringEnabled())
-            )
-            .satisfies(a ->
-                assertThat(a.getHardwareMonitoringInterval())
-                    .as("check hardwareMonitoringInterval")
-                    .isEqualTo(expected.getHardwareMonitoringInterval())
-            )
-            .satisfies(a ->
-                assertThat(a.getCpuWarningThreshold()).as("check cpuWarningThreshold").isEqualTo(expected.getCpuWarningThreshold())
-            )
-            .satisfies(a -> assertThat(a.getCpuDangerThreshold()).as("check cpuDangerThreshold").isEqualTo(expected.getCpuDangerThreshold())
-            )
-            .satisfies(a ->
-                assertThat(a.getMemoryWarningThreshold()).as("check memoryWarningThreshold").isEqualTo(expected.getMemoryWarningThreshold())
-            )
-            .satisfies(a ->
-                assertThat(a.getMemoryDangerThreshold()).as("check memoryDangerThreshold").isEqualTo(expected.getMemoryDangerThreshold())
-            )
-            .satisfies(a ->
-                assertThat(a.getDiskWarningThreshold()).as("check diskWarningThreshold").isEqualTo(expected.getDiskWarningThreshold())
-            )
-            .satisfies(a ->
-                assertThat(a.getDiskDangerThreshold()).as("check diskDangerThreshold").isEqualTo(expected.getDiskDangerThreshold())
-            )
             .satisfies(a -> assertThat(a.getCreatedAt()).as("check createdAt").isEqualTo(expected.getCreatedAt()))
             .satisfies(a -> assertThat(a.getUpdatedAt()).as("check updatedAt").isEqualTo(expected.getUpdatedAt()))
-            .satisfies(a -> assertThat(a.getLastPingAt()).as("check lastPingAt").isEqualTo(expected.getLastPingAt()))
-            .satisfies(a ->
-                assertThat(a.getLastHardwareCheckAt()).as("check lastHardwareCheckAt").isEqualTo(expected.getLastHardwareCheckAt())
-            );
+            .satisfies(a -> assertThat(a.getIsActive()).as("check isActive").isEqualTo(expected.getIsActive()));
     }
 
     /**

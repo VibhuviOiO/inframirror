@@ -20,6 +20,10 @@ import ServiceHeartbeat from './service-heartbeat';
 import StatusPage from './status-page';
 import StatusDependency from './status-dependency';
 import MonitoredService from './monitored-service';
+import ICCIntegrationList from 'app/modules/icc/icc-integration-list';
+import ICCInstanceList from 'app/modules/icc/icc-instance-list';
+import ICCResourceList from 'app/modules/icc/icc-resource-list';
+import ICCDataView from 'app/modules/icc/icc-data-view';
 /* jhipster-needle-add-route-import - JHipster will add routes here */
 
 export default () => {
@@ -44,6 +48,9 @@ export default () => {
         <Route path="status-page/*" element={<StatusPage />} />
         <Route path="status-dependency/*" element={<StatusDependency />} />
         <Route path="monitored-service/*" element={<MonitoredService />} />
+        <Route path="icc" element={<ICCIntegrationList />} />
+        <Route path="icc/instances/:code" element={<ICCInstanceList />} />
+        <Route path="icc/:code/:resource" element={<ICCDataView />} />
         {/* jhipster-needle-add-route-path - JHipster will add routes here */}
       </ErrorBoundaryRoutes>
     </div>

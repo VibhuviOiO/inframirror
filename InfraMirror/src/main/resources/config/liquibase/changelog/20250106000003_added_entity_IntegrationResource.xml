@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20250106000003-1" author="jhipster">
+        <createTable tableName="integration_resource">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="control_integration_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="display_name" type="varchar(100)"/>
+            <column name="api_path" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="response_path" type="text"/>
+            <column name="identifier_path" type="text"/>
+            <column name="supports_namespace" type="boolean" defaultValueBoolean="false"/>
+            <column name="refresh_interval_sec" type="integer" defaultValueNumeric="30"/>
+            <column name="is_active" type="boolean" defaultValueBoolean="true"/>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <createIndex indexName="idx_integration_resource_control_integration" tableName="integration_resource">
+            <column name="control_integration_id"/>
+        </createIndex>
+        <createIndex indexName="idx_integration_resource_name" tableName="integration_resource">
+            <column name="name"/>
+        </createIndex>
+        <createIndex indexName="idx_integration_resource_active" tableName="integration_resource">
+            <column name="is_active"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="20250106000003-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="control_integration_id"
+                                 baseTableName="integration_resource"
+                                 constraintName="fk_integration_resource_control_integration_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="control_integration"/>
+    </changeSet>
+
+    <changeSet id="20250106000003-3" author="jhipster">
+        <addUniqueConstraint tableName="integration_resource"
+                             columnNames="control_integration_id, name"
+                             constraintName="uk_integration_resource_integration_name"/>
+    </changeSet>
+
+</databaseChangeLog>

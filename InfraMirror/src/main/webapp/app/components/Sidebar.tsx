@@ -98,6 +98,12 @@ const sidebarMenu: SidebarMenu[] = [
     ],
   },
   {
+    title: 'Integration Control',
+    icon: FaSitemap,
+    route: '/icc',
+    items: [],
+  },
+  {
     title: 'App Metrics',
     icon: FaTools,
     items: [
