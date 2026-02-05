@@ -5,10 +5,7 @@ services:
     extends:
       file: ./postgresql.yml
       service: postgresql
-  timescaledb:
-    extends:
-      file: ./postgresql.yml
-      service: timescaledb
+#
   keycloak:
     extends:
       file: ./keycloak.yml

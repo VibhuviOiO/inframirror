@@ -53,6 +53,27 @@ public class InstanceDTO implements Serializable {
 
     private AgentDTO agent;
 
+    private Integer pingInterval;
+
+    private Integer pingTimeoutMs;
+
+    private Integer pingRetryCount;
+
+    private Boolean hardwareMonitoringEnabled;
+
+    private Integer hardwareMonitoringInterval;
+
+    private Integer cpuWarningThreshold;
+
+    private Integer cpuDangerThreshold;
+
+    private Integer memoryWarningThreshold;
+
+    private Integer memoryDangerThreshold;
+
+    private Integer diskWarningThreshold;
+
+    private Integer diskDangerThreshold;
     public Long getId() {
         return id;
     }
@@ -163,6 +184,94 @@ public class InstanceDTO implements Serializable {
 
     public void setAgent(AgentDTO agent) {
         this.agent = agent;
+    }
+
+    public Integer getPingInterval() {
+        return pingInterval;
+    }
+
+    public void setPingInterval(Integer pingInterval) {
+        this.pingInterval = pingInterval;
+    }
+
+    public Integer getPingTimeoutMs() {
+        return pingTimeoutMs;
+    }
+
+    public void setPingTimeoutMs(Integer pingTimeoutMs) {
+        this.pingTimeoutMs = pingTimeoutMs;
+    }
+
+    public Integer getPingRetryCount() {
+        return pingRetryCount;
+    }
+
+    public void setPingRetryCount(Integer pingRetryCount) {
+        this.pingRetryCount = pingRetryCount;
+    }
+
+    public Boolean getHardwareMonitoringEnabled() {
+        return hardwareMonitoringEnabled;
+    }
+
+    public void setHardwareMonitoringEnabled(Boolean hardwareMonitoringEnabled) {
+        this.hardwareMonitoringEnabled = hardwareMonitoringEnabled;
+    }
+
+    public Integer getHardwareMonitoringInterval() {
+        return hardwareMonitoringInterval;
+    }
+
+    public void setHardwareMonitoringInterval(Integer hardwareMonitoringInterval) {
+        this.hardwareMonitoringInterval = hardwareMonitoringInterval;
+    }
+
+    public Integer getCpuWarningThreshold() {
+        return cpuWarningThreshold;
+    }
+
+    public void setCpuWarningThreshold(Integer cpuWarningThreshold) {
+        this.cpuWarningThreshold = cpuWarningThreshold;
+    }
+
+    public Integer getCpuDangerThreshold() {
+        return cpuDangerThreshold;
+    }
+
+    public void setCpuDangerThreshold(Integer cpuDangerThreshold) {
+        this.cpuDangerThreshold = cpuDangerThreshold;
+    }
+
+    public Integer getMemoryWarningThreshold() {
+        return memoryWarningThreshold;
+    }
+
+    public void setMemoryWarningThreshold(Integer memoryWarningThreshold) {
+        this.memoryWarningThreshold = memoryWarningThreshold;
+    }
+
+    public Integer getMemoryDangerThreshold() {
+        return memoryDangerThreshold;
+    }
+
+    public void setMemoryDangerThreshold(Integer memoryDangerThreshold) {
+        this.memoryDangerThreshold = memoryDangerThreshold;
+    }
+
+    public Integer getDiskWarningThreshold() {
+        return diskWarningThreshold;
+    }
+
+    public void setDiskWarningThreshold(Integer diskWarningThreshold) {
+        this.diskWarningThreshold = diskWarningThreshold;
+    }
+
+    public Integer getDiskDangerThreshold() {
+        return diskDangerThreshold;
+    }
+
+    public void setDiskDangerThreshold(Integer diskDangerThreshold) {
+        this.diskDangerThreshold = diskDangerThreshold;
     }
 
     @Override
